@@ -1,0 +1,11 @@
+{% extends '../base.njk' %}
+
+{% block main %}
+    <h1>Happenings</h1>
+
+    {% for h, happening in happenings %}
+        {{h}} - {{happening}}
+        <h2>{{ happening.title }}</h2>
+        <p>{{ happening.body }}</p>
+    {% endfor %}
+{% endblock %}
