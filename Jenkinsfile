@@ -7,6 +7,16 @@ pipeline {
     }
     
     stages {
+        stage('Setup') {
+            steps {
+                // Initialize and update submodules
+                sh '''
+                    git submodule init
+                    git submodule update --recursive --remote
+                '''
+            }
+        }
+
         stage('Setup NVM') {
             steps {
                 sh '''
