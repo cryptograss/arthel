@@ -29,3 +29,7 @@ To document:
 * Cursor rules
 * Blue Railroad Train Squats video fetch
 * Dice-rolling wallet generation; cryptograss paper wallets
+
+### Builds
+
+The cryptograss build server, maybelle, builds the production branch every two minutes.
