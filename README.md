@@ -14,6 +14,7 @@ nvm use 23
 npm update
 npm install
 npm run test
+npm run fetch-chain-data
 npm run dev:cg (or dev:jh)
 npm run build (set the site domain as SITE in environment variables)
 ```
