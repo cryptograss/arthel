@@ -2,7 +2,7 @@
 
 This is a tool to build cryptograss web projects, including the cryptograss.live website, and justinholmes.com, the website of Justin Holmes and the Immutable String Band.
 
-On ubuntu 24+, it requires node 22.X or 23.x to build.
+On ubuntu 24+, it requires node 23.x to build.
 
 OS-level dependencies:
 `sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev`
