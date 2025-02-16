@@ -1,0 +1,15 @@
+name: Trigger Jenkins Build
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  trigger-jenkins:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Jenkins Build
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.JENKINS_API_TOKEN }}" \
+            "https://maybelle.cryptograss.live/job/pull-requests/build?delay=0sec"
