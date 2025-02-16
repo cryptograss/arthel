@@ -14,7 +14,7 @@ nvm use 23
 npm update
 npm install
 npm run test
-npm run devserver
+npm run dev:cg (or dev:jh)
 npm run build
 ```
 
