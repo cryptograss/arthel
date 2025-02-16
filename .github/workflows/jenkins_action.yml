@@ -1,15 +1,22 @@
-name: Trigger Jenkins Build
+name: Jenkins Action
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [ main ]
 
 jobs:
-  trigger-jenkins:
+  maybelle-build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Trigger Jenkins Build
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.JENKINS_API_TOKEN }}" \
-            "https://maybelle.cryptograss.live/job/pull-requests/build?delay=0sec"
+
+    - name: Knock Jenkins API
+      uses: Mondtic/build-jenkins-job@master
+      with:
+        jenkins-url: https://maybelle.cryptograss.live
+        jenkins-token: "${{ secrets.JENKINS_API_TOKEN }}"
+        jenkins-user: admin
+        jenkins-job: pull-requests
+        jenkins-wait-job: "no-wait"
+        jenkins-ssl-verify: "false"
+
