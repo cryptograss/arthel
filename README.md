@@ -1,6 +1,6 @@
-## Justin Holmes website, cryptograss tools
+## Crypograss builder
 
-This is a self-building static site, built with node.js and designed to be hosted on a static site host (currently, nearlyfreespeech.net).
+This is a tool to build cryptograss web projects, including the cryptograss.live website, and justinholmes.com, the website of Justin Holmes and the Immutable String Band.
 
 On ubuntu 24+, it requires node 22.X or 23.x to build.
 
