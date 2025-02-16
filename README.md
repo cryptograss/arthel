@@ -29,7 +29,7 @@ To document:
 
 Build and deployment automation logic is included in the `deployment` directory.
 
-The cryptograss build server, maybelle, builds the production branch every two minutes.  Chain data is fetched for this purpose on alternating minutes, so builds might be as much as 3 minutes out of date.
+The cryptograss build server, maybelle (https://maybelle.cryptograss.live), builds the production branch every two minutes.  Chain data is fetched for this purpose on alternating minutes, so builds might be as much as 3 minutes out of date.
 
 Pull Requests are built automatically only for members of the cryptograss organization on github.  If you have a Pull Request that you'd like built by maybelle, just ask on our discord and we'll review it for security issues first.
 
