@@ -21,6 +21,7 @@ npm run build (set the site domain as SITE in environment variables)
 
 To document:
 
+* Getting Blue Railroad metadata and building videos
 * Nunjucks
 * Cursor rules
 * Blue Railroad Train Squats video fetch
