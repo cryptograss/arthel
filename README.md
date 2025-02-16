@@ -2,6 +2,8 @@
 
 This is a tool to build cryptograss web projects, including the cryptograss.live website, and justinholmes.com, the website of Justin Holmes and the Immutable String Band.
 
+The templates, which are written in Nunjucks, are in the `templates` folder for each site.
+
 On ubuntu 24+, it requires node 22.X or 23.x to build.
 
 OS-level dependencies:
