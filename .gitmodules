@@ -1,0 +1,3 @@
+[submodule "src/data/happenings"]
+	path = src/data/happenings
+	url = git@github.com:cryptograss/happenings.git

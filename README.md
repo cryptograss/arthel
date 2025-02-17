@@ -44,3 +44,9 @@ Branches which are built are also available as previews.
 The build server needs access to providers for each of the chains for which data is being read, as well as API access to discord, github, and other places where merch-related metadata and multimedia are held.  Thus, a malicicious actor can submit a pull request which either emits those secrets in logs, or passes those secrets as context to the preview build. For this reason, we only allow    branches to be built, not pull requests.
 
 The jenkins instance on the builder server does not have direct access to the web server; production builds are rsynced by a separate job, by a separate user.
+
+
+
+
+`git submodule add git@github.com:cryptograss/happenings.git src/data/happenings`
+
