@@ -1,6 +1,6 @@
 ## Crypograss builder
 
-This is a tool to read onchian data in the cryptograss ecosystem and build cryptograss web projects, including the cryptograss.live website, and justinholmes.com, the website of Justin Holmes and the Immutable String Band.
+This is a tool to read onchian data in the cryptograss ecosystem, fetch metadata and multimedia, and build cryptograss web projects, including the cryptograss.live website, and justinholmes.com, the website of Justin Holmes and the Immutable String Band.
 
 On ubuntu 24+, it requires node 23.x to build.
 
