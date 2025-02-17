@@ -15,7 +15,8 @@ pipeline {
         SHARED_DATA_DIR = '/var/jenkins_home/shared'
         CHAIN_DATA_DIR = "${WORKSPACE}/output/_prebuild_chain_data"
         COMMIT_SHA = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
-        PREVIEW_BUILD = "${env.CHANGE_ID != null ? 'true' : 'false'}"
+        BRANCH_NAME = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+        IS_PRODUCTION = "${env.BRANCH_NAME == 'production' ? 'true' : 'false'}"
     }
 
     stages {
@@ -151,62 +152,42 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    echo "CHANGE_BRANCH: ${env.CHANGE_BRANCH}"
-                    echo "CHANGE_ID: ${env.CHANGE_ID}"
-                    def isPR = env.CHANGE_ID != null
-                    echo "isPR: ${isPR}"
+                    if (env.IS_PRODUCTION != 'true') {
+                        // Preview build for any non-production branch
+                        sh "mkdir -p ${PR_BUILDS_DIR}/previews/${COMMIT_SHA}"
 
-                    if (env.CHANGE_BRANCH != 'production') {
-                        // Create PR build directory
-                        sh "mkdir -p ${PR_BUILDS_DIR}/${COMMIT_SHA}"
-
-                        // Copy build to PR build directory
-                        // TODO: Make this an artifact, and... I guess symlink it?
-                        sh """
-                            rsync -av output/dist/* ${PR_BUILDS_DIR}/${COMMIT_SHA}
-                        """
-
-                        // Run HTML modification script with proper Node.js setup
                         withEnv([
-                            "PR_BUILD_DIR=${PR_BUILDS_DIR}/${COMMIT_SHA}",
+                            "PREVIEW_BUILD=true",
                             "COMMIT_SHA=${COMMIT_SHA}",
-                            "CHANGE_URL=${env.CHANGE_URL}",
-                            "CHANGE_ID=${env.CHANGE_ID}",
-                            "CHANGE_BRANCH=${env.CHANGE_BRANCH}",
-                            "CHANGE_FORK=${env.CHANGE_FORK}",
-                            "CHANGE_TITLE=${env.CHANGE_TITLE}",
-                            "COMMIT_MESSAGE=${env.COMMIT_MESSAGE}"
+                            "BRANCH_NAME=${BRANCH_NAME}"
                         ]) {
-                        sh """
-                            export NVM_DIR="\$HOME/.nvm"
-                            [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"  # Load nvm
-                            nvm use ${NODE_VERSION}
+                            sh """
+                                export NVM_DIR="\$HOME/.nvm"
+                                [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
+                                nvm use ${NODE_VERSION}
 
-                            NODE_PATH=\$(npm root -g)
-                            export NODE_PATH
+                                NODE_PATH=\$(npm root -g)
+                                export NODE_PATH
 
-                            node deployment/scripts/modify_build_htmls.js
-                        """
+                                node deployment/scripts/modify_build_htmls.js
+                            """
                         }
-                        // TODO: Instead of hardcoding the port, use the port from the nginx config
-                        def previewUrls = """🔍 [Preview URLs](https://maybelle.cryptograss.live:8081/build-previews/${COMMIT_SHA}) for ${env.COMMIT_SHA}"""
 
-                        // Post comment on GitHub PR
-                        pullRequest.comment(previewUrls)
+                        // Comment on the commit instead of the PR
+                        withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
+                            def previewUrls = """🔍 [Preview URLs](https://maybelle.cryptograss.live:8081/build-previews/${COMMIT_SHA}) for ${env.COMMIT_SHA} (${env.BRANCH_NAME})"""
+                            sh """
+                                curl -X POST \
+                                -H "Authorization: token ${GITHUB_TOKEN}" \
+                                -H "Accept: application/vnd.github.v3+json" \
+                                https://api.github.com/repos/cryptograss/justinholmes.com/commits/${COMMIT_SHA}/comments \
+                                -d '{"body": "${previewUrls}"}'
+                            """
+                        }
 
-                        // Set GitHub status with preview URLs
-                        pullRequest.createStatus(
-                            status: 'success',
-                            context: 'Preview Deployment',
-                            description: 'Preview builds are ready',
-                            targetUrl: "https://maybelle.cryptograss.live/build-previews/${COMMIT_SHA}"
-                        )
-
-                        // Add preview URLs to build description
-                        currentBuild.description = previewUrls
                     } else {
+                        // Production build
                         sh "mkdir -p ${PR_BUILDS_DIR}/production"
-
                         sh """
                             rsync -av output/dist/* ${PR_BUILDS_DIR}/production
                         """
