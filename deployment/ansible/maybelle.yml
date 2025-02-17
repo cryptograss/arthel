@@ -1,8 +1,7 @@
 ---
 - name: Provision Jenkins for Cryptograss
   hosts: all
-  become: yes
-  
+
   vars:
     jenkins_port: 8080
     docker_users:
@@ -27,7 +26,6 @@
       stat:
         path: "{{ secrets_dir | realpath }}/{{ item.value }}"
       register: secret_stats
-      become: false
       loop: "{{ required_secrets | dict2items }}"
       delegate_to: localhost
       run_once: true
@@ -128,7 +126,7 @@
         mode: '0644'
         owner: 1000
         group: 1000
-    
+
     - name: Create secrets directory in Jenkins home
       file:
         path: "{{ jenkins_home }}/secrets"
@@ -192,7 +190,7 @@
         path: "~/.ssh/id_ed25519"
         type: ed25519
         state: present
-    
+
     - name: Ensure that known_hosts is present
       ansible.builtin.file:
         path: "~/.ssh/known_hosts"
@@ -204,7 +202,17 @@
         hash_host: yes
         key: "|1|kXmD+AGFcaF62DEuUeuL+47t/BA=|Ri2jtfePwmmkcsa9BerY+xC+Epw= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICbXE1f5S3N/flFHUm2i97tzKGJUWzxotY1HHBMIX72h"
         state: present
-    
+
+    - name: Add known_hosts entry for NFS
+      ansible.builtin.known_hosts:
+        host: gith.nyc1.nearlyfreespeech.net
+        hash_host: yes
+        key: "|1|kXmD+AGFcaF62DEuUeuL+47t/BA=|Ri2jtfePwmmkcsa9BerY+xC+Epw= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICbXE1f5S3N/flFHUm2i97tzKGJUWzxotY1HHBMIX72h"
+        state: present
+    - name: Add known_hosts entry for github.com
+      ansible.builtin.shell:
+        cmd: "ssh-keyscan -H github.com >> /var/jenkins_home/.ssh/known_hosts"
+
     - name: Cronjob to rsync production builds to web servers
       ansible.builtin.cron:
         name: "push sites to prod"
@@ -234,7 +242,7 @@
         owner: www-data
         group: www-data
 
-    - name: Slurp public SSH key
+    - name: Slurp public SSH key  # TODO: This is only useful as the jenkins user, which doesn't have a key yet.  Better to custody the private key and copy it.  #230
       ansible.builtin.slurp:
         src: ~/.ssh/id_ed25519.pub
       register: ssh_trinket
@@ -248,4 +256,4 @@
       service:
         name: nginx
         state: restarted
-  
+

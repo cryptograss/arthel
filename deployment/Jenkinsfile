@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     options {
         buildDiscarder(logRotator(numToKeepStr: '50'))
         parallelsAlwaysFailFast();
@@ -37,12 +37,12 @@ pipeline {
                         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
                         chmod -R 755 "$NVM_DIR"  # Add execute permissions
                     fi
-                    
+
                     # Ensure NVM script is executable
                     chmod +x "$NVM_DIR/nvm.sh"
-                
+
                     nvm use ${NODE_VERSION} --silent
-                    
+
                     # Copy .env file from secrets
                     cp ${SECRETS_DIR}/0/.env .env
                     chmod 600 .env
@@ -50,7 +50,7 @@ pipeline {
             }
         }
 
-        
+
         stage('Install Dependencies') {
             steps {
                 // Only install if node_modules doesn't exist or package.json changed
@@ -64,7 +64,7 @@ pipeline {
             }
         }
 
-        
+
         stage('Run Tests') {
             steps {
                 sh '''#!/bin/bash
@@ -82,7 +82,7 @@ pipeline {
                 '''
             }
         }
-                
+
         stage('Copy Chain Data') {
             steps {
                 sh '''#!/bin/bash
@@ -90,10 +90,10 @@ pipeline {
                         echo "Chain data not found or outdated. Please ensure chain-data-fetcher job is running."
                         exit 1
                     fi
-                    
+
                     # Create chain data dir
                     mkdir -p ${CHAIN_DATA_DIR}
-                    
+
                     # Copy shared data to workspace
                     cp -r ${SHARED_DATA_DIR}/chain_data/* ${CHAIN_DATA_DIR}
                 '''
@@ -123,7 +123,7 @@ pipeline {
         stage("Build all sites in parallel") {
 
             parallel {
-                    
+
                 stage('Build cryptograss.live') {
                     steps {
                         sh '''#!/bin/bash
@@ -147,24 +147,25 @@ pipeline {
                 }
             }
         }
-    
+
         stage('Deploy') {
             steps {
                 script {
+                    echo "CHANGE_BRANCH: ${env.CHANGE_BRANCH}"
                     echo "CHANGE_ID: ${env.CHANGE_ID}"
                     def isPR = env.CHANGE_ID != null
                     echo "isPR: ${isPR}"
-                    
-                    if (isPR) {
+
+                    if (env.CHANGE_BRANCH != 'production') {
                         // Create PR build directory
                         sh "mkdir -p ${PR_BUILDS_DIR}/${COMMIT_SHA}"
-                        
+
                         // Copy build to PR build directory
                         // TODO: Make this an artifact, and... I guess symlink it?
                         sh """
                             rsync -av output/dist/* ${PR_BUILDS_DIR}/${COMMIT_SHA}
                         """
-                        
+
                         // Run HTML modification script with proper Node.js setup
                         withEnv([
                             "PR_BUILD_DIR=${PR_BUILDS_DIR}/${COMMIT_SHA}",
@@ -180,19 +181,19 @@ pipeline {
                             export NVM_DIR="\$HOME/.nvm"
                             [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"  # Load nvm
                             nvm use ${NODE_VERSION}
-                            
+
                             NODE_PATH=\$(npm root -g)
                             export NODE_PATH
-                            
+
                             node deployment/scripts/modify_build_htmls.js
                         """
-                        } 
+                        }
                         // TODO: Instead of hardcoding the port, use the port from the nginx config
                         def previewUrls = """🔍 [Preview URLs](https://maybelle.cryptograss.live:8081/build-previews/${COMMIT_SHA}) for ${env.COMMIT_SHA}"""
 
                         // Post comment on GitHub PR
                         pullRequest.comment(previewUrls)
-                        
+
                         // Set GitHub status with preview URLs
                         pullRequest.createStatus(
                             status: 'success',
@@ -200,7 +201,7 @@ pipeline {
                             description: 'Preview builds are ready',
                             targetUrl: "https://maybelle.cryptograss.live/build-previews/${COMMIT_SHA}"
                         )
-                        
+
                         // Add preview URLs to build description
                         currentBuild.description = previewUrls
                     } else {
@@ -220,5 +221,5 @@ pipeline {
                 archiveArtifacts artifacts: 'output/**/*'
         }
     }
-    
+
 }
