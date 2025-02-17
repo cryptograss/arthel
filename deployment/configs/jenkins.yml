@@ -33,20 +33,12 @@ credentials:
   system:
     domainCredentials:
       - credentials:
-          - usernamePassword:
-              scope: GLOBAL
-              id: "github-token"
-              username: "jmyles"
-              password: "${GITHUB_TOKEN}"
-              description: "GitHub Token"
-          - basicSSHUserPrivateKey:
-              scope: GLOBAL
-              id: "jenkins-ssh-key"
-              username: "jenkins"
-              privateKeySource:
-                directEntry:
-                  privateKey: ${JENKINS_SSH_KEY}
-              description: "SSH key for rsync deployments"
+        - usernamePassword:
+            scope: GLOBAL
+            id: "github-token"
+            username: "maybelle"
+            password: "${GITHUB_TOKEN}"
+            description: "GitHub Token"
 
 unclassified:
   location:
