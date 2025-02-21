@@ -154,7 +154,7 @@ pipeline {
                 script {
                     if (env.IS_PRODUCTION != 'true') {
                         // Preview build for any non-production branch
-                        sh "mkdir -p ${PR_BUILDS_DIR}/previews/${COMMIT_SHA}"
+                        sh "mkdir -p ${PR_BUILDS_DIR}/${COMMIT_SHA}"
 
                         withEnv([
                             "PREVIEW_BUILD=true",
