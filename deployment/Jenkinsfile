@@ -170,6 +170,8 @@ pipeline {
                                 export NODE_PATH
 
                                 node deployment/scripts/modify_build_htmls.js
+
+                                rsync -av output/dist/* ${PR_BUILDS_DIR}/${COMMIT_SHA}
                             """
                         }
 
