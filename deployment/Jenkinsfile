@@ -153,6 +153,9 @@ pipeline {
             steps {
                 script {
                     if (env.IS_PRODUCTION != 'true') {
+                        // Emit message showing whether we're in preview mode or not.
+                        echo "Preview build for ${COMMIT_SHA} (${BRANCH_NAME})"
+
                         // Preview build for any non-production branch
                         sh "mkdir -p ${PR_BUILDS_DIR}/${COMMIT_SHA}"
 
@@ -189,6 +192,8 @@ pipeline {
 
                     } else {
                         // Production build
+
+                        echo "Production build for ${COMMIT_SHA}"
                         sh "mkdir -p ${PR_BUILDS_DIR}/production"
                         sh """
                             rsync -av output/dist/* ${PR_BUILDS_DIR}/production
