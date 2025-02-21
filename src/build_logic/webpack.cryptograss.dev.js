@@ -30,8 +30,9 @@ async function dev_config() {
                 ],
             },
             // TODO: Enforce this matching the CopyPlugin
+            // TODO: Handle assets per site #198
             static: [{
-                directory: path.join(getProjectDirs().outputPrimarySiteDir, 'assets'),
+                directory: path.join(outputPrimaryRootDir, 'assets'),
                 publicPath: '/assets',
             }],
         },

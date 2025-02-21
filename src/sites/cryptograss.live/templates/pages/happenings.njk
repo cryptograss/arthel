@@ -1,11 +1,16 @@
 {% extends '../base.njk' %}
 
 {% block main %}
-    <h1>Happenings</h1>
+    <div class="row">
+        <div class="col-2"></div>
+        <div id="top-news" class="col-8 text-post">
+            <div class="row">
+                <h1 class="text-center grid-writing">cryptograss happenings</h1>
+            </div>
 
-    {% for h, happening in happenings %}
-        {{h}} - {{happening}}
-        <h2>{{ happening.title }}</h2>
-        <p>{{ happening.body }}</p>
-    {% endfor %}
+            {% for h, happening in happenings %}
+                {% include 'reuse/single-happening.njk' %}
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

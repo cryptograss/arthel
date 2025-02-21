@@ -1,1 +1,70 @@
-* {color: #000;}
+@font-face {
+    font-family: "grid-writing";
+    font-style: normal;
+    src: url(handwriting-draft_free-version.ttf);
+}
+
+@font-face {
+    font-family: "aesthetic";
+    font-style: normal;
+    src: url("Aesthetic-Beauty-CF.otf");
+}
+
+.grid-writing {
+    font-family: grid-writing;
+}
+
+.aesthetic {
+    font-family: aesthetic;
+}
+
+
+#base-container {
+    background-image: url("cryptograss-cropped.jpg");
+    background-repeat: no-repeat;
+    background-color: rgb(235, 240, 235);
+    background-attachment: fixed;
+}
+
+#banner {
+    height: 115px;
+}
+
+#the-nav {
+    z-index: 1000;
+    text-shadow: 0px 0px 1px black, 0px 0px 3px #8eeaff;
+    -webkit-text-stroke: 0.03em black;
+}
+
+#the-nav .navbar-nav {
+    color: #bfbfbf;
+}
+
+#the-nav .nav-link.active,
+#the-nav .nav-link,
+#the-nav .nav-link:hover,
+#the-nav {
+    color: #bfbfbf;
+}
+
+#main-image-at-top {
+    z-index: 1;
+    height: 375px;
+}
+
+#main-container {
+    position: relative;
+    z-index: 1000;
+}
+
+.text-post {
+    border-right: 4px dashed #00bcb9;
+    background-color: rgba(242, 255, 255, 0.8);
+}
+
+.subhead {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #00bcb9;
+    text-shadow: 0px 0px 1px black;
+}

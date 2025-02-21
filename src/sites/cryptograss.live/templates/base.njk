@@ -15,5 +15,9 @@
     </head>
 
     <body>
-        {% block main %}{% endblock %}
+        <div id="base-container" class="container-fluid">
+            {% include 'partials/banner.njk' %}
+            <div id="main-container" class="container">
+                {% block main %}{% endblock %}
+        </div>
     </body>

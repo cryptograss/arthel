@@ -1,6 +1,27 @@
 {% extends '../base.njk' %}
 {% block main %}
 
+    <div class="row">
+        <div class="col-2"></div>
+        <div id="top-news" class="col-8 text-post">
+            <div class="row">
+                <h1 class="text-center">Happenings</h1>
+            </div>
+            <div class="row">
+
+                <h3>Some big happening in particular</h3>
+
+                <img src="{{get_image(musicians/Harry-and-Nacci.jpg)}}" alt="Happening">
+
+                   Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+
+
+
+                </div>
+        </div>
+        <div class="col-2"></div>
+    </div>
+
     <div class="blue-railroad-grid">
         {% for tokenId, data in chainData.blueRailroads %}
             <div class="blue-railroad-card semi-transparent-bg">
@@ -15,7 +36,7 @@
                 {% if data.video_url %}
                     <div class="video-container">
                         <video controls preload="metadata">
-                            <source src="/assets/fetched/10-{{ chainData.blueRailroadContractAddress}}-{{ tokenId }}.mp4" 
+                            <source src="/assets/fetched/10-{{ chainData.blueRailroadContractAddress}}-{{ tokenId }}.mp4"
                                             type="{{ data.content_type }}">
                                     Your browser does not support the video tag.
                                 </video>
