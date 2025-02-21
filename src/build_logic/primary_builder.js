@@ -372,7 +372,7 @@ export const runPrimaryBuild = async () => {
     // Chapter 5: Happenings
     ///////////////////////////
 
-    if (site === "cryptograss.live") {  // TODO: This is a hack.  We need to make this more general.
+    if (site === "cryptograss.live") {  // TODO: This is a hack.  We need to make this more general.  Probably #197.
 
         // Iterate though YAML files in data/happenings
         let happenings = {};
