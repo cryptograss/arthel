@@ -1,4 +1,4 @@
-index:
+llamas:
   template: index.njk
   context:
     page_title: "Future-proofing Bluegrass"

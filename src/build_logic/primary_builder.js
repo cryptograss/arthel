@@ -407,7 +407,7 @@ export const runPrimaryBuild = async () => {
         // First, all the happenings to the news page (TODO: paginate this? TODO: Turn this into a regular page, with happenigns as context.)
         renderPage({
             template_path: 'pages/happenings.njk',
-            output_path: `happenings.html`,
+            output_path: `index.html`,
             site: site,
             context: {
                 happenings: happenings,
