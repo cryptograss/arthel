@@ -26,6 +26,8 @@ const htmlPluginInstances = templateFiles.map(templatePath => {
         var chunks = ['vowel_sounds'];
     } else if (relativePath.startsWith('sign')) {
         var chunks = ['main', 'signing'];
+    } else if (relativePath.startsWith('shows/')) {
+        var chunks = ['main', 'strike_set_stone'];
     } else if (relativePath.startsWith('magichat')) {
         var chunks = ['main', 'magic_hat'];
     } else {
@@ -75,6 +77,7 @@ export default {
         help: `${frontendJSDir}/help.js`,
         signing: `${frontendJSDir}/jhmusic_signing.js`,
         magic_hat: `${frontendJSDir}/magic_hat.js`,
+        strike_set_stone: `${frontendJSDir}/strike_set_stones.js`,
     },
     module: {
         rules: [
@@ -84,4 +87,4 @@ export default {
             },
         ]
     },
-}; 
+};
