@@ -57,9 +57,8 @@ export default {
         new CopyPlugin({
             patterns: [
                 {
-                    from: path.resolve(outputPrimarySiteDir, 'assets'),
-                    to: path.resolve(outputDistDir, 'assets'),
-                    noErrorOnMissing: true
+                    from: path.resolve(outputPrimaryRootDir, 'assets'),
+                    to: path.resolve(outputDistDir, 'assets')
                 },
                 {
                     from: path.resolve(outputPrimarySiteDir, 'setstones'),
@@ -99,4 +98,4 @@ export default {
             },
         ]
     },
-}; 
+};
