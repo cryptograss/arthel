@@ -122,9 +122,12 @@ pipeline {
         }
 
         stage("Build all sites in parallel") {
+            environment {
+                PREVIEW_BUILD = "${env.BRANCH_NAME != 'production' ? 'true' : 'false'}"
+                COMMIT_SHA = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+            }
 
             parallel {
-
                 stage('Build cryptograss.live') {
                     steps {
                         sh '''#!/bin/bash
