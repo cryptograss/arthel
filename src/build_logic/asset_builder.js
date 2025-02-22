@@ -15,7 +15,7 @@ let unusedImages = new Set();
 let _assets_gathered = false;
 
 function gatherAssets() {
-    const { imagesSourceDir, outputPrimaryRootDir, srcDir } = getProjectDirs();
+    const { imagesSourceDir, outputPrimaryRootDir, srcDir, basePath } = getProjectDirs();
     const imageDirPattern = `${imagesSourceDir}/**/*.{png,jpg,jpeg,gif,avif,svg,webp,mp4}`
 
     const assetsOutputDir = path.join(outputPrimaryRootDir, 'assets');
@@ -69,9 +69,13 @@ function gatherAssets() {
 
         // Create mapping
         const originalPath = path.relative(imagesSourceDir, file).replace(/\\/g, '/');
-        imageMapping[originalPath] = `/assets/images/${hashedFilename}`;
+        if (basePath) {
+            imageMapping[originalPath] = `${basePath}/assets/images/${hashedFilename}`;
+        } else {
+            imageMapping[originalPath] = `/assets/images/${hashedFilename}`;
+        }
         unusedImages.add(originalPath); // we add all files to unusedImages, then we remove them from the mapping when they are used
-    }); 
+    });
 
     // Simply copy the fetched assets directory
     if (fs.existsSync(fetchedAssetsDir)) {
