@@ -122,31 +122,46 @@ pipeline {
         }
 
         stage("Build all sites in parallel") {
-            environment {
-                PREVIEW_BUILD = "${env.BRANCH_NAME != 'production' ? 'true' : 'false'}"
-                COMMIT_SHA = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
-            }
-
             parallel {
                 stage('Build cryptograss.live') {
                     steps {
-                        sh '''#!/bin/bash
-                            export SITE=cryptograss.live
-                            . "$NVM_DIR/nvm.sh" --silent
-                            nvm use ${NODE_VERSION} --silent
-                            npm run build
-                        '''
+                        script {
+                            def branchName = getBranchName()
+                            def isPreviewBuild = !branchName.equals('origin/production')
+
+                            withEnv([
+                                "PREVIEW_BUILD=${isPreviewBuild}",
+                                "COMMIT_SHA=${COMMIT_SHA}"
+                            ]) {
+                                sh '''#!/bin/bash
+                                    export SITE=cryptograss.live
+                                    . "$NVM_DIR/nvm.sh" --silent
+                                    nvm use ${NODE_VERSION} --silent
+                                    npm run build
+                                '''
+                            }
+                       }
                     }
                 }
 
                 stage('Build justinholmes.com') {
                     steps {
-                        sh '''#!/bin/bash
-                            export SITE=justinholmes.com
-                            . "$NVM_DIR/nvm.sh" --silent
-                            nvm use ${NODE_VERSION} --silent
-                            npm run build
-                        '''
+                        script {
+                            def branchName = getBranchName()
+                            def isPreviewBuild = !branchName.equals('origin/production')
+
+                            withEnv([
+                                "PREVIEW_BUILD=${isPreviewBuild}",
+                                "COMMIT_SHA=${COMMIT_SHA}"
+                            ]) {
+                                sh '''#!/bin/bash
+                                    export SITE=justinholmes.com
+                                    . "$NVM_DIR/nvm.sh" --silent
+                                    nvm use ${NODE_VERSION} --silent
+                                    npm run build
+                                '''
+                            }
+                        }
                     }
                 }
             }
@@ -155,9 +170,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    if (env.IS_PRODUCTION != 'true') {
-                        // Emit message showing whether we're in preview mode or not.
-                        echo "Preview build for ${COMMIT_SHA} (${BRANCH_NAME})"
+                    def branchName = getBranchName()
+
+                    if (!branchName.equals('origin/production')) {
+                        echo "Preview build for ${COMMIT_SHA} (${branchName})"
 
                         // Preview build for any non-production branch
                         sh "mkdir -p ${PR_BUILDS_DIR}/${COMMIT_SHA}"
@@ -165,7 +181,7 @@ pipeline {
                         withEnv([
                             "PREVIEW_BUILD=true",
                             "COMMIT_SHA=${COMMIT_SHA}",
-                            "BRANCH_NAME=${BRANCH_NAME}"
+                            "BRANCH_NAME=${branchName}"
                         ]) {
                             sh """
                                 export NVM_DIR="\$HOME/.nvm"
@@ -213,4 +229,19 @@ pipeline {
         }
     }
 
+}
+
+def getBranchName() {
+    def branchName = ''
+    if (env.CHANGE_BRANCH) {
+        // Pull Request
+        branchName = env.CHANGE_BRANCH
+    } else if (env.GIT_BRANCH) {
+        // Direct branch build
+        branchName = env.GIT_BRANCH
+    } else {
+        // Fallback to shell command
+        branchName = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+    }
+    return branchName
 }
