@@ -1,34 +1,58 @@
 <div class="semi-transparent-bg border-bottom border-black pb-3 pixel-font row">
     <div class="row">
-        {% if title_as_link %}<a href="{{ show.resource_url }}">{% endif %}<h1>{{ show.title }}</h1>
-        {% if title_as_link %}</a>{% endif %}
+        <div class="col-6">
+            {% if title_as_link %}
+                <a href="{{ show.resource_url }}">
+                {% endif %}
+                <h1>{{ show.title }}</h1>
+                {% if title_as_link %}
+                </a>
+            {% endif %}
+            <h3>
+                {% if show.locality %}{{ show.locality }}, {% endif %}{{ show.region1 }}
+                {% if show.region2 %},
+            {{ show.region2 }}
+                {% endif %}
+            </h3>
+            <h4>{{ show.local_date }}</h4>
+            <span>Blockheight: <b>{{ show.blockheight.toLocaleString() }}
+                </b>
+            </span><br>
+            <span>Venue:</span>
+            <b>{{ show.venue }}</b><br>
+            {% if show.host %}
+                <span>Host:</span>
+                <b>{{ show.host }}</b><br>
+            {% endif %}
+            {% if show.event_url %}
+                <span>Event URL:</span>
+                <a href="{{ show.event_url }}">{{ show.event_url }}</a><br>
+            {% endif %}
+            {% if show.ensemble %}
+                <div class="ensemble w-75 p-1 text-black">
+                    <h4 class="mb-0 pixel-font">Ensemble:</h4>
+                    {% for player, instruments in show.ensemble %}
+                        <a href="{{ basePath }}/pickers/{{ player | slugify }}">{{ player }}</a>: {{ instruments }}<br/>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-6">
+            {% if show.poster %}
+                <img class="show-poster img-fluid" src="{{ get_image(show.poster) }}">
+            {% endif %}
+
+            {% if title_as_link %}
+                <a href="{{ show.resource_url }}">
+                {% endif %}
+                <img class="img-fluid" full-show src="{{ show.artist_id |resolveGraph(show.blockheight, "full-show") }}">
+                {% if title_as_link %}
+                </a>
+            {% endif %}
+
+        </div>
     </div>
-    <div class="col-7">
-        <h3>{% if show.locality %}{{ show.locality }}, {% endif %}{{ show.region1 }}{% if show.region2 %},
-            {{ show.region2 }}{% endif %}</h3>
-        <h4>{{ show.local_date }}</h4>
-        <span>Blockheight: <b>{{ show.blockheight.toLocaleString() }} </b></span><br>
-        <span>Venue:</span> <b>{{ show.venue }}</b><br>
-        {% if show.host %}
-            <span>Host:</span> <b>{{ show.host }}</b><br>
-        {% endif %}
-        {% if show.event_url %}
-            <span>Event URL:</span> <a href="{{ show.event_url }}">{{ show.event_url }}</a><br>
-        {% endif %}
-        {% if show.ensemble %}
-            <div class="ensemble w-75 p-1 text-black">
-                <h4 class="mb-0 pixel-font">Ensemble:</h4>
-                {% for player, instruments in show.ensemble %}
-                    <a href="{{ basePath }}/pickers/{{ player | slugify }}">{{ player }}</a>: {{ instruments }}<br/>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </div>
-    <div class="col-5">
-        {% if title_as_link %}<a href="{{ show.resource_url }}">{% endif %}
-        <img class="img-fluid" full-show src="{{ show.artist_id |resolveGraph(show.blockheight, "full-show") }}">
-        {% if title_as_link %}</a>{% endif %}
-    </div>
+
     {% if show.has_set_stones_available %}
         <div class="set-stones-available">
             <a href="{{ basePath }}/cryptograss/about_set_stones">Set Stones</a>
