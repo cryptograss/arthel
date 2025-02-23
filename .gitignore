@@ -1,6 +1,8 @@
 gbuild/
 ape-nft-project/
 node_modules
+src/images/graphs/
+src/fetched_assets/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
