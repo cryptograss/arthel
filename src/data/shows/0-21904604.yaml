@@ -1,0 +1,26 @@
+title: "GFEL Boulder 2025"
+poster: "alienGFEL_POSTER.png"
+venue: "The Riverside"
+host: "Global Forum for Ethereum Localism"
+locality: "Boulder"
+region1: "Colorado"
+timezone: "America/Denver"
+ensemble:
+  "Justin Holmes": [ "guitar", "melodica", "six-whistle"]
+  "Skyler Golden": [ "dobro" ]
+  "Kyle Bestape": [ "mandolin" ]
+  "Laura Quam": [ "fiddle" ]
+
+sets:
+  0:
+    songplays:
+      - Red Haired Boy
+      - Nanny State Fiddler
+      - Dragon Roost Island:
+        mode: segue
+      - Nanny State Fiddler:
+        mode: reprise
+      - Vowel Sounds
+      - Bubak and Hungaricus:
+        mode: segue
+      - Loser

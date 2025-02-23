@@ -720,3 +720,6 @@ nav a img {
     object-fit: contain;
     background: rgba(0, 0, 0, 0.2);
 }
+.show-poster {
+    width: auto;
+}
