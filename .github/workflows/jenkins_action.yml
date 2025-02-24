@@ -1,0 +1,22 @@
+name: Jenkins Action
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  maybelle-build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Knock Jenkins API
+      uses: Mondtic/build-jenkins-job@master
+      with:
+        jenkins-url: https://maybelle.cryptograss.live
+        jenkins-token: "${{ secrets.JENKINS_API_TOKEN }}"
+        jenkins-user: admin
+        jenkins-job: pull-requests
+        jenkins-wait-job: "no-wait"
+        jenkins-ssl-verify: "false"
+

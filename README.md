@@ -1,27 +1,23 @@
-## Justin Holmes website, cryptograss tools
+## Crypograss builder
 
-This is a self-building static site, built with node.js and designed to be hosted on a static site host (currently, nearlyfreespeech.net).
+This is a tool to build cryptograss web projects, including the cryptograss.live website, and justinholmes.com, the website of Justin Holmes and the Immutable String Band.
 
-On ubuntu 24+, it requires node 22.X or 23.x to build.
+On ubuntu 24+, it requires node 23.x to build.
 
 OS-level dependencies:
 `sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev`
 
-# To run locally:
+## To run locally:
 
 ```
 nvm use 23 
 npm update
 npm install
 npm run test
-npm run devserver
-npm run build
+npm run fetch-chain-data
+npm run dev:cg (or dev:jh)
+npm run build (set the site domain as SITE in environment variables)
 ```
-
-### Adding a new page
-To add a new page, include it in the `src/data/pages.yaml`
-
-If the page has a custom javascript, create a new file in `src/js/`, include it in the `webpack.common.js` file in the `entry` section and adjust the `chunks` array to inject the correct js chunk into the page template.
 
 To document:
 
@@ -31,6 +27,18 @@ To document:
 * Dice-rolling wallet generation; cryptograss paper wallets
 
 
+### To install happenings submodule
 
 `git submodule add git@github.com:cryptograss/happenings.git src/data/happenings`
+
+
+### Builds
+
+Build and deployment automation logic is included in the `deployment` directory.
+
+The cryptograss build server, maybelle (https://maybelle.cryptograss.live), builds the production branch every two minutes.  Chain data is fetched for this purpose on alternating minutes, so builds might be as much as 3 minutes out of date.
+
+Pull Requests are built automatically only for members of the cryptograss organization on github.  If you have a Pull Request that you'd like built by maybelle, just ask on our discord and we'll review it for security issues first.
+
+Pull Request which are built are also available as previews.
 
