@@ -6,12 +6,11 @@ region1: "Colorado"
 timezone: "America/Denver"
 poster: "posters/SCHELLINGPOINTRC4.png"
 ensemble:
-  "Justin Holmes": [ "guitar", "melodica", "six-whistle"]
-  "Skyler Golden": [ "dobro" ]
-  "Kyle Bestape": [ "mandolin" ]
+  "Justin Holmes": [ "guitar"]
+  "Skyler Golden": [ "bass" ]
   "Laura Quam": [ "fiddle" ]
   "Chris Elliott": [ "banjo" ]
-  "Jake Stargel": [ "bass" ]
+  "Jake Stargel": [ "mandolin" ]
 sets:
   0:
     songplays:
