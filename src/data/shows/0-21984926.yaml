@@ -1,0 +1,32 @@
+title: "GRASSBurn Zero"
+venue: "Crucible"
+host: "CryptoGrass"
+locality: "Breckenridge"
+region1: "Colorado"
+timezone: "America/Denver"
+poster: "posters/GRASSBURNIRLRC1.png"
+ensemble:
+  "Justin Holmes": [ "guitar"]
+  "Skyler Golden": [ "bass" ]
+  "Chris Elliott": [ "banjo" ]
+  "Jake Stargel": [ "mandolin" ]
+sets:
+  0:
+    songplays:
+      - Red Haired Boy
+      - The Morning of the Bank Run
+      - Lost
+      - Sonic Offerings:
+        mode: segue
+      - The Two Sisters
+      - Power Underneath
+  1:
+    songplays:
+      - Shady Grove
+      - Sonic Offerings:
+        mode: reprise
+      - Silver .44:
+        mode: segue
+      - Song of Storms
+      - Loser
+      - Hell or High Water
