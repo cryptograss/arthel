@@ -1,19 +1,28 @@
-## Crypograss builder
+## Arthel, the cryptograss domain builder
 
-This is a tool to build cryptograss web projects, including the cryptograss.live website, and justinholmes.com, the website of Justin Holmes and the Immutable String Band.
-## Crypograss builder
+Named for Arthel Lane "Doc" Watson, this is a tool to build cryptograss web projects, including the cryptograss.live website, and justinholmes.com, the website of Justin Holmes and the Immutable String Band.
 
-This is a tool to build cryptograss web projects, including the cryptograss.live website, and justinholmes.com, the website of Justin Holmes and the Immutable String Band.
+## Main features
+
+* Setlist parser
+* Blockchain data fetcher and parser
+* Show, set, ensemble, and song metadata formats and serialization tooling
+* Set stone generation and display
+* Revealer frontend, and revealer artifact display
+* Blue Railroad Train Squats video and metadata fetch
+* Dice-rolling wallet generation; cryptograss paper wallets
 
 The templates, which are written in Nunjucks, are in the `templates` folder for each site.
-The templates, which are written in Nunjucks, are in the `templates` folder for each site.
+
+
+## Running it
 
 On ubuntu 24+, it requires node 22.X or 23.x to build.
 
 OS-level dependencies:
 `sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev`
 
-# To run locally:
+### To run locally:
 
 ```
 nvm use 23
@@ -22,15 +31,9 @@ npm install
 npm run test
 npm run fetch-chain-data
 npm run dev:cg (or dev:jh)
-npm run build (set the site domain as SITE in environment variables)
 ```
 
-To document:
 
-* Nunjucks
-* Cursor rules
-* Blue Railroad Train Squats video fetch
-* Dice-rolling wallet generation; cryptograss paper wallets
 
 ### Builds
 
@@ -47,7 +50,11 @@ The build server needs access to providers for each of the chains for which data
 The jenkins instance on the builder server does not have direct access to the web server; production builds are rsynced by a separate job, by a separate user.
 
 
+### Submodules
 
+Currently, the only submodule is the happenings data, which is used to announce news and events.
+
+It is a private repo, so you'll need to be added to the cryptograss org to clone it.
 
 `git submodule add git@github.com:cryptograss/happenings.git src/data/happenings`
 
