@@ -399,9 +399,9 @@ export function processShowAndSetData() {
 
 
             if (songPlay._set._show.ensemble.hasOwnProperty(song['by_artist'])) {
-                songPlay['provenance'] = 'original';
+                songPlay['provenance'] = 'cover';
                 songPlay['detail'] = `(via ${song['by_artist']})`;
-                songsByProvenance['original'].push(song); // TODO: Again, this needs to be forward-compatible with other artists using the service.  The matter of whether it's a cover depends on who is playing it.
+                songsByProvenance['cover'].push(song); // TODO: Again, this needs to be forward-compatible with other artists using the service.  The matter of whether it's a cover depends on who is playing it.
             } else {
                 songPlay['provenance'] = 'cover';
                 songsByProvenance['cover'].push(song); // TODO: Again, this needs to be forward-compatible with other artists using the service.  The matter of whether it's a cover depends on who is playing it.
