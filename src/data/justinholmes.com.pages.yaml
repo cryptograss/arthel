@@ -61,7 +61,7 @@ shows:
     include_data_in_context:
       - shows
     context:
-        page_title: "Shows"
+        page_title: "Instances"
 
 # add-live-set:
 #   context:

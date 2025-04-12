@@ -1,5 +1,5 @@
 <ul>
-    <h2 class="kreon">Played at {{ song.plays.length }} shows:</h2>
+    <h2 class="kreon">Played during {{ song.plays.length }} instances:</h2>
     {% if instrument_to_show %}<p>(showing {{ instrument_to_show }})</p>{% endif %}
     {% for song_play in song.plays | reverse %}
         <li>
