@@ -1,0 +1,24 @@
+title: "Variace Olomouc"
+venue: "Variace Olomouc"
+locality: "Olomouc"
+region1: "Czech Republic"
+timezone: "Europe/Prague"
+ensemble:
+  "Justin Holmes": [ "guitar"]
+  "Skyler Golden": [ "bass" ]
+  "Jakub Vysoky": [ "mandolin" ]
+  "Bogdan": [ "percussion" ]
+sets:
+  0:
+    songplays:
+      - Lost
+      - Paint Exchange
+      - Rueben's Train
+      - Silver .44:
+        mode: segue
+      - Terrapin Station:
+        mode: tease
+      - Dragon Roost Island:
+        mode: segue
+      - Silver .44:
+        mode: reprise

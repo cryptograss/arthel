@@ -11,15 +11,16 @@ ensemble:
 sets:
   0:
     songplays:
-      - Drowsy Maggie
-      - Little Maggie:
+      - Drowsy Maggie:
         mode: segue
+      - Little Maggie
       - Power Underneath
-      - Cork Board
-      - Shady Grove:
+      - Cork Board:
         mode: segue
+      - Shady Grove
       - Devil Jam
-      - Hell or High Water
+      - Hell or High Water:
+        mode: segue
       - Salt Creek:
         mode: segue
       - Hell or High Water:
