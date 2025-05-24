@@ -57,6 +57,7 @@ export function processShowAndSetData() {
         let songYAMLFile = fs.readFileSync(path.resolve(dataDir, 'songs_and_tunes', songYAML));
         let song = yaml.load(songYAMLFile);
         song.plays = [];
+        song.setstoneFavorites = [];
 
         let songSlug;
 
