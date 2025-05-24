@@ -112,11 +112,22 @@ export async function appendSetStoneDataToShows(showsChainData, config) {
                 args: [artist_id, blockheight, set_order],
             });
 
+            // TODO: Also read the ticketstubs contract.
+            // For now, fake data.  TODO: Unfake this.
+            let ticketStubIDs = [3n, 11n, 35n];
+
+            for (let ticketStubID of ticketStubIDs) {
+                let ticketStub = {};
+                ticketStub["tokenId"] = ticketStubID;
+                set.ticketStubs.push(ticketStub);
+            }
+
+
 
             for (let setStoneId of setStoneIds) {
 
                 // This is the model for set stones.
-                // TODO: Put this in a more logical place - we need some kind of a merch models module.
+                // TODO: Put this in a more logical place - we need some kind of a merch models module.  TODO: Perhaps this all goes in blox-office?
                 let setstone = {}
                 number_of_stones_in_sets++;
 
