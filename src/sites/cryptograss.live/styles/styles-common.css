@@ -70,3 +70,10 @@
     color: #00bcb9;
     text-shadow: 0px 0px 1px black;
 }
+.ticket-stub-number {
+    font-size: 1em;
+    color: #00bcb9;
+    text-shadow: 0px 0px 1px black;
+    margin-left: 380px;
+    margin-top: -24px;
+}
