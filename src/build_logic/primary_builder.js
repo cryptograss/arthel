@@ -216,6 +216,26 @@ export const runPrimaryBuild = async () => {
         generateSetStonePages(shows, path.resolve(outputPrimarySiteDir, 'setstones'));
     }
 
+    // Append set stone favorites to the song objects.  TOOD: Surely this belongs in a better place.
+    for (const [showId, show] of Object.entries(shows)) {
+        // We're only interested in shows that have set stones.
+        if (!show.has_set_stones_available) {
+            continue;
+        }
+
+        Object.entries(show.sets).forEach(([setNumber, set]) => {
+            set.setstones.forEach((setstone, setstoneNumber) => {
+
+                const favoriteSong1Index = setstone.favoriteSong
+
+                setstone.favoriteSongObject = set.songplays[favoriteSong1Index]._song;  // TODO: Terrible name; this needs to be like "moment" instead of "favoriteSong" and then "momentSong" when we resolve it.  Or something.
+
+                setstone.favoriteSongObject.setstoneFavorites.push(setstone);
+                console.log(`show ${showId} set ${setNumber} stone ${setstoneNumber} favorite song: ${setstone.favoriteSongObject.slug}`);
+
+            });
+        });
+    }
 
     renderSetStoneImages(shows, path.resolve(outputPrimarySiteDir, 'assets/images/setstones'));
 
