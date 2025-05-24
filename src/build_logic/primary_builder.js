@@ -99,8 +99,9 @@ export const runPrimaryBuild = async () => {
     // We'll need helpers....
     registerHelpers(site);
 
-    // ...and processed context...
-    appendChainDataToShows(shows, chainData); // Mutates shows.
+    // A lot going on here - this is where we actually append things like set stones, ticket stubs, etc., to the shows.  Any further chain data that is required to render shows to templates needs to be added here.
+    appendChainDataToShows(shows, chainData); // Mutates shows, obviously.
+
     const dataAvailableAsContext = {
         "songs": songs,
         "shows": shows,
