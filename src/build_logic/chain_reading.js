@@ -103,7 +103,7 @@ export async function appendSetStoneDataToShows(showsChainData, config) {
 
         for (let [set_order, set] of Object.entries(show.sets)) {
             set.setstones = [];
-
+            set.ticketStubs = [];
             const setStoneIds = await readContract(config, {
                 abi: setStoneABI,
                 address: setStoneContractAddress,
