@@ -316,9 +316,13 @@ export function appendChainDataToShows(shows, chainData) {
                 set["shape"] = chainDataForShow['sets'][i]['shape'];
                 const set_stones_for_this_Set = chainDataForShow['sets'][i]['setstones'];
 
+                // TODO: Because we're copying the set stone data, ticket stubs are per-set.  But we don't want that - ticket stubs are per-show.
+                const ticket_stubs_for_this_Set = chainDataForShow['sets'][i]['ticketStubs'];
+
                 // TODO: Iterate through songs and note that this set stone is present.
                 // TODO: Note if the song is favorited.
                 set['setstones'] = set_stones_for_this_Set;
+                set['ticketStubs'] = ticket_stubs_for_this_Set;
             }
         }
     }
