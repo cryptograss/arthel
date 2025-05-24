@@ -29,57 +29,58 @@
                         {{ commentary |safe }}
                     </div>
                 {% endif %}
-{% if false %} {#  Until we figure out empty set stones display, TODO #}
+
                 <h2 class="set-stones-available vanilla">Set Stones</h2>
                 <table class="px-3">
                     <thead class="border-bottom border-black">
-                    <tr>
-                        <th class="text-center">Show</th>
-                        <th class="text-center">Owner</th>
-                        <th class="text-center">Paid (ETH)</th>
-                        <th class="text-center">Set Stone</th>
-                    </tr>
+                        <tr>
+                            <th class="text-center">Show</th>
+                            <th class="text-center">Owner</th>
+                            <th class="text-center">Paid (ETH)</th>
+                            <th class="text-center">Set Stone</th>
+                        </tr>
                     </thead>
+                    <tbody>
+                        {% for stone in song.setstoneFavorites %}
 
-                    {% for play in song.plays %}
-
-
-                        <tbody>
-                        {% for stone in play._set.setstones %}
                             <tr class="border-bottom border-black">
-                            <td class="px-3" data-tippy-content="{{ play._set._show.title }}"><a
+                                <td class="px-3" data-tippy-content="{{ play._set._show.title }}">
+                                    <a
                                         href="{{ play._set.show.resource_url }}"
-                                        target="_blank">{{ play._set._show.title }}</a></td>
-                                <td class="px-3" data-tippy-content="{{ stone.owner }}"><a
+                                        target="_blank">{{ play._set._show.title }}</a>
+                                </td>
+                                <td class="px-3" data-tippy-content="{{ stone.owner }}">
+                                    <a
                                         href="https://etherscan.io/address/{{ stone.owner }}"
-                                        target="_blank">{{ stone.owner | truncate(16) }}</a></td>
+                                        target="_blank">{{ stone.owner | truncate(16) }}</a>
+                                </td>
                                 <td class="px-3">{{ stone.paidAmountEth }}</td>
-                                <td class="px-3"><a href="{{getCryptograssUrl()}}/assets/images/setstones/{{ stone.tokenId }}.png"
+                                <td class="px-3">
+                                    <a href="{{getCryptograssUrl()}}/assets/images/setstones/{{ stone.tokenId }}.png"
                                                     target="_blank"><img
                                         src="{{getCryptograssUrl()}}/assets/images/setstones/{{ stone.tokenId }}.png"
                                         style="width: 50px;"></a>
                                 </td>
                             </tr>
+
                         {% endfor %}
-                        </tbody>
-
-
-                    {% endfor %}
+                    </tbody>
                 </table>
-{% endif %}
 
                 {% if song.other_resources %}
                     <h2>Other resources</h2>
                     <ul>
                         {% for resource_name, other_resource_url in song.other_resources %}
-                            <li><a href="{{ other_resource_url }}">{{ resource_name }}</a></li>
+                            <li>
+                                <a href="{{ other_resource_url }}">{{ resource_name }}</a>
+                            </li>
                         {% endfor %}
                     </ul>
                 {% endif %}
             </div>
 
             <div class="col-md-4 mt-2 text-shadow">
-                {% set instrument_to_show=song.instrumentalist_to_display %}
+                {% set instrument_to_show = song.instrumentalist_to_display %}
                 {% include 'partials/song-all-plays.njk' %}
 
                 {% if song.selected_versions %}
