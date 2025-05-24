@@ -201,6 +201,8 @@ export async function appendSetStoneDataToShows(showsChainData, config) {
                 setstone["tokenURI"] = tokenURI;
 
                 set.setstones.push(setstone);
+
+                console.log(`show ${show_id} set ${set_order} stone ${setStoneId}: ${setstone["owner"]}`);
             }
         }
 
@@ -281,9 +283,9 @@ export function appendChainDataToShows(shows, chainData) {
         let chainDataForShow = showsChainData[show_id];
         // TODO: Handle the show not being in the chain data at all - emit a warning that it's time to refresh chain data?  And an error in prod?
         if (chainDataForShow === undefined) {
-
+            // TODO: Handle this case - why is this show not in the chain data?
         } else if (chainDataForShow['has_set_stones_available'] === false) {
-
+            // TODO: Handle this case - probably do nothing.  But maybe we want to handle other merch even if set stones are not available?
         } else {
 
             show["has_set_stones_available"] = true;
