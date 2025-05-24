@@ -79,6 +79,8 @@ export function generateSetStonePages(shows, outputDir) {
                     colors: setstoneColornames,
                     imageMapping,
                 };
+
+                // TODO: Put URL generation in a shared place that's easier to find.  It's weird that such an important URL is buried on this relatively obscure line.
                 const outputPath = `/artifacts/setstones/${showId}-${setstone.tokenId}.html`;
                 const outputPathForPrintable = `/artifacts/setstones/${showId}-${setstone.tokenId}-print.html`;
                 setstone.resource_url = outputPath;
@@ -100,6 +102,7 @@ export function generateSetStonePages(shows, outputDir) {
                 });
 
             });
+
         });
     };
 }

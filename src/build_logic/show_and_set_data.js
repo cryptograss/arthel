@@ -80,7 +80,7 @@ export function processShowAndSetData() {
                 songAlternateNames[slugify(alt_name)] = songSlug;
             }
         }
-    } // First song loop.
+    } // End first song loop.
 
 
     ////////////// YAMLs of Full Shows //////////////
@@ -117,6 +117,7 @@ export function processShowAndSetData() {
         }
 
         // If show is part of a tour, add it to that tour.
+        // TOOD: #264
         if (showYAMLData.hasOwnProperty('tour')) {
             let tour = showYAMLData['tour'];
 
