@@ -102,6 +102,21 @@ export function generateSetStonePages(shows, outputDir) {
                 });
 
             });
+            // Now page individual pages for ticket stubs.
+            set.ticketStubs.forEach((ticketStub, _counter) => {
+                let outputPath = `/artifacts/ticket-stubs/${showId}-${ticketStub.tokenId}.html`;
+                let context = {
+                    show: show,
+                    ticketStub: ticketStub,
+                };
+                renderPage({
+                    template_path: 'reuse/single-ticket-stub.njk',
+                    output_path: outputPath,
+                    context: context,
+                    site: "cryptograss.live"
+                });
+            });
+
 
         });
     };
