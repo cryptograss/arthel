@@ -75,6 +75,7 @@ export function registerHelpers(site) {
         }
 
         // TODO: We need to check to see if the show is in the future.
+        // #269
         // Then we can uncomment these two failfast checks.
 
         try {

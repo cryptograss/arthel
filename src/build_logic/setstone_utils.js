@@ -6,12 +6,9 @@ import { nesPalette } from "./graphics/palettes.js";
 import { renderPage } from "./utils/rendering_utils.js";
 import { getProjectDirs } from "./locations.js";
 
-
-0
-
 /**
- * 
- * 
+ *
+ *
  * Generates and saves NFT metadata JSON files for each setstone in the shows.
  * @param {Object} showsWithChainData - Object containing show data with chain information.
  * @param {string} outputDir - Directory to save the generated JSON files.
@@ -144,7 +141,7 @@ export function renderSetStoneImages(shows, outputDir) {
         // We're only interested in shows that have set stones.
         if (!show.has_set_stones_available) {
             continue;
-        }   
+        }
 
         Object.entries(show.sets).forEach(([setNumber, set]) => {
             set.setstones.forEach((setstone, setstoneNumber) => {
