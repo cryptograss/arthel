@@ -109,9 +109,20 @@ export async function appendSetStoneDataToShows(showsChainData, config) {
         // Split ID by "-" into artist_id and blockheight
         const [artist_id, blockheight] = show_id.split('-');
 
+        show.ticketStubs = [];
+
+        // TODO: Also read the ticketstubs contract.
+        // For now, fake data.  TODO: Unfake this.
+        let ticketStubIDs = [3n, 11n, 35n];
+
+        for (let ticketStubID of ticketStubIDs) {
+            let ticketStub = {};
+            ticketStub["tokenId"] = ticketStubID;
+            show.ticketStubs.push(ticketStub);
+        }
+
         for (let [set_order, set] of Object.entries(show.sets)) {
             set.setstones = [];
-            set.ticketStubs = [];
             const setStoneIds = await readContract(config, {
                 abi: setStoneABI,
                 address: setStoneContractAddress,
@@ -119,18 +130,6 @@ export async function appendSetStoneDataToShows(showsChainData, config) {
                 chainId: arbitrum.id,
                 args: [artist_id, blockheight, set_order],
             });
-
-            // TODO: Also read the ticketstubs contract.
-            // For now, fake data.  TODO: Unfake this.
-            let ticketStubIDs = [3n, 11n, 35n];
-
-            for (let ticketStubID of ticketStubIDs) {
-                let ticketStub = {};
-                ticketStub["tokenId"] = ticketStubID;
-                set.ticketStubs.push(ticketStub);
-            }
-
-
 
             for (let setStoneId of setStoneIds) {
 
@@ -290,6 +289,11 @@ export function appendChainDataToShows(shows, chainData) {
     for (let [show_id, show] of Object.entries(shows)) {
         let chainDataForShow = showsChainData[show_id];
         // TODO: Handle the show not being in the chain data at all - emit a warning that it's time to refresh chain data?  And an error in prod?
+
+        const ticket_stubs_for_this_Set = chainDataForShow['ticketStubs'];
+
+        show['ticketStubs'] = ticket_stubs_for_this_Set;
+
         if (chainDataForShow === undefined) {
             // TODO: Handle this case - why is this show not in the chain data?
         } else if (chainDataForShow['has_set_stones_available'] === false) {
@@ -324,13 +328,12 @@ export function appendChainDataToShows(shows, chainData) {
                 set["shape"] = chainDataForShow['sets'][i]['shape'];
                 const set_stones_for_this_Set = chainDataForShow['sets'][i]['setstones'];
 
-                // TODO: Because we're copying the set stone data, ticket stubs are per-set.  But we don't want that - ticket stubs are per-show.
-                const ticket_stubs_for_this_Set = chainDataForShow['sets'][i]['ticketStubs'];
+
 
                 // TODO: Iterate through songs and note that this set stone is present.
                 // TODO: Note if the song is favorited.
                 set['setstones'] = set_stones_for_this_Set;
-                set['ticketStubs'] = ticket_stubs_for_this_Set;
+
             }
         }
     }
