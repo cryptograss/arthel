@@ -15,9 +15,7 @@ import { getProjectDirs } from "./locations.js";
  */
 export function generateSetStonePages(shows, outputDir) {
     const { cryptograssUrl } = getProjectDirs();
-    for (const showMetadata of shows) {
-        const show = showMetadata[1];
-        const showId = showMetadata[0];
+    for (const [showId, show] of Object.entries(shows)) {
 
         // Ticket stubs
         if (!show.ticketStubs) {
