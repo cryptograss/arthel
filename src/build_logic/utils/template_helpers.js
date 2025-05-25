@@ -85,12 +85,12 @@ export function registerHelpers(site) {
             // throw new Error(`Image not found: ${originalPath}`);
         }
 
-        // if (!foundImage) {
-        //     // Raise an error if the image is not found
-        //     throw new Error(`Image not found: ${originalPath}`);
-        // } else {
-        //     unusedImages.delete(originalPath);
-        // }
+        if (!foundImage) {
+            console.log(`Image not found: ${originalPath} - this show is probably in the future`);
+            // throw new Error(`Image not found: ${originalPath}`);
+            return `Is this show - ${blockheight} - in the future?`
+        }
+
         return foundImage['original'] // TODO: Do we always want original here?  What if we want thumbnail?  Is that even a thing for graphs?  Are there other types?
     });
 
