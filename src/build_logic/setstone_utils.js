@@ -19,6 +19,30 @@ import { getProjectDirs } from "./locations.js";
 export function generateSetStonePages(shows, outputDir) {
     const { cryptograssUrl } = getProjectDirs();
     for (const [showId, show] of Object.entries(shows)) {
+
+
+        // Ticket stubs
+        if (!show.ticketStubs) {
+            console.log(`No ticket stubs for show ${showId}`);
+            // TODO: If show has no ticket stubs - just continue?
+            continue;
+        }
+        show.ticketStubs.forEach((ticketStub, _counter) => {
+            let outputPath = `/artifacts/ticket-stubs/${showId}-${ticketStub.tokenId}.html`;
+            let context = {
+                show: show,
+                ticketStub: ticketStub,
+            };
+            renderPage({
+                template_path: 'reuse/single-ticket-stub.njk',
+                output_path: outputPath,
+                context: context,
+                site: "cryptograss.live"
+            });
+        });
+
+
+
         // We're only interested in shows that have set stones.
         if (!show.has_set_stones_available) {
             continue;
@@ -26,6 +50,7 @@ export function generateSetStonePages(shows, outputDir) {
 
         Object.entries(show.sets).forEach(([setNumber, set]) => {
             set.setstones.forEach((setstone, setstoneNumber) => {
+
 
                 ////////////////
                 // metadata JSON for NFT
@@ -101,20 +126,6 @@ export function generateSetStonePages(shows, outputDir) {
                     site: "cryptograss.live"
                 });
 
-            });
-            // Now page individual pages for ticket stubs.
-            set.ticketStubs.forEach((ticketStub, _counter) => {
-                let outputPath = `/artifacts/ticket-stubs/${showId}-${ticketStub.tokenId}.html`;
-                let context = {
-                    show: show,
-                    ticketStub: ticketStub,
-                };
-                renderPage({
-                    template_path: 'reuse/single-ticket-stub.njk',
-                    output_path: outputPath,
-                    context: context,
-                    site: "cryptograss.live"
-                });
             });
 
 
