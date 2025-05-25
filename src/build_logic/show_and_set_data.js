@@ -91,7 +91,7 @@ export function processShowAndSetData() {
     for (let i = 0; i < liveShowYAMLs.length; i++) {
         let showYAML = liveShowYAMLs[i];
         let showID = showYAML.split('.')[0];
-        let artistID = showID.split('-')[0];
+        let artistsID = showID.split('-')[0];
         let blockheight = parseInt(showID.split('-')[1]);
 
         // TOOD: Every chain data fetch needs to store as a top level object the various block heights.  Let's use that to specifically mark that a show is in the future so that we can style future shows differently.
@@ -146,8 +146,15 @@ export function processShowAndSetData() {
         shows[showID] = showYAMLData;
         shows[showID]['resource_url'] = `/shows/${showID}`; // TODO Where does this logic really belong?
         // Arguably redundant, but we'll add the artist ID and blockheight to the showYAMLData.
-        showYAMLData["artist_id"] = artistID;
+        showYAMLData["artist_ids"] = artistsID.split('_'); // This will either be a stringified int of a single artist(as in 0-<blockheight>) or will be multiple artist ids separated by underscores in the case of a show with multiple bands.
         showYAMLData["blockheight"] = blockheight;
+
+        ///////////////////
+        // TODO: We don't presently handle setlists for multiple bands.
+        // We'll assume the setlist is for the first band.
+        const artistID = showYAMLData["artist_ids"][0];
+        // #268
+        /////////////////
 
         if (showYAMLData['setlist-lost']) {  // There are some shows which we want to reflect, but whose setlist has been lost to time.
             showYAMLData['sets'] = {};
