@@ -733,3 +733,56 @@ nav a img {
 .all-shows-list .show-poster {
     max-height: 75%;
 }
+/* NES color picker */
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(14, 40px);
+    gap: 4px;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.color-cell {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: transform 0.1s;
+    position: relative;
+}
+
+.color-cell:hover {
+    transform: scale(1.1);
+    border: 1px solid #000;
+    z-index: 2;
+}
+
+.color-cell:hover .tooltip {
+    display: block;
+}
+
+.selected {
+    border: 2px solid #000;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+}
+
+#selected-color {
+    margin: 20px;
+    text-align: center;
+    font-family: monospace;
+}

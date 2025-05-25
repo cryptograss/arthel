@@ -71,10 +71,42 @@
     color: #00bcb9;
     text-shadow: 0px 0px 1px black;
 }
-.ticket-stub-number {
+/* Ticket stub things */
+
+.ticket-stub-container {
+    position: relative;
+}
+
+.ticket-stub-container .ticket-stub-number {
     font-size: 1em;
     color: #00bcb9;
     text-shadow: 0px 0px 1px black;
-    margin-left: 380px;
-    margin-top: -24px;
+    position: absolute;
+        left: 391px;
+        top: 193px;
+    }
+    
+    
+    .ticket-stub-container .band-names {
+        font-size: .6em;
+        color: #00bcb9;
+        text-shadow: 0px 0px 1px black;
+        position: absolute;
+        left: 62px;
+        top: 35px;
+        width: 86px;
+    }
+    
+    .ticket-stub-container .venue {
+        font-size: .6em;
+        color: #5c1700;
+        position: absolute;
+        left: 61px;
+        top: 170px;
+        width: 86px;
+        text-shadow: 0px 0px 0px black;
+    }
+    
+    .ticket-stub-container .locality {
+        width: 200px;
 }
