@@ -1,12 +1,11 @@
 
-<div class="ticket-stub-container">
-    <img src="{{ get_image("ticket-stub.png") }}"/>
-
-    <div class="ticket-stub-number">
-        {{ ticketStub.tokenId }} / 50
+<div class="row">
+    {% include 'partials/ticketstub-front.njk' %}
+</div>
+<div class="row">
+    <div class="claim-link">
+        <a href="/blox-office/claim/blah blah">
+            Click here to claim / move this ticket stub
+        </a>
     </div>
 </div>
-
-<a href="/blox-office/claim/blah blah">
-Click here to claim / move this ticket stub
-</a>
