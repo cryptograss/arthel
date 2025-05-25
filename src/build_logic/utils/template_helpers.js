@@ -49,7 +49,17 @@ export function registerHelpers(site) {
 
     // TODO: We removed 'resolveImage', so we now show every image as unused.  No good.
 
-    env.addFilter('resolveGraph', function (artist_id, blockheight, setId) {
+    env.addFilter('resolveGraph', function (artist_ids, blockheight, setId) {
+
+
+
+        //////////////////////
+        // TODO: We need to handle multiple artists here.
+        // Again, we'll just use the first artist_id and presume the setlist is for the first artist.
+        const artist_id = artist_ids[0];
+    // #268
+    /////////////////
+
 
         // Sanity check.
         if (artist_id === undefined || blockheight === undefined || setId === undefined) {

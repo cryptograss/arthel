@@ -78,7 +78,7 @@
             {{show.sets.length}} sets in show
                 <a href="{{ show.resource_url }}">
                 {% endif %}
-                <img class="img-fluid w-75" full-show src="{{ show.artist_id |resolveGraph(show.blockheight, "full-show") }}">
+                <img class="img-fluid w-75" full-show src="{{ show.artist_ids |resolveGraph(show.blockheight, "full-show") }}">
                 {% if title_as_link %}
                 </a>
             {% endif %}

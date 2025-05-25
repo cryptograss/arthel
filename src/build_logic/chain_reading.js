@@ -27,8 +27,16 @@ export async function fetchChainDataForShows(shows, config) {
 
     // Iterate through show IDs and parse the data.
     for (let [show_id, show] of Object.entries(shows)) {
+
         // Split ID by "-" into artist_id and blockheight
-        const [artist_id, _blockheight] = show_id.split('-');
+        let [artist_id, _blockheight] = show_id.split('-');
+
+
+        // TODO: We want to support multiple bands in the same show, sharing merch.  But presently, we only have one artist_id per show.
+        // For the moment, we'll just use the first artist_id in the show.
+        // TODO: We'll need to change this when we support multiple bands in the same show.
+        artist_id = artist_id.split('_')[0];
+
         const blockheight = parseInt(_blockheight);
 
         let singleShowChainData = {"sets": []};
