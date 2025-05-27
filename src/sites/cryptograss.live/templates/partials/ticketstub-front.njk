@@ -1,29 +1,40 @@
-<div class="details">
-Shady Grove, my little love
-Shady Grove I say
-Shady Grove, my little love
-I'm bound to go away
+<div class="ticket-stub-container row">
+    <div class="col-7" id="ticket-stub-front-{{ ticketStub.tokenId }}">
+        <img src="{{ get_image("ticket-stub-gridremoved.png") }}"/>
 
-When I was a little boy
-I wanted a Barlow knife
-And now I want little Shady Grove
-To say she'll be my wife
-</div>
-
-<div class="ticket-stub-container">
-    <img src="{{ get_image("ticket-stub-gridremoved.png") }}"/>
-
-    <div class="band-names">
+        <div class="band-names">
             Justin Holmes and The Immutable String Band
+            <br/>&<br/>
+            Band No. 7
         </div>
-    <div class="venue">
-        {{show.venue}}
-        <br/>
-        <div class="locality">
-            {{show.locality}}, {{show.region1}}
+
+        <div class="venue">
+            {{show.venue}}
+            <br/>
+            <div class="locality">
+                {{show.locality}}, {{show.region1}}
+            </div>
+        </div>
+
+        <div class="ticket-stub-datetime">
+            <p class="small">Showtime blockheight:</p>
+            {{ show.blockheight }}
+        </div>
+
+        <div class="ticket-stub-number">
+            <div class="rabbit-hash">
+                <p class="small">Rabbit hash:</p>
+                {{ ticketStub.rabbitHash }}
+            </div>
+            {{ ticketStub.tokenId }} / 50
         </div>
     </div>
-    <div class="ticket-stub-number">
-        {{ ticketStub.tokenId }} / 50
+
+    <div class="col-5 ticket-stub-foldout">
+        <div class="ticket-stub-secret-warning-text">
+            <br/><br/>
+            <h3>SECRET<br/>UNDERNEATH</h3>
+            <p>Remove sticker and unfold<br/> to claim 721 onchain</p>
         </div>
+    </div>
 </div>
