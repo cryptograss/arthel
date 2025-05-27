@@ -5,6 +5,8 @@ import {imageMapping} from "./asset_builder.js";
 import { nesPalette } from "./graphics/palettes.js";
 import { renderPage } from "./utils/rendering_utils.js";
 import { getProjectDirs } from "./locations.js";
+import { randomBytes } from 'crypto';
+import { keccak256 } from 'viem';
 
 /**
  *
@@ -25,6 +27,51 @@ export function generateSetStonePages(shows, outputDir) {
             // TODO: If show has no ticket stubs - just continue?
             continue;
         }
+
+        // Page to print all ticket stubs
+        // TODO: We need to use a secret here, and hash it.
+        // The hash can... live in the codebase and also onchain?
+        let printableTicketStubFrontsPath = `/artifacts/all-ticket-stub-fronts-for-show-printable/${showId}.html`;
+        let printableTicketStubBacksPath = `/artifacts/all-ticket-stub-backs-for-show-printable/${showId}.html`;
+
+        //////////////////////////
+        // TODO: We're about to print the paper ticket stubs, so obviously we have the rabbit at this time.  But where do we want to actually get it?  #273
+
+
+        for (let i = 0; i < show.ticketStubCount; i++) {
+            // Generate a random fake rabbit for each ticket stub.
+            let fakeRabbit = randomBytes(32).toString('hex');
+            let fakeRabbitHash = keccak256(fakeRabbit);
+            let fakeRabbitHashTruncated = fakeRabbitHash.slice(0, 12);
+            show.ticketStubs[i].rabbitHash = fakeRabbitHashTruncated;
+            show.ticketStubs[i].rabbitHashFull = fakeRabbitHash;
+            // SECRET HERE!  HAZMAT!  DO NOT LOG!
+            show.ticketStubs[i].secret = fakeRabbit;
+        }
+
+        //////////////////////////
+
+        renderPage({
+            template_path: 'reuse/all-ticket-stubs-for-show-printable.njk',
+            output_path: printableTicketStubFrontsPath,
+            context: {
+                show: show,
+                side: "front",
+            },
+            site: "cryptograss.live"
+        });
+
+        renderPage({
+            template_path: 'reuse/all-ticket-stubs-for-show-printable.njk',
+            output_path: printableTicketStubBacksPath,
+            context: {
+                show: show,
+                side: "back",
+            },
+            site: "cryptograss.live"
+        });
+
+        // Individual ticket stub pages
         show.ticketStubs.forEach((ticketStub, _counter) => {
             let outputPath = `/artifacts/ticket-stubs/${showId}-${ticketStub.tokenId}.html`;
             let context = {
