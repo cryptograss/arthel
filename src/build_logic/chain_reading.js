@@ -105,21 +105,36 @@ export async function appendSetStoneDataToShows(showsChainData, config) {
 
     let number_of_stones_in_sets = 0;
 
+    // TODO: This is faked obviously.
+    showsChainData["0_7-22575700"].ticketStubCount = 50;
+    showsChainData["0_7-22590100"].ticketStubCount = 50;
+
     for (let [show_id, show] of Object.entries(showsChainData)) {
         // Split ID by "-" into artist_id and blockheight
         const [artist_id, blockheight] = show_id.split('-');
 
+        // Ticket stub things
         show.ticketStubs = [];
 
-        // TODO: Also read the ticketstubs contract.
-        // For now, fake data.  TODO: Unfake this.
-        let ticketStubIDs = [3n, 11n, 35n];
+        if (!(show.ticketStubCount === undefined)) {
 
-        for (let ticketStubID of ticketStubIDs) {
-            let ticketStub = {};
-            ticketStub["tokenId"] = ticketStubID;
-            show.ticketStubs.push(ticketStub);
-        }
+            console.log(`Show ${show_id} has ${show.ticketStubCount} ticket stubs.`);
+
+            // TODO: Also read the ticketstubs contract.
+            // For now, fake data.  TODO: Unfake this.
+            // We'll just use an array of ints 0-49
+            let ticketStubIDs = [];
+            for (let i = 0; i < show.ticketStubCount; i++) {
+                ticketStubIDs.push(BigInt(i));
+            }
+
+            for (let ticketStubID of ticketStubIDs) {
+                let ticketStub = {};
+                ticketStub["tokenId"] = ticketStubID;
+                show.ticketStubs.push(ticketStub);
+            }
+        }//// End ticket stub things
+
 
         for (let [set_order, set] of Object.entries(show.sets)) {
             set.setstones = [];
@@ -290,9 +305,14 @@ export function appendChainDataToShows(shows, chainData) {
         let chainDataForShow = showsChainData[show_id];
         // TODO: Handle the show not being in the chain data at all - emit a warning that it's time to refresh chain data?  And an error in prod?
 
+
+        // ...but this is kinda weird altogether.  TODO: Make this line only _purcahsed_ ticket stubs, for use on show pages, etc.
+        // TODO: metadata about ticket stubs generally (such as how many are availagble in a given show) can go in the YAML.
         const ticket_stubs_for_this_Set = chainDataForShow['ticketStubs'];
 
-        show['ticketStubs'] = ticket_stubs_for_this_Set;
+        show['ticketStubs'] = ticket_stubs_for_this_Set;  // TODO: Is this still needed?
+
+        show['ticketStubCount'] = chainDataForShow['ticketStubCount'];
 
         if (chainDataForShow === undefined) {
             // TODO: Handle this case - why is this show not in the chain data?
@@ -430,7 +450,12 @@ export async function get_times_for_shows() {
             const secondsUntilShow = Number(blocksUntilShow) * 12;
             const timestampOfShow = BigInt(timestampOfMostRecentBlock) + BigInt(secondsUntilShow);
             times_for_shows[showID] = timestampOfShow;
-            console.log(`${showID} is ${secondsUntilShow} seconds away.`)
+
+            // Show the datetime of the show in the future.
+            const now = new Date();
+            const datetimeOfShow = new Date(Number(timestampOfShow) * 1000);
+
+            console.log(`${showID} is ${secondsUntilShow} seconds away, at ${datetimeOfShow}.`)
         }
 
     }
