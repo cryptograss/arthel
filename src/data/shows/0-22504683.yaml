@@ -1,0 +1,21 @@
+title: "Kuba Hejhal Memorial"
+venue: "Koruna"
+locality: "Roudnice nad Labem"
+region1: "Czech Republic"
+timezone: "Europe/Prague"
+ensemble:
+  "Justin Holmes": [ "guitar" ]
+  "Skyler Golden": [ "bass" ]
+  "Jakub Vysoky": [ "mandolin" ]
+  Honza Špringl: [5-string banjo, tenor banjo, guitar]
+sets:
+  0:
+    songplays:
+      - Red Haired Boy
+      - Lady Be Good
+      - Old Joe Clark
+      - Power Underneath
+      - Dragon Roost Island
+      - Jednou mi fotr povídá
+      - Can the Circle Be Unbroken? (By and By)
+      - Smrti
