@@ -48,6 +48,34 @@ export function generateSetStonePages(shows, outputDir) {
         }
 
         //////////////////////////
+        // Make a JSON object with the secrets and hashes for each ticket stub
+        // TODO: This is a little weird, but it's a good way to get the data to the blockchain.
+
+
+        const ticketStubDataPath = `/artifacts/ticket-stub-data/${showId}.html`;
+        const secrets_and_hashes = show.ticketStubs.map(ticketStub => ({
+            tokenId: ticketStub.tokenId,
+            secret: ticketStub.secret,
+            rabbitHash: ticketStub.rabbitHashFull,
+        }));
+        const only_hashes = show.ticketStubs.map(ticketStub => ({
+            tokenId: ticketStub.tokenId,
+            rabbitHash: ticketStub.rabbitHashFull,
+        }));
+        const json_string_of_only_hashes = JSON.stringify(only_hashes);
+        const json_string_of_secrets_and_hashes = JSON.stringify(secrets_and_hashes);
+        renderPage({
+            template_path: 'reuse/ticket-stub-data.njk',
+            output_path: ticketStubDataPath,
+            context: {
+                json_string_of_secrets_and_hashes: json_string_of_secrets_and_hashes,
+                only_hashes: json_string_of_only_hashes,
+            },
+            site: "cryptograss.live"
+        });
+
+
+        //////////////////////////
 
         renderPage({
             template_path: 'reuse/all-ticket-stubs-for-show-printable.njk',
