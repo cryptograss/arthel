@@ -262,6 +262,7 @@ export function processShowAndSetData() {
                                     // TODO: What if this piece has multiple modifications?
 
                                     songPlay["detail"] = "(feat. ";
+                                    songPlay["detail"] += detail.join(", ");  // TODO: Make these a link in the case of pickers about whom we already know. #274
                                     for (let featured_artist of detail) {
 
                                         const picker_slug = slugify(featured_artist)
@@ -275,8 +276,6 @@ export function processShowAndSetData() {
                                                 shows: { [showID]: "featured" } // TODO: Show instrument(s) here.
                                             }
                                         }
-
-                                        songPlay["detail"] += featured_artist;
                                     }
                                     songPlay["detail"] += ")";
                                 } else {
@@ -441,7 +440,7 @@ export function processShowAndSetData() {
 
         // Sanity check: did we set a provenance?
         if (!songPlay.hasOwnProperty('provenance')) {
-            throw new Error("SongPlay does not have provenance; seems like an impossible state.");
+            throw new Error("SongPlay does not have provenance; seems like an impossible state.  Did you make a MD file for this song without filling out its YAML?");
         }
 
 
