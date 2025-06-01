@@ -6,7 +6,7 @@ import { nesPalette } from "./graphics/palettes.js";
 import { renderPage } from "./utils/rendering_utils.js";
 import { getProjectDirs } from "./locations.js";
 import { randomBytes } from 'crypto';
-import { keccak256 } from 'viem';
+import { JsonRpcVersionUnsupportedError, keccak256 } from 'viem';
 
 /**
  *
