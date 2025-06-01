@@ -78,33 +78,31 @@
 }
 
 .ticket-stub-container .ticket-stub-number {
-    font-size: .8em;
-    color: #00bcb9;
-    text-shadow: 0px 0px 1px black;
+    font-size: 1em;
+    color: hsl(163, 100%, 15.9%);
     position: absolute;
-    left: 375px;
-    top: 168px;
+    left: 351px;
+    top: 154px;
     text-align: right;
 }
 
 .ticket-stub-container .band-names {
-    font-size: .6em;
-    color: #00bcb9;
-    text-shadow: 0px 0px 1px black;
+    font-size: .7em;
+    color: #004f4d;
     position: absolute;
     left: 74px;
     top: 35px;
     width: 95px;
+    line-height: 14px;
 }
 
 .ticket-stub-container .venue {
-    font-size: .6em;
+    font-size: .8em;
     color: #5c1700;
     position: absolute;
     left: 74px;
     top: 170px;
     width: 86px;
-    text-shadow: 0px 0px 0px black;
 }
 
 .ticket-stub-container .locality {
@@ -122,7 +120,6 @@
 .ticket-stub-datetime {
     font-size: 1em;
     color: #5c1700;
-    text-shadow: 0px 0px 1px rgb(0, 0, 0);
     position: absolute;
     left: 385px;
     top: 38px;
@@ -130,7 +127,7 @@
 }
 
 .ticket-stub-container .small {
-    font-size: .4em;
+    font-size: .7em;
     margin: auto;
 }
 
@@ -153,19 +150,17 @@
 }
 
 .ticket-stub-container .ticket-stub-number-on-back {
-    font-size: .8em;
-    color: #00bcb9;
-    text-shadow: 0px 0px 1px black;
+    font-size: .9em;
+    color: #004746;
     position: absolute;
-    right: 82px;
-    top: 9px;
+    right: 78px;
+    top: 5px;
     text-align: right;
 }
 
 .ticket-stub-container .rabbit-text {
     font-size: .8em;
     color: #00bcb9;
-    text-shadow: 0px 0px 1px black;
     position: absolute;
     right: 125px;
     top: 191px;
@@ -175,9 +170,17 @@
 .ticket-stub-container .uri-text {
     font-size: .8em;
     color: #00bcb9;
-    text-shadow: 0px 0px 1px black;
     position: absolute;
     right: 270px;
     top: 188px;
     text-align: right;
+}
+
+.ticket-stub-claim-instructions {
+    font-size: .8em;
+}
+
+.ticket-stub-claim-instructions h5 {
+    font-size: 1em;
+    color: #530007;
 }

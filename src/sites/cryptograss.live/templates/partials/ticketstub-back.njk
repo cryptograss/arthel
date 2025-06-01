@@ -1,0 +1,28 @@
+<div class="ticket-stub-container row">
+    <div class="col-2"></div>
+    <div class="col-4 ticket-stub-foldout">
+        <div class="ticket-stub-claim-instructions">
+            <br/><br/>
+            <h4>Claiming this 721 onchain</h4>
+            <div>The QR codes are the secrets you need ("rabbits") to claim this 721 and move it to a wallet you control.  You can either follow the URL and use our facility, or you can write directly to the chain yourself using the plaintext secret.</div>
+            <br/>
+            <h5>justinholmes.com</h5>
+            <h5>cryptograss.live</h5>
+        </div>
+    </div>
+    <div class="col-6 ticket-stub-back" id="ticket-stub-back-{{ ticketStub.tokenId }}">
+        <img src="{{ get_image("ticket-stub-gridremoved-no-diamond.png") }}"/>
+
+        <canvas class="qr-code-for-secret" data-qr-token="{{ ticketStub.tokenId }}" data-qr-secret="{{ ticketStub.secret }}"></canvas>
+        <div class="rabbit-text">rabbit secret plaintext</div>
+
+        <canvas class="qr-code-for-secret-uri" data-uri-qr-token="{{ ticketStub.tokenId }}" data-uri-qr-secret="{{ ticketStub.secret }}"></canvas>
+        <div class="uri-text">URI including rabbit secret</div>
+        <div class="ticket-stub-number-on-back">
+            <div class="rabbit-hash">
+                {{ ticketStub.rabbitHash }}
+            </div>
+            {{ ticketStub.tokenId }} / {50-99}
+        </div>
+    </div>
+</div>

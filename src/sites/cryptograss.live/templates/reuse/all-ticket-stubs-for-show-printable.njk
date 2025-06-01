@@ -1,0 +1,22 @@
+<style type="text/css" media="print">
+    @page {
+        size: a3;
+        /* auto is the initial value */
+        margin: 0;
+        /* this affects the margin in the printer settings */
+    }
+</style>
+
+{% for ticketStub in show.ticketStubs %}
+    {# Front of ticket stub #}
+    <div class="row single-printable-ticket-stub">
+            {% if side == "front" %}
+                {% include 'partials/ticketstub-front.njk' %}
+            {% elif side == "back" %}
+                {% include 'partials/ticketstub-back.njk' %}
+            {% else %}
+                PLEASE SPECIFY SIDE - EITHER FRONT OR BACK
+            {% endif %}
+    </div>
+</div>
+{% endfor %}
