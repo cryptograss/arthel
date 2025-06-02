@@ -47,6 +47,8 @@ vowel-sounds-album-art:
 ensemble:
   template: ensemble.njk
   context_from_yaml: true
+  include_data_in_context:
+    - pickers_by_instance_count
   context:
     page_title: "The Immutable String Band"
 

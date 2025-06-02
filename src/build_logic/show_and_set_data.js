@@ -298,7 +298,7 @@ export function processShowAndSetData() {
                     }
                 }
 
-                // Teases and reprises are just for the setlist; don't count them in the list of plays for a song.
+                // Teases and reprises are just for the setlist; don't count them in the list of plays for a song.  And obviosuly, don't count scratched songs.
                 if (songPlay.mode !== "tease" && songPlay.mode !== "reprise" && songPlay.mode !== "scratch") {
                     song.plays.push(songPlay);
                 }
@@ -449,9 +449,6 @@ export function processShowAndSetData() {
 
     // Now, we'll go through each set again and make a graph for song provenance.
     for (let [showID, show] of Object.entries(shows)) {
-        if (show.title == 'Allo DAO Summoning') {
-            console.log("here's the busted one")
-        }
         let show_provenances = {
             'original': 0,
             'traditional': 0,
@@ -618,10 +615,28 @@ export function processShowAndSetData() {
 
     console.timeEnd("Show and Song Data");
 
-    // sort shows by key, with largest numbers first
-    shows = Object.fromEntries(Object.entries(shows).sort(function (a, b) {
-        return parseInt(b[0].split('-')[1]) - parseInt(a[0].split('-')[1]);
-    }));
+    // Add clean array of shows for each picker to make templating easier.
+    for (let [picker, picker_data] of Object.entries(pickers)) {
+        picker_data['shows_as_array'] = []
+        let shows_played_by_this_picker = []
+        let show_list = picker_data['shows'];
+        for (let [show_id, instruments] of Object.entries(show_list)) {
+
+            // Sanity check: if we don't know about this show, this will fail later.
+            if (!shows[show_id]) {
+                throw new Error(`Show ${show_id} not found when trying to populate shows for ${picker}`);
+            }
+
+            picker_data['shows_as_array'].push({
+                show_id,
+                show: shows[show_id],
+                instruments
+            });
+        }
+
+    }
+
+
 
     return { shows, songs, pickers, songsByVideoGame, songsByProvenance };
 

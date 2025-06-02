@@ -96,6 +96,50 @@ export const runPrimaryBuild = async () => {
     /// Chapter 3.1: Register helpers, partials, and context
     //////
 
+    ////////
+    //// 3.1a: Picker metadata
+    //////
+    // TODO: Not jazzed to do this here instead of just making this available in the context.
+    let songs_by_studio_version = {};
+    for (let [song_slug, song] of Object.entries(songs)) {
+        if (!song.studio_versions) {
+            continue;
+        }
+        for (let [record_name, studio_version] of Object.entries(song.studio_versions)) {
+            let studio_version_slug = slugify(record_name + '_' + song.slug);
+            songs_by_studio_version[studio_version_slug] = studio_version;
+            for (let [studio_picker_name, instruments] of Object.entries(studio_version.ensemble)) {
+                let studio_picker_slug = slugify(studio_picker_name);
+                if (!pickers[studio_picker_name]) {
+                    continue;
+                }
+                if (!pickers[studio_picker_name].studio_versions) {
+                    pickers[studio_picker_name].studio_versions = []
+                }
+                pickers[studio_picker_name].studio_versions.push(studio_version);
+            }
+        }
+    }
+
+    // Now that we have studio versions, let's take a brief diversion to add those to the pickers instances.
+
+    for (let [picker_name, picker_data] of Object.entries(pickers)) {
+        if (!picker_data.studio_versions) {
+            picker_data.studio_versions = [];
+        }
+        picker_data.total_instance_count = picker_data.shows_as_array.length + picker_data.studio_versions.length;
+    }
+
+    // Also provide pickers sorted by number of instances.
+    let pickers_by_instance_count = Object.entries(pickers).sort(function (a, b) {
+        return b[1].total_instance_count - a[1].total_instance_count;
+    }); // TODO: Man, isn't this going to be fun when we actually have proper model and manager notions of all these things?
+
+    ////////
+    //// 3.1b: context population
+    //////
+
+
     // We'll need helpers....
     registerHelpers(site);
 
@@ -108,6 +152,7 @@ export const runPrimaryBuild = async () => {
         'songsByProvenance': songsByProvenance,
         'latest_git_commit': execSync('git rev-parse HEAD').toString().trim(),
         'chainData': chainData,
+        'pickers_by_instance_count': pickers_by_instance_count,
     };
 
     if (site === "justinholmes.com") { // TODO: Make this more general
@@ -120,6 +165,7 @@ export const runPrimaryBuild = async () => {
     ////////////////////
     // Chapter 3.2: Render one-off pages from YAML
     ///////////////////////
+
 
     let pageyamlFile = fs.readFileSync(`src/data/${site}.pages.yaml`);
     let pageyaml = yaml.load(pageyamlFile);
@@ -315,29 +361,30 @@ export const runPrimaryBuild = async () => {
 
     if (site === "justinholmes.com") { // TODO: This is a hack.  We need to make this more general.
 
-    // TODO: Not jazzed to do this here instead of just making this available in the context.
 
-    // Make a new array of songs, sorted by song.plays.length
-    let songs_sorted_by_plays = Object.values(songs);
-    songs_sorted_by_plays.sort((a, b) => {
-        return b.plays.length - a.plays.length;
-    });
 
-    let context = {
-        page_name: "songs-by-plays",
-        page_title: "Songs sorted by plays",
-        songs: songs_sorted_by_plays,
-        imageMapping,
-        chainData,
-    };
 
-    renderPage({
-        template_path: 'pages/songs/songs-by-plays.njk',
-        output_path: `songs/songs-by-plays.html`,
-        context: context,
-        site: site,
-    }
-    );
+        // Make a new array of songs, sorted by song.plays.length
+        let songs_sorted_by_plays = Object.values(songs);
+        songs_sorted_by_plays.sort((a, b) => {
+            return b.plays.length - a.plays.length;
+        });
+
+        let context = {
+            page_name: "songs-by-plays",
+            page_title: "Songs sorted by plays",
+            songs: songs_sorted_by_plays,
+            imageMapping,
+            chainData,
+        };
+
+        renderPage({
+            template_path: 'pages/songs/songs-by-plays.njk',
+            output_path: `songs/songs-by-plays.html`,
+            context: context,
+            site: site,
+        }
+        );
 
     }
 
@@ -352,21 +399,7 @@ export const runPrimaryBuild = async () => {
 
         let picker_slug = slugify(picker);
 
-        let shows_played_by_this_picker = []
-        let show_list = picker_data['shows'];
-        for (let [show_id, instruments] of Object.entries(show_list)) {
-
-            // Sanity check: if we don't know about this show, this will fail later.
-            if (!shows[show_id]) {
-                throw new Error(`Show ${show_id} not found when trying to populate shows for ${picker}`);
-            }
-
-            shows_played_by_this_picker.push({
-                show_id,
-                show: shows[show_id],
-                instruments
-            });
-        }
+        const shows_played_by_this_picker = picker_data['shows_as_array'];
 
         let context = {
             page_name: picker,
