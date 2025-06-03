@@ -1,2 +1,10 @@
 by_artist_id: 0
-on_release: "4masks"
+studio_versions:
+  0:
+    4masks:
+      ensemble:
+        Justin Holmes: [guitar, vocals, throatsinging, six-whistle]
+        Kyle Tuttle: [5-string banjo]
+        Harry Clark: [mandolin]
+        Maddie Denton: [fiddle]
+        Skyler Golden: [bass]

@@ -1,12 +1,18 @@
 by_artist_id: 0
 instrumental: true
 studio_versions:
-  Vowel Sounds:
-    ensemble:
-      Justin Holmes: [vocals, guitar, throatsinging, six-whistle]
-      Cory Walker: [5-string banjo]
-      Harry Clark: [mandolin]
-      Christian Ward: [fiddle]
-      Jake Stargel: [bass]
-      Allen Cooke: [dobro]
-      Luna Lavender: [spoken word]
+  0:
+    Vowel Sounds:
+      ensemble:
+        Justin Holmes: [vocals, guitar, throatsinging, six-whistle]
+        Cory Walker: [5-string banjo]
+        Harry Clark: [mandolin]
+        Christian Ward: [fiddle]
+        Jake Stargel: [bass]
+        Allen Cooke: [dobro]
+        Luna Lavender: [spoken word]
+        Jakub Vysoky: [mandolin]
+    4masks:
+      ensemble:
+        Justin Holmes: [guitar, six-whistle]
+        David Grier: [guitar]

@@ -1,10 +1,11 @@
 by_artist_id: 0
 studio_versions:
-  Vowel Sounds:
-    ensemble:
-      Justin Holmes: [vocals, guitar]
-      Cory Walker: [5-string banjo]
-      Harry Clark: [mandolin]
-      Christian Ward: [fiddle]
-      Jake Stargel: [bass]
-      Allen Cooke: [dobro]
+  0:
+    Vowel Sounds:
+      ensemble:
+        Justin Holmes: [vocals, guitar]
+        Cory Walker: [5-string banjo]
+        Harry Clark: [mandolin]
+        Christian Ward: [fiddle]
+        Jake Stargel: [bass]
+        Allen Cooke: [dobro]
