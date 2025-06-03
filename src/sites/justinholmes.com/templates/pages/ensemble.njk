@@ -45,10 +45,16 @@
                         <h2 class="fs-1 bio-title">{{name}}</a>
                     </h2>
                     <h3>
-                        <a href="{{metadata.resource_url}}">Involved Instances: {{metadata.total_instance_count}}</a>
+                        Appears in {{metadata.total_instance_count}} Instance{% if metadata.total_instance_count > 1 %}s{% endif %}
                     </h3>
-                    {% if metadata.studio_versions.length > 0 %}
-                        <h5>(Shows: {{metadata.shows_as_array.length}}, Studio Tracks: {{metadata.studio_versions.length}})</h5>
+                    {% if metadata.studio_versions.length == 0 %}
+                    <a href="{{metadata.resource_url}}">
+                        <h5>{% if metadata.total_instance_count > 1 %}All shows{% else %}A show{% endif %}</h5>
+                        </a>
+                    {% elif metadata.shows_as_array.length == 0 %}
+                        <h5>{% if metadata.total_instance_count > 1 %}All studio tracks{% else %}A studio track{% endif %}</h5>
+                    {% else %}
+                        <h5><a href="{{metadata.resource_url}}">{{metadata.shows_as_array.length}} Show{% if metadata.shows_as_array.length > 1 %}s{% endif %}</a>, {{metadata.studio_versions.length}} Studio Track{% if metadata.studio_versions.length > 1 %}s{% endif %}</h5>
                     {% endif %}
                 </div>
                 <div class="row">
@@ -70,11 +76,17 @@
                 <div class="row">
                     <div class="col-11">
                         <h2 class="fs-1 text-right bio-title">{{name}}</h2>
-                        <h3>
-                            <a href="{{metadata.resource_url}}">Involved Instances: {{metadata.total_instance_count}}</a>
-                        </h3>
-                        {% if metadata.studio_versions.length > 0 %}
-                        <h5>(Shows: {{metadata.shows_as_array.length}}, Studio Tracks: {{metadata.studio_versions.length}})</h5>
+                    <h3>
+                        Appears in {{metadata.total_instance_count}} Instance{% if metadata.total_instance_count > 1 %}s{% endif %}
+                    </h3>
+                    {% if metadata.studio_versions.length == 0 %}
+                    <a href="{{metadata.resource_url}}">
+                        <h5>{% if metadata.total_instance_count > 1 %}All shows{% else %}A show{% endif %}</h5>
+                        </a>
+                    {% elif metadata.shows_as_array.length == 0 %}
+                        <h5>{% if metadata.total_instance_count > 1 %}All studio tracks{% else %}A studio track{% endif %}</h5>
+                    {% else %}
+                        <h5><a href="{{metadata.resource_url}}">{{metadata.shows_as_array.length}} Show{% if metadata.shows_as_array.length > 1 %}s{% endif %}</a>, {{metadata.studio_versions.length}} Studio Track{% if metadata.studio_versions.length > 1 %}s{% endif %}</h5>
                     {% endif %}
                     </div>
                     <div class="col-1"></div>

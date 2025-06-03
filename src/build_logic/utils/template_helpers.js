@@ -4,6 +4,9 @@ import { getProjectDirs } from "../locations.js";
 import {slugify} from "./text_utils.js";
 import { getShowAndSetData } from "../show_and_set_data.js";
 import path from 'path';
+import fs from 'fs';
+import yaml from 'js-yaml';
+const { dataDir } = getProjectDirs();
 
 const REFERENCE_BLOCK = 20612385; // Example block number
 const REFERENCE_TIMESTAMP = 1724670731; // Unix timestamp in seconds
@@ -23,6 +26,14 @@ export function registerHelpers(site) {
     // Add the 'get_image' filter that looks up images in the imageMapping object
     env.addGlobal('get_image', function (filename, imageType) {
         return get_image_from_asset_mapping(filename, imageType);  // Return empty string if not found
+    });
+
+    env.addGlobal('get_record_metadata', function (record_name) {
+        // Open and parse the yaml file.
+        const recordSlug = slugify(record_name);
+        let recordYAMLfile = fs.readFileSync(`${dataDir}/records/${recordSlug}.yaml`, 'utf8');
+        let recordMetadata = yaml.load(recordYAMLfile);
+        return recordMetadata;
     });
 
     env.addFilter('showInstrumentalist', function (song_play, instrument_to_show) {
