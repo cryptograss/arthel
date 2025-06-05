@@ -1,4 +1,4 @@
-title: "ETHPrague Second Show"
+title: "ETHPrague 2025 Second Show"
 venue: "Bike Jesus"
 locality: "Prague"
 region1: "Czech Republic"
@@ -7,23 +7,65 @@ ensemble:
   "Justin Holmes": [ "guitar"]
   "Skyler Golden": [ "bass" ]
   "Jakub Vysoky": [ "mandolin" ]
-  "Bones": [ "banjo" ]
-  "Seamus": [ "fiddle" ]
-  "Joshua": [ "cello" ]
+  "Pavel Bohm": ["dobro"]
 sets:
   0:
     songplays:
-      - Bank Run
-      - The Frog
-      - Dragon Roost Island
-      - Song of Storms
-      - Terrapin Station
-      - Dragon Roost Island
-      - Paint Exchange
-      - Lost
-      - Shady Grove
-      - Clinch Mountain Backstep
-      - Garfield's
-      - Silver .44
-      - I Know You Rider
-      - The Two Sisters
+      - The Morning of The Bank Run:
+        ensemble-modifications:
+          featuring:
+            - Shaka Lei Kaumaka
+      - The Frog:
+        ensemble-modifications:
+          featuring:
+            - Shaka Lei Kaumaka
+      - Dragon Roost Island:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+            - Shaka Lei Kaumaka
+      - Song of Storms:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+            - Shaka Lei Kaumaka
+      - Terrapin Station:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+            - Shaka Lei Kaumaka
+      - Paint Exchange:
+        ensemble-modifications:
+          featuring:
+            - Shaka Lei Kaumaka
+        mode: segue
+      - Lost:
+        ensemble-modifications:
+          featuring:
+            - Shaka Lei Kaumaka
+      - As long as I am in this world, you will never hack alone
+      - Shady Grove:
+        ensemble-modifications:
+          featuring:
+            - Steve Willis
+      - Clinch Mountain Backstep:
+        ensemble-modifications:
+          featuring:
+            - Steve Willis
+      - Garfield's Blackberry Blossom:
+        ensemble-modifications:
+          featuring:
+            - Steve Willis
+      - Silver .44:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+            - Steve Willis
+      - I Know You Rider:
+        ensemble-modifications:
+          featuring:
+            - Steve Willis
+      - The Two Sisters:
+        ensemble-modifications:
+          featuring:
+            - Band No. 7
