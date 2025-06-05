@@ -41,76 +41,84 @@
 
             <div class="person-info row border-top border-2 border-black mt-2 pt-2">
                 {% if loop.index % 2 === 0 %}
-                    <div class="row">
-                        <h2 class="fs-1 bio-title">{{name}}</a>
+                    <h2 class="fs-1 bio-title">{{name}}
+                        {% if metadata.instruments_display %}
+                            <span class="instruments-display small">({{metadata.instruments_display}})</span>{% endif %}
+
                     </h2>
                     <h3>
-                        Appears in {{metadata.total_instance_count}} Instance{% if metadata.total_instance_count > 1 %}s{% endif %}
+                        Appears in <a href="{{metadata.resource_url}}">{{metadata.total_instance_count}} Instance{% if metadata.total_instance_count > 1 %}s{% endif %}
+                        </a>
                     </h3>
                     {% if metadata.studio_versions.length == 0 %}
-                    <a href="{{metadata.resource_url}}">
-                        <h5>{% if metadata.total_instance_count > 1 %}All shows{% else %}A show{% endif %}</h5>
-                        </a>
+                        <h5>
+                            {% if metadata.total_instance_count > 1 %}(All shows){% else %}(A show){% endif %}
+                        </h5>
                     {% elif metadata.shows_as_array.length == 0 %}
-                        <h5>{% if metadata.total_instance_count > 1 %}All studio tracks{% else %}A studio track{% endif %}</h5>
+                        <h5>
+                            {% if metadata.total_instance_count > 1 %}(All studio tracks){% else %}(A studio track){% endif %}
+                        </h5>
                     {% else %}
-                        <h5><a href="{{metadata.resource_url}}">{{metadata.shows_as_array.length}} Show{% if metadata.shows_as_array.length > 1 %}s{% endif %}</a>, {{metadata.studio_versions.length}} Studio Track{% if metadata.studio_versions.length > 1 %}s{% endif %}</h5>
+                        <h5>{{metadata.shows_as_array.length}} Show{% if metadata.shows_as_array.length > 1 %}s{% endif %}, {{metadata.studio_versions.length}} Studio Track{% if metadata.studio_versions.length > 1 %}s{% endif %}
+                        </h5>
                     {% endif %}
-                </div>
-                <div class="row">
-                    <div class="col-5">
-                        <a class='spotlight'
+                    <div class="row">
+                        <div class="col-5">
+                            <a class='spotlight'
                            href="{{ get_image(details.Photo) }}"
                            title="{{details.Caption}}">
-                            <img src="{{ get_image(details.Photo) }}"/>
-                        </a>
-                        <figcaption class="figure-caption text-white fs-5 bio-caption">{{details.Caption}}</figcaption>
+                                <img src="{{ get_image(details.Photo) }}"/>
+                            </a>
+                            <figcaption class="figure-caption text-white fs-5 bio-caption">{{details.Caption}}</figcaption>
+                        </div>
+                        <div class="col-1"></div>
+                        <div class="col-6 fs-4 person-bio">
+                            {{details.Description}}
+                            {{details.Address}}
+                        </div>
                     </div>
-                    <div class="col-1"></div>
-                    <div class="col-6 fs-4 person-bio">
-                        {{details.Description}}
-                        {{details.Address}}
-                    </div>
-                </div>
-            {% else %}
-                <div class="row">
-                    <div class="col-11">
-                        <h2 class="fs-1 text-right bio-title">{{name}}</h2>
+                {% else %}
+                    <h2 class="fs-1 bio-title">{{name}}
+                        {% if metadata.instruments_display %}
+                            <span class="instruments-display small">({{metadata.instruments_display}})</span>{% endif %}
+                    </h2>
                     <h3>
-                        Appears in {{metadata.total_instance_count}} Instance{% if metadata.total_instance_count > 1 %}s{% endif %}
+                        Appears in <a href="{{metadata.resource_url}}">{{metadata.total_instance_count}} Instance{% if metadata.total_instance_count > 1 %}s{% endif %}
+                        </a>
                     </h3>
                     {% if metadata.studio_versions.length == 0 %}
-                    <a href="{{metadata.resource_url}}">
-                        <h5>{% if metadata.total_instance_count > 1 %}All shows{% else %}A show{% endif %}</h5>
-                        </a>
+                        <h5>
+                            {% if metadata.total_instance_count > 1 %}(All shows){% else %}(A show){% endif %}
+                        </h5>
                     {% elif metadata.shows_as_array.length == 0 %}
-                        <h5>{% if metadata.total_instance_count > 1 %}All studio tracks{% else %}A studio track{% endif %}</h5>
+                        <h5>
+                            {% if metadata.total_instance_count > 1 %}(All studio tracks){% else %}(A studio track){% endif %}
+                        </h5>
                     {% else %}
-                        <h5><a href="{{metadata.resource_url}}">{{metadata.shows_as_array.length}} Show{% if metadata.shows_as_array.length > 1 %}s{% endif %}</a>, {{metadata.studio_versions.length}} Studio Track{% if metadata.studio_versions.length > 1 %}s{% endif %}</h5>
+                        <h5>{{metadata.shows_as_array.length}} Show{% if metadata.shows_as_array.length > 1 %}s{% endif %}, {{metadata.studio_versions.length}} Studio Track{% if metadata.studio_versions.length > 1 %}s{% endif %}
+                        </h5>
                     {% endif %}
-                    </div>
                     <div class="col-1"></div>
-                </div>
-                <div class="row">
-                    <div class="col-6 fs-4 person-bio">
-                        {{details.Description}}
-                        {{details.Address}}
-                    </div>
-                    <div class="col-1"></div>
-                    <div class="col-5 text-center">
+                    <div class="row">
+                        <div class="col-6 fs-4 person-bio">
+                            {{details.Description}}
+                            {{details.Address}}
+                        </div>
+                        <div class="col-1"></div>
+                        <div class="col-5 text-center">
 
-                        <a class='spotlight'
+                            <a class='spotlight'
                            href="{{ get_image(details.Photo) }}"
                            title="{{details.Caption}}">
-                            <img src="{{ get_image(details.Photo) }}"/>
-                        </a>
-                        <figcaption class="figure-caption text-white fs-5 bio-caption">{{details.Caption}}</figcaption>
+                                <img src="{{ get_image(details.Photo) }}"/>
+                            </a>
+                            <figcaption class="figure-caption text-white fs-5 bio-caption">{{details.Caption}}</figcaption>
+                        </div>
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
 
-        </div>
-    {% endfor %}
+            </div>
+        {% endfor %}
 
-</div>
+    </div>
 {% endblock %}

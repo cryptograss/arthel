@@ -140,6 +140,16 @@ export function processShowAndSetData() {
                     };
                 }
                 pickers[picker]["shows"][showID] = instruments
+                if (!pickers[picker].instruments) {
+                    pickers[picker].instruments = {};
+                }
+                for (let instrument of instruments) {
+                    if (!pickers[picker].instruments[instrument]) {
+                        pickers[picker].instruments[instrument] = 1
+                    } else {
+                        pickers[picker].instruments[instrument] += 1
+                    }
+                }
             }
         }
 
@@ -266,7 +276,7 @@ export function processShowAndSetData() {
 
                                         const picker_slug = slugify(featured_artist)
 
-                                        if (pickers.hasOwnProperty(picker_slug)) {
+                                        if (pickers.hasOwnProperty(featured_artist)) {
                                             pickers[featured_artist]["shows"][showID] = "featured"; // TODO: Show instrument(s) here.
                                         } else {
 
@@ -636,7 +646,8 @@ export function processShowAndSetData() {
 
     }
 
-
+    // Sort shows by blockheight.
+    shows = Object.entries(shows).sort((a, b) => b[1].blockheight - a[1].blockheight);
 
     return { shows, songs, pickers, songsByVideoGame, songsByProvenance };
 

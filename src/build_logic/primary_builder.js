@@ -130,16 +130,30 @@ export const runPrimaryBuild = async () => {
                     if (!pickers[studio_picker_name]) {
                         pickers[studio_picker_name] = {}
                     }
-                    if (!pickers[studio_picker_name].studio_versions) {
-                        pickers[studio_picker_name].studio_versions = []
-                        pickers[studio_picker_name].studio_versions_by_record = {}
+                    let picker = pickers[studio_picker_name];
+                    if (!picker.studio_versions) {
+                        picker.studio_versions = []
+                        picker.studio_versions_by_record = {}
                     }
 
-                    pickers[studio_picker_name].studio_versions.push(studio_version);
-                    if (!pickers[studio_picker_name].studio_versions_by_record[record_name]) {
-                        pickers[studio_picker_name].studio_versions_by_record[record_name] = []
+                    picker.studio_versions.push(studio_version);
+                    if (!picker.studio_versions_by_record[record_name]) {
+                        picker.studio_versions_by_record[record_name] = []
                     }
-                    pickers[studio_picker_name].studio_versions_by_record[record_name].push([song, studio_version]);
+
+
+                    if (!picker.instruments) {
+                        picker.instruments = {};
+                    }
+                    for (let instrument of instruments) {
+                        if (!picker.instruments[instrument]) {
+                            picker.instruments[instrument] = 1
+                        } else {
+                            picker.instruments[instrument] += 1
+                        }
+                    }
+
+                    picker.studio_versions_by_record[record_name].push([song, studio_version]);
 
                 } // End ensemble loop
             } // End record loop
@@ -160,8 +174,47 @@ export const runPrimaryBuild = async () => {
         }
         picker_data.total_instance_count = picker_data.shows_as_array.length + picker_data.studio_versions.length;
 
+
+        let shows_in_ensemble = 0;
+
+        // Count each show where the picker was in the ensemble (not a featured artist)
+        if (picker_data.shows) {
+            for (let [showId, instruments] of Object.entries(picker_data.shows)) {
+                if (instruments != 'featured') {
+                    shows_in_ensemble += 1;
+                } else {
+                    console.log(`${picker_name} featured in ${showId}`);
+                }
+            }
+        }
+
         // Since studio versions happen more rarely but are heard many times, we weigh them much more strongly for the purposes of sorting the pickers on the list.
-        picker_data.weighted_total_instance_count = picker_data.shows_as_array.length + (picker_data.studio_versions.length * 3.2);
+        picker_data.weighted_total_instance_count = shows_in_ensemble + (picker_data.studio_versions.length * 3);
+
+        // Also, anybody who has both studio versions and shows gets 35% weight increase compared to pickers who have only one or the other.
+        if (picker_data.shows_as_array.length > 0 && picker_data.studio_versions.length > 0) {
+            picker_data.weighted_total_instance_count *= 1.5;
+        }
+
+        // If the picker has been in at least 5 of each, another increase in weight.
+        if (picker_data.shows_as_array.length > 5 && picker_data.studio_versions.length > 5) {
+            picker_data.weighted_total_instance_count *= 1.25;
+        }
+
+
+
+        // Shortcut to easily display instruments in the template.
+        if (picker_data.instruments) {
+            let instruments_sorted = Object.entries(picker_data.instruments).sort((a, b) => {
+                return b[1] - a[1] || a[0].localeCompare(b[0]);
+            });
+
+            // Then, format them as a comma-separated list.
+            picker_data.instruments_display = instruments_sorted.map(instrument => instrument[0]).join(', ');
+        } else {
+            picker_data.instruments_display = '';
+        }
+
     }
 
     // Also provide pickers sorted by number of instances.
@@ -300,7 +353,10 @@ export const runPrimaryBuild = async () => {
     }
 
     // Append set stone favorites to the song objects.  TOOD: Surely this belongs in a better place.
-    for (const [showId, show] of Object.entries(shows)) {
+    for (let show_array_item of shows) {
+        let show = show_array_item[1];
+        let showId = show_array_item[0];
+
         // We're only interested in shows that have set stones.
         if (!show.has_set_stones_available) {
             continue;
@@ -328,7 +384,7 @@ export const runPrimaryBuild = async () => {
 
     if (site === "justinholmes.com") { // TODO: This is a hack.  We need to make this more general.
 
-        Object.entries(shows).forEach(([show_id, show]) => {
+        shows.forEach(([show_id, show]) => {
             const page = `show_${show_id}`;
 
             let context = {

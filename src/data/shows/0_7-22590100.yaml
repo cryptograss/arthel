@@ -1,0 +1,29 @@
+title: "ETHPrague Second Show"
+venue: "Bike Jesus"
+locality: "Prague"
+region1: "Czech Republic"
+timezone: "Europe/Prague"
+ensemble:
+  "Justin Holmes": [ "guitar"]
+  "Skyler Golden": [ "bass" ]
+  "Jakub Vysoky": [ "mandolin" ]
+  "Bones": [ "banjo" ]
+  "Seamus": [ "fiddle" ]
+  "Joshua": [ "cello" ]
+sets:
+  0:
+    songplays:
+      - Bank Run
+      - The Frog
+      - Dragon Roost Island
+      - Song of Storms
+      - Terrapin Station
+      - Dragon Roost Island
+      - Paint Exchange
+      - Lost
+      - Shady Grove
+      - Clinch Mountain Backstep
+      - Garfield's
+      - Silver .44
+      - I Know You Rider
+      - The Two Sisters
