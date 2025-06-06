@@ -15,8 +15,9 @@ import { getProjectDirs } from "./locations.js";
  */
 export function generateSetStonePages(shows, outputDir) {
     const { cryptograssUrl } = getProjectDirs();
-    for (const [showId, show] of Object.entries(shows)) {
-
+    for (const showMetadata of shows) {
+        const show = showMetadata[1];
+        const showId = showMetadata[0];
 
         // Ticket stubs
         if (!show.ticketStubs) {
@@ -60,7 +61,7 @@ export function generateSetStonePages(shows, outputDir) {
                     external_url: `https://justinholmes.com/cryptograss/bazaar/setstones/${showId}.html`,
                     description: `Set Stone from artist with id=${show.artist_id} and show on ${show.blockheight}`,
                     // The images live on cryptograss.live, so we need to use that URL.  Also, we don't want to use the variable, because this is actual token metadata.
-                    image: `https://cryptograss.live/assets/images/setstones/${set.shape}-${setstone.color[0]}-${setstone.color[1]}-${setstone.color[2]}.png`, 
+                    image: `https://cryptograss.live/assets/images/setstones/${set.shape}-${setstone.color[0]}-${setstone.color[1]}-${setstone.color[2]}.png`,
                     attributes: [
                         {
                             trait_type: "Shape",
@@ -137,7 +138,9 @@ export function renderSetStoneImages(shows, outputDir) {
         fs.mkdirSync(outputDir, {recursive: true});
     }
 
-    for (const [showId, show] of Object.entries(shows)) {
+    for (const showMetadata of shows) {
+        const show = showMetadata[1];
+        const showId = showMetadata[0];
         // We're only interested in shows that have set stones.
         if (!show.has_set_stones_available) {
             continue;
