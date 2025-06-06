@@ -6,7 +6,6 @@ import { getShowAndSetData } from "../show_and_set_data.js";
 import path from 'path';
 import fs from 'fs';
 import yaml from 'js-yaml';
-const { dataDir } = getProjectDirs();
 
 const REFERENCE_BLOCK = 20612385; // Example block number
 const REFERENCE_TIMESTAMP = 1724670731; // Unix timestamp in seconds
@@ -30,6 +29,7 @@ export function registerHelpers(site) {
 
     env.addGlobal('get_record_metadata', function (record_name) {
         // Open and parse the yaml file.
+        const { dataDir } = getProjectDirs();
         const recordSlug = slugify(record_name);
         let recordYAMLfile = fs.readFileSync(`${dataDir}/records/${recordSlug}.yaml`, 'utf8');
         let recordMetadata = yaml.load(recordYAMLfile);
