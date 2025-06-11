@@ -78,7 +78,12 @@
             {{show.sets.length}} sets in show
                 <a href="{{ show.resource_url }}">
                 {% endif %}
-                <img class="img-fluid w-75" full-show src="{{ show.artist_ids |resolveGraph(show.blockheight, "full-show") }}">
+                {% set graphPath = show.artist_ids |resolveGraph(show.blockheight, "full-show") %}
+                {% if graphPath %}
+                <img class="img-fluid w-75" full-show src="{{ graphPath }}">
+                {% else %}
+                <div class="text-muted">Graph will be available after the show</div>
+                {% endif %}
                 {% if title_as_link %}
                 </a>
             {% endif %}

@@ -66,7 +66,12 @@
 
                     </div>
                     <div class="col-md-4">
-                        <img class="img-fluid" src="{{show.artist_ids | resolveGraph(show.blockheight, set_number)}}">
+                        {% set setGraphPath = show.artist_ids | resolveGraph(show.blockheight, set_number) %}
+                        {% if setGraphPath %}
+                        <img class="img-fluid" src="{{ setGraphPath }}">
+                        {% else %}
+                        <div class="text-muted">Set graph will be available after the show</div>
+                        {% endif %}
                     </div>
                 </div>
                 {% if show.has_set_stones_available %}
