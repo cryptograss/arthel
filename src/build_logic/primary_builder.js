@@ -353,9 +353,7 @@ export const runPrimaryBuild = async () => {
     }
 
     // Append set stone favorites to the song objects.  TOOD: Surely this belongs in a better place.
-    for (let show_array_item of shows) {
-        let show = show_array_item[1];
-        let showId = show_array_item[0];
+    for (let [show, showId] of Object.entries(shows)) {
 
         // We're only interested in shows that have set stones.
         if (!show.has_set_stones_available) {
@@ -384,7 +382,7 @@ export const runPrimaryBuild = async () => {
 
     if (site === "justinholmes.com") { // TODO: This is a hack.  We need to make this more general.
 
-        shows.forEach(([show_id, show]) => {
+        Object.entries(shows).forEach(([show_id, show]) => {
             const page = `show_${show_id}`;
 
             let context = {

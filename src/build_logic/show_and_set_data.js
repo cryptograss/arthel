@@ -645,8 +645,9 @@ export function processShowAndSetData() {
 
     }
 
-    // Sort shows by blockheight.
-    shows = Object.entries(shows).sort((a, b) => b[1].blockheight - a[1].blockheight);
+    // Sort shows by blockheight and convert back to object.
+    const sortedShowEntries = Object.entries(shows).sort((a, b) => b[1].blockheight - a[1].blockheight);
+    shows = Object.fromEntries(sortedShowEntries);
 
     return { shows, songs, pickers, songsByVideoGame, songsByProvenance };
 

@@ -301,7 +301,7 @@ export async function getBlueRailroads(config) {
 
 export function appendChainDataToShows(shows, chainData) {
     const showsChainData = chainData["showsWithChainData"];
-    for (let [show_id, show] of shows) {
+    for (let [show_id, show] of Object.entries(shows)) {
         let chainDataForShow = showsChainData[show_id];
         // TODO: Handle the show not being in the chain data at all - emit a warning that it's time to refresh chain data?  And an error in prod?
 

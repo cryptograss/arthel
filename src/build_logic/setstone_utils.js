@@ -213,9 +213,7 @@ export function renderSetStoneImages(shows, outputDir) {
         fs.mkdirSync(outputDir, {recursive: true});
     }
 
-    for (const showMetadata of shows) {
-        const show = showMetadata[1];
-        const showId = showMetadata[0];
+    for (let [show, showId] of Object.entries(shows)) {
         // We're only interested in shows that have set stones.
         if (!show.has_set_stones_available) {
             continue;
