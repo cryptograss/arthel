@@ -1,0 +1,26 @@
+title: "ETHDam 2025"
+venue: "Pakhuis de Zwijger"
+locality: "Amsterdam"
+region1: "Netherlands"
+timezone: "Europe/Amsterdam"
+ensemble:
+  "Justin Holmes": [ "guitar"]
+  "Skyler Golden": [ "bass" ]
+  "Jakub Vysoky": [ "mandolin" ]
+  "Bones": [ "banjo" ]
+  "Seamus": [ "fiddle" ]
+  "Joshua": [ "cello" ]
+sets:
+  0:
+    songplays:
+      - Silver .44:
+        mode: segue
+      - Paint Exchange
+      - Lost
+      - Red Haired Boy
+      - Drowsy Maggie:
+        mode: segue
+      - Little Maggie
+      - Shady Grove
+      - The Two Sisters
+      - Nanny State Fiddler

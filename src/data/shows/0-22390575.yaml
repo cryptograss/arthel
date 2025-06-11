@@ -1,0 +1,27 @@
+title: "Kulturní dům Říp"
+venue: "Kulturní dům Říp"
+locality: "Roudnice nad Labem"
+region1: "Czech Republic"
+timezone: "Europe/Prague"
+ensemble:
+  "Justin Holmes": [ "guitar"]
+  "Skyler Golden": [ "bass" ]
+  "Nick Jennings": [ "banjo", "dulcimer" ]
+  "Jakub Vysoky": [ "mandolin" ]
+sets:
+  0:
+    songplays:
+      - Drowsy Maggie:
+        mode: segue
+      - Little Maggie
+      - Power Underneath
+      - Cork Board:
+        mode: segue
+      - Shady Grove
+      - Devil Jam
+      - Hell or High Water:
+        mode: segue
+      - Salt Creek:
+        mode: segue
+      - Hell or High Water:
+        mode: reprise

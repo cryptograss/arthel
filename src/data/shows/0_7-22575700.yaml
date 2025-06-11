@@ -1,0 +1,47 @@
+title: "ETHPrague 2025 First Show"
+venue: "Burza #4"
+locality: "Prague"
+region1: "Czech Republic"
+timezone: "Europe/Prague"
+ensemble:
+  "Justin Holmes": [ "guitar"]
+  "Skyler Golden": [ "bass" ]
+  "Jakub Vysoky": [ "mandolin" ]
+sets:
+  0:
+    songplays:
+      - Red Haired Boy
+      - Drowsy Maggie:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+              - Dominika Stašová
+      - Little Maggie:
+        ensemble-modifications:
+          featuring:
+            - Dominika Stašová
+      - Nanny State Fiddler:
+        ensemble-modifications:
+          featuring:
+            - Dominika Stašová
+            - Shaka Lei Kaumaka
+      - Cork Board:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+            - Dominika Stašová
+            - Shaka Lei Kaumaka
+      - Rueben's Train:
+        mode: tease
+      - Loser:
+        ensemble-modifications:
+          featuring:
+            - Shaka Lei Kaumaka
+            - Ludvik
+            - Nick Jennings
+            - Eliška
+      - Power Underneath:
+        ensemble-modifications:
+          featuring:
+            - Ludvik
+            - Nick Jennings

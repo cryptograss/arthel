@@ -4,6 +4,8 @@ import { getProjectDirs } from "../locations.js";
 import {slugify} from "./text_utils.js";
 import { getShowAndSetData } from "../show_and_set_data.js";
 import path from 'path';
+import fs from 'fs';
+import yaml from 'js-yaml';
 
 const REFERENCE_BLOCK = 20612385; // Example block number
 const REFERENCE_TIMESTAMP = 1724670731; // Unix timestamp in seconds
@@ -23,6 +25,15 @@ export function registerHelpers(site) {
     // Add the 'get_image' filter that looks up images in the imageMapping object
     env.addGlobal('get_image', function (filename, imageType) {
         return get_image_from_asset_mapping(filename, imageType);  // Return empty string if not found
+    });
+
+    env.addGlobal('get_record_metadata', function (record_name) {
+        // Open and parse the yaml file.
+        const { dataDir } = getProjectDirs();
+        const recordSlug = slugify(record_name);
+        let recordYAMLfile = fs.readFileSync(`${dataDir}/records/${recordSlug}.yaml`, 'utf8');
+        let recordMetadata = yaml.load(recordYAMLfile);
+        return recordMetadata;
     });
 
     env.addFilter('showInstrumentalist', function (song_play, instrument_to_show) {
@@ -49,7 +60,17 @@ export function registerHelpers(site) {
 
     // TODO: We removed 'resolveImage', so we now show every image as unused.  No good.
 
-    env.addFilter('resolveGraph', function (artist_id, blockheight, setId) {
+    env.addFilter('resolveGraph', function (artist_ids, blockheight, setId) {
+
+
+
+        //////////////////////
+        // TODO: We need to handle multiple artists here.
+        // Again, we'll just use the first artist_id and presume the setlist is for the first artist.
+        const artist_id = artist_ids[0];
+    // #268
+    /////////////////
+
 
         // Sanity check.
         if (artist_id === undefined || blockheight === undefined || setId === undefined) {
@@ -65,6 +86,7 @@ export function registerHelpers(site) {
         }
 
         // TODO: We need to check to see if the show is in the future.
+        // #269
         // Then we can uncomment these two failfast checks.
 
         try {
@@ -74,12 +96,12 @@ export function registerHelpers(site) {
             // throw new Error(`Image not found: ${originalPath}`);
         }
 
-        // if (!foundImage) {
-        //     // Raise an error if the image is not found
-        //     throw new Error(`Image not found: ${originalPath}`);
-        // } else {
-        //     unusedImages.delete(originalPath);
-        // }
+        if (!foundImage) {
+            console.log(`Image not found: ${originalPath} - this show is probably in the future`);
+            // throw new Error(`Image not found: ${originalPath}`);
+            return `Is this show - ${blockheight} - in the future?`
+        }
+
         return foundImage['original'] // TODO: Do we always want original here?  What if we want thumbnail?  Is that even a thing for graphs?  Are there other types?
     });
 

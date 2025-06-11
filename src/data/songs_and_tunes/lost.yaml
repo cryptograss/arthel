@@ -1,4 +1,14 @@
 by_artist_id: 0
-on_release: "Vowel Sounds"
 alternate_names:
   - I Lost My Seed Phrase
+studio_versions:
+  0:
+    Vowel Sounds:
+      ensemble:
+        Justin Holmes: [guitar]
+        Cory Walker: [5-string banjo]
+        Harry Clark: [mandolin]
+        Christian Ward: [fiddle]
+        Jake Stargel: [bass]
+        Allen Cooke: [dobro]
+        Jakub Vysoky: [mandolin]

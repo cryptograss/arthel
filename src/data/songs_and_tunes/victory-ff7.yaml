@@ -1,2 +1,12 @@
 video_game: Final Fantasy VII
 instrumental: true
+studio_versions:
+  0:
+    4masks:
+      ensemble:
+        Justin Holmes: [guitar, melodica]
+        Kyle Tuttle: [5-string banjo]
+        Harry Clark: [mandolin]
+        Maddie Denton: [fiddle]
+        Skyler Golden: [bass]
+        Jake Stargel: [guitar]

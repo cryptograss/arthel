@@ -1,16 +1,42 @@
 {% extends 'shared/layouts/base.njk' %}
 {% block main %}
-{% include 'partials/bigger-banner.njk' %}
+    {% include 'partials/bigger-banner.njk' %}
 
+    <div id="content" class="container text-light all-shows-list">
 
-<div id="content" class="container text-light all-shows-list">
-    <h2 class="center mt-2 mb-2">{{shows_played_by_this_picker.length}} shows played by {{picker}}</h2>
-    <div class="col-md-12">
-        {% set title_as_link = true %}
-        {% for show_data in shows_played_by_this_picker %}
-        {% set show = show_data["show"] %}
-        {% include "partials/single-show-overview.njk" %}
-        {% endfor %}
+        {% if picker_data.studio_versions.length > 0 %}
+            <div class="row">
+                <h2 class="center mt-2 mb-2 pixel-font">{{picker_data.studio_versions.length}} Studio Tracks Featuring {{picker}}</h2>
+                <div class="col-3"></div>
+                <div class="col-md-9">
+                    {% for record, studio_versions_on_this_record in picker_data.studio_versions_by_record %}
+                        {% set record_metadata = get_record_metadata(record) %}
+
+                        <h3>On <a href="{{record_metadata.bandcamp_url}}">{{record}}</a>
+                        </h3>
+                        <ul>
+                            {% for song, studio_version in studio_versions_on_this_record %}
+                                <li>
+                                    <a href="{{song.resource_url}}">{{song.title}}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if picker_data.shows_as_array.length > 0 %}
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="center mt-2 mb-2 pixel-font">{{picker_data.shows_as_array.length}} live instance{% if picker_data.shows_as_array.length > 1 %}s{% endif %} including {{picker}}</h2>
+                    {% set title_as_link = true %}
+                    {% for show_data in picker_data.shows_as_array | reverse %}
+                        {% set show = show_data["show"] %}
+                        {% include "partials/single-show-overview.njk" %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
     </div>
-</div>
 {% endblock %}

@@ -26,9 +26,17 @@ export async function fetchChainDataForShows(shows, config) {
     let showsChainData = {};
 
     // Iterate through show IDs and parse the data.
-    for (let [show_id, show] of Object.entries(shows)) {
+    for (let [show_id, show] of shows) {
+
         // Split ID by "-" into artist_id and blockheight
-        const [artist_id, _blockheight] = show_id.split('-');
+        let [artist_id, _blockheight] = show_id.split('-');
+
+
+        // TODO: We want to support multiple bands in the same show, sharing merch.  But presently, we only have one artist_id per show.
+        // For the moment, we'll just use the first artist_id in the show.
+        // TODO: We'll need to change this when we support multiple bands in the same show.
+        artist_id = artist_id.split('_')[0];
+
         const blockheight = parseInt(_blockheight);
 
         let singleShowChainData = {"sets": []};
@@ -101,9 +109,20 @@ export async function appendSetStoneDataToShows(showsChainData, config) {
         // Split ID by "-" into artist_id and blockheight
         const [artist_id, blockheight] = show_id.split('-');
 
+        show.ticketStubs = [];
+
+        // TODO: Also read the ticketstubs contract.
+        // For now, fake data.  TODO: Unfake this.
+        let ticketStubIDs = [3n, 11n, 35n];
+
+        for (let ticketStubID of ticketStubIDs) {
+            let ticketStub = {};
+            ticketStub["tokenId"] = ticketStubID;
+            show.ticketStubs.push(ticketStub);
+        }
+
         for (let [set_order, set] of Object.entries(show.sets)) {
             set.setstones = [];
-
             const setStoneIds = await readContract(config, {
                 abi: setStoneABI,
                 address: setStoneContractAddress,
@@ -112,11 +131,10 @@ export async function appendSetStoneDataToShows(showsChainData, config) {
                 args: [artist_id, blockheight, set_order],
             });
 
-
             for (let setStoneId of setStoneIds) {
 
                 // This is the model for set stones.
-                // TODO: Put this in a more logical place - we need some kind of a merch models module.
+                // TODO: Put this in a more logical place - we need some kind of a merch models module.  TODO: Perhaps this all goes in blox-office?
                 let setstone = {}
                 number_of_stones_in_sets++;
 
@@ -190,6 +208,8 @@ export async function appendSetStoneDataToShows(showsChainData, config) {
                 setstone["tokenURI"] = tokenURI;
 
                 set.setstones.push(setstone);
+
+                console.log(`show ${show_id} set ${set_order} stone ${setStoneId}: ${setstone["owner"]}`);
             }
         }
 
@@ -266,13 +286,18 @@ export async function getBlueRailroads(config) {
 
 export function appendChainDataToShows(shows, chainData) {
     const showsChainData = chainData["showsWithChainData"];
-    for (let [show_id, show] of Object.entries(shows)) {
+    for (let [show_id, show] of shows) {
         let chainDataForShow = showsChainData[show_id];
         // TODO: Handle the show not being in the chain data at all - emit a warning that it's time to refresh chain data?  And an error in prod?
+
+        const ticket_stubs_for_this_Set = chainDataForShow['ticketStubs'];
+
+        show['ticketStubs'] = ticket_stubs_for_this_Set;
+
         if (chainDataForShow === undefined) {
-
+            // TODO: Handle this case - why is this show not in the chain data?
         } else if (chainDataForShow['has_set_stones_available'] === false) {
-
+            // TODO: Handle this case - probably do nothing.  But maybe we want to handle other merch even if set stones are not available?
         } else {
 
             show["has_set_stones_available"] = true;
@@ -303,9 +328,12 @@ export function appendChainDataToShows(shows, chainData) {
                 set["shape"] = chainDataForShow['sets'][i]['shape'];
                 const set_stones_for_this_Set = chainDataForShow['sets'][i]['setstones'];
 
+
+
                 // TODO: Iterate through songs and note that this set stone is present.
                 // TODO: Note if the song is favorited.
                 set['setstones'] = set_stones_for_this_Set;
+
             }
         }
     }

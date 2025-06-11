@@ -6,19 +6,41 @@ import { nesPalette } from "./graphics/palettes.js";
 import { renderPage } from "./utils/rendering_utils.js";
 import { getProjectDirs } from "./locations.js";
 
-
-0
-
 /**
- * 
- * 
+ *
+ *
  * Generates and saves NFT metadata JSON files for each setstone in the shows.
  * @param {Object} showsWithChainData - Object containing show data with chain information.
  * @param {string} outputDir - Directory to save the generated JSON files.
  */
 export function generateSetStonePages(shows, outputDir) {
     const { cryptograssUrl } = getProjectDirs();
-    for (const [showId, show] of Object.entries(shows)) {
+    for (const showMetadata of shows) {
+        const show = showMetadata[1];
+        const showId = showMetadata[0];
+
+        // Ticket stubs
+        if (!show.ticketStubs) {
+            console.log(`No ticket stubs for show ${showId}`);
+            // TODO: If show has no ticket stubs - just continue?
+            continue;
+        }
+        show.ticketStubs.forEach((ticketStub, _counter) => {
+            let outputPath = `/artifacts/ticket-stubs/${showId}-${ticketStub.tokenId}.html`;
+            let context = {
+                show: show,
+                ticketStub: ticketStub,
+            };
+            renderPage({
+                template_path: 'reuse/single-ticket-stub.njk',
+                output_path: outputPath,
+                context: context,
+                site: "cryptograss.live"
+            });
+        });
+
+
+
         // We're only interested in shows that have set stones.
         if (!show.has_set_stones_available) {
             continue;
@@ -26,6 +48,7 @@ export function generateSetStonePages(shows, outputDir) {
 
         Object.entries(show.sets).forEach(([setNumber, set]) => {
             set.setstones.forEach((setstone, setstoneNumber) => {
+
 
                 ////////////////
                 // metadata JSON for NFT
@@ -38,7 +61,7 @@ export function generateSetStonePages(shows, outputDir) {
                     external_url: `https://justinholmes.com/cryptograss/bazaar/setstones/${showId}.html`,
                     description: `Set Stone from artist with id=${show.artist_id} and show on ${show.blockheight}`,
                     // The images live on cryptograss.live, so we need to use that URL.  Also, we don't want to use the variable, because this is actual token metadata.
-                    image: `https://cryptograss.live/assets/images/setstones/${set.shape}-${setstone.color[0]}-${setstone.color[1]}-${setstone.color[2]}.png`, 
+                    image: `https://cryptograss.live/assets/images/setstones/${set.shape}-${setstone.color[0]}-${setstone.color[1]}-${setstone.color[2]}.png`,
                     attributes: [
                         {
                             trait_type: "Shape",
@@ -79,6 +102,8 @@ export function generateSetStonePages(shows, outputDir) {
                     colors: setstoneColornames,
                     imageMapping,
                 };
+
+                // TODO: Put URL generation in a shared place that's easier to find.  It's weird that such an important URL is buried on this relatively obscure line.
                 const outputPath = `/artifacts/setstones/${showId}-${setstone.tokenId}.html`;
                 const outputPathForPrintable = `/artifacts/setstones/${showId}-${setstone.tokenId}-print.html`;
                 setstone.resource_url = outputPath;
@@ -100,6 +125,8 @@ export function generateSetStonePages(shows, outputDir) {
                 });
 
             });
+
+
         });
     };
 }
@@ -111,11 +138,13 @@ export function renderSetStoneImages(shows, outputDir) {
         fs.mkdirSync(outputDir, {recursive: true});
     }
 
-    for (const [showId, show] of Object.entries(shows)) {
+    for (const showMetadata of shows) {
+        const show = showMetadata[1];
+        const showId = showMetadata[0];
         // We're only interested in shows that have set stones.
         if (!show.has_set_stones_available) {
             continue;
-        }   
+        }
 
         Object.entries(show.sets).forEach(([setNumber, set]) => {
             set.setstones.forEach((setstone, setstoneNumber) => {

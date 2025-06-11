@@ -1,115 +1,124 @@
 {% extends 'shared/layouts/base.njk' %}
 {% block main %}
-{% include 'partials/bigger-banner.njk' %}
+    {% include 'partials/bigger-banner.njk' %}
 
-
-<div id="content" class="container text-light">
-    <h1 class="text-light pixel-font text-center m-5">Meet the Musicians</h1>
-    <div id="ensemble-intro" class="fs-4 text-start semi-transparent-bg">
-        <h1 class="curly">A message from Justin:</h1>
-        <p>
+    <div id="content" class="container text-light">
+        <h1 class="text-light pixel-font text-center m-5">Meet the Musicians</h1>
+        <div id="ensemble-intro" class="fs-4 text-start semi-transparent-bg">
+            <h1 class="curly">A message from Justin:</h1>
+            <p>
             What constitutes... mutability? In a band?
         </p>
-        <p>
+            <p>
             Every time I take the stage (or at least, at each new stop on a tour); every time I put on cans in the
             studio, I feel a process of instantiation - a new instance of Band. Our setlist is unique each night; our
             arrangements and effects are often chosen (and signaled to one another) in the moment.
         </p>
-        <p>
+            <p>
             In my journey to write logic that is the internet I want to see - from hacking together a viable
             battlestation for myself to play games with my kiddo, to legacy enterprise web apps, to custom dapps for
             this production, I have had many notions in my head (sometimes literally in my dreams) about mutability and
             its role in mapping the metaphor of the mind into a codebase, and particularly object orientation.
         </p>
-        <p>
+            <p>
             Some of the most important friends I've made along the way are those who have chosen to play (and sometimes
             write) music with me.
         </p>
-        <p>
+            <p>
             And their contributions don't seem to me to be a small part of some persistent monolith that belongs to me;
             instead, they feel each like their own distinct and complete creation.
         </p>
-        <p>
+            <p>
             I hope you have enjoyed the shows and records that these folks have made with me as much as I've enjoyed
             their company, and I especially hope that you see fit to visit us again and contribute your ears and
             energies to the instantiation of new setlists and sounds.
 
         </p>
-    </div>
-    {% for name, details in ensemble %}
-        <div class="person-info row border-top border-2 border-black mt-2 pt-2">
-            {% if loop.index % 2 === 0 %}
-                <div class="row">
-                    <h2 class="fs-1 bio-title">{{name}}</h2>
-                </div>
-                <div class="row">
-                    <div class="col-5">
-                        <a class='spotlight'
-                           href="{{ imageMapping[details.Photo] }}"
-                           title="{{details.Caption}}">
-                            <img src="{{ imageMapping[details.Photo] }}"/>
-                        </a>
-                        <figcaption class="figure-caption text-white fs-5 bio-caption">{{details.Caption}}</figcaption>
-                    </div>
-                    <div class="col-1"></div>
-                    <div class="col-6 fs-4 person-bio">
-                        {{details.Description}}
-                        {{details.Address}}
-                    </div>
-                </div>
-            {% else %}
-                <div class="row">
-                    <div class="col-11">
-                        <h2 class="fs-1 text-right bio-title">{{name}}</h2>
-                    </div>
-                    <div class="col-1"></div>
-                </div>
-                <div class="row">
-                    <div class="col-6 fs-4 person-bio">
-                        {{details.Description}}
-                        {{details.Address}}
-                    </div>
-                    <div class="col-1"></div>
-                    <div class="col-5 text-center">
-
-                        <a class='spotlight'
-                           href="{{ imageMapping[details.Photo] }}"
-                           title="{{details.Caption}}">
-                            <img src="{{ imageMapping[details.Photo] }}"/>
-                        </a>
-                        <figcaption class="figure-caption text-white fs-5 bio-caption">{{details.Caption}}</figcaption>
-                    </div>
-                </div>
-            {% endif %}
-
         </div>
-    {% endfor %}
-    <hr>
-    <h2>Bios to come: </h2>
-    <ul>
-        <li> Viv Ford</li>
+        {# For now, remove the first picker, as its Justin. #}
+        {% for name, metadata in pickers_by_instance_count.slice(1) %}
+            {% set details = ensemble[name] %}
 
-        <li>Kuba Hejhal</li>
+            <div class="person-info row border-top border-2 border-black mt-2 pt-2">
+                {% if loop.index % 2 === 0 %}
+                    <h2 class="fs-1 bio-title">{{name}}
+                        {% if metadata.instruments_display %}
+                            <span class="instruments-display small">({{metadata.instruments_display}})</span>{% endif %}
 
-        <li>Jake Stargel</li>
+                    </h2>
+                    <h3>
+                        Appears in <a href="{{metadata.resource_url}}">{{metadata.total_instance_count}} Instance{% if metadata.total_instance_count > 1 %}s{% endif %}
+                        </a>
+                    </h3>
+                    {% if metadata.studio_versions.length == 0 %}
+                        <h5>
+                            {% if metadata.total_instance_count > 1 %}(All shows){% else %}(A show){% endif %}
+                        </h5>
+                    {% elif metadata.shows_as_array.length == 0 %}
+                        <h5>
+                            {% if metadata.total_instance_count > 1 %}(All studio tracks){% else %}(A studio track){% endif %}
+                        </h5>
+                    {% else %}
+                        <h5>{{metadata.shows_as_array.length}} Show{% if metadata.shows_as_array.length > 1 %}s{% endif %}, {{metadata.studio_versions.length}} Studio Track{% if metadata.studio_versions.length > 1 %}s{% endif %}
+                        </h5>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-5">
+                            <a class='spotlight'
+                           href="{{ get_image(details.Photo) }}"
+                           title="{{details.Caption}}">
+                                <img src="{{ get_image(details.Photo) }}"/>
+                            </a>
+                            <figcaption class="figure-caption text-white fs-5 bio-caption">{{details.Caption}}</figcaption>
+                        </div>
+                        <div class="col-1"></div>
+                        <div class="col-6 fs-4 person-bio">
+                            {{details.Description}}
+                            {{details.Address}}
+                        </div>
+                    </div>
+                {% else %}
+                    <h2 class="fs-1 bio-title">{{name}}
+                        {% if metadata.instruments_display %}
+                            <span class="instruments-display small">({{metadata.instruments_display}})</span>{% endif %}
+                    </h2>
+                    <h3>
+                        Appears in <a href="{{metadata.resource_url}}">{{metadata.total_instance_count}} Instance{% if metadata.total_instance_count > 1 %}s{% endif %}
+                        </a>
+                    </h3>
+                    {% if metadata.studio_versions.length == 0 %}
+                        <h5>
+                            {% if metadata.total_instance_count > 1 %}(All shows){% else %}(A show){% endif %}
+                        </h5>
+                    {% elif metadata.shows_as_array.length == 0 %}
+                        <h5>
+                            {% if metadata.total_instance_count > 1 %}(All studio tracks){% else %}(A studio track){% endif %}
+                        </h5>
+                    {% else %}
+                        <h5>{{metadata.shows_as_array.length}} Show{% if metadata.shows_as_array.length > 1 %}s{% endif %}, {{metadata.studio_versions.length}} Studio Track{% if metadata.studio_versions.length > 1 %}s{% endif %}
+                        </h5>
+                    {% endif %}
+                    <div class="col-1"></div>
+                    <div class="row">
+                        <div class="col-6 fs-4 person-bio">
+                            {{details.Description}}
+                            {{details.Address}}
+                        </div>
+                        <div class="col-1"></div>
+                        <div class="col-5 text-center">
 
-        <li>Jeff Fehlauer</li>
+                            <a class='spotlight'
+                           href="{{ get_image(details.Photo) }}"
+                           title="{{details.Caption}}">
+                                <img src="{{ get_image(details.Photo) }}"/>
+                            </a>
+                            <figcaption class="figure-caption text-white fs-5 bio-caption">{{details.Caption}}</figcaption>
+                        </div>
+                    </div>
+                {% endif %}
 
-        <li>Christian Ward</li>
+            </div>
+        {% endfor %}
 
-        <li>Dani Jaye</li>
-
-        <li>Shaka Lei Kaumaka</li>
-
-        <li>David Flores Pradillas</li>
-
-        <li>Allen Cooke</li>
-
-        <li>Yarda Vysoky</li>
-
-        <li>And More...</li>
-
-    </ul>
-
-</div>
+    </div>
 {% endblock %}

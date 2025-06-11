@@ -1,0 +1,34 @@
+title: "Vinckovo"
+venue: "Vinckovo"
+locality: "Jesenik"
+region1: "Czech Republic"
+timezone: "Europe/Prague"
+ensemble:
+  "Justin Holmes": [ "guitar"]
+  "Skyler Golden": [ "bass" ]
+  "Jakub Vysoky": [ "mandolin" ]
+  "Ondra Kozak": [ "fiddle" ]
+sets:
+  0:
+    songplays:
+      - Red Haired Boy
+      - Song of Storms
+      - The Morning of The Bank Run:
+        mode: segue
+      - Manzanita
+      - Nanny State Fiddler
+      - O Death:
+        ensemble-modifications:
+          solo: Justin
+      - Clinch Mountain Backstep:
+        ensemble-modifications:
+          featuring:
+            - Steve Willis
+      - The Two Sisters:
+        ensemble-modifications:
+          featuring:
+            - Steve Willis
+      - Can the Circle Be Unbroken:
+        ensemble-modifications:
+          featuring:
+            - Band No. 7

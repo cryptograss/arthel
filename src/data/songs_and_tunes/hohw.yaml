@@ -1,5 +1,15 @@
 by_artist_id: 0
-on_release: "Vowel Sounds"
 primary_display_name: "Hell or High Water (A Policeman and a Fortune Teller)"
 alternate_names:
   - "Hell or High Water"
+studio_versions:
+  0:
+    Vowel Sounds:
+      ensemble:
+        Justin Holmes: [vocals, throatsinging, guitar]
+        Cory Walker: [5-string banjo]
+        Harry Clark: [mandolin]
+        Christian Ward: [fiddle]
+        Jake Stargel: [bass]
+        Allen Cooke: [dobro]
+        Jakub Vysoky: [vocals, mandolin]

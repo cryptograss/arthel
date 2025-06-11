@@ -87,7 +87,7 @@ In **1882**, Francis James Child included the song
 in [his collection, titled "The English and Scottish Popular Ballads"](https://archive.org/details/englishandscotti01chiluoft/page/118/mode/1up?view=theater),
 as "10: The Twa Sisters". This was, and arguably remains, the most comprehensive accounting of the song's early history (the other contender is the amazing and much more recent [scholarship of Richard Matteson at Bluegrass Messengers](http://www.bluegrassmessengers.com/10-the-twa-sisters-or-minnorie-or-binnorie.aspx)).
 
-Child lists Twenty-one variations and then provides about nine pages of exposition on these 21, comparing and contrasting lyrical content - quite a lift for pre-internet research. He also notes several sub-variations among these, including what appear to be the beginnings of some of the lyrical distinctions, such as which instrument ia made, whether the sisters are rich or poor, etc., which I'll discuss below.
+Child lists Twenty-one variations and then provides about nine pages of exposition on these 21, comparing and contrasting lyrical content - quite a lift for pre-internet research. He also notes several sub-variations among these, including what appear to be the beginnings of some of the lyrical distinctions, such as which instrument is made, whether the sisters are rich or poor, etc., which I'll discuss below.
 
 Interestingly, none of these 21 variations appear to have been commonly called by any variation of "Wind and Rain" at that time - this name appears to have gained traction some time after Child's writing.
 
@@ -110,19 +110,19 @@ Although scholars seem to unflinchingly accept "Bow Down" as the same song, it h
 
 In fact, if you listen to the above version, it's fairly easy to sing "Crawdad Song" in your head as you hear each verse. Hints of other songs strike the ear as well.
 
-However... there is apparently a single data point from over a cenutry earlier - in **1770** - that, if authentic, makes a clear case that "Bow Down" is indeed rooted in The Two Sisters. It's a song called ["There was a King Lived in the North Country"](http://www.bluegrassmessengers.com/king-lived-in-the`-north-country-kent1770-child-y.aspx), and unlike many of the early 1900s versions, it has most of the common historical elements: two sisters, a gay gold ring (albeit given by their father), a drowning younger sister... it even has the line "Oh father, oh father, there swims a swan" which we'll see later picked up by Grateful Dead and Crooked Still and others. 
+However... there is apparently a single data point from over a cenutry earlier - in **1770** - that, if authentic, makes a clear case that "Bow Down" is indeed rooted in The Two Sisters. It's a song called ["There was a King Lived in the North Country"](http://www.bluegrassmessengers.com/king-lived-in-the`-north-country-kent1770-child-y.aspx), and unlike many of the early 1900s versions, it has most of the common historical elements: two sisters, a gay gold ring (albeit given by their father), a drowning younger sister... it even has the line "Oh father, oh father, there swims a swan" which we'll see later picked up by Grateful Dead and Crooked Still and others.
 
 So whether Bow Down is The Two Sisters, or whether it has another lost root, it's clear that the two songs are closely related.
 
 In any case, shortly thereafter, we start to see elements emerge that represent the quintessence of the Appalachian (and later, Grateful Dead) lineage of this song. For example, a **1933** [version cut by **Richard Hayward** as "Binnorie"](https://archive.org/details/78_binnorie_richard-hayward-richard-hayward_gbia0351633a) and distributed by Decca Records has the iconic line *"a sound that melted hearts of stone"*, sung with a cadence and rhythm that almost exactly matches Jerry Garcia's delivery of this line 50 years later. My best guess is that Jerry Garcia had access to this recording, or to a version of the song which was influenced by it.
 
-After this, studio versions become more sparse as the song takes on more Appalachian qualities, but also becomes more obscure. Almost all recordings of the next few decades are made by archivists or folklorists, and not by touring musicians. 
+After this, studio versions become more sparse as the song takes on more Appalachian qualities, but also becomes more obscure. Almost all recordings of the next few decades are made by archivists or folklorists, and not by touring musicians.
 
 Of personal interest to me as a newly minted Florida musician, there is a noted version recorded by an archivist visiting a home in [High Springs, Florida, in June **1937**](https://soundcloud.com/user-860765554/the-two-sisters-mrs-c-s-macclellan).  It is sung by a **Mrs. C. S. MacClellan** (Library of Congress entry: https://www.loc.gov/item/afc9999005.5234).  This version has a simlar structure to the "Binnorie" versions above (though it says "By Nowling"), but it also tells the story much more in keeping with both the oldest versions and the "Wind and Rain" versions ahead.
 
 A decade later, the Samuel Preston Bayard Papers at Penn State University inclues [another "By Nowling" version recorded on August 12, **1948** by **Charles S. Brink**](https://youtu.be/TDkBs93Lexs?t=613).
 
-In the second half of the 20th century, surviving versions continue the descent into an underground folk vibration.  In fact, it's not clear to me that this song was ever played to a large crowd from about 1860 to 1980. But a few prominent and lovely versions exist from this period of the song's fade to temporary obscurity. 
+In the second half of the 20th century, surviving versions continue the descent into an underground folk vibration.  In fact, it's not clear to me that this song was ever played to a large crowd from about 1860 to 1980. But a few prominent and lovely versions exist from this period of the song's fade to temporary obscurity.
 
 The first is the beautiful [**1958 Peggy Seeger** version]( https://www.youtube.com/watch?v=f1v4NGcfKXw) - the last published pre-Dead version that sounds like a distinctly different branch - it is mostly a Bow Down rather than a Wind and Rain. In fact, this might be the last version in this lineage which does not contain the phrase "wind and rain". And although this version sounds quite different (and selects very different verses) from Garcia's, the banjo part is somewhat reminiscent of Jerry's banjo style as we hear it in slower songs; I wonder if he might have heard this version and focused more on the banjo than the structure and verses.
 
@@ -152,7 +152,7 @@ If you've read this far, and if you love this song, I encourage you to take a mo
 
 Understand that this room is something of a mecca for deadheads - in 1980, The Grateful Dead played a run of 15 nights there, celebrating their 15th anniversary. For The Two Sisters to land there after three and a half centuries is an exercise in genuine human time and space travel.
 
-The [DeadDisc entry for The Two Sisters](http://www.deaddisc.com/songs/Oh_The_Wind_And_Rain.htm) notes a stunning 151 versions of the song leading up to, and then influenced by, the moment captured here. 
+The [DeadDisc entry for The Two Sisters](http://www.deaddisc.com/songs/Oh_The_Wind_And_Rain.htm) notes a stunning 151 versions of the song leading up to, and then influenced by, the moment captured here.
 
 *(As an aside: DeadDisc is an incredible repository of information the appalachian
 traditionals played by The Grateful Dead, Jerry Garcia, and Old and In The Way, and a quintessential example
@@ -173,7 +173,7 @@ Some things I want to note about the *Shady Grove*   version:
 
 There is one other, earlier, notable version by Garcia: the [1987 recording with The Jerry Garcia Acoustic Band](https://www.youtube.com/watch?v=bxleZ6U8498). Notable in this version is the shortened lines in first verse.
 
- 
+
 ### Internet Age
 
 Nearly every version after this point has one of two qualities:
@@ -193,11 +193,11 @@ Another "sad live" version - perhaps the best in class for that category - is th
 
 Another notable Billy Strings performance of this song for me personally is from [November 12, 2022](https://www.youtube.com/watch?v=D-Yfza-kkFc) at The Met in Philadelphia.  I, my son Fibonacci, and my parents were in the audience (it was my parents' first Billy Strings show). Toward the end of the first set, Billy Strings said, *"Why don't we do... mandolin player's choice!"*
 
-At this point, mandolin player Jarrod Walker (who happens to be the younger brother of our frequent studio collaborator and one-of-a-kind banjo phenom [Cory Walker](/pickers/cory-walker)) said something into the talkback mic, to which Billy looked surprised and replied, *"that's not what I expected of you! I was expecting like Ashes of Love or something like that, but I think this is what Jarrod Walker wants to hear."* 
+At this point, mandolin player Jarrod Walker (who happens to be the younger brother of our frequent studio collaborator and one-of-a-kind banjo phenom [Cory Walker](/pickers/cory-walker)) said something into the talkback mic, to which Billy looked surprised and replied, *"that's not what I expected of you! I was expecting like Ashes of Love or something like that, but I think this is what Jarrod Walker wants to hear."*
 
 And sure enough, Jarrod's choice had been The Two Sisters (which they typically write on setlists as "Oh The Wind And Rain"). Jarrod knows that I like and play this song, and also knew I was going to be in the audience that night, but whether my presence had any effect I don't know; almost certainly coincidence I reckon. Either way, I was thankful because it was a lovely version, and it was a great moment for me and my family.
 
-As an aside: after that show, the band's bassist Royal Masat came over to my AirBnb, where we shared a bottle of wine and talked about music late into the night, along with my family and our mutual friend Gabrielle Simard, a circus star and software engineer who was in town. Royal was (and has since been) very encouraging about my music and my career, and it was a very validating moment, just when I needed a reason to keep going. Thanks Royal. 
+As an aside: after that show, the band's bassist Royal Masat came over to my AirBnb, where we shared a bottle of wine and talked about music late into the night, along with my family and our mutual friend Gabrielle Simard, a circus star and software engineer who was in town. Royal was (and has since been) very encouraging about my music and my career, and it was a very validating moment, just when I needed a reason to keep going. Thanks Royal.
 
 ### As cryptograss
 
@@ -263,13 +263,13 @@ Child writes (using his alphabetical notation here for different variations):
 
 A [1931 version](https://mudcat.org/thread.cfm?threadid=164203#reply) has the sisters going to the water to sse their father's fishing boat, which seems to support the idea that the story varied with regard to their wealth.
 
-In many "Bow Down" versions, including the 1928 version linked above, the sisters are decidedly not royalty, and instead we have something like: 
+In many "Bow Down" versions, including the 1928 version linked above, the sisters are decidedly not royalty, and instead we have something like:
 
 * "An old woman lived by the sea shore, and she had daughters three or four"
 
 (which seems strange on its own, and possibly another indication of an independent origin of "Bow Down" - if it's "The Two Sisters", why do these variants describe three of four daughters?)
 
-In many versions, but almost every "poor sisters" version, we see the suitor court one or both of them with a "gay gold ring" or "gay gold pin", which makes sense - a young poor girl might presumably marvel at a gold ring. 
+In many versions, but almost every "poor sisters" version, we see the suitor court one or both of them with a "gay gold ring" or "gay gold pin", which makes sense - a young poor girl might presumably marvel at a gold ring.
 
 However, we also see the ring in older versions where it's not clear whether the sisters are royalty or not, which suggests to me that there may be lost "poor sisters" versions predating the 1900s "Wind and Rain" versions.
 
@@ -307,7 +307,7 @@ I sometimes sing as follows:
 
 In most versions, the younger sister's hair is used to make either the strings of the instrument or to sting the the bow. In some versions, it is used to make the fiddle itself.
 
-The most common quality of her hair we find is its color: yellow, gold, or "gowd", though, as I mentioned above, this quality only gains quasi-ubiquity once the songs becomes ppopular in Scandinavia. 
+The most common quality of her hair we find is its color: yellow, gold, or "gowd", though, as I mentioned above, this quality only gains quasi-ubiquity once the songs becomes ppopular in Scandinavia.
 
 Several modern versions, including both the Jerry Garcia versions and the Gillian Welch version, say, "he strung his fiddle bow with her long yella' hair."
 

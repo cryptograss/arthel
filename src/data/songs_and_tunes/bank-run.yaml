@@ -1,3 +1,20 @@
 by_artist_id: 0
-on_release: "Vowel Sounds"
 primary_display_name: "The Morning of The Bank Run"
+studio_versions:
+  0:
+    Vowel Sounds:
+      ensemble:
+        Justin Holmes: [vocals, throatsinging, guitar]
+        Cory Walker: [5-string banjo]
+        Harry Clark: [mandolin]
+        Christian Ward: [fiddle]
+        Jake Stargel: [bass]
+        Allen Cooke: [dobro]
+        Jakub Vysoky: [vocals, mandolin]
+    Nanny State Fiddler:
+      ensemble:
+        Justin Holmes: [vocals, guitar, throatsinging, six-whistle]
+        Cory Walker: [5-string banjo]
+        Dani Jaye: [fiddle]
+        Jeff Fehlauer: [drums]
+        Ice Quilitz: [bass]

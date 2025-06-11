@@ -96,17 +96,152 @@ export const runPrimaryBuild = async () => {
     /// Chapter 3.1: Register helpers, partials, and context
     //////
 
+    ////////
+    //// 3.1a: Picker metadata
+    //////
+    // TODO: Not jazzed to do this here instead of just making this available in the context.
+    let songs_by_studio_version = {};
+    let all_records = {}
+    for (let [song_slug, song] of Object.entries(songs)) {
+        if (!song.studio_versions) {
+            continue;
+        }
+
+        for (let [producing_artist_id, records_including_this_song] of Object.entries(song.studio_versions)) {
+
+            if (!(producing_artist_id == 0)) {
+                // TODO: Here's where we'll have logic to deal with albums by artists other than JH+ISB.
+                continue;
+            }
+
+            for (let [record_name, studio_version] of Object.entries(records_including_this_song)) {
+                if (!all_records[song.by_artist_id]) {
+                    all_records[song.by_artist_id] = {}
+                }
+                if (!all_records[song.by_artist_id][record_name]) {
+                    all_records[song.by_artist_id][record_name] = [] // TODO: What about track order?
+                }
+                all_records[song.by_artist_id][record_name].push(studio_version)
+                let studio_version_slug = slugify(record_name + '_' + song.slug);
+                songs_by_studio_version[studio_version_slug] = studio_version;
+
+                for (let [studio_picker_name, instruments] of Object.entries(studio_version.ensemble)) {
+                    let studio_picker_slug = slugify(studio_picker_name);
+                    if (!pickers[studio_picker_name]) {
+                        pickers[studio_picker_name] = {}
+                    }
+                    let picker = pickers[studio_picker_name];
+                    if (!picker.studio_versions) {
+                        picker.studio_versions = []
+                        picker.studio_versions_by_record = {}
+                    }
+
+                    picker.studio_versions.push(studio_version);
+                    if (!picker.studio_versions_by_record[record_name]) {
+                        picker.studio_versions_by_record[record_name] = []
+                    }
+
+
+                    if (!picker.instruments) {
+                        picker.instruments = {};
+                    }
+                    for (let instrument of instruments) {
+                        if (!picker.instruments[instrument]) {
+                            picker.instruments[instrument] = 1
+                        } else {
+                            picker.instruments[instrument] += 1
+                        }
+                    }
+
+                    picker.studio_versions_by_record[record_name].push([song, studio_version]);
+
+                } // End ensemble loop
+            } // End record loop
+        }// End Studio version loop
+
+
+
+    }
+
+    // Now that we have studio versions, let's take a brief diversion to add those to the pickers instances.
+
+    for (let [picker_name, picker_data] of Object.entries(pickers)) {
+        if (!picker_data.studio_versions) {
+            picker_data.studio_versions = [];
+        }
+        if (!picker_data.shows_as_array) {
+            picker_data.shows_as_array = [];
+        }
+        picker_data.total_instance_count = picker_data.shows_as_array.length + picker_data.studio_versions.length;
+
+
+        let shows_in_ensemble = 0;
+
+        // Count each show where the picker was in the ensemble (not a featured artist)
+        if (picker_data.shows) {
+            for (let [showId, instruments] of Object.entries(picker_data.shows)) {
+                if (instruments != 'featured') {
+                    shows_in_ensemble += 1;
+                } else {
+                    console.log(`${picker_name} featured in ${showId}`);
+                }
+            }
+        }
+
+        // Since studio versions happen more rarely but are heard many times, we weigh them much more strongly for the purposes of sorting the pickers on the list.
+        picker_data.weighted_total_instance_count = shows_in_ensemble + (picker_data.studio_versions.length * 3);
+
+        // Also, anybody who has both studio versions and shows gets 35% weight increase compared to pickers who have only one or the other.
+        if (picker_data.shows_as_array.length > 0 && picker_data.studio_versions.length > 0) {
+            picker_data.weighted_total_instance_count *= 1.5;
+        }
+
+        // If the picker has been in at least 5 of each, another increase in weight.
+        if (picker_data.shows_as_array.length > 5 && picker_data.studio_versions.length > 5) {
+            picker_data.weighted_total_instance_count *= 1.25;
+        }
+
+
+
+        // Shortcut to easily display instruments in the template.
+        if (picker_data.instruments) {
+            let instruments_sorted = Object.entries(picker_data.instruments).sort((a, b) => {
+                return b[1] - a[1] || a[0].localeCompare(b[0]);
+            });
+
+            // Then, format them as a comma-separated list.
+            picker_data.instruments_display = instruments_sorted.map(instrument => instrument[0]).join(', ');
+        } else {
+            picker_data.instruments_display = '';
+        }
+
+    }
+
+    // Also provide pickers sorted by number of instances.
+    let pickers_by_instance_count = Object.entries(pickers).sort(function (a, b) {
+        return b[1].weighted_total_instance_count - a[1].weighted_total_instance_count;
+    }); // TODO: Man, isn't this going to be fun when we actually have proper model and manager notions of all these things?
+
+
+
+    ////////
+    //// 3.1b: context population
+    //////
+
+
     // We'll need helpers....
     registerHelpers(site);
 
-    // ...and processed context...
-    appendChainDataToShows(shows, chainData); // Mutates shows.
+    // A lot going on here - this is where we actually append things like set stones, ticket stubs, etc., to the shows.  Any further chain data that is required to render shows to templates needs to be added here.
+    appendChainDataToShows(shows, chainData); // Mutates shows, obviously.
+
     const dataAvailableAsContext = {
         "songs": songs,
         "shows": shows,
         'songsByProvenance': songsByProvenance,
         'latest_git_commit': execSync('git rev-parse HEAD').toString().trim(),
         'chainData': chainData,
+        'pickers_by_instance_count': pickers_by_instance_count,
     };
 
     if (site === "justinholmes.com") { // TODO: Make this more general
@@ -119,6 +254,7 @@ export const runPrimaryBuild = async () => {
     ////////////////////
     // Chapter 3.2: Render one-off pages from YAML
     ///////////////////////
+
 
     let pageyamlFile = fs.readFileSync(`src/data/${site}.pages.yaml`);
     let pageyaml = yaml.load(pageyamlFile);
@@ -216,6 +352,29 @@ export const runPrimaryBuild = async () => {
         generateSetStonePages(shows, path.resolve(outputPrimarySiteDir, 'setstones'));
     }
 
+    // Append set stone favorites to the song objects.  TOOD: Surely this belongs in a better place.
+    for (let show_array_item of shows) {
+        let show = show_array_item[1];
+        let showId = show_array_item[0];
+
+        // We're only interested in shows that have set stones.
+        if (!show.has_set_stones_available) {
+            continue;
+        }
+
+        Object.entries(show.sets).forEach(([setNumber, set]) => {
+            set.setstones.forEach((setstone, setstoneNumber) => {
+
+                const favoriteSong1Index = setstone.favoriteSong
+
+                setstone.favoriteSongObject = set.songplays[favoriteSong1Index]._song;  // TODO: Terrible name; this needs to be like "moment" instead of "favoriteSong" and then "momentSong" when we resolve it.  Or something.
+
+                setstone.favoriteSongObject.setstoneFavorites.push(setstone);
+                console.log(`show ${showId} set ${setNumber} stone ${setstoneNumber} favorite song: ${setstone.favoriteSongObject.slug}`);
+
+            });
+        });
+    }
 
     renderSetStoneImages(shows, path.resolve(outputPrimarySiteDir, 'assets/images/setstones'));
 
@@ -225,7 +384,7 @@ export const runPrimaryBuild = async () => {
 
     if (site === "justinholmes.com") { // TODO: This is a hack.  We need to make this more general.
 
-        Object.entries(shows).forEach(([show_id, show]) => {
+        shows.forEach(([show_id, show]) => {
             const page = `show_${show_id}`;
 
             let context = {
@@ -254,37 +413,37 @@ export const runPrimaryBuild = async () => {
 
     if (site === "justinholmes.com") { // TODO: This is a hack.  We need to make this more general.
 
-    Object.entries(songs).forEach(([song_slug, song]) => {
-        const page = `song_${song_slug}`;
+        Object.entries(songs).forEach(([song_slug, song]) => {
+            const page = `song_${song_slug}`;
 
-        let context = {
-            page_name: page,
-            page_title: song.title,
-            song,
-            imageMapping,
-            chainData,
-        };
+            let context = {
+                page_name: page,
+                page_title: song.title,
+                song,
+                imageMapping,
+                chainData,
+            };
 
-        // See if we have a MD file with long-form commentary for the song.
-        let commentary;
-        const commentary_path = path.resolve(dataDir, `songs_and_tunes/${song_slug}.md`);
-        if (fs.existsSync(commentary_path)) {
-            const commentary_raw = fs.readFileSync(commentary_path, 'utf8');
-            const commentary_njk_rendered = nunjucks.renderString(commentary_raw, context)
-            commentary = marked(commentary_njk_rendered);
-        }
+            // See if we have a MD file with long-form commentary for the song.
+            let commentary;
+            const commentary_path = path.resolve(dataDir, `songs_and_tunes/${song_slug}.md`);
+            if (fs.existsSync(commentary_path)) {
+                const commentary_raw = fs.readFileSync(commentary_path, 'utf8');
+                const commentary_njk_rendered = nunjucks.renderString(commentary_raw, context)
+                commentary = marked(commentary_njk_rendered);
+            }
 
-        context.commentary = commentary;
+            context.commentary = commentary;
 
-        renderPage({
-            template_path: 'reuse/single-song.njk',
-            output_path: `songs/${song_slug}.html`,
-            context: context,
-            site: site,
-        }
-        );
+            renderPage({
+                template_path: 'reuse/single-song.njk',
+                output_path: `songs/${song_slug}.html`,
+                context: context,
+                site: site,
+            }
+            );
 
-    });
+        });
 
     }
 
@@ -294,29 +453,30 @@ export const runPrimaryBuild = async () => {
 
     if (site === "justinholmes.com") { // TODO: This is a hack.  We need to make this more general.
 
-    // TODO: Not jazzed to do this here instead of just making this available in the context.
 
-    // Make a new array of songs, sorted by song.plays.length
-    let songs_sorted_by_plays = Object.values(songs);
-    songs_sorted_by_plays.sort((a, b) => {
-        return b.plays.length - a.plays.length;
-    });
 
-    let context = {
-        page_name: "songs-by-plays",
-        page_title: "Songs sorted by plays",
-        songs: songs_sorted_by_plays,
-        imageMapping,
-        chainData,
-    };
 
-    renderPage({
-        template_path: 'pages/songs/songs-by-plays.njk',
-        output_path: `songs/songs-by-plays.html`,
-        context: context,
-        site: site,
-    }
-    );
+        // Make a new array of songs, sorted by song.plays.length
+        let songs_sorted_by_plays = Object.values(songs);
+        songs_sorted_by_plays.sort((a, b) => {
+            return b.plays.length - a.plays.length;
+        });
+
+        let context = {
+            page_name: "songs-by-plays",
+            page_title: "Songs sorted by plays",
+            songs: songs_sorted_by_plays,
+            imageMapping,
+            chainData,
+        };
+
+        renderPage({
+            template_path: 'pages/songs/songs-by-plays.njk',
+            output_path: `songs/songs-by-plays.html`,
+            context: context,
+            site: site,
+        }
+        );
 
     }
 
@@ -327,44 +487,30 @@ export const runPrimaryBuild = async () => {
 
     if (site === "justinholmes.com") { // TODO: This is a hack.  We need to make this more general.
 
-    Object.entries(pickers).forEach(([picker, picker_data]) => {
+        Object.entries(pickers).forEach(([picker, picker_data]) => {
 
-        let picker_slug = slugify(picker);
+            let picker_slug = slugify(picker);
 
-        let shows_played_by_this_picker = []
-        let show_list = picker_data['shows'];
-        for (let [show_id, instruments] of Object.entries(show_list)) {
+            const shows_played_by_this_picker = picker_data['shows_as_array'];
 
-            // Sanity check: if we don't know about this show, this will fail later.
-            if (!shows[show_id]) {
-                throw new Error(`Show ${show_id} not found when trying to populate shows for ${picker}`);
+            let context = {
+                page_name: picker,
+                page_title: picker,
+                picker,
+                picker_data,
+                imageMapping,
+                chainData,
+            };
+
+            renderPage({
+                template_path: 'reuse/single-picker.njk',
+                output_path: `pickers/${picker_slug}.html`,
+                context: context,
+                site: site,
             }
+            );
 
-            shows_played_by_this_picker.push({
-                show_id,
-                show: shows[show_id],
-                instruments
-            });
-        }
-
-        let context = {
-            page_name: picker,
-            page_title: picker,
-            picker,
-            shows_played_by_this_picker,
-            imageMapping,
-            chainData,
-        };
-
-        renderPage({
-            template_path: 'reuse/single-picker.njk',
-            output_path: `pickers/${picker_slug}.html`,
-            context: context,
-            site: site,
-        }
-        );
-
-    });
+        });
 
     }
 
