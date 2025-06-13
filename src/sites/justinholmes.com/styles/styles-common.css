@@ -370,6 +370,10 @@ nav a img {
     margin-bottom: 30px;
 }
 
+#ensemble-intro {
+    padding: 20px;
+}
+
 #productionArea, #ensembleArea {
     width: 1200px;
     display: none;

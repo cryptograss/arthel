@@ -3,7 +3,8 @@ import {createConfig, http, readContract, fetchBlockNumber, fetchEnsName, getBlo
 import {mainnet, optimism, optimismSepolia, arbitrum} from '@wagmi/core/chains';
 import {brABI as abi} from "../abi/blueRailroadABI.js";
 import {setStoneABI} from "../abi/setStoneABI.js";
-import { setStoneContractAddress, blueRailroadContractAddress } from "./constants.js";
+import { setStoneContractAddress, blueRailroadContractAddress, AVERAGE_BLOCK_TIME, ticketStubClaimerContractAddress } from "./constants.js";
+import {ticketStubClaimerABI} from "../abi/ticketStubClaimerABI.js";
 import {getVowelsoundContributions} from "./revealer_utils.js";
 import Web3 from 'web3';
 
@@ -26,7 +27,7 @@ export async function fetchChainDataForShows(shows, config) {
     let showsChainData = {};
 
     // Iterate through show IDs and parse the data.
-    for (let [show_id, show] of shows) {
+    for (let [show_id, show] of Object.entries(shows)) {
 
         // Split ID by "-" into artist_id and blockheight
         let [artist_id, _blockheight] = show_id.split('-');
@@ -105,35 +106,87 @@ export async function appendSetStoneDataToShows(showsChainData, config) {
 
     let number_of_stones_in_sets = 0;
 
-    // TODO: This is faked obviously.
-    showsChainData["0_7-22575700"].ticketStubCount = 50;
-    showsChainData["0_7-22590100"].ticketStubCount = 50;
-
     for (let [show_id, show] of Object.entries(showsChainData)) {
         // Split ID by "-" into artist_id and blockheight
         const [artist_id, blockheight] = show_id.split('-');
 
-        // Ticket stub things
+        // Ticket stub things - read from contract
         show.ticketStubs = [];
+        
+        try {
+            // Convert show_id to a numeric showId for the contract
+            // For now, use blockheight as showId - may need to adjust this logic
+            const showIdForContract = BigInt(blockheight);
+            
+            const ticketStubCount = await readContract(config, {
+                abi: ticketStubClaimerABI,
+                address: ticketStubClaimerContractAddress,
+                functionName: 'showTicketCounts',
+                chainId: arbitrum.id,
+                args: [showIdForContract],
+            });
 
-        if (!(show.ticketStubCount === undefined)) {
+            show.ticketStubCount = Number(ticketStubCount);
 
-            console.log(`Show ${show_id} has ${show.ticketStubCount} ticket stubs.`);
+            if (show.ticketStubCount > 0) {
+                console.log(`Show ${show_id} has ${show.ticketStubCount} ticket stubs on-chain.`);
 
-            // TODO: Also read the ticketstubs contract.
-            // For now, fake data.  TODO: Unfake this.
-            // We'll just use an array of ints 0-49
-            let ticketStubIDs = [];
-            for (let i = 0; i < show.ticketStubCount; i++) {
-                ticketStubIDs.push(BigInt(i));
+                // Get all ticket stubs for this show
+                // We need to iterate through token IDs to find ones for this show
+                const totalSupply = await readContract(config, {
+                    abi: ticketStubClaimerABI,
+                    address: ticketStubClaimerContractAddress,
+                    functionName: 'totalSupply',
+                    chainId: arbitrum.id,
+                });
+
+                for (let tokenId = 0; tokenId < totalSupply; tokenId++) {
+                    try {
+                        const ticketStubData = await readContract(config, {
+                            abi: ticketStubClaimerABI,
+                            address: ticketStubClaimerContractAddress,
+                            functionName: 'getTicketStub',
+                            chainId: arbitrum.id,
+                            args: [BigInt(tokenId)],
+                        });
+
+                        // Check if this ticket stub belongs to our show
+                        if (ticketStubData.showId === showIdForContract) {
+                            let ticketStub = {
+                                tokenId: BigInt(tokenId),
+                                showId: ticketStubData.showId,
+                                secretHash: ticketStubData.secretHash,
+                                claimed: ticketStubData.claimed
+                            };
+
+                            // Get owner if claimed
+                            if (ticketStubData.claimed) {
+                                try {
+                                    const owner = await readContract(config, {
+                                        abi: ticketStubClaimerABI,
+                                        address: ticketStubClaimerContractAddress,
+                                        functionName: 'ownerOf',
+                                        chainId: arbitrum.id,
+                                        args: [BigInt(tokenId)],
+                                    });
+                                    ticketStub.owner = owner;
+                                } catch (error) {
+                                    console.log(`Token ${tokenId} not yet claimed`);
+                                }
+                            }
+
+                            show.ticketStubs.push(ticketStub);
+                        }
+                    } catch (error) {
+                        // Token might not exist yet, continue
+                        continue;
+                    }
+                }
             }
-
-            for (let ticketStubID of ticketStubIDs) {
-                let ticketStub = {};
-                ticketStub["tokenId"] = ticketStubID;
-                show.ticketStubs.push(ticketStub);
-            }
-        }//// End ticket stub things
+        } catch (error) {
+            console.log(`No ticket stubs found for show ${show_id} or contract not deployed yet`);
+            show.ticketStubCount = 0;
+        } //// End ticket stub things
 
 
         for (let [set_order, set] of Object.entries(show.sets)) {
@@ -301,7 +354,7 @@ export async function getBlueRailroads(config) {
 
 export function appendChainDataToShows(shows, chainData) {
     const showsChainData = chainData["showsWithChainData"];
-    for (let [show_id, show] of shows) {
+    for (let [show_id, show] of Object.entries(shows)) {
         let chainDataForShow = showsChainData[show_id];
         // TODO: Handle the show not being in the chain data at all - emit a warning that it's time to refresh chain data?  And an error in prod?
 
@@ -447,8 +500,8 @@ export async function get_times_for_shows() {
             // Convert to BigInt for subtraction
             const blocksUntilShow = BigInt(block_number) - BigInt(mainnetBlockHeight);
             // Convert back to Number for multiplication if needed
-            const secondsUntilShow = Number(blocksUntilShow) * 12;
-            const timestampOfShow = BigInt(timestampOfMostRecentBlock) + BigInt(secondsUntilShow);
+            const secondsUntilShow = Number(blocksUntilShow) * AVERAGE_BLOCK_TIME;
+            const timestampOfShow = BigInt(timestampOfMostRecentBlock) + BigInt(Math.round(secondsUntilShow));
             times_for_shows[showID] = timestampOfShow;
 
             // Show the datetime of the show in the future.

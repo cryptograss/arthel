@@ -3,13 +3,13 @@ import { get_image_from_asset_mapping, imageMapping, unusedImages } from "../ass
 import { getProjectDirs } from "../locations.js";
 import {slugify} from "./text_utils.js";
 import { getShowAndSetData } from "../show_and_set_data.js";
+import { AVERAGE_BLOCK_TIME } from "../constants.js";
 import path from 'path';
 import fs from 'fs';
 import yaml from 'js-yaml';
 
 const REFERENCE_BLOCK = 20612385; // Example block number
 const REFERENCE_TIMESTAMP = 1724670731; // Unix timestamp in seconds
-const AVERAGE_BLOCK_TIME = 12.12; // Average block time in seconds
 
 let _helpers_are_registered = [];
 
@@ -66,8 +66,8 @@ export function registerHelpers(site) {
 
         //////////////////////
         // TODO: We need to handle multiple artists here.
-        // Again, we'll just use the first artist_id and presume the setlist is for the first artist.
-        const artist_id = artist_ids[0];
+        // For now, we'll construct the artist portion of the show ID from all artist IDs
+        const artist_id = artist_ids.join('_');
     // #268
     /////////////////
 
@@ -91,15 +91,19 @@ export function registerHelpers(site) {
 
         try {
             foundImage = imageMapping[originalPath];
+            if (foundImage) {
+                unusedImages.delete(foundImage.original);  // Mark image as used (same as get_image_from_asset_mapping does)
+            }
         } catch (e) {
-            console.log(`Image not found: ${originalPath} - this show is probably in the future`);
+            console.log(`Exception accessing imageMapping for ${originalPath}:`, e);
             // throw new Error(`Image not found: ${originalPath}`);
         }
 
         if (!foundImage) {
-            console.log(`Image not found: ${originalPath} - this show is probably in the future`);
+            console.log(`Image not found in mapping: ${originalPath}`);
+            console.log(`Available keys containing 'graphs':`, Object.keys(imageMapping).filter(k => k.includes('graphs')).slice(0, 5));
             // throw new Error(`Image not found: ${originalPath}`);
-            return `Is this show - ${blockheight} - in the future?`
+            return null; // Return null instead of debug text that gets used as image src
         }
 
         return foundImage['original'] // TODO: Do we always want original here?  What if we want thumbnail?  Is that even a thing for graphs?  Are there other types?

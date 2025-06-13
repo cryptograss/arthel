@@ -1,0 +1,144 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}Claim Ticket Stub #{{ tokenId }}{% endblock %}
+
+{% block main %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1>Claim Your Ticket Stub #{{ tokenId }}</h1>
+            
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    <h4 class="alert-heading">Error!</h4>
+                    <p>{{ error }}</p>
+                </div>
+            {% endif %}
+
+            {% if success %}
+                <div class="alert alert-success" role="alert">
+                    <h4 class="alert-heading">Success!</h4>
+                    <p>Your ticket stub has been claimed successfully!</p>
+                    <p>Transaction hash: <code>{{ transactionHash }}</code></p>
+                    <p>You can view your NFT on <a href="https://arbiscan.io/token/{{ contractAddress }}?a={{ tokenId }}" target="_blank">Arbiscan</a></p>
+                </div>
+            {% endif %}
+
+            {% if not success and not error %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Ready to Claim</h5>
+                        <p class="card-text">
+                            You're about to claim ticket stub #{{ tokenId }} using the secret from your physical ticket.
+                        </p>
+                        
+                        {% if secret %}
+                            <p class="text-muted">
+                                <small>Secret detected from URL: {{ secret | truncate(8) }}...</small>
+                            </p>
+                        {% endif %}
+
+                        <form id="claimForm">
+                            <div class="mb-3">
+                                <label for="walletAddress" class="form-label">Your Wallet Address</label>
+                                <input type="text" class="form-control" id="walletAddress" placeholder="0x..." required>
+                                <div class="form-text">The address where you want to receive your ticket stub NFT</div>
+                            </div>
+                            
+                            {% if not secret %}
+                            <div class="mb-3">
+                                <label for="secretInput" class="form-label">Secret from Ticket</label>
+                                <input type="text" class="form-control" id="secretInput" placeholder="Enter the secret from your physical ticket" required>
+                                <div class="form-text">This should be the text or QR code content from your ticket stub</div>
+                            </div>
+                            {% else %}
+                            <input type="hidden" id="secretInput" value="{{ secret }}">
+                            {% endif %}
+
+                            <button type="submit" class="btn btn-primary">
+                                Connect Wallet & Claim Ticket Stub
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h5>What happens when I claim?</h5>
+                    <ul>
+                        <li>We'll verify your secret against the ticket stub contract</li>
+                        <li>If valid, the NFT will be minted to your wallet address</li>
+                        <li>You'll own the digital representation of your physical ticket</li>
+                        <li>The secret can only be used once</li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { createConfig, http, writeContract, waitForTransactionReceipt } from '@wagmi/core';
+    import { arbitrum } from '@wagmi/core/chains';
+    import { keccak256, toBytes } from 'viem';
+
+    // Contract configuration
+    const TICKET_STUB_CONTRACT_ADDRESS = '{{ contractAddress }}';
+    const TICKET_STUB_ABI = {{ contractABI | safe }};
+
+    const config = createConfig({
+        chains: [arbitrum],
+        transports: {
+            [arbitrum.id]: http('https://arb-mainnet.g.alchemy.com/v2/{{ alchemyApiKey }}'),
+        },
+    });
+
+    document.getElementById('claimForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const walletAddress = document.getElementById('walletAddress').value;
+        const secret = document.getElementById('secretInput').value;
+        
+        if (!walletAddress || !secret) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        try {
+            // Convert secret to bytes32
+            const secretBytes = keccak256(toBytes(secret));
+            
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Claiming...';
+            submitBtn.disabled = true;
+
+            // Call the contract
+            const hash = await writeContract(config, {
+                abi: TICKET_STUB_ABI,
+                address: TICKET_STUB_CONTRACT_ADDRESS,
+                functionName: 'claimTicketStub',
+                args: [secretBytes],
+                account: walletAddress,
+            });
+
+            // Wait for transaction confirmation
+            const receipt = await waitForTransactionReceipt(config, {
+                hash,
+            });
+
+            // Redirect to success page
+            window.location.href = `?success=true&hash=${hash}`;
+
+        } catch (error) {
+            console.error('Error claiming ticket stub:', error);
+            alert('Error claiming ticket stub: ' + error.message);
+            
+            // Reset button
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+{% endblock %}

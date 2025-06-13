@@ -1,0 +1,14 @@
+by_artist_id: 0
+on_release: "4masks"
+primary_display_name: "Moon Factory"
+is_instrumental: true
+studio_versions:
+  0:
+    4masks:
+      ensemble:
+        Justin Holmes: [mandolin, throatsinging]
+        Cory Walker: [5-string banjo]
+        Samson Grisman: [bass]
+        John Mailander: [fiddle]
+        Kaitlyn Raitz: [cello]
+        Harry Clark: [guitar]
