@@ -28,14 +28,6 @@
                 <span>Event URL:</span>
                 <a href="{{ show.event_url }}">{{ show.event_url }}</a><br>
             {% endif %}
-            {% if show.ensemble %}
-                <div class="ensemble w-75 p-1 text-black">
-                    <h4 class="mb-0 pixel-font">Ensemble:</h4>
-                    {% for player, instruments in show.ensemble %}
-                        <a href="{{ basePath }}/pickers/{{ player | slugify }}">{{ player }}</a>: {{ instruments }}<br/>
-                    {% endfor %}
-                </div>
-            {% endif %}
         </div>
 
         <div id="setstones" class="col-6">
@@ -61,18 +53,26 @@
             {% endif %}
         </div>
     </div>
-    <div id="show-poster-and-graph" class="row">
-        <div class="col-6">
+    <div id="ensemble-poster-and-graph" class="row">
+        <div class="col-5">
+            {% if show.ensemble %}
+                <div class="ensemble w-100 p-1 text-black mb-3">
+                    <h4 class="mb-0 pixel-font">Ensemble:</h4>
+                    {% for player, instruments in show.ensemble %}
+                        <a href="{{ basePath }}/pickers/{{ player | slugify }}">{{ player }}</a>: {{ instruments }}<br/>
+                    {% endfor %}
+                </div>
+            {% endif %}
             {% if show.poster %}
                 <a href="{{ get_image(show.poster, 'original') }}" class="show-poster-link">
-                    <img class="show-poster img-fluid w-75"
+                    <img class="show-poster img-fluid w-100"
                          src="{{ get_image(show.poster, 'thumbnail') }}"
                          data-full-src="{{ get_image(show.poster, 'original') }}"
                          alt="Show poster">
                 </a>
             {% endif %}
         </div>
-        <div class="col-6">
+        <div class="col-7">
             {% if title_as_link and show.sets.length > 1 %}
 
             {{show.sets.length}} sets in show

@@ -230,7 +230,7 @@ export function renderSetStoneImages(shows, outputDir) {
         fs.mkdirSync(outputDir, {recursive: true});
     }
 
-    for (let [show, showId] of Object.entries(shows)) {
+    for (let [showId, show] of Object.entries(shows)) {
         // We're only interested in shows that have set stones.
         if (!show.has_set_stones_available) {
             continue;

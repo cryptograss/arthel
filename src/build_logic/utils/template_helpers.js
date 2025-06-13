@@ -66,8 +66,8 @@ export function registerHelpers(site) {
 
         //////////////////////
         // TODO: We need to handle multiple artists here.
-        // Again, we'll just use the first artist_id and presume the setlist is for the first artist.
-        const artist_id = artist_ids[0];
+        // For now, we'll construct the artist portion of the show ID from all artist IDs
+        const artist_id = artist_ids.join('_');
     // #268
     /////////////////
 
