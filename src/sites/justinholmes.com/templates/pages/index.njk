@@ -2,7 +2,27 @@
 {% block main %}
     {% include 'partials/bigger-banner.njk' %}
     <div class="row justify-content-center">
-        <img class="img-fluid w-50" src="{{ get_image("RC1GorillaPoster.jpg") }}"/>
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ get_image("bluegrass-standard-logo.png") }}" alt="The Bluegrass Standard" class="me-3" style="height: 40px;">
+                        <small class="text-muted">Featured in The Bluegrass Standard</small>
+                    </div>
+                    <h4 class="card-title mb-3">Justin Holmes and The Immutable String Band</h4>
+                    <p class="card-text text-muted mb-3">
+                        "Justin Holmes is taking bluegrass music into the future with blockchain technology and traditional acoustic instruments, creating something entirely new yet deeply rooted in tradition."
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="https://www.thebluegrassstandard.com/post/justin-holmes-and-the-immutable-string-band" 
+                           class="btn btn-outline-primary btn-sm" target="_blank">
+                            Read Full Article →
+                        </a>
+                        <small class="text-muted">thebluegrassstandard.com</small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 

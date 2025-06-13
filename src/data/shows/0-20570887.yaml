@@ -4,6 +4,7 @@ host: "web3 foundation"
 locality: "Berlin"
 region1: "Germany"
 timezone: "Europe/Berlin"
+poster: "posters/web3summit-2024.png"
 ensemble:
   "Justin Holmes": [ "guitar", "melodica", "six-whistle"]
   "Skyler Golden": [ "bass" ]

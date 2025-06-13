@@ -1,0 +1,13 @@
+title: "Porcupine 2025"
+venue: "North Country Camp"
+host: "North Country Porcupines"
+locality: "Lancaster"
+region1: "New Hampshire"
+timezone: "America/New_York"
+poster: "posters/porcupine2025-poster.png"
+# TODO: Add ensemble when confirmed
+# TODO: Add sets when setlist is planned
+# sets:
+#   0:
+#     songplays:
+#       - TBD

@@ -65,7 +65,7 @@
             {% endif %}
             {% if show.poster %}
                 <a href="{{ get_image(show.poster, 'original') }}" class="show-poster-link">
-                    <img class="show-poster img-fluid w-100"
+                    <img class="show-poster img-fluid object-fit-contain"
                          src="{{ get_image(show.poster, 'thumbnail') }}"
                          data-full-src="{{ get_image(show.poster, 'original') }}"
                          alt="Show poster">

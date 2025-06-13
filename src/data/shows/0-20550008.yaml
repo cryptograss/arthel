@@ -5,6 +5,7 @@ locality: "Berlin"
 region1: "Germany"
 event_url: ""
 timezone: "Europe/Berlin"
+poster: "posters/moos-space-2024.png"
 ensemble:
   "Justin Holmes": ["guitar", "six-whistle", "melodica"]
   "Skyler Golden": [ "bass" ]

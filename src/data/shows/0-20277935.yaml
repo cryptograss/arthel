@@ -6,6 +6,7 @@ region1: "Belgium"
 event_url: "https://lu.ma/jmfb5xdj"
 timezone: "Europe/Berlin"
 tour: "europe-2024"
+poster: "posters/regens-brussels-2024.jpeg"
 ensemble:
   "Justin Holmes": ['guitar', 'mandolin', 'six-whistle', 'melodica']
   "Skyler Golden": ["bass"]
