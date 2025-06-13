@@ -4,8 +4,6 @@
 
         <div class="band-names">
             Justin Holmes and The Immutable String Band
-            <br/>&<br/>
-            Band No. 7
         </div>
 
         <div class="venue">
@@ -30,6 +28,7 @@
         </div>
     </div>
 
+    {% if not hideFoldout %}
     <div class="col-5 ticket-stub-foldout">
         <div class="ticket-stub-secret-warning-text">
             <br/><br/>
@@ -37,5 +36,6 @@
             <p>Remove sticker and unfold<br/> to claim 721 onchain</p>
         </div>
     </div>
+    {% endif %}
     <div class="col-2"></div>
 </div>
