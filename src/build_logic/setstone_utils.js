@@ -22,10 +22,36 @@ export function generateSetStonePages(shows, outputDir) {
     for (const [showId, show] of Object.entries(shows)) {
 
         // Ticket stubs
-        if (!show.ticketStubs) {
-            console.log(`No ticket stubs for show ${showId}`);
-            // TODO: If show has no ticket stubs - just continue?
-            continue;
+        if (!show.ticketStubs || show.ticketStubs.length === 0) {
+            // For testing purposes, create fake ticket stubs for some shows
+            // TODO: Remove this when real contract integration is complete
+            let fakeTicketStubCount = 0;
+            if (showId === '0-22447747') { // ETHDam 2025
+                fakeTicketStubCount = 3;
+            } else if (showId === '0-20570887') { // Web3 Summit 2024
+                fakeTicketStubCount = 2;
+            }
+            
+            if (fakeTicketStubCount > 0) {
+                console.log(`Creating ${fakeTicketStubCount} fake ticket stubs for show ${showId} (for testing)`);
+                show.ticketStubs = [];
+                show.ticketStubCount = fakeTicketStubCount; // Update count for consistency
+                for (let i = 0; i < fakeTicketStubCount; i++) {
+                    show.ticketStubs.push({
+                        tokenId: i + 1, // Start token IDs at 1
+                        claimed: false,
+                        owner: null,
+                        rabbitHash: '',
+                        rabbitHashFull: '',
+                        secret: ''
+                    });
+                }
+            } else {
+                console.log(`No ticket stubs for show ${showId} (count: ${show.ticketStubCount || 0})`);
+                // Create empty array for consistency
+                show.ticketStubs = [];
+                continue;
+            }
         }
 
         // Page to print all ticket stubs
