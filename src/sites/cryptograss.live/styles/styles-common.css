@@ -71,42 +71,116 @@
     color: #00bcb9;
     text-shadow: 0px 0px 1px black;
 }
-/* Ticket stub things */
 
+/* Ticket stub things */
 .ticket-stub-container {
     position: relative;
 }
 
 .ticket-stub-container .ticket-stub-number {
     font-size: 1em;
-    color: #00bcb9;
-    text-shadow: 0px 0px 1px black;
+    color: hsl(163, 100%, 15.9%);
     position: absolute;
-        left: 391px;
-        top: 193px;
-    }
-    
-    
-    .ticket-stub-container .band-names {
-        font-size: .6em;
-        color: #00bcb9;
-        text-shadow: 0px 0px 1px black;
-        position: absolute;
-        left: 62px;
-        top: 35px;
-        width: 86px;
-    }
-    
-    .ticket-stub-container .venue {
-        font-size: .6em;
-        color: #5c1700;
-        position: absolute;
-        left: 61px;
-        top: 170px;
-        width: 86px;
-        text-shadow: 0px 0px 0px black;
-    }
-    
-    .ticket-stub-container .locality {
-        width: 200px;
+    left: 351px;
+    top: 154px;
+    text-align: right;
+}
+
+.ticket-stub-container .band-names {
+    font-size: .7em;
+    color: #004f4d;
+    position: absolute;
+    left: 74px;
+    top: 35px;
+    width: 95px;
+    line-height: 14px;
+}
+
+.ticket-stub-container .venue {
+    font-size: .8em;
+    color: #5c1700;
+    position: absolute;
+    left: 74px;
+    top: 170px;
+    width: 86px;
+}
+
+.ticket-stub-container .locality {
+    width: 200px;
+}
+
+.single-printable-ticket-stub {
+    border: 1px dotted rgb(116, 116, 116);
+}
+
+.ticket-stub-foldout {
+    border-left: 3px dashed rgb(67, 0, 0);
+}
+
+.ticket-stub-datetime {
+    font-size: 1em;
+    color: #5c1700;
+    position: absolute;
+    left: 385px;
+    top: 38px;
+    width: 86px;
+}
+
+.ticket-stub-container .small {
+    font-size: .7em;
+    margin: auto;
+}
+
+.ticket-stub-container .qr-code-for-secret {
+    position: absolute;
+    right: 100px;
+    top: 29px;
+}
+
+.ticket-stub-container .qr-code-for-secret-uri {
+    position: absolute;
+    right: 262px;
+    top: 30px;
+    height: 170px !important;
+    width: 170px !important;
+}
+
+.ticket-stub-back {
+    text-align: right;
+}
+
+.ticket-stub-container .ticket-stub-number-on-back {
+    font-size: .9em;
+    color: #004746;
+    position: absolute;
+    right: 78px;
+    top: 5px;
+    text-align: right;
+}
+
+.ticket-stub-container .rabbit-text {
+    font-size: .8em;
+    color: #00bcb9;
+    position: absolute;
+    right: 125px;
+    top: 191px;
+    text-align: right;
+}
+
+.ticket-stub-container .uri-text {
+    font-size: .8em;
+    color: #00bcb9;
+    position: absolute;
+    right: 270px;
+    top: 188px;
+    text-align: right;
+}
+
+.ticket-stub-claim-instructions {
+    font-size: .8em;
+}
+
+.ticket-stub-claim-instructions h5 {
+    font-size: 1em;
+    color: #530007;
 }
