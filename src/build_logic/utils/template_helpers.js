@@ -91,13 +91,17 @@ export function registerHelpers(site) {
 
         try {
             foundImage = imageMapping[originalPath];
+            if (foundImage) {
+                unusedImages.delete(foundImage.original);  // Mark image as used (same as get_image_from_asset_mapping does)
+            }
         } catch (e) {
-            console.log(`Image not found: ${originalPath} - this show is probably in the future`);
+            console.log(`Exception accessing imageMapping for ${originalPath}:`, e);
             // throw new Error(`Image not found: ${originalPath}`);
         }
 
         if (!foundImage) {
-            console.log(`Image not found: ${originalPath} - this show is probably in the future`);
+            console.log(`Image not found in mapping: ${originalPath}`);
+            console.log(`Available keys containing 'graphs':`, Object.keys(imageMapping).filter(k => k.includes('graphs')).slice(0, 5));
             // throw new Error(`Image not found: ${originalPath}`);
             return null; // Return null instead of debug text that gets used as image src
         }

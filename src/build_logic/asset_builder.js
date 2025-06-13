@@ -82,6 +82,8 @@ function gatherAssets() {
         unusedImages.add(originalPath);
     });
 
+    console.log(`Total of ${unusedImages.size} found.`); // At this time, all the images have been added to unusedImages.
+
     // Simply copy the fetched assets directory
     if (fs.existsSync(fetchedAssetsDir)) {
         const fetchedOutputDir = path.join(assetsOutputDir, 'fetched');
@@ -125,8 +127,12 @@ function getImageMapping() {
 }
 
 function get_image_from_asset_mapping(filename, imageType = 'original') {
-    unusedImages.delete(filename);
     const mapping = imageMapping[filename];
+    if (!mapping) {
+        console.log(`Not finding ${filename} - this is going to result in a broken image.`)
+        return false
+    }
+    unusedImages.delete(mapping.original);
     return mapping ? mapping[imageType] : '';
 }
 

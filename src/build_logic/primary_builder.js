@@ -183,7 +183,7 @@ export const runPrimaryBuild = async () => {
                 if (instruments != 'featured') {
                     shows_in_ensemble += 1;
                 } else {
-                    console.log(`${picker_name} featured in ${showId}`);
+                    // console.log(`${picker_name} featured in ${showId}`);
                 }
             }
         }
@@ -578,7 +578,7 @@ export const runPrimaryBuild = async () => {
     // Warn about each unused image.
     console.log(unusedImages.size, 'images were not used.');
     unusedImages.forEach(image => {
-        console.warn(`Image not used: ${image}`);
+    console.warn(`Image not used: ${image}`);
     });
 
     console.timeEnd('primary-build');
