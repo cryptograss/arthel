@@ -26,7 +26,7 @@ export async function fetchChainDataForShows(shows, config) {
     let showsChainData = {};
 
     // Iterate through show IDs and parse the data.
-    for (let [show_id, show] of shows) {
+    for (let [show_id, show] of Object.entries(shows)) {
 
         // Split ID by "-" into artist_id and blockheight
         let [artist_id, _blockheight] = show_id.split('-');
