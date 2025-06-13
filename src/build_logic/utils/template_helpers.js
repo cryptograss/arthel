@@ -3,13 +3,13 @@ import { get_image_from_asset_mapping, imageMapping, unusedImages } from "../ass
 import { getProjectDirs } from "../locations.js";
 import {slugify} from "./text_utils.js";
 import { getShowAndSetData } from "../show_and_set_data.js";
+import { AVERAGE_BLOCK_TIME } from "../constants.js";
 import path from 'path';
 import fs from 'fs';
 import yaml from 'js-yaml';
 
 const REFERENCE_BLOCK = 20612385; // Example block number
 const REFERENCE_TIMESTAMP = 1724670731; // Unix timestamp in seconds
-const AVERAGE_BLOCK_TIME = 12.12; // Average block time in seconds
 
 let _helpers_are_registered = [];
 

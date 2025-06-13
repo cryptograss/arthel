@@ -3,8 +3,8 @@ import {createConfig, http, readContract, fetchBlockNumber, fetchEnsName, getBlo
 import {mainnet, optimism, optimismSepolia, arbitrum} from '@wagmi/core/chains';
 import {brABI as abi} from "../abi/blueRailroadABI.js";
 import {setStoneABI} from "../abi/setStoneABI.js";
+import { setStoneContractAddress, blueRailroadContractAddress, AVERAGE_BLOCK_TIME, ticketStubClaimerContractAddress } from "./constants.js";
 import {ticketStubClaimerABI} from "../abi/ticketStubClaimerABI.js";
-import { setStoneContractAddress, blueRailroadContractAddress, ticketStubClaimerContractAddress } from "./constants.js";
 import {getVowelsoundContributions} from "./revealer_utils.js";
 import Web3 from 'web3';
 
@@ -500,8 +500,8 @@ export async function get_times_for_shows() {
             // Convert to BigInt for subtraction
             const blocksUntilShow = BigInt(block_number) - BigInt(mainnetBlockHeight);
             // Convert back to Number for multiplication if needed
-            const secondsUntilShow = Number(blocksUntilShow) * 12;
-            const timestampOfShow = BigInt(timestampOfMostRecentBlock) + BigInt(secondsUntilShow);
+            const secondsUntilShow = Number(blocksUntilShow) * AVERAGE_BLOCK_TIME;
+            const timestampOfShow = BigInt(timestampOfMostRecentBlock) + BigInt(Math.round(secondsUntilShow));
             times_for_shows[showID] = timestampOfShow;
 
             // Show the datetime of the show in the future.
