@@ -868,13 +868,25 @@ The cryptograss ecosystem continues bridging traditional music and blockchain te
 - Current range: ~22680000+ (June 2025)
 - Historical reference: Block 21081875 = October 30, 2023 (Halloween/Billy Strings show)
 
-### Recent Technical Context
+### Recent Technical Context  
 - Fixed issue #277: Graph display bug in template_helpers.js (returning debug text instead of null)
-- Ticket stub → set stone minting system replacing rabbit secrets paradigm
+- **Major**: Merged prague2025 ticket stub infrastructure into main branch
+- **Contract**: Implemented complete TicketStubClaimer smart contract with 22 passing tests
+- **Layout**: Improved show overview layout (ensemble + poster in left column, graph on right)
+- **Rebase**: Successfully rebased prague2025 onto main, resolving conflicts with cubby merge
+- Ticket stub → set stone minting system replacing rabbit secrets paradigm  
 - NES color palette system (54 authentic colors)
 - Zod schema validation for TypeScript models
 - Jest ESM mocking challenges ongoing
 - GitHub issue tracking with Claude Code attribution format
+
+### Ticket Stub System (Now in Main)
+- **Templates**: Complete front/back ticket stub templates with QR codes
+- **QR Codes**: Generate both plaintext secrets and claim URLs (`/blox-office/ticketstubs/claim/{tokenId}?secret={secret}`)
+- **Smart Contract**: ERC721 with secret-based claiming, anti-replay protection, show-based organization
+- **Test Suite**: 22 comprehensive tests covering all claiming scenarios and edge cases
+- **Secret Generation**: Crypto.randomBytes() + keccak256 hashing system
+- **Integration**: Works with existing chain_reading.js and setstone infrastructure
 
 ### Context Compacting Protocol
 When approaching context limits (~97%):
