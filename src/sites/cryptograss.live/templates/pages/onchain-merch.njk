@@ -1,0 +1,358 @@
+{% extends '../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-2"></div>
+    <div id="onchain-merch" class="col-md-8 text-post">
+        <div class="row">
+            <h1 class="text-center pixel-font">Onchain Merch</h1>
+            <p class="text-center">Physical artifacts become digital collectibles through blockchain technology</p>
+        </div>
+
+        <!-- Ticket Stubs Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h2 class="pixel-font">Ticket Stubs</h2>
+                <div class="mb-4">
+                    <p class="lead">
+                        <strong>Pure paper memorabilia</strong> that bridges the physical and digital worlds. Each ticket stub is a tangible piece of show history that can optionally be claimed as an ERC-721 NFT.
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Physical Features</h5>
+                            <ul>
+                                <li><strong>50 available per show</strong> - Limited physical edition</li>
+                                <li><strong>Complete onchain information</strong> - Everything needed to claim is printed on the paper</li>
+                                <li><strong>Show details</strong> - Band names, venue, projected block height</li>
+                                <li><strong>Unique identifiers</strong> - Token ID and secret hash for claiming</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Digital Capabilities</h5>
+                            <ul>
+                                <li><strong>Optional activation</strong> - Claim onchain when you're ready</li>
+                                <li><strong>Website integration</strong> - Claimed stubs appear on show pages</li>
+                                <li><strong>Upgrade path</strong> - Can be upgraded to Set Stones (0.1 ETH)</li>
+                                <li><strong>Ecosystem presence</strong> - Set Stones appear throughout cryptograss</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>Pricing:</strong> 0.0171 ETH / 1000 CZK / 40 Euro / 1.5 Ounce Silver
+                    </div>
+                </div>
+
+                <!-- Example Ticket Stub -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h4 class="pixel-font">Example Ticket Stub</h4>
+                        <p class="text-muted mb-3">Here's what a physical ticket stub looks like:</p>
+                        
+                        <!-- Create mock data for example ticket stub -->
+                        {% set exampleShow = {
+                            venue: "Ryman Auditorium",
+                            locality: "Nashville", 
+                            region1: "Tennessee",
+                            blockheight: 30198476,
+                            local_date: "May 1, 2028",
+                            title: "The Immutable String Band"
+                        } %}
+                        {% set exampleTicketStub = {
+                            tokenId: 42,
+                            rabbitHash: "0xa1b2c3d4e5f6...",
+                            secret: "example-secret-for-demo"
+                        } %}
+                        
+                        <div class="example-ticket-container p-3 border rounded bg-light">
+                            {% set show = exampleShow %}
+                            {% set ticketStub = exampleTicketStub %}
+                            {% set hideFoldout = true %}
+                            {% include 'partials/ticketstub-front.njk' %}
+                        </div>
+                        
+                        <p class="mt-2 text-muted small">
+                            <em>This is a demonstration ticket stub. Real ticket stubs are printed on special paper and include functional QR codes.</em>
+                        </p>
+                    </div>
+                </div>
+                
+                {% set ticketStubShows = [] %}
+                {% for show_id, show in shows %}
+                    {% if show.ticketStubCount and show.ticketStubCount > 0 %}
+                        {% set ticketStubShows = (ticketStubShows.push(show), ticketStubShows) %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if ticketStubShows.length > 0 %}
+                    <div class="merch-grid">
+                        {% for show in ticketStubShows %}
+                            <div class="merch-item semi-transparent-bg p-3 mb-3">
+                                <h4 class="pixel-font">{{ show.title }}</h4>
+                                <p><strong>{{ show.local_date }}</strong> • {{ show.locality }}{% if show.region1 %}, {{ show.region1 }}{% endif %}</p>
+                                <p>Venue: {{ show.venue }}</p>
+                                <p class="text-muted">{{ show.ticketStubCount }} ticket stub{% if show.ticketStubCount != 1 %}s{% endif %} available</p>
+                                
+                                {% if show.poster %}
+                                    <img src="{{ get_image(show.poster, 'thumbnail') }}" 
+                                         alt="Show poster" 
+                                         class="img-fluid mb-2" 
+                                         style="max-height: 150px; object-fit: contain;">
+                                {% endif %}
+                                
+                                <div class="mt-2">
+                                    <small class="text-muted">Blockheight: {{ show.blockheight.toLocaleString() }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <p>No ticket stubs are currently available for claiming. Check back after upcoming shows!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Set Stones Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h2 class="pixel-font">Set Stones</h2>
+                <div class="mb-4">
+                    <p class="lead">
+                        <strong>Algorithmic art NFTs</strong> that transform live musical performances into unique visual artifacts. Each Set Stone is a crystallization of a musical moment in time.
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Musical Data Translation</h5>
+                            <ul>
+                                <li><strong>Song-derived colors</strong> - Each song has a unique color signature</li>
+                                <li><strong>Set structure</strong> - Visual representation of song flow and transitions</li>
+                                <li><strong>Performance metadata</strong> - Block height, venue, and ensemble captured</li>
+                                <li><strong>Algorithmic generation</strong> - No two stones are identical</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Collectible Properties</h5>
+                            <ul>
+                                <li><strong>Unique artwork</strong> - Generative art based on setlist data</li>
+                                <li><strong>Transferable ownership</strong> - Trade on secondary markets</li>
+                                <li><strong>Ecosystem integration</strong> - Appear throughout cryptograss platform</li>
+                                <li><strong>Historical record</strong> - Permanent documentation of live performance</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="alert alert-secondary">
+                        <strong>Note:</strong> Set Stones can be purchased directly (0.1 ETH) or obtained by upgrading a claimed ticket stub.
+                    </div>
+                </div>
+
+                <!-- Example Set Stone -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h4 class="pixel-font">Example Set Stone</h4>
+                        <p class="text-muted mb-3">Here's what a Set Stone looks like:</p>
+                        
+                        <div class="example-setstone-container p-3 border rounded bg-light d-flex align-items-center gap-3">
+                            <div class="setstone-image">
+                                <!-- This would typically link to a real set stone image -->
+                                <div class="placeholder-setstone bg-gradient" style="width: 80px; height: 80px; border-radius: 8px; background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);"></div>
+                            </div>
+                            <div class="setstone-details">
+                                <h6 class="mb-1">Set Stone #123</h6>
+                                <p class="mb-1 text-muted small">ETHDam 2025 - Set 0</p>
+                                <p class="mb-1 text-muted small">Songs: Silver .44, Paint Exchange, Lost, Red Haired Boy</p>
+                                <p class="mb-0 text-muted small">Colors derived from traditional and original compositions</p>
+                            </div>
+                        </div>
+                        
+                        <p class="mt-2 text-muted small">
+                            <em>This is a demonstration Set Stone. Real Set Stones feature unique algorithmic artwork based on actual performance data.</em>
+                        </p>
+                    </div>
+                </div>
+
+                {% set setStoneShows = [] %}
+                {% for show_id, show in shows %}
+                    {% if show.has_set_stones_available %}
+                        {% set setStoneShows = (setStoneShows.push(show), setStoneShows) %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if setStoneShows.length > 0 %}
+                    <div class="merch-grid">
+                        {% for show in setStoneShows %}
+                            <div class="merch-item semi-transparent-bg p-3 mb-3">
+                                <h4 class="pixel-font">{{ show.title }}</h4>
+                                <p><strong>{{ show.local_date }}</strong> • {{ show.locality }}{% if show.region1 %}, {{ show.region1 }}{% endif %}</p>
+                                <p>Venue: {{ show.venue }}</p>
+                                
+                                {% set totalStones = 0 %}
+                                {% for set_number, set in show.sets %}
+                                    {% set totalStones = totalStones + set.setstones.length %}
+                                {% endfor %}
+                                
+                                <p class="text-muted">{{ totalStones }} set stone{% if totalStones != 1 %}s{% endif %} minted</p>
+                                
+                                <!-- Show sample set stones -->
+                                {% if totalStones > 0 %}
+                                    <div class="set-stones-preview d-flex flex-wrap gap-2 mb-2">
+                                        {% for set_number, set in show.sets %}
+                                            {% for stone in set.setstones | slice(0, 3) %}
+                                                <a href="{{getCryptograssUrl()}}/artifacts/setstones/{{show.show_id}}-{{stone.tokenId}}.html" 
+                                                   target="_blank" 
+                                                   class="set-stone-preview">
+                                                    <img src="{{getCryptograssUrl()}}/assets/images/setstones/{{ stone.tokenId }}.png" 
+                                                         alt="Set Stone {{ stone.tokenId }}"
+                                                         style="width: 40px; height: 40px; border-radius: 4px;">
+                                                </a>
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% if totalStones > 3 %}
+                                            <span class="align-self-center text-muted">+{{ totalStones - 3 }} more</span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                                
+                                {% if show.poster %}
+                                    <img src="{{ get_image(show.poster, 'thumbnail') }}" 
+                                         alt="Show poster" 
+                                         class="img-fluid mb-2" 
+                                         style="max-height: 150px; object-fit: contain;">
+                                {% endif %}
+                                
+                                <div class="mt-2">
+                                    <small class="text-muted">Blockheight: {{ show.blockheight.toLocaleString() }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <p>No set stones are currently available. Set stones are generated after live performances.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h2 class="pixel-font">How It Works</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Ticket Stub Journey</h4>
+                        <div class="workflow-steps">
+                            <div class="step mb-3">
+                                <span class="step-number badge bg-primary">1</span>
+                                <strong>Purchase at show</strong> - Buy a physical ticket stub at the venue (50 available per show)
+                            </div>
+                            <div class="step mb-3">
+                                <span class="step-number badge bg-primary">2</span>
+                                <strong>Optional claiming</strong> - Scan QR code or use the secret hash printed on the back
+                            </div>
+                            <div class="step mb-3">
+                                <span class="step-number badge bg-primary">3</span>
+                                <strong>Digital ownership</strong> - Claim your ERC-721 NFT with all show metadata
+                            </div>
+                            <div class="step mb-3">
+                                <span class="step-number badge bg-primary">4</span>
+                                <strong>Upgrade option</strong> - Convert to a customizable Set Stone for enhanced visibility
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Set Stone Creation</h4>
+                        <div class="workflow-steps">
+                            <div class="step mb-3">
+                                <span class="step-number badge bg-secondary">1</span>
+                                <strong>Performance capture</strong> - Live setlist data recorded during the show
+                            </div>
+                            <div class="step mb-3">
+                                <span class="step-number badge bg-secondary">2</span>
+                                <strong>Algorithmic transformation</strong> - Songs converted to colors and visual patterns
+                            </div>
+                            <div class="step mb-3">
+                                <span class="step-number badge bg-secondary">3</span>
+                                <strong>Unique generation</strong> - Each Set Stone artwork is mathematically unique
+                            </div>
+                            <div class="step mb-3">
+                                <span class="step-number badge bg-secondary">4</span>
+                                <strong>Ecosystem integration</strong> - Appears throughout cryptograss platform and marketplaces
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="row mt-4 mb-5">
+            <div class="col-12">
+                <div class="alert alert-secondary">
+                    <h5 class="pixel-font">Technical Details</h5>
+                    <p class="mb-1"><strong>Ticket Stubs:</strong> ERC-721 NFTs on Arbitrum • Contract: {{ chainData.ticketStubClaimerContractAddress }}</p>
+                    <p class="mb-0"><strong>Set Stones:</strong> ERC-721 NFTs on Arbitrum • Contract: {{ chainData.setStoneContractAddress }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-2"></div>
+</div>
+
+<style>
+.merch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.merch-item {
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+.set-stone-preview img {
+    transition: transform 0.2s ease;
+}
+
+.set-stone-preview:hover img {
+    transform: scale(1.1);
+}
+
+.pixel-font {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+.workflow-steps .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.step-number {
+    min-width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    margin-top: 2px;
+}
+
+.example-ticket-container {
+    background: #f8f9fa !important;
+    border: 2px dashed #dee2e6 !important;
+}
+
+.example-setstone-container {
+    background: #f8f9fa !important;
+    border: 2px dashed #dee2e6 !important;
+}
+
+.placeholder-setstone {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+</style>
+
+{% endblock %}
