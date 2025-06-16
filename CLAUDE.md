@@ -24,6 +24,27 @@ OK, some requests for how to engage:
 
 * We generally don't need you to do builds; it's only needed when _you_ want to see the result (which you can in the output/dist directory at the root of the project).  We mostly use a local dev server which does the builds for us.
 
+  Current Development Context:
+  ## Current State (June 2025, Block ~22,713,000)
+  - Ticket stub system is implemented and tested (22 passing tests)
+  - Main blocker: Template path issues in Jest tests
+  - Priority: Get Porcupine Fest claiming interface working
+  - Drive to Porcupine Fest in progress
+
+  ## For New Team Members
+  - Run `npm test` to see current state
+  - Ticket stub claiming contract is deployed and tested
+  - Use `node src/build_logic/get_current_blockheight.js` for temporal context
+  - Test conventions: "Fails when..." not "Should fail..."
+  - Current test issue: Nunjucks template paths in Jest environment
+
+  Development Workflow:
+  ## Team Development Notes
+  - Sky: Has laptop access, will need API key setup
+  - We generally work directly on main unless major feature development
+  - Test first when touching critical paths (ticket stub claiming, set stone minting)
+  - Block height tracking helps with temporal awareness and debugging
+
 * We engaged in a large-scale compacting around block 21411000.  This was when you were much less capable than you are now, so it took more text for you to understand and preserve your notions of our history.  What follows is the result of that compacting discussion.
 
 ----
