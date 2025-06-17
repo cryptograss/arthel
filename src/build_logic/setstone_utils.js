@@ -30,6 +30,8 @@ export function generateSetStonePages(shows, outputDir) {
                 fakeTicketStubCount = 3;
             } else if (showId === '0-20570887') { // Web3 Summit 2024
                 fakeTicketStubCount = 2;
+            } else if (showId === '0-22748946') {
+                fakeTicketStubCount = 40;
             }
             
             if (fakeTicketStubCount > 0) {
