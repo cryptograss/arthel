@@ -1,0 +1,32 @@
+qr_codes:
+  - name: "vowel-sounds-bandcamp"
+    caption: "Vowel Sounds Album"
+    data: "https://justinholmes.bandcamp.com/album/vowel-sounds"
+    
+  - name: "four-masks-bandcamp"
+    caption: "Four Masks Album"
+    data: "https://justinholmes.bandcamp.com/album/4masks"
+    
+  - name: "justinholmes-website"
+    caption: "Justin Holmes Website"
+    data: "https://justinholmes.com"
+    
+  - name: "cryptograss-merch"
+    caption: "Cryptograss Merch"
+    data: "https://cryptograss.live/onchain-merch"
+    
+  - name: "github-source"
+    caption: "GitHub Source Code"
+    data: "https://github.com/cryptograss/arthel/"
+    
+  - name: "justinholmes-shows"
+    caption: "Live Shows & Setlists"
+    data: "https://justinholmes.com/shows"
+    
+  - name: "bitcoin-address"
+    caption: "Bitcoin Payment"
+    data: "bitcoin:bc1qvx54mqq7jsa4vf9ttef99hppfwlsgp2flte6jw?time=1750111237&exp=86400"
+        
+  - name: "cryptograss-eth"
+    caption: "Ethereum Payment"
+    data: "cryptograss.eth"

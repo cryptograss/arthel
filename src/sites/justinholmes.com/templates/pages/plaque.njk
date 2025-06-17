@@ -7,8 +7,8 @@
 
 {% block main %}
 <script>
-// Prevent slogan from being overwritten by JS
-window.skipSloganUpdate = true;
+    // Prevent slogan from being overwritten by JS
+    window.skipSloganUpdate = true;
 </script>
 {% include 'partials/bigger-banner.njk' %}
 <div class="container">
@@ -26,7 +26,7 @@ window.skipSloganUpdate = true;
                         class="qr-code">
                 </div>
                 <div class="card-content">
-                    <h3 class="card-title">Our second record: <br />Vowel Sounds</h3>
+                    <h3 class="card-title">Our first record: <br />Vowel Sounds</h3>
                     <p class="card-subtitle">Album on Bandcamp</p>
                 </div>
             </div>
@@ -129,7 +129,6 @@ window.skipSloganUpdate = true;
 </div>
 
 <style>
-
     .payment-section {
         display: flex;
         align-items: center;
@@ -160,6 +159,8 @@ window.skipSloganUpdate = true;
     }
 
     .cryptograss-qr {
+        height: 100px;
+        width: 100px;
         border: 3px solid white;
         border-radius: 8px;
         background: white;
@@ -257,75 +258,10 @@ window.skipSloganUpdate = true;
     /* Print styles for physical plaque */
     @media print {
         @page {
-            size: letter;
-            margin: 0;
-        }
-
-        /* Force backgrounds to print */
-        body, * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        
-        /* Hide the footer social links and video background */
-        #footer,
-        .bg,
-        video {
-            display: none !important;
-        }
-        
-        /* Fix grid geometry for print */
-        .plaque-grid-container {
-            max-width: 7.5in !important;
-            margin: 0 auto !important;
-            padding: 0.25rem !important;
-        }
-        
-        .plaque-grid {
-            display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-            grid-template-rows: repeat(3, 1fr) !important;
-            gap: 0.5rem !important;
-            min-height: auto !important;
-            max-height: 9in !important;
-        }
-        
-        .plaque-card {
-            max-width: 3.5in !important;
-            height: 2.2in !important;
-            padding: 0.3rem !important;
-            page-break-inside: avoid !important;
-            overflow: hidden !important;
-        }
-        
-        .qr-code {
-            width: 75px !important;
-            height: 75px !important;
-        }
-        
-        .card-artwork {
-            width: 70px !important;
-            height: 70px !important;
-        }
-        
-        .card-title {
-            font-size: 0.85rem !important;
-            line-height: 1.1 !important;
-            margin-bottom: 0.2rem !important;
-            overflow: hidden !important;
-        }
-        
-        .card-subtitle {
-            font-size: 0.7rem !important;
-            line-height: 1 !important;
-            margin: 0 !important;
-        }
-        
-        /* Remove hover effects for print */
-        .plaque-card:hover {
-            transform: none !important;
-            box-shadow: none !important;
+            size: 12in 18in;
+            margin: 0in;
         }
     }
 </style>
+
 {% endblock %}
