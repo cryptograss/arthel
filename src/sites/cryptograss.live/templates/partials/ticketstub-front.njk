@@ -1,5 +1,6 @@
 <div class="ticket-stub-container row">
-    <div class="col-6" id="ticket-stub-front-{{ ticketStub.tokenId }}">
+    <div class="col-1"></div>
+    <div class="col-6 ticket-stub-front" id="ticket-stub-front-{{ ticketStub.tokenId }}">
         <img src="{{ get_image("ticket-stub-gridremoved.png") }}"/>
 
         <div class="band-names">
@@ -24,7 +25,7 @@
                 <p class="small">Rabbit hash:</p>
                 {{ ticketStub.rabbitHash }}
             </div>
-            {{ ticketStub.tokenId }} / {50-99}
+            {{ ticketStub.tokenId }} / {100-149}
         </div>
     </div>
 

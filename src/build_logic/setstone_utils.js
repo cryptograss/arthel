@@ -40,7 +40,7 @@ export function generateSetStonePages(shows, outputDir) {
                 show.ticketStubCount = fakeTicketStubCount; // Update count for consistency
                 for (let i = 0; i < fakeTicketStubCount; i++) {
                     show.ticketStubs.push({
-                        tokenId: i + 1, // Start token IDs at 1
+                        tokenId: i + 100, // Start token IDs at 1
                         claimed: false,
                         owner: null,
                         rabbitHash: '',
@@ -142,21 +142,21 @@ export function generateSetStonePages(shows, outputDir) {
             });
 
             // Generate claim page for each ticket stub
-            let claimOutputPath = `/blox-office/ticketstubs/claim/${ticketStub.tokenId}.html`;
-            let claimContext = {
-                tokenId: ticketStub.tokenId,
-                contractAddress: ticketStubClaimerContractAddress,
-                contractABI: JSON.stringify(ticketStubClaimerABI),
-                alchemyApiKey: process.env.ALCHEMY_API_KEY,
-                show: show,
-                ticketStub: ticketStub,
-            };
-            renderPage({
-                template_path: 'pages/claim-ticket-stub.njk',
-                output_path: claimOutputPath,
-                context: claimContext,
-                site: "cryptograss.live"
-            });
+            // let claimOutputPath = `/blox-office/ticketstubs/claim/${ticketStub.tokenId}.html`;
+            // let claimContext = {
+            //     tokenId: ticketStub.tokenId,
+            //     contractAddress: ticketStubClaimerContractAddress,
+            //     contractABI: JSON.stringify(ticketStubClaimerABI),
+            //     alchemyApiKey: process.env.ALCHEMY_API_KEY,
+            //     show: show,
+            //     ticketStub: ticketStub,
+            // };
+            // renderPage({
+            //     template_path: 'pages/claim-ticket-stub.njk',
+            //     output_path: claimOutputPath,
+            //     context: claimContext,
+            //     site: "cryptograss.live"
+            // });
         });
 
 
