@@ -1,17 +1,10 @@
 {% extends 'shared/layouts/base.njk' %}
 
-{% block title %}Justin Holmes Music - Plaque{% endblock %}
+{% block title %}Justin Holmes Music{% endblock %}
 
 {% block main %}
+{% include 'partials/bigger-banner.njk' %}
 <div class="container">
-    <div class="row">
-        <div class="col-12">
-            <div class="bigger-banner semi-transparent-bg">
-                <h1 class="pixel-font text-center">Justin Holmes Music</h1>
-                <p class="text-center scan-to-connect">Scan to Connect</p>
-            </div>
-        </div>
-    </div>
     
     <div class="container">
         <div class="row">
@@ -19,15 +12,15 @@
                 <div class="plaque-description">
                     <div class="payment-section">
                         <div class="payment-left">
-                            <img src="/assets/images/Sky Lightning wallet.png" alt="Sky Lightning Wallet" class="wallet-image">
-                            <p class="payment-label">Lightning wallet</p>
+                            <img src="{{ get_image('qr-codes/bitcoin-address.png') }}" alt="Bitcoin Address QR Code" class="wallet-image">
+                            <p class="payment-label">Bitcoin address</p>
                         </div>
                         <div class="payment-center">
-                            <p class="payment-methods">We accept Lightning wallet, ETH, silver, gold backs</p>
+                            <p class="payment-methods">We accept Bitcoin, ETH, silver, gold backs</p>
                             <p class="fiat-fee">Fiat is subject to a 15% bullshit fee</p>
                         </div>
                         <div class="payment-right">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=cryptograss.eth" alt="cryptograss.eth QR Code" class="cryptograss-qr">
+                            <img src="{{ get_image('qr-codes/cryptograss-eth.png') }}" alt="cryptograss.eth QR Code" class="cryptograss-qr">
                             <p class="payment-label">cryptograss.eth</p>
                         </div>
                     </div>
@@ -44,10 +37,10 @@
                     <img src="/assets/images/albums/vowel-sounds-cover-art-400.png" alt="Vowel Sounds Album Art" class="card-artwork">
                 </div>
                 <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://justinholmesmusic.bandcamp.com/album/vowel-sounds" alt="Vowel Sounds QR Code" class="qr-code">
+                    <img src="{{ get_image('qr-codes/vowel-sounds-bandcamp.png') }}" alt="Vowel Sounds QR Code" class="qr-code">
                 </div>
                 <div class="card-content">
-                    <h3 class="card-title">Vowel Sounds</h3>
+                    <h3 class="card-title">Our second record: <br/>Vowel Sounds</h3>
                     <p class="card-subtitle">Album on Bandcamp</p>
                 </div>
             </div>
@@ -57,10 +50,10 @@
                     <img src="/assets/images/albums/four-masks-temp.png" alt="Four Masks Album" class="card-artwork">
                 </div>
                 <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://justinholmesmusic.bandcamp.com/album/four-masks" alt="Four Masks QR Code" class="qr-code">
+                    <img src="{{ get_image('qr-codes/four-masks-bandcamp.png') }}" alt="Four Masks QR Code" class="qr-code">
                 </div>
                 <div class="card-content">
-                    <h3 class="card-title">Four Masks</h3>
+                    <h3 class="card-title">Our second record: <br/>4Masks</h3>
                     <p class="card-subtitle">Album on Bandcamp</p>
                 </div>
             </div>
@@ -71,7 +64,7 @@
                     <img src="/assets/images/jh-logo-shaded.png" alt="Justin Holmes Logo" class="card-artwork">
                 </div>
                 <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://justinholmes.com" alt="Website QR Code" class="qr-code">
+                    <img src="{{ get_image('qr-codes/justinholmes-website.png') }}" alt="Website QR Code" class="qr-code">
                 </div>
                 <div class="card-content">
                     <h3 class="card-title">Website</h3>
@@ -84,7 +77,7 @@
                     <img src="/assets/images/bike-with-instruments.png" alt="Cryptograss Merch" class="card-artwork">
                 </div>
                 <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://cryptograss.live/onchain-merch" alt="Cryptograss Merch QR Code" class="qr-code">
+                    <img src="{{ get_image('qr-codes/cryptograss-merch.png') }}" alt="Cryptograss Merch QR Code" class="qr-code">
                 </div>
                 <div class="card-content">
                     <h3 class="card-title">Cryptograss Merch</h3>
@@ -98,7 +91,7 @@
                     <img src="/assets/images/social-logos/Octocat.png" alt="GitHub" class="card-artwork">
                 </div>
                 <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://github.com/JustinHolmesMusic/justinholmes.com" alt="GitHub QR Code" class="qr-code">
+                    <img src="{{ get_image('qr-codes/github-source.png') }}" alt="GitHub QR Code" class="qr-code">
                 </div>
                 <div class="card-content">
                     <h3 class="card-title">GitHub</h3>
@@ -111,10 +104,10 @@
                     <img src="/assets/images/IMG_0484.jpg" alt="Shows" class="card-artwork">
                 </div>
                 <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://justinholmes.com/shows" alt="Shows QR Code" class="qr-code">
+                    <img src="{{ get_image('qr-codes/justinholmes-shows.png') }}" alt="Shows QR Code" class="qr-code">
                 </div>
                 <div class="card-content">
-                    <h3 class="card-title">Shows</h3>
+                    <h3 class="card-title">Our past shows, setlists, performers, and metadata</h3>
                     <p class="card-subtitle">Live Performances</p>
                 </div>
             </div>
@@ -125,7 +118,6 @@
 <style>
 .plaque-grid-container {
     max-width: 1200px;
-    margin: 3rem auto;
     padding: 2rem;
 }
 
@@ -319,25 +311,87 @@
 
 /* Print styles for physical plaque */
 @media print {
-    .plaque-grid-container {
-        max-width: none;
+    @page {
+        size: letter;
         margin: 0;
-        padding: 1rem;
+    }
+    
+    /* Force backgrounds to print */
+    body, * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    body#bodyWithBackground {
+	background-image: url(9909d53f79b8750c8c70.png);
+	height: 100%;
+	margin: 0;
+	font-family: fell serif;
+	color: white;
+            -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+}
+    
+    /* Hide the footer social links and video background */
+    #footer,
+    .bg,
+    video, nav {
+        display: none !important;
+    }
+    
+    /* Fix grid geometry for print */
+    .plaque-grid-container {
+        max-width: 7.5in !important;
+        margin: 0 auto !important;
+        padding: 0.25rem !important;
+    }
+    
+    .plaque-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-rows: repeat(3, 1fr) !important;
+        gap: 0.5rem !important;
+        min-height: auto !important;
+        max-height: 9in !important;
     }
     
     .plaque-card {
-        background: white;
-        border: 2px solid black;
-        color: black;
+        max-width: 3.5in !important;
+        height: 2.2in !important;
+        padding: 0.3rem !important;
+        page-break-inside: avoid !important;
+        overflow: hidden !important;
     }
     
-    .card-content {
-        color: black;
+    .qr-code {
+        width: 75px !important;
+        height: 75px !important;
+    }
+    
+    .card-artwork {
+        width: 70px !important;
+        height: 70px !important;
+    }
+    
+    .card-title {
+        font-size: 0.85rem !important;
+        line-height: 1.1 !important;
+        margin-bottom: 0.2rem !important;
+        overflow: hidden !important;
     }
     
     .card-subtitle {
-        color: #666;
+        font-size: 0.7rem !important;
+        line-height: 1 !important;
+        margin: 0 !important;
+    }
+    
+    /* Remove hover effects for print */
+    .plaque-card:hover {
+        transform: none !important;
+        box-shadow: none !important;
     }
 }
+
 </style>
 {% endblock %}
