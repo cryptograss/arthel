@@ -133,16 +133,16 @@
 
 .ticket-stub-container .qr-code-for-secret {
     position: absolute;
-    right: 100px;
+    right: 35px;
     top: 29px;
 }
 
 .ticket-stub-container .qr-code-for-secret-uri {
-    position: absolute;
-    right: 262px;
-    top: 30px;
-    height: 170px !important;
-    width: 170px !important;
+	position: absolute;
+	right: 198px;
+	top: 25px;
+	height: 170px !important;
+	width: 170px !important;
 }
 
 .ticket-stub-back {
@@ -150,28 +150,28 @@
 }
 
 .ticket-stub-container .ticket-stub-number-on-back {
-    font-size: .9em;
-    color: #004746;
-    position: absolute;
-    right: 78px;
-    top: 5px;
-    text-align: right;
+	font-size: .9em;
+	color: #004746;
+	position: absolute;
+	right: 17px;
+	top: 6px;
+	text-align: right;
 }
 
 .ticket-stub-container .rabbit-text {
-    font-size: .8em;
-    color: #00bcb9;
-    position: absolute;
-    right: 125px;
-    top: 191px;
-    text-align: right;
+	font-size: .8em;
+	color: #00bcb9;
+	position: absolute;
+	right: 64px;
+	top: 194px;
+	text-align: right;
 }
 
 .ticket-stub-container .uri-text {
     font-size: .8em;
     color: #00bcb9;
     position: absolute;
-    right: 270px;
+    right: 205px;
     top: 188px;
     text-align: right;
 }
