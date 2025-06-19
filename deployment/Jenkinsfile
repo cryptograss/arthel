@@ -65,17 +65,6 @@ pipeline {
             }
         }
 
-
-        stage('Run Tests') {
-            steps {
-                sh '''#!/bin/bash
-                    . "$NVM_DIR/nvm.sh" --silent
-                    nvm use ${NODE_VERSION} --silent
-                    npm test
-                    '''
-            }
-        }
-
         stage('Create Chain Data Directory') {
             steps {
                 sh '''#!/bin/bash
@@ -119,6 +108,16 @@ pipeline {
                     nvm use ${NODE_VERSION} --silent
                     npm run download-videos
                 '''
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh '''#!/bin/bash
+                    . "$NVM_DIR/nvm.sh" --silent
+                    nvm use ${NODE_VERSION} --silent
+                    npm test
+                    '''
             }
         }
 
