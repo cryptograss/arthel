@@ -7,9 +7,9 @@ class MockTicketStubClaimer {
         this.ticketStubs = new Map();
         this.usedSecrets = new Set();
         this.showTicketCounts = new Map();
-        this.nextTokenId = 50;
+        this.nextTokenId = 1;
         this.owner = 'owner_address';
-        this.totalSupplyValue = 50;
+        this.totalSupplyValue = 0;
         this.baseURI = '';
     }
 
