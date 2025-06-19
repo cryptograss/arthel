@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
-import nunjucks from "nunjucks";
 import { getProjectDirs } from "../locations.js";
+import { getNunjucksEnv } from "./template_helpers.js";
 
 export function renderPage({ template_path, context, output_path, layout = "base.njk", site }) {
     const { outputPrimaryRootDir, templateDir, basePath } = getProjectDirs();
@@ -10,9 +10,11 @@ export function renderPage({ template_path, context, output_path, layout = "base
     if (!fs.existsSync(outputFilePath)) {
         fs.mkdirSync(path.dirname(outputFilePath), {recursive: true});
     }
-    const template = path.join(templateDir, template_path);
-
-    let rendered_page = nunjucks.render(template, {
+    
+    // Get the shared Nunjucks environment with helpers
+    const env = getNunjucksEnv(site);
+    
+    let rendered_page = env.render(template_path, {
         ...context,
         basePath: basePath
     });

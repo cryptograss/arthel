@@ -40,7 +40,7 @@ export function generateSetStonePages(shows, outputDir) {
                 show.ticketStubCount = fakeTicketStubCount; // Update count for consistency
                 for (let i = 0; i < fakeTicketStubCount; i++) {
                     show.ticketStubs.push({
-                        tokenId: i + 100, // Start token IDs at 1
+                        tokenId: i + 1, // Start token IDs at 1
                         claimed: false,
                         owner: null,
                         rabbitHash: '',
@@ -80,7 +80,6 @@ export function generateSetStonePages(shows, outputDir) {
         //////////////////////////
         // Make a JSON object with the secrets and hashes for each ticket stub
         // TODO: This is a little weird, but it's a good way to get the data to the blockchain.
-
 
         const ticketStubDataPath = `/artifacts/ticket-stub-data/${showId}.html`;
         const secrets_and_hashes = show.ticketStubs.map(ticketStub => ({
