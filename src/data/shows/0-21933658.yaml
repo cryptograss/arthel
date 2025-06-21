@@ -20,6 +20,8 @@ sets:
       - Shady Grove
       - Drowsy Maggie
       - Paint Exchange  # Jake on guitar, Justin on mando
-      - You and Whose Army
+      - You and Whose Army:
+        mode: segue
+      - All the Tired Horses
       - Song of Storms
       - Salt Creek
