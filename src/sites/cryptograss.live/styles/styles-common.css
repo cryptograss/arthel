@@ -77,7 +77,7 @@
     position: relative;
 }
 
-.ticket-stub-container .ticket-stub-number {
+.ticket-stub-number {
 	font-size: 1em;
 	color: hsl(163, 100%, 15.9%);
 	position: absolute;

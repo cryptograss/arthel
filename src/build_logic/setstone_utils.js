@@ -26,26 +26,31 @@ export function generateSetStonePages(shows, outputDir) {
             // For testing purposes, create fake ticket stubs for some shows
             // TODO: Remove this when real contract integration is complete
             let fakeTicketStubCount = 0;
-            if (showId === '0-22447747') { // ETHDam 2025
-                fakeTicketStubCount = 3;
-            } else if (showId === '0-20570887') { // Web3 Summit 2024
-                fakeTicketStubCount = 2;
-            } else if (showId === '0-22748946') {
+            let startTokenId = 1;
+            
+            if (showId === '0_7-22575700') { // Burza #4 - ETHPrague 2025 First Show
+                fakeTicketStubCount = 50;
+                startTokenId = 0;
+            } else if (showId === '0_7-22590100') { // Bike Jesus - ETHPrague 2025 Second Show
+                fakeTicketStubCount = 50;
+                startTokenId = 50;
+            } else if (showId === '0-22748946') { // Porcupine 2025
                 fakeTicketStubCount = 40;
+                startTokenId = 100;
             }
             
             if (fakeTicketStubCount > 0) {
-                console.log(`Creating ${fakeTicketStubCount} fake ticket stubs for show ${showId} (for testing)`);
+                console.log(`Creating ${fakeTicketStubCount} fake ticket stubs for show ${showId} (tokens ${startTokenId}-${startTokenId + fakeTicketStubCount - 1})`);
                 show.ticketStubs = [];
                 show.ticketStubCount = fakeTicketStubCount; // Update count for consistency
                 for (let i = 0; i < fakeTicketStubCount; i++) {
                     show.ticketStubs.push({
-                        tokenId: i + 1, // Start token IDs at 1
+                        tokenId: startTokenId + i,
                         claimed: false,
                         owner: null,
                         rabbitHash: '',
                         rabbitHashFull: '',
-                        secret: ''
+                        secret: `secret_for_token_${startTokenId + i}`
                     });
                 }
             } else {
@@ -141,31 +146,34 @@ export function generateSetStonePages(shows, outputDir) {
             });
 
             // Generate claim page for each ticket stub
-            // let claimOutputPath = `/blox-office/ticketstubs/claim/${ticketStub.tokenId}.html`;
-            // let claimContext = {
-            //     tokenId: ticketStub.tokenId,
-            //     contractAddress: ticketStubClaimerContractAddress,
-            //     contractABI: JSON.stringify(ticketStubClaimerABI),
-            //     alchemyApiKey: process.env.ALCHEMY_API_KEY,
-            //     show: show,
-            //     ticketStub: ticketStub,
-            // };
-            // renderPage({
-            //     template_path: 'pages/claim-ticket-stub.njk',
-            //     output_path: claimOutputPath,
-            //     context: claimContext,
-            //     site: "cryptograss.live"
-            // });
+            let claimOutputPath = `/blox-office/ticketstubs/claim/${ticketStub.tokenId}.html`;
+            let claimContext = {
+                tokenId: ticketStub.tokenId,
+                contractAddress: ticketStubClaimerContractAddress,
+                contractABI: JSON.stringify(ticketStubClaimerABI),
+                alchemyApiKey: process.env.ALCHEMY_API_KEY,
+                show: show,
+                ticketStub: ticketStub,
+            };
+            renderPage({
+                template_path: 'pages/claim-ticket-stub.njk',
+                output_path: claimOutputPath,
+                context: claimContext,
+                site: "cryptograss.live"
+            });
         });
 
 
 
-        // We're only interested in shows that have set stones.
-        if (!show.has_set_stones_available) {
+        // Generate set stones for shows that have actual setstone data
+        if (!show.sets || Object.keys(show.sets).length === 0) {
             continue;
         }
 
         Object.entries(show.sets).forEach(([setNumber, set]) => {
+            if (!set.setstones || set.setstones.length === 0) {
+                return; // Skip sets without setstones
+            }
             set.setstones.forEach((setstone, setstoneNumber) => {
 
 
@@ -258,12 +266,15 @@ export function renderSetStoneImages(shows, outputDir) {
     }
 
     for (let [showId, show] of Object.entries(shows)) {
-        // We're only interested in shows that have set stones.
-        if (!show.has_set_stones_available) {
+        // Generate set stone images for shows that have actual setstone data
+        if (!show.sets || Object.keys(show.sets).length === 0) {
             continue;
         }
 
         Object.entries(show.sets).forEach(([setNumber, set]) => {
+            if (!set.setstones || set.setstones.length === 0) {
+                return; // Skip sets without setstones
+            }
             set.setstones.forEach((setstone, setstoneNumber) => {
                 const canvas = generateDiamondPatternFromNesPalette(setstone.color[0], setstone.color[1], setstone.color[2], "transparent", null, 1000);
                 const buffer = canvas.toBuffer('image/png');
