@@ -3,13 +3,6 @@
     "configurations": [
         {
             "type": "node",
-            "name": "Dev Servers",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": ["run", "dev"],
-            "console": "integratedTerminal"
-        },
-        {
-            "type": "node",
             "name": "JH Dev Server",
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run", "dev:jh"]
@@ -18,7 +11,16 @@
             "type": "node",
             "name": "CG Dev Server",
             "runtimeExecutable": "npm",
-            "runtimeArgs": ["run", "dev:cg"]
+            "runtimeArgs": ["run", "dev:cg"],
+            "console": "integratedTerminal",
+            "outputCapture": "std",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+                "**/webpack/**"
+            ],
+            "trace": false,
+            "attachSimplePort": 0
         },
         {
             "type": "node",
