@@ -7,6 +7,8 @@ import { renderPage } from "./utils/rendering_utils.js";
 import { getProjectDirs } from "./locations.js";
 import { randomBytes } from 'crypto';
 import { JsonRpcVersionUnsupportedError, keccak256 } from 'viem';
+import {ticketStubClaimerABI} from "../abi/ticketStubClaimerABI.js";
+import { ticketStubClaimerContractAddress } from "./constants.js";
 
 /**
  *
@@ -17,9 +19,7 @@ import { JsonRpcVersionUnsupportedError, keccak256 } from 'viem';
  */
 export function generateSetStonePages(shows, outputDir) {
     const { cryptograssUrl } = getProjectDirs();
-    for (const showMetadata of shows) {
-        const show = showMetadata[1];
-        const showId = showMetadata[0];
+    for (const [showId, show] of Object.entries(shows)) {
 
         // Ticket stubs
         if (!show.ticketStubs) {
@@ -110,6 +110,23 @@ export function generateSetStonePages(shows, outputDir) {
                 template_path: 'reuse/single-ticket-stub.njk',
                 output_path: outputPath,
                 context: context,
+                site: "cryptograss.live"
+            });
+
+            // Generate claim page for each ticket stub
+            let claimOutputPath = `/blox-office/ticketstubs/claim/${ticketStub.tokenId}.html`;
+            let claimContext = {
+                tokenId: ticketStub.tokenId,
+                contractAddress: ticketStubClaimerContractAddress,
+                contractABI: JSON.stringify(ticketStubClaimerABI),
+                alchemyApiKey: process.env.ALCHEMY_API_KEY,
+                show: show,
+                ticketStub: ticketStub,
+            };
+            renderPage({
+                template_path: 'pages/claim-ticket-stub.njk',
+                output_path: claimOutputPath,
+                context: claimContext,
                 site: "cryptograss.live"
             });
         });
@@ -213,9 +230,7 @@ export function renderSetStoneImages(shows, outputDir) {
         fs.mkdirSync(outputDir, {recursive: true});
     }
 
-    for (const showMetadata of shows) {
-        const show = showMetadata[1];
-        const showId = showMetadata[0];
+    for (let [showId, show] of Object.entries(shows)) {
         // We're only interested in shows that have set stones.
         if (!show.has_set_stones_available) {
             continue;
