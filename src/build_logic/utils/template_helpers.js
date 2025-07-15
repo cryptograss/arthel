@@ -12,15 +12,21 @@ const REFERENCE_BLOCK = 20612385; // Example block number
 const REFERENCE_TIMESTAMP = 1724670731; // Unix timestamp in seconds
 
 let _helpers_are_registered = [];
+let _nunjucks_env = null;
 
 export function registerHelpers(site) {
     const { templateDir } = getProjectDirs();
 
-    let env = nunjucks.configure([templateDir, path.join(templateDir, site)], { autoescape: false })
+    if (!_nunjucks_env) {
+        _nunjucks_env = nunjucks.configure([templateDir, path.join(templateDir, site)], { autoescape: false });
+    }
+    
     if (_helpers_are_registered.includes(site)) {
         console.warn('Helpers are already registered');
-        return;
+        return _nunjucks_env;
     }
+    
+    let env = _nunjucks_env;
 
     // Add the 'get_image' filter that looks up images in the imageMapping object
     env.addGlobal('get_image', function (filename, imageType) {
@@ -114,4 +120,12 @@ export function registerHelpers(site) {
     });
 
     _helpers_are_registered.push(site);
+    return env;
+}
+
+export function getNunjucksEnv(site) {
+    if (!_nunjucks_env) {
+        registerHelpers(site);
+    }
+    return _nunjucks_env;
 }

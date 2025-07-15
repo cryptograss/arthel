@@ -1,33 +1,124 @@
 {% extends 'shared/layouts/base.njk' %}
+{% set hide_social_nav = true %}
+{% set no_nav = true %}
+{% set custom_slogan = "somewhere between ginseng sullivan and byzantine fault tolerance" %}
 
-{% block title %}Justin Holmes Music - Plaque{% endblock %}
+{% block title %}Justin Holmes Music{% endblock %}
 
 {% block main %}
+<script>
+    // Prevent slogan from being overwritten by JS
+    window.skipSloganUpdate = true;
+</script>
+{% include 'partials/bigger-banner.njk' %}
 <div class="container">
-    <div class="row">
-        <div class="col-12">
-            <div class="bigger-banner semi-transparent-bg">
-                <h1 class="pixel-font text-center">Justin Holmes Music</h1>
-                <p class="text-center scan-to-connect">Scan to Connect</p>
+
+    <div class="plaque-grid-container">
+        <div class="plaque-grid">
+            <!-- Row 1 -->
+            <div class="plaque-card">
+                <div class="artwork-container">
+                    <img src="/assets/images/albums/vowel-sounds-cover-art-400.png" alt="Vowel Sounds Album Art"
+                        class="card-artwork">
+                </div>
+                <div class="qr-container">
+                    <img src="{{ get_image('qr-codes/vowel-sounds-bandcamp.png') }}" alt="Vowel Sounds QR Code"
+                        class="qr-code">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Our first record: <br />Vowel Sounds</h3>
+                    <p class="card-subtitle">Album on Bandcamp</p>
+                </div>
+            </div>
+
+            <div class="plaque-card">
+                <div class="artwork-container">
+                    <img src="/assets/images/albums/four-masks-temp.png" alt="Four Masks Album" class="card-artwork">
+                </div>
+                <div class="qr-container">
+                    <img src="{{ get_image('qr-codes/four-masks-bandcamp.png') }}" alt="Four Masks QR Code"
+                        class="qr-code">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Our second record: <br />4Masks</h3>
+                    <p class="card-subtitle">Album on Bandcamp</p>
+                </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="plaque-card">
+                <div class="artwork-container">
+                    <img src="/assets/images/jh-logo-shaded.png" alt="Justin Holmes Logo" class="card-artwork">
+                </div>
+                <div class="qr-container">
+                    <img src="{{ get_image('qr-codes/justinholmes-website.png') }}" alt="Website QR Code"
+                        class="qr-code">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Website</h3>
+                    <p class="card-subtitle">justinholmes.com</p>
+                </div>
+            </div>
+
+            <div class="plaque-card">
+                <div class="artwork-container">
+                    <img src="/assets/images/bike-with-instruments.png" alt="Cryptograss Merch" class="card-artwork">
+                </div>
+                <div class="qr-container">
+                    <img src="{{ get_image('qr-codes/cryptograss-merch.png') }}" alt="Cryptograss Merch QR Code"
+                        class="qr-code">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Cryptograss Merch</h3>
+                    <p class="card-subtitle">Digital Collectibles</p>
+                </div>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="plaque-card">
+                <div class="artwork-container">
+                    <img src="/assets/images/social-logos/Octocat.png" alt="GitHub" class="card-artwork">
+                </div>
+                <div class="qr-container">
+                    <img src="{{ get_image('qr-codes/github-source.png') }}" alt="GitHub QR Code" class="qr-code">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">GitHub</h3>
+                    <p class="card-subtitle">Source Code</p>
+                </div>
+            </div>
+
+            <div class="plaque-card">
+                <div class="artwork-container">
+                    <img src="/assets/images/IMG_0484.jpg" alt="Shows" class="card-artwork">
+                </div>
+                <div class="qr-container">
+                    <img src="{{ get_image('qr-codes/justinholmes-shows.png') }}" alt="Shows QR Code" class="qr-code">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Our past shows, setlists, performers, and metadata</h3>
+                    <p class="card-subtitle">Live Performances</p>
+                </div>
             </div>
         </div>
     </div>
-    
     <div class="container">
         <div class="row">
             <div class="col-12">
                 <div class="plaque-description">
                     <div class="payment-section">
                         <div class="payment-left">
-                            <img src="/assets/images/Sky Lightning wallet.png" alt="Sky Lightning Wallet" class="wallet-image">
-                            <p class="payment-label">Lightning wallet</p>
+                            <img src="{{ get_image('qr-codes/bitcoin-address.png') }}" alt="Bitcoin Address QR Code"
+                                class="wallet-image">
+                            <p class="payment-label">Bitcoin address</p>
                         </div>
                         <div class="payment-center">
-                            <p class="payment-methods">We accept Lightning wallet, ETH, silver, gold backs</p>
+                            <p class="payment-methods">We accept Bitcoin, ETH, silver, gold backs</p>
                             <p class="fiat-fee">Fiat is subject to a 15% bullshit fee</p>
                         </div>
                         <div class="payment-right">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=cryptograss.eth" alt="cryptograss.eth QR Code" class="cryptograss-qr">
+                            <img src="{{ get_image('qr-codes/cryptograss-eth.png') }}" alt="cryptograss.eth QR Code"
+                                class="cryptograss-qr">
                             <p class="payment-label">cryptograss.eth</p>
                         </div>
                     </div>
@@ -35,309 +126,142 @@
             </div>
         </div>
     </div>
-    
-    <div class="plaque-grid-container">
-        <div class="plaque-grid">
-            <!-- Row 1 -->
-            <div class="plaque-card">
-                <div class="artwork-container">
-                    <img src="/assets/images/albums/vowel-sounds-cover-art-400.png" alt="Vowel Sounds Album Art" class="card-artwork">
-                </div>
-                <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://justinholmesmusic.bandcamp.com/album/vowel-sounds" alt="Vowel Sounds QR Code" class="qr-code">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">Vowel Sounds</h3>
-                    <p class="card-subtitle">Album on Bandcamp</p>
-                </div>
-            </div>
-            
-            <div class="plaque-card">
-                <div class="artwork-container">
-                    <img src="/assets/images/albums/four-masks-temp.png" alt="Four Masks Album" class="card-artwork">
-                </div>
-                <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://justinholmesmusic.bandcamp.com/album/four-masks" alt="Four Masks QR Code" class="qr-code">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">Four Masks</h3>
-                    <p class="card-subtitle">Album on Bandcamp</p>
-                </div>
-            </div>
-            
-            <!-- Row 2 -->
-            <div class="plaque-card">
-                <div class="artwork-container">
-                    <img src="/assets/images/jh-logo-shaded.png" alt="Justin Holmes Logo" class="card-artwork">
-                </div>
-                <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://justinholmes.com" alt="Website QR Code" class="qr-code">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">Website</h3>
-                    <p class="card-subtitle">justinholmes.com</p>
-                </div>
-            </div>
-            
-            <div class="plaque-card">
-                <div class="artwork-container">
-                    <img src="/assets/images/bike-with-instruments.png" alt="Cryptograss Merch" class="card-artwork">
-                </div>
-                <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://cryptograss.live/onchain-merch" alt="Cryptograss Merch QR Code" class="qr-code">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">Cryptograss Merch</h3>
-                    <p class="card-subtitle">Digital Collectibles</p>
-                </div>
-            </div>
-            
-            <!-- Row 3 -->
-            <div class="plaque-card">
-                <div class="artwork-container">
-                    <img src="/assets/images/social-logos/Octocat.png" alt="GitHub" class="card-artwork">
-                </div>
-                <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://github.com/JustinHolmesMusic/justinholmes.com" alt="GitHub QR Code" class="qr-code">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">GitHub</h3>
-                    <p class="card-subtitle">Source Code</p>
-                </div>
-            </div>
-            
-            <div class="plaque-card">
-                <div class="artwork-container">
-                    <img src="/assets/images/IMG_0484.jpg" alt="Shows" class="card-artwork">
-                </div>
-                <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://justinholmes.com/shows" alt="Shows QR Code" class="qr-code">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">Shows</h3>
-                    <p class="card-subtitle">Live Performances</p>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <style>
-.plaque-grid-container {
-    max-width: 1200px;
-    margin: 3rem auto;
-    padding: 2rem;
-}
+    .payment-section {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 800px;
+        margin: 0 auto;
+        gap: .5rem;
+    }
 
-.scan-to-connect {
-    font-family: 'Cabin', sans-serif;
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-}
+    .payment-left,
+    .payment-right {
+        flex: 0 0 auto;
+        text-align: center;
+    }
 
-.plaque-description {
-    margin: 2rem 0;
-    padding: 1rem;
-}
+    .payment-center {
+        flex: 1;
+        text-align: center;
+    }
 
-.payment-section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 800px;
-    margin: 0 auto;
-    gap: 2rem;
-}
+    .wallet-image {
+        height: 100px;
+        width: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #99c9ff;
+        margin-bottom: 0.5rem;
+    }
 
-.payment-left, .payment-right {
-    flex: 0 0 auto;
-    text-align: center;
-}
+    .cryptograss-qr {
+        height: 100px;
+        width: 100px;
+        border: 3px solid white;
+        border-radius: 8px;
+        background: white;
+        padding: 4px;
+        margin-bottom: 0.5rem;
+    }
 
-.payment-center {
-    flex: 1;
-    text-align: center;
-}
+    .payment-label {
+        font-family: 'Cabin', sans-serif;
+        font-size: 0.9rem;
+        color: #99c9ff;
+        margin: 0;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
 
-.wallet-image {
-    height: 100px;
-    width: 100px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 2px solid #99c9ff;
-    margin-bottom: 0.5rem;
-}
+    .payment-methods {
+        font-family: 'Cabin', sans-serif;
+        font-weight: bold;
+        color: #99c9ff;
+        margin-bottom: 0.5rem;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
 
-.cryptograss-qr {
-    border: 3px solid white;
-    border-radius: 8px;
-    background: white;
-    padding: 4px;
-    margin-bottom: 0.5rem;
-}
+    .fiat-fee {
+        font-family: 'Cabin', sans-serif;
+        color: #ffb06b;
+        font-style: italic;
+        margin: 0;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
 
-.payment-label {
-    font-family: 'Cabin', sans-serif;
-    font-size: 0.9rem;
-    color: #99c9ff;
-    margin: 0;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.payment-methods {
-    font-family: 'Cabin', sans-serif;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #99c9ff;
-    margin-bottom: 0.5rem;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.fiat-fee {
-    font-family: 'Cabin', sans-serif;
-    font-size: 1.2rem;
-    color: #ffb06b;
-    font-style: italic;
-    margin: 0;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.plaque-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 2rem;
-    min-height: 600px;
-}
-
-.plaque-card {
-    background: rgba(64, 70, 84, 0.9);
-    border: 2px solid #99c9ff;
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.plaque-card:hover {
-    transform: translateY(-5px);
-    border-color: #ffb06b;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-}
-
-.artwork-container {
-    margin-bottom: 1rem;
-}
-
-.card-artwork {
-    width: 120px;
-    height: 120px;
-    border: 2px solid #99c9ff;
-    border-radius: 8px;
-    object-fit: cover;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 4px;
-}
-
-.qr-container {
-    margin-bottom: 1rem;
-}
-
-.qr-code {
-    width: 160px;
-    height: 160px;
-    border: 3px solid white;
-    border-radius: 8px;
-    background: white;
-    padding: 8px;
-}
-
-.card-content {
-    color: white;
-}
-
-.card-title {
-    font-family: 'Cabin', sans-serif;
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.card-subtitle {
-    font-size: 0.9rem;
-    color: #99c9ff;
-    margin: 0;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
     .plaque-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: repeat(6, 1fr);
-        gap: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 2rem;
+        min-height: 600px;
     }
-    
-    .plaque-grid-container {
-        padding: 1rem;
+
+    .plaque-card {
+        background: rgba(64, 70, 84, 0.9);
+        border: 2px solid #99c9ff;
+        border-radius: 12px;
+        padding: .5rem;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
-    
-    .qr-code {
-        width: 140px;
-        height: 140px;
+
+    .artwork-container {
+        margin-bottom: 1rem;
     }
-    
+
     .card-artwork {
         width: 100px;
         height: 100px;
+        border: 2px solid #99c9ff;
+        border-radius: 8px;
+        object-fit: cover;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px;
     }
-}
 
-@media (max-width: 480px) {
+    .qr-container {
+        margin-bottom: .5rem;
+    }
+
     .qr-code {
-        width: 120px;
-        height: 120px;
-    }
-    
-    .card-title {
-        font-size: 1rem;
-    }
-    
-    .card-subtitle {
-        font-size: 0.8rem;
-    }
-    
-    .card-artwork {
-        width: 80px;
-        height: 80px;
-    }
-}
-
-/* Print styles for physical plaque */
-@media print {
-    .plaque-grid-container {
-        max-width: none;
-        margin: 0;
-        padding: 1rem;
-    }
-    
-    .plaque-card {
+        width: 70px;
+        height: 70px;
+        border: 3px solid white;
+        border-radius: 8px;
         background: white;
-        border: 2px solid black;
-        color: black;
+        padding: 3px;
     }
-    
+
     .card-content {
-        color: black;
+        color: white;
     }
-    
+
+    .card-title {
+        font-family: 'Cabin', sans-serif;
+        font-size: .5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
     .card-subtitle {
-        color: #666;
+        font-size: 0.3rem;
+        color: #99c9ff;
+        margin: 0;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     }
-}
+
+    /* Print styles for physical plaque */
+    @media print {
+        @page {
+            size: 12in 18in;
+            margin: 0in;
+        }
+    }
 </style>
+
 {% endblock %}

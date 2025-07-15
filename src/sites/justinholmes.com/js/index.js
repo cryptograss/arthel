@@ -7,19 +7,21 @@ import $ from 'jquery';
 
 $(document).ready(function () {
     // load assets/slogans.json
-    $.getJSON('/assets/slogans.json', function (data) {
-        const weightedChoices = [];
-        for (const [weight, strings] of Object.entries(data)) {
-            for (const string of strings) {
-                for (let i = 0; i < weight; i++) {
-                    weightedChoices.push(string);
+    if (!window.skipSloganUpdate) {
+        $.getJSON('/assets/slogans.json', function (data) {
+            const weightedChoices = [];
+            for (const [weight, strings] of Object.entries(data)) {
+                for (const string of strings) {
+                    for (let i = 0; i < weight; i++) {
+                        weightedChoices.push(string);
+                    }
                 }
             }
-        }
-        const randomIndex = Math.floor(Math.random() * weightedChoices.length);
-        $('#slogan').text(weightedChoices[randomIndex]);
+            const randomIndex = Math.floor(Math.random() * weightedChoices.length);
+            $('#slogan').text(weightedChoices[randomIndex]);
 
-    });
+        });
+    }
 
     var video = $('video.bg');  // Get the video element
     var height = $(window).height();  // Get the window height

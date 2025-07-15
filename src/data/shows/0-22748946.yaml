@@ -5,9 +5,51 @@ locality: "Lancaster"
 region1: "New Hampshire"
 timezone: "America/New_York"
 poster: "posters/porcupine2025-poster.png"
-# TODO: Add ensemble when confirmed
-# TODO: Add sets when setlist is planned
-# sets:
-#   0:
-#     songplays:
-#       - TBD
+ensemble:
+  "Justin Holmes": [ "guitar"]
+  "Skyler Golden": [ "bass" ]
+sets:
+  0:
+    songplays:
+      - Hell or High Water
+      - Rueben's Train
+      - Red Haired Boy
+      - Drowsy Maggie:
+        mode: segue
+      - Little Maggie:
+        mode: segue
+      - Song of Storms
+      - Power Underneath
+      - The Morning of The Bank Run
+  1:
+    songplays:
+      - Shady Grove
+      - Salt Creek
+      - Loser
+      - Vowel Sounds:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+            - Mark Hansen
+      - Proximity:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+            - Mark Hansen
+      - Terrapin Station:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+            - Mark Hansen
+      - Dragon Roost Island:
+        ensemble-modifications:
+          featuring:
+            - Mark Hansen
+      - Silver .44:
+        mode: segue
+      - I Know You Rider
+      - Garfield's Blackberry Blossom
+      - Paint Exchange:
+        ensemble-modifications:
+          featuring:
+            - Mark Hansen

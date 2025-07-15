@@ -90,7 +90,7 @@
                     </div>
                 </div>
 
-                <div class="mt-4">
+                <div class="mt-4 bg-white p-3 rounded shadow-sm">
                     <h5>What happens when I claim?</h5>
                     <ul>
                         <li>We'll verify your secret against the ticket stub contract</li>
@@ -99,6 +99,80 @@
                         <li>The secret can only be used once</li>
                     </ul>
                 </div>
+
+                {% if show.ticketStubs and show.ticketStubs.length > 0 %}
+                <div class="mt-5">
+                    <div class="row">
+                        <div class="col-3"></div>
+                        <div id="donationModal" class="col-md-6 semi-transparent-bg p-4 rounded shadow">
+                            <span class="pixel-font" style="color: white;">
+                                <h2>🎵 Also Available: Strike Set Stone for This Show</h2>
+                            </span>
+                            <p class="text-white">Commemorate your experience with a unique set stone NFT. Select three colors from the original NES palette.</p>
+                            
+                            <div id="setStoneColorPicker" style="width: 100%; align-items: left; color: white;">
+                                <select id="colorDropdown1" class="form-select pixel-font"></select>
+                                <select id="colorDropdown2" class="form-select pixel-font"></select>
+                                <select id="colorDropdown3" class="form-select pixel-font"></select>
+                                <button id="randomizeColors" class="btn btn-primary mt-2 pixel-font"
+                                    onclick="randomizeColors()">
+                                Randomize
+                            </button>
+                            </div>
+
+                            <div id="stoneRenderArea"></div>
+
+                            <div id="crystalizationMessage">
+                                <h4 class="pixel-font" style="color: white;">Crystalization message:</h4>
+                                <input id="crystalizationMessageText" type="text" class="form-control"
+                                   placeholder="Enter personal message">
+                            </div>
+
+                            <select id="setPicker" class="form-select pixel-font mt-2">
+                                {% for set_number, set in show.sets %}
+                                    <option value="{{set_number}}">Set #{{loop.index}}</option>
+                                {% endfor %}
+                            </select>
+
+                            <h4 data-tippy-content="Select a song from the setlist to make it your favorite song for this set stone."
+                            class="pixel-font mt-2" style="color: white;">Song of Note:</h4>
+                            <select id="favoriteSongPicker" class="form-select pixel-font mt-2"></select>
+
+                            <h4 class="pixel-font text-white">
+                                <span>Minimum price:</span>
+                                <span id="stonePrice"></span>
+                            </h4>
+                            <div class="input-group mt-2" style="width: 100%">
+                                <input id="amount" class="form-control">
+                                <span class="input-group-text">ETH</span>
+                            </div>
+
+                            <h3 class="pixel-font text-white">Rabbit</h3>
+                            <p class="text-white">You need a secret "rabbit", distributed at the show, to buy a set stone. Each rabbit is valid to purchase one stone.</p>
+                            <input id="rabbit" type="text" class="form-control"/>
+                            <button id="verifyRabbit" class="btn btn-primary mt-2">Verify</button>
+
+                            <div id="rabbitHashIconContainer" style="display: flex; flex-direction: row; align-items: center;">
+                                <div id="rabbitHashIcon"></div>
+                                <span id="rabbithash"></span>
+                            </div>
+
+                            <p id="verifyResult" class="text-light"></p>
+                            <p id="invalidRabbitErrorMessage" style="display: none; color: red;">Invalid secret rabbit</p>
+
+                            <div class="mt-5" style="display: flex; justify-content: space-between; width: 100%">
+                                <button id="mintStone" class="btn btn-primary pixel-font"
+                                        style="padding: 10px; background-color: hsl(345, 100%, 51%); border-color: hsl(345, 100%, 51%);"
+                                        onclick="mintStone()">Strike SetStone
+                                </button>
+                                <w3m-button></w3m-button>
+                            </div>
+
+                        </div>
+                        <div class="col-3"></div>
+                    </div>
+                </div>
+                {% endif %}
             {% endif %}
         </div>
     </div>
@@ -352,5 +426,21 @@
             width: 125%;
         }
     }
+    .ticket-stub-number {
+        position:absolute;
+    }
+    
+    /* Set stone interface styling */
+    .semi-transparent-bg {
+        background: linear-gradient(90deg, rgba(64, 70, 84, 0.7) 0%, rgba(58, 58, 62, .84) 100%);
+        border-radius: 15px;
+    }
+    
+    .pixel-font {
+        font-family: 'll-pixel', monospace;
+    }
 </style>
+
+<!-- Include set stone functionality -->
+<script src="/js/bazaar/strike_set_stones.js"></script>
 {% endblock %}

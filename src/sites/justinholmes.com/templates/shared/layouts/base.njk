@@ -31,6 +31,7 @@
     <div id="top-fixed-area" class="fixed-top"></div>
     {% block main %}{% endblock %}
 
+    {% if not hide_social_nav %}
     <nav id="footer" class="mt-3 nav nav-fill justify-content-center flex-column flex-sm-row">
 
         <a class="p-0 nav-link" target="_blank" href="https://discord.gg/B8rEXkSAJ4">
@@ -60,6 +61,7 @@
             <img class="mt-2" src="{{ get_image("social-logos/youtube_social_icon_red.png") }}"/>
         </a>
     </nav>
+    {% endif %}
 </div>
 
 </body>
