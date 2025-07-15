@@ -2,3 +2,9 @@ llamas:
   template: index.njk
   context:
     page_title: "Future-proofing Bluegrass"
+
+onchain-merch:
+  template: onchain-merch.njk
+  include_data_in_context: ["shows", "chainData"]
+  context:
+    page_title: "Onchain Merch"
