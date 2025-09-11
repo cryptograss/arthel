@@ -29,7 +29,11 @@ export function renderPage({ template_path, context, output_path, layout = "base
     fs.writeFileSync(outputFilePath, rendered_page);
     
     // Add to sitemap
-    const urlPath = output_path.replace(/\.html$/, '').replace(/\/index$/, '') || '/';
+    let urlPath = output_path.replace(/\.html$/, '').replace(/\/index$/, '') || '/';
+    // Ensure URL path starts with /
+    if (!urlPath.startsWith('/')) {
+        urlPath = '/' + urlPath;
+    }
     sitemap.set(urlPath, {
         site: site,
         template: template_path,

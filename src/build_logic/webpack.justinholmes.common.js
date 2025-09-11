@@ -15,7 +15,7 @@ const { outputDistDir, outputPrimaryRootDir, outputPrimarySiteDir, siteDir, site
 // Make sure the output directory exists
 fs.mkdirSync(outputDistDir, { recursive: true });
 
-const templatesPattern = path.join(outputPrimarySiteDir, '**/*.html');
+const templatesPattern = path.join(outputPrimarySiteDir, '**/*.{html,xml}');
 const templateFiles = glob.sync(templatesPattern);
 
 const htmlPluginInstances = templateFiles.map(templatePath => {
