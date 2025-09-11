@@ -596,7 +596,7 @@ export const runPrimaryBuild = async () => {
     
     // Generate HTML sitemap (debug tool - goes outside webpack reach)
     const htmlSitemap = generateSitemapHTML(site);
-    const debugSitemapPath = path.join(outputPrimaryRootDir, `debug-sitemap-${site}.html`);
+    const debugSitemapPath = path.join(outputPrimarySiteDir, `sitemap.html`);
     fs.writeFileSync(debugSitemapPath, htmlSitemap);
     console.log(`Debug sitemap written to: ${debugSitemapPath}`);
     

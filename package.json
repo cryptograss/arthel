@@ -13,7 +13,8 @@
     "fetch-video-metadata": "node src/build_logic/fetch_video_metadata.js",
     "verify-dice": "node src/build_logic/verify_dice_roll.js",
     "fetch-chain-data": "node src/build_logic/fetch_chain_data.js",
-    "blockheight": "node src/build_logic/get_current_blockheight.js"
+    "blockheight": "node src/build_logic/get_current_blockheight.js",
+    "build-oracle": "node src/build_logic/build_oracle_data.js"
   },
   "type": "module",
   "keywords": [],
