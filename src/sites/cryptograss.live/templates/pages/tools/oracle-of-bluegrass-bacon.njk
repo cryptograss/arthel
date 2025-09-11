@@ -1,0 +1,392 @@
+---
+title: "Oracle of Bluegrass Bacon"
+pageId: "oracle-of-bluegrass-bacon" 
+description: "Connect any two musicians through shows and recordings - like Six Degrees of Kevin Bacon, but for bluegrass!"
+---
+
+{% extends '../../base.njk' %}
+
+{% block head %}
+    <style>
+        .oracle-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .oracle-search {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .search-field {
+            margin-bottom: 1rem;
+        }
+        
+        .search-field label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #8B4513;
+        }
+        
+        .search-field input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #8B4513;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: white;
+        }
+        
+        .search-field input:focus {
+            outline: none;
+            border-color: #A0522D;
+            box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.2);
+        }
+        
+        .search-button {
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        }
+        
+        .search-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .path-display {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .degrees {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 1rem;
+        }
+        
+        .path {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .path-arrow {
+            color: #8B4513;
+            font-weight: bold;
+            margin: 0 0.5rem;
+        }
+        
+        .connections {
+            margin-top: 2rem;
+        }
+        
+        .connection {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #8B4513;
+        }
+        
+        .connection-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .connection-show {
+            background: #e8f5e8;
+            color: #2d5a2d;
+        }
+        
+        .connection-recording {
+            background: #f0e8ff;
+            color: #4a2c7a;
+        }
+        
+        .connection-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .connection-details {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .error-message {
+            background: #ffe6e6;
+            color: #cc0000;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #8B4513;
+            font-style: italic;
+        }
+        
+        .musician-suggestions {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            position: absolute;
+            width: 100%;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .suggestion {
+            padding: 0.75rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .suggestion:hover {
+            background: #f5f5f5;
+        }
+        
+        .suggestion:last-child {
+            border-bottom: none;
+        }
+        
+        .search-field {
+            position: relative;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <div class="oracle-container">
+        <h1>🎵 Oracle of Bluegrass Bacon</h1>
+        <p>Connect any two musicians through shows and recordings! Like the famous "Six Degrees of Kevin Bacon," but for the cryptograss universe. Find the shortest path between any two musicians who have appeared on our records or performed at our shows.</p>
+        
+        <div class="oracle-search">
+            <div class="search-field">
+                <label for="musician1">Starting Musician:</label>
+                <input type="text" id="musician1" placeholder="e.g., Justin Holmes">
+                <div class="musician-suggestions" id="suggestions1"></div>
+            </div>
+            
+            <div class="search-field">
+                <label for="musician2">Ending Musician:</label>
+                <input type="text" id="musician2" placeholder="e.g., David Grier">
+                <div class="musician-suggestions" id="suggestions2"></div>
+            </div>
+            
+            <button class="search-button" onclick="findPath()">Find Connection</button>
+        </div>
+        
+        <div id="results" style="display: none;">
+        </div>
+        
+        <div id="error" style="display: none;" class="error-message">
+        </div>
+    </div>
+
+    <script>
+        let oracle;
+        
+        // Initialize Oracle when class becomes available
+        function initializeOracle() {
+            if (typeof OracleClient !== 'undefined') {
+                oracle = new OracleClient();
+                loadMusicians();
+                setupAutocomplete('musician1', 'suggestions1');
+                setupAutocomplete('musician2', 'suggestions2');
+            } else {
+                // Wait for OracleClient to load
+                setTimeout(initializeOracle, 50);
+            }
+        }
+        
+        // Load all musicians on page load
+        async function loadMusicians() {
+            try {
+                await oracle.loadData();
+                console.log('Oracle data loaded successfully');
+            } catch (error) {
+                console.error('Error loading Oracle data:', error);
+                showError('Failed to load musician database. Please refresh the page.');
+            }
+        }
+        
+        // Setup autocomplete for musician inputs
+        function setupAutocomplete(inputId, suggestionsId) {
+            const input = document.getElementById(inputId);
+            const suggestions = document.getElementById(suggestionsId);
+            
+            input.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                if (value.length < 2) {
+                    suggestions.style.display = 'none';
+                    return;
+                }
+                
+                const matches = oracle.searchMusicians(value);
+                
+                if (matches.length > 0) {
+                    suggestions.innerHTML = matches.map(musician => 
+                        `<div class="suggestion" onclick="selectMusician('${inputId}', '${musician.replace(/'/g, "\\'")}')">${musician}</div>`
+                    ).join('');
+                    suggestions.style.display = 'block';
+                } else {
+                    suggestions.style.display = 'none';
+                }
+            });
+            
+            // Hide suggestions when clicking elsewhere
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+                    suggestions.style.display = 'none';
+                }
+            });
+        }
+        
+        function selectMusician(inputId, musician) {
+            document.getElementById(inputId).value = musician;
+            const suggestionsId = inputId === 'musician1' ? 'suggestions1' : 'suggestions2';
+            document.getElementById(suggestionsId).style.display = 'none';
+        }
+        
+        async function findPath() {
+            if (!oracle) {
+                showError('Oracle is still loading. Please wait a moment and try again.');
+                return;
+            }
+
+            const musician1 = document.getElementById('musician1').value.trim();
+            const musician2 = document.getElementById('musician2').value.trim();
+            const resultsDiv = document.getElementById('results');
+            const errorDiv = document.getElementById('error');
+            const button = document.querySelector('.search-button');
+            
+            // Clear previous results
+            resultsDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            if (!musician1 || !musician2) {
+                showError('Please enter both musicians');
+                return;
+            }
+            
+            if (musician1 === musician2) {
+                showError('Please enter two different musicians');
+                return;
+            }
+            
+            // Show loading state
+            button.disabled = true;
+            button.textContent = 'Searching...';
+            
+            try {
+                const result = oracle.findPath(musician1, musician2);
+                displayResults(result);
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Find Connection';
+            }
+        }
+        
+        function displayResults(result) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (!result) {
+                showError('No connection found! These musicians haven\'t crossed paths in our database yet.');
+                return;
+            }
+            
+            const html = `
+                <div class="results-container">
+                    <div class="path-display">
+                        <div class="degrees">🎵 ${result.degrees} degree${result.degrees === 1 ? '' : 's'} of separation!</div>
+                        <div class="path">
+                            ${result.path.map((musician, index) => {
+                                if (index === result.path.length - 1) return musician;
+                                return musician + '<span class="path-arrow">→</span>';
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    ${result.connections.length > 0 ? `
+                        <div class="connections">
+                            <h3>Connection${result.connections.length === 1 ? '' : 's'}:</h3>
+                            ${result.connections.map((conn, i) => `
+                                <div class="connection">
+                                    <div class="connection-type connection-${conn.type}">
+                                        ${conn.type === 'show' ? '🎤 Live Show' : '🎧 Recording'}
+                                    </div>
+                                    <div class="connection-title">${conn.context}</div>
+                                    <div class="connection-details">
+                                        ${conn.venue ? `at ${conn.venue}` : ''}
+                                        ${conn.location ? `, ${conn.location}` : ''}
+                                        ${conn.song ? `• Song: ${conn.song}` : ''}
+                                        ${conn.songContext ? `• Featured in: ${Object.keys(conn.songContext)[0]}` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            initializeOracle();
+        });
+        
+        // Allow Enter key to trigger search
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && (e.target.id === 'musician1' || e.target.id === 'musician2')) {
+                findPath();
+            }
+        });
+    </script>
+{% endblock %}
