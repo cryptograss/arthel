@@ -11,7 +11,7 @@ import nunjucks from "nunjucks";
 // Local utilities and helpers
 import { getProjectDirs } from "./locations.js";
 import { slugify } from "./utils/text_utils.js";
-import { renderPage } from "./utils/rendering_utils.js";
+import { renderPage, generateSitemapXML, generateSitemapHTML, getSitemap, clearSitemap } from "./utils/rendering_utils.js";
 import { registerHelpers } from './utils/template_helpers.js';
 
 // Data and asset management
@@ -45,6 +45,9 @@ export const runPrimaryBuild = async () => {
     };
     ensureDirectories();
     console.time('primary-build');
+    
+    // Clear sitemap from any previous builds
+    clearSitemap();
 
     // TODO: Do we need to make sure the root output directory exists?
 
@@ -580,6 +583,24 @@ export const runPrimaryBuild = async () => {
     unusedImages.forEach(image => {
     console.warn(`Image not used: ${image}`);
     });
+
+    // Generate sitemaps
+    console.time('sitemap-generation');
+    const sitemap = getSitemap();
+    console.log(`Generated sitemap with ${sitemap.size} pages`);
+    
+    // Generate XML sitemap (for search engines - goes in normal location)
+    const baseUrl = site === 'cryptograss.live' ? 'https://cryptograss.live' : 'https://justinholmes.com';
+    const xmlSitemap = generateSitemapXML(site, baseUrl);
+    fs.writeFileSync(path.join(outputPrimarySiteDir, 'sitemap.xml'), xmlSitemap);
+    
+    // Generate HTML sitemap (debug tool - goes outside webpack reach)
+    const htmlSitemap = generateSitemapHTML(site);
+    const debugSitemapPath = path.join(outputPrimaryRootDir, `debug-sitemap-${site}.html`);
+    fs.writeFileSync(debugSitemapPath, htmlSitemap);
+    console.log(`Debug sitemap written to: ${debugSitemapPath}`);
+    
+    console.timeEnd('sitemap-generation');
 
     console.timeEnd('primary-build');
     return true; // TODO: Return something useful.
