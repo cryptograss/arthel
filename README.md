@@ -1,6 +1,8 @@
 ## Arthel, the cryptograss domain builder
 
-Named for Arthel Lane "Doc" Watson, this is a tool to build cryptograss web projects, including the cryptograss.live website, and justinholmes.com, the website of Justin Holmes and the Immutable String Band.
+Named for Arthel Lane "Doc" Watson, arthel is a toolchain to release and monetize IP-unencumbered, DRM-free music and show- and record-related merch on the ethereum blockchain.  It is chiefly built for musicians making bluegrass, old-time, and traditional music, but may be useful to others as well.
+
+It also includes the tools to build web frontends integrating the above, and is used to build the cryptograss.live website, and justinholmes.com, the website of Justin Holmes and the Immutable String Band.
 
 ## Main features
 
