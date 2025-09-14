@@ -71,6 +71,11 @@ export default {
                     to: path.resolve(outputDistDir, 'api'),
                     noErrorOnMissing: true
                 },
+                {
+                    from: path.resolve(srcDir, '../audio'),
+                    to: path.resolve(outputDistDir, 'audio'),
+                    noErrorOnMissing: true
+                },
             ]
         }),
         new MiniCssExtractPlugin({
