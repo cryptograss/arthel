@@ -1,106 +1,187 @@
 {% extends 'shared/layouts/base.njk' %}
+
+{# Check if any studio version has chartifacts data #}
+{% set chartifacts_version = null %}
+{% for version_num, version in song.studio_versions if not chartifacts_version %}
+{% for release_name, release_data in version if not chartifacts_version %}
+{% if release_data.chartifacts %}
+{% set chartifacts_version = release_data %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+{% block additional_css %}
+{% if chartifacts_version and chartifacts_version.chartifacts %}
+<link rel="stylesheet" href="/styles/webamp-chartifacts.css">
+{% endif %}
+{% endblock %}
+
 {% block main %}
-    {% include 'partials/bigger-banner.njk' %}
+{% include 'partials/bigger-banner.njk' %}
 
-    <div class="container text-light long-form" id="content">
+<div class="container text-light long-form" id="content">
 
-        <div class="row">
-            <div class="col-md-8 semi-transparent-bg">
-                <h1 class="container-fluid text-center">{{ song.title }}</h1>
-                {% if song.traditional %}
-                    <h3 class="container-fluid text-center">(traditional)</h3>
-                {% endif %}
-                {% if song.by_artist %}
-                    <h3 class="container-fluid text-center">by {{ song.by_artist }}</h3>
-                {% endif %}
-                {% if song.video_game %}
-                    <span class="video-game-detail">(from {{ song.video_game }})</span>
-                {% endif %}
-                {% if song.quick_facts %}
-                    <ul>
-                        {% for fact_name, fact_value in song.quick_facts %}
-                            <li>{{ fact_name }}: {{ fact_value }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                {% if commentary %}
-                    <h2 class="vanilla center">Justin's Commentary</h2>
-                    <div class="commentary text-shadow">
-                        {{ commentary |safe }}
-                    </div>
-                {% endif %}
+    <div class="row">
+        <div class="col-md-8 semi-transparent-bg">
+            <h1 class="container-fluid text-center">{{ song.title }}</h1>
+            {% if song.traditional %}
+            <h3 class="container-fluid text-center">(traditional)</h3>
+            {% endif %}
+            {% if song.by_artist %}
+            <h3 class="container-fluid text-center">by {{ song.by_artist }}</h3>
+            {% endif %}
+            {% if song.video_game %}
+            <span class="video-game-detail">(from {{ song.video_game }})</span>
+            {% endif %}
+            {% if song.quick_facts %}
+            <ul>
+                {% for fact_name, fact_value in song.quick_facts %}
+                <li>{{ fact_name }}: {{ fact_value }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
 
-                <h2 class="set-stones-available vanilla">Set Stones</h2>
-                <table class="px-3">
-                    <thead class="border-bottom border-black">
-                        <tr>
-                            <th class="text-center">Show</th>
-                            <th class="text-center">Owner</th>
-                            <th class="text-center">Paid (ETH)</th>
-                            <th class="text-center">Set Stone</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for stone in song.setstoneFavorites %}
 
-                            <tr class="border-bottom border-black">
-                                <td class="px-3" data-tippy-content="{{ play._set._show.title }}">
-                                    <a
-                                        href="{{ play._set.show.resource_url }}"
-                                        target="_blank">{{ play._set._show.title }}</a>
-                                </td>
-                                <td class="px-3" data-tippy-content="{{ stone.owner }}">
-                                    <a
-                                        href="https://etherscan.io/address/{{ stone.owner }}"
-                                        target="_blank">{{ stone.owner | truncate(16) }}</a>
-                                </td>
-                                <td class="px-3">{{ stone.paidAmountEth }}</td>
-                                <td class="px-3">
-                                    <a href="{{getCryptograssUrl()}}/assets/images/setstones/{{ stone.tokenId }}.png"
-                                                    target="_blank"><img
-                                        src="{{getCryptograssUrl()}}/assets/images/setstones/{{ stone.tokenId }}.png"
-                                        style="width: 50px;"></a>
-                                </td>
-                            </tr>
+            {% if chartifacts_version and chartifacts_version.chartifacts %}
+            <div id="player-with-ensemble" class="container">
+            <div class="row">
+                <div id="just-the-player-goes-here" class="col-md-6">
+                    Loading interactive player...
+                </div>
 
-                        {% endfor %}
-                    </tbody>
-                </table>
-
-                {% if song.other_resources %}
-                    <h2>Other resources</h2>
-                    <ul>
-                        {% for resource_name, other_resource_url in song.other_resources %}
-                            <li>
-                                <a href="{{ other_resource_url }}">{{ resource_name }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+                <div id="parts-chart" class="d-flex align-items-end col-md-6"></div>
             </div>
 
-            <div class="col-md-4 mt-2 text-shadow">
-                {% set instrument_to_show = song.instrumentalist_to_display %}
-                {% include 'partials/song-all-plays.njk' %}
+            <!-- WebampChartifacts loaded via webpack chunks -->
 
-                {% if song.selected_versions %}
-                    <h2>Selected versions</h2>
+            <script>
+                // Convert YAML data to JavaScript format
+                window.songChartifactsData = {
+                    title: "{{ song.title }}",
+                    duration: {{ chartifacts_version.chartifacts.duration }},
+                audioFile: "{{ chartifacts_version.chartifacts.audioFile }}",
 
-                    {% for media in song.selected_versions %}
-                        <div class="row index-{{ loop.index % 4 }} mb-2 center">
-                            <div class="row">{{ media.artist }}</div>
-                            <div class="row">
-                                {% if media.youtube %}
-                                    {% set url = media.youtube %}
-                                    {% include 'partials/youtube.njk' %}
-                                {% endif %}
-                            </div>
-                        </div>
+                    // Build ensemble from YAML ensemble data (first instrument is default)
+                    ensemble: {
+                    {% for musician_name, instruments in chartifacts_version.ensemble %}
+                    "{{ musician_name }}": { defaultInstrument: "{{ instruments[0] }}" } {% if not loop.last %}, {% endif %}
                     {% endfor %}
+                },
 
-                {% endif %}
+                // Color scheme from YAML
+                colorScheme: {{ chartifacts_version.chartifacts.colorScheme | dump | safe }},
+
+                // Timeline from YAML
+                timeline: {{ chartifacts_version.chartifacts.timeline | dump | safe }}
+                        };
+
+                // Initialize Webamp Chartifacts when page loads
+                window.addEventListener('load', function () {
+                    try {
+                        function initWebampPlayer() {
+                            if (typeof WebampChartifacts !== 'undefined' && window.songChartifactsData) {
+                                new WebampChartifacts('just-the-player-goes-here', window.songChartifactsData);
+                            } else {
+                                setTimeout(initWebampPlayer, 100);
+                            }
+                        }
+                        initWebampPlayer();
+                    } catch (error) {
+                        console.error('Error initializing Webamp Chartifacts:', error);
+                        document.getElementById('just-the-player-goes-here').innerHTML =
+                            '<div style="background: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; text-align: center;">' +
+                            '<h3>⚠️ Player Error</h3>' +
+                            '<p>Unable to load interactive chartifacts player.</p>' +
+                            '</div>';
+                    }
+                });
+            </script>
+            {% endif %}
+
+            <div class="row">
+                <div id="ensemble-display" class="col-md-6">
+                    <!-- TODO: List the ensemble here even if there is no player (per studio release, right?)  -->
+                </div>
             </div>
 
+
+
+            {% if commentary %}
+            <h2 class="vanilla center">Justin's Commentary</h2>
+            <div class="commentary text-shadow">
+                {{ commentary |safe }}
+            </div>
+            {% endif %}
+
+
+            <h2 class="set-stones-available vanilla">Set Stones</h2>
+            <table class="px-3">
+                <thead class="border-bottom border-black">
+                    <tr>
+                        <th class="text-center">Show</th>
+                        <th class="text-center">Owner</th>
+                        <th class="text-center">Paid (ETH)</th>
+                        <th class="text-center">Set Stone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stone in song.setstoneFavorites %}
+
+                    <tr class="border-bottom border-black">
+                        <td class="px-3" data-tippy-content="{{ play._set._show.title }}">
+                            <a href="{{ play._set.show.resource_url }}" target="_blank">{{ play._set._show.title }}</a>
+                        </td>
+                        <td class="px-3" data-tippy-content="{{ stone.owner }}">
+                            <a href="https://etherscan.io/address/{{ stone.owner }}" target="_blank">{{ stone.owner |
+                                truncate(16) }}</a>
+                        </td>
+                        <td class="px-3">{{ stone.paidAmountEth }}</td>
+                        <td class="px-3">
+                            <a href="{{getCryptograssUrl()}}/assets/images/setstones/{{ stone.tokenId }}.png"
+                                target="_blank"><img
+                                    src="{{getCryptograssUrl()}}/assets/images/setstones/{{ stone.tokenId }}.png"
+                                    style="width: 50px;"></a>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if song.other_resources %}
+            <h2>Other resources</h2>
+            <ul>
+                {% for resource_name, other_resource_url in song.other_resources %}
+                <li>
+                    <a href="{{ other_resource_url }}">{{ resource_name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
         </div>
+
+        <div class="col-md-4 mt-2 text-shadow">
+            {% set instrument_to_show = song.instrumentalist_to_display %}
+            {% include 'partials/song-all-plays.njk' %}
+
+            {% if song.selected_versions %}
+            <h2>Selected versions</h2>
+
+            {% for media in song.selected_versions %}
+            <div class="row index-{{ loop.index % 4 }} mb-2 center">
+                <div class="row">{{ media.artist }}</div>
+                <div class="row">
+                    {% if media.youtube %}
+                    {% set url = media.youtube %}
+                    {% include 'partials/youtube.njk' %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+
+            {% endif %}
+        </div>
+
     </div>
+</div>
 {% endblock %}
