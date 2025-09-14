@@ -17,8 +17,24 @@ class WebampChartifacts {
         this.upcomingMomentTimes = [...this.allMomentTimes]; // Moments that haven't fired yet
         this.flashInProgress = false; // Track if a flash effect is happening
 
+        // Inject dynamic styles if color scheme is provided
+        this.injectDynamicStyles();
+
         this.init();
     }
+
+    injectDynamicStyles() {
+        // Only inject styles if a color scheme is provided
+        if (!this.trackData.colorScheme) return;
+
+        const styleId = `webamp-chartifacts-dynamic-styles`;
+        // Remove existing dynamic styles if they exist
+        const existingStyle = document.getElementById(styleId);
+        if (existingStyle) {
+            existingStyle.remove();
+        }
+
+        const colors = this.trackData.colorScheme;    }
 
     async init() {
         this.renderSimpleUI();
@@ -28,68 +44,38 @@ class WebampChartifacts {
 
     renderSimpleUI() {
         // Add ensemble display alongside Webamp
-        const ensembleDiv = document.createElement('div');
-        ensembleDiv.id = 'ensemble-display';
-        ensembleDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            color: #333;
-            z-index: 1000;
-            min-width: 250px;
-        `;
+        const ensembleDiv = document.getElementById('ensemble-display');
+        const partsChart = document.getElementById('parts-chart');
+
+        // Extract song parts from timeline
+        const songParts = this.extractSongParts();
+        songParts.forEach((part, index) => {
+            const partBox = document.createElement('div');
+            partBox.id = `part-${index}`;
+            partBox.className = 'part-box';
+            partBox.textContent = part;
+            partsChart.appendChild(partBox);
+        });
 
         // Create ensemble list
         const ensembleList = document.createElement('div');
         ensembleList.style.display = 'flex';
         ensembleList.style.flexDirection = 'column';
-        ensembleList.innerHTML = '<h4 style="margin: 0 0 10px 0;">Ensemble</h4>';
 
         Object.entries(this.trackData.ensemble).forEach(([musicianName, musicianData]) => {
             const musicianDiv = document.createElement('div');
             musicianDiv.id = `musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`;
-            musicianDiv.style.cssText = `
-                padding: 8px;
-                margin: 4px 0;
-                border-radius: 4px;
-                border: 1px solid #ddd;
-                transition: all 0.3s ease;
-            `;
+            musicianDiv.className = 'musician-card';
             musicianDiv.innerHTML = `
-                <div style="font-weight: bold;">${musicianName}</div>
-                <div style="font-size: 12px; color: #666;" class="instrument">${musicianData.defaultInstrument}</div>
+                <div class="musician-name">${musicianName} (${musicianData.defaultInstrument})</div>
+                <div class="chartifact-line">Chartifact "0x1234ff" owned by cryptograss.eth</div>
             `;
             ensembleList.appendChild(musicianDiv);
         });
 
         ensembleDiv.appendChild(ensembleList);
-        document.body.appendChild(ensembleDiv);
     }
 
-    renderTimelineMarkers() {
-        const totalWidth = 400; // Fixed width for timeline
-        return this.trackData.solos.map(solo => {
-            const startPercent = (solo.startTime / this.trackData.duration) * 100;
-            const widthPercent = ((solo.endTime - solo.startTime) / this.trackData.duration) * 100;
-
-            return `
-                <div class="timeline-marker" 
-                     style="left: ${startPercent}%; width: ${widthPercent}%;" 
-                     data-start="${solo.startTime}"
-                     data-musician="${solo.musician}" 
-                     data-instrument="${solo.instrument}"
-                     title="${solo.musician} - ${solo.instrument} (${this.formatTime(solo.startTime)} - ${this.formatTime(solo.endTime)})">
-                    <span class="marker-label">${solo.musician}</span>
-                </div>
-            `;
-        }).join('');
-    }
 
     renderSolosList() {
         return this.trackData.solos.map(solo => `
@@ -107,6 +93,7 @@ class WebampChartifacts {
     async initWebamp() {
         // Create Webamp instance with our track
         this.webamp = new Webamp({
+            zindex: 9999,
             windowLayout: {
                 main: {
                     position: { top: 0, left: 0 },
@@ -123,7 +110,7 @@ class WebampChartifacts {
 
         // Render Webamp directly to the main container - no custom HTML
         this.webamp.renderWhenReady(this.container).then(() => {
-            console.log("rendered webamp!");
+            console.log(`rendered webamp in ${this.container}`);
             // Set up event listeners for Webamp
             this.setupWebampListeners();
         }).catch(error => {
@@ -197,6 +184,75 @@ class WebampChartifacts {
         return momentTimes.sort((a, b) => a - b);
     }
 
+    extractSongParts() {
+        // Build chronological sequence of parts from timeline
+        const partSequence = [];
+        const timelineEntries = Object.entries(this.trackData.timeline)
+            .map(([timeStr, arrangement]) => ({ time: Number(timeStr), arrangement }))
+            .sort((a, b) => a.time - b.time);
+
+        timelineEntries.forEach(({ arrangement }) => {
+            if (arrangement.part) {
+                partSequence.push(arrangement.part);
+            }
+        });
+
+        return partSequence;
+    }
+
+    updatePartsChart(arrangement) {
+        const currentPart = arrangement ? arrangement.part : null;
+        const currentPartIndex = this.getCurrentPartIndex();
+        const songParts = this.extractSongParts();
+
+        songParts.forEach((part, index) => {
+            const partBox = document.getElementById(`part-${index}`);
+            if (!partBox) return;
+
+            const isActivePartIndex = index === currentPartIndex;
+
+            if (isActivePartIndex) {
+                partBox.classList.add('active');
+            } else {
+                partBox.classList.remove('active');
+            }
+        });
+    }
+
+    getCurrentPartIndex() {
+        // Find the most recent part change in chronological order
+        const currentTime = this.getCurrentTime();
+        const timelineEntries = Object.entries(this.trackData.timeline)
+            .map(([timeStr, arrangement]) => ({ time: Number(timeStr), arrangement }))
+            .filter(({ arrangement }) => arrangement.part) // Only entries with parts
+            .sort((a, b) => a.time - b.time);
+
+        // Find the last part change that has occurred
+        let activePartIndex = -1;
+        timelineEntries.forEach(({ time, arrangement }, chronologicalIndex) => {
+            if (time <= currentTime) {
+                activePartIndex = chronologicalIndex;
+            }
+        });
+
+        return activePartIndex;
+    }
+
+    updateMusicianCard(musicianDiv, musicianName, instrument, classes = [], showStar = false) {
+        // Clear all state classes
+        musicianDiv.className = 'musician-card';
+
+        // Add any state classes
+        classes.forEach(cls => musicianDiv.classList.add(cls));
+
+        // Update content
+        const starPrefix = showStar ? '⭐ ' : '';
+        musicianDiv.innerHTML = `
+            <div class="musician-name">${starPrefix}${musicianName} (${instrument})</div>
+            <div class="chartifact-line">Chartifact "0x1234ff" owned by cryptograss.eth</div>
+        `;
+    }
+
     getCurrentArrangement(currentTime) {
         const startTimes = Object.keys(this.trackData.timeline).map(Number).sort((a, b) => b - a);
         const currentStartTime = startTimes.find(time => time <= currentTime);
@@ -208,14 +264,14 @@ class WebampChartifacts {
         const instruments = {};
 
         // Start with default instruments
-        Object.entries(this.trackData.ensemble).forEach(([musicianName, musicianData]) => {
-            instruments[musicianName] = musicianData.defaultInstrument;
+        Object.entries(this.trackData.ensemble).forEach(([musician, musicianData]) => {
+            instruments[musician] = musicianData.defaultInstrument;
         });
 
         // Apply any instrument changes for current timeline segment
         if (arrangement && arrangement.instrumentChanges) {
-            arrangement.instrumentChanges.forEach(change => {
-                instruments[change.musicianName] = change.instrument;
+            Object.entries(arrangement.instrumentChanges).forEach(([musician, instrument]) => {
+                instruments[musician] = instrument;
             });
         }
 
@@ -238,6 +294,9 @@ class WebampChartifacts {
             this.currentEra = arrangement;
         }
 
+        // Update parts chart
+        this.updatePartsChart(arrangement);
+
         // Skip normal ensemble updates during flash effects
         if (this.flashInProgress) {
             return;
@@ -247,76 +306,30 @@ class WebampChartifacts {
             const musicianDiv = document.getElementById(`musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`);
             if (!musicianDiv) return;
 
-            const instrumentDiv = musicianDiv.querySelector('.instrument');
-            instrumentDiv.textContent = currentInstruments[musicianName];
+            const instrument = currentInstruments[musicianName];
 
             // Handle different lead types
             if (currentSoloist === musicianName) {
                 const leadType = arrangement ? arrangement.type : null;
 
                 if (leadType === 'solo') {
-                    // Solo: star, move to top, blue highlight
-                    musicianDiv.style.cssText = `
-                        padding: 8px;
-                        margin: 4px 0;
-                        border-radius: 4px;
-                        border: 2px solid #007bff;
-                        background: #e3f2fd;
-                        transition: all 0.3s ease;
-                        transform: scale(1.05);
-                        order: -1;
-                    `;
-                    musicianDiv.innerHTML = `
-                        <div style="font-weight: bold;">⭐ ${musicianName}</div>
-                        <div style="font-size: 12px; color: #0056b3;" class="instrument">${currentInstruments[musicianName]}</div>
-                    `;
+                    this.updateMusicianCard(musicianDiv, musicianName, instrument, ['solo'], true);
                 } else if (leadType === 'pick up') {
-                    // Pickup: bold name, orange highlight, no star
-                    musicianDiv.style.cssText = `
-                        padding: 8px;
-                        margin: 4px 0;
-                        border-radius: 4px;
-                        border: 2px solid #ff9800;
-                        background: #fff3e0;
-                        transition: all 0.3s ease;
-                        transform: scale(1.02);
-                    `;
-                    musicianDiv.innerHTML = `
-                        <div style="font-weight: bold;">${musicianName}</div>
-                        <div style="font-size: 12px; color: #e65100;" class="instrument">${currentInstruments[musicianName]}</div>
-                    `;
+                    this.updateMusicianCard(musicianDiv, musicianName, instrument, ['pickup']);
                 } else {
-                    // Intro or default: bold name, light blue highlight, no star
-                    musicianDiv.style.cssText = `
-                        padding: 8px;
-                        margin: 4px 0;
-                        border-radius: 4px;
-                        border: 1px solid #17a2b8;
-                        background: #e6f7ff;
-                        transition: all 0.3s ease;
-                        transform: scale(1.02);
-                    `;
-                    musicianDiv.innerHTML = `
-                        <div style="font-weight: bold;">${musicianName}</div>
-                        <div style="font-size: 12px; color: #117a8b;" class="instrument">${currentInstruments[musicianName]}</div>
-                    `;
+                    // Intro or default
+                    this.updateMusicianCard(musicianDiv, musicianName, instrument, ['intro']);
                 }
             } else {
-                // Not leading: normal styling
-                musicianDiv.style.cssText = `
-                    padding: 8px;
-                    margin: 4px 0;
-                    border-radius: 4px;
-                    border: 1px solid #ddd;
-                    background: #f8f9fa;
-                    transition: all 0.3s ease;
-                    transform: scale(1);
-                    order: 0;
-                `;
-                musicianDiv.innerHTML = `
-                    <div style="font-weight: bold;">${musicianName}</div>
-                    <div style="font-size: 12px; color: #666;" class="instrument">${currentInstruments[musicianName]}</div>
-                `;
+                // Not leading - check if we need to gray out during intro
+                const leadType = arrangement ? arrangement.type : null;
+                const isIntroScene = currentSoloist && leadType === 'intro';
+
+                if (isIntroScene) {
+                    this.updateMusicianCard(musicianDiv, musicianName, instrument, ['grayed']);
+                } else {
+                    this.updateMusicianCard(musicianDiv, musicianName, instrument, []);
+                }
             }
         });
     }
@@ -326,33 +339,26 @@ class WebampChartifacts {
         this.flashInProgress = true;
 
         // Flash each musician individually with golden highlight
-        Object.entries(this.trackData.ensemble).forEach(([musicianName, musicianData]) => {
+        Object.entries(this.trackData.ensemble).forEach(([musicianName]) => {
             const musicianDiv = document.getElementById(`musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`);
             if (!musicianDiv) return;
 
-            // Apply golden flash styling
-            musicianDiv.style.cssText = `
-                padding: 8px;
-                margin: 4px 0;
-                border-radius: 4px;
-                border: 2px solid #ffd700;
-                background: #fffbf0;
-                box-shadow: 0 0 15px #ffd700;
-                transition: all 0.3s ease;
-                transform: scale(1.05);
-            `;
-
-            musicianDiv.innerHTML = `
-                <div style="font-weight: bold;">🎵 ${musicianName}</div>
-                <div style="font-size: 12px; color: #b8860b;" class="instrument">${musicianData.defaultInstrument}</div>
-            `;
+            // Apply flash class
+            musicianDiv.classList.add('flash');
         });
 
         // Fade back to normal after 1.5 seconds
         setTimeout(() => {
+            // Remove flash class from all musicians
+            Object.entries(this.trackData.ensemble).forEach(([musicianName]) => {
+                const musicianDiv = document.getElementById(`musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`);
+                if (!musicianDiv) return;
+                musicianDiv.classList.remove('flash');
+            });
+
             // Reset flash effect, let normal updates resume
             this.flashInProgress = false;
-        }, 1500);
+        }, 300);
     }
 
     checkForMoments(currentTime) {
@@ -392,9 +398,9 @@ class WebampChartifacts {
         console.log(`Triggering moment at ${momentTime}:`, arrangement);
 
         // Handle different moment types
-        if (arrangement.detail === "band-in") {
-            this.flashEntireEnsemble();
-        }
+            if (arrangement.detail === "band-in") {
+                this.flashEntireEnsemble();
+            }
         // Add other moment types here as needed
     }
 
@@ -427,37 +433,37 @@ class WebampChartifacts {
         }
     }
 
-    displayCurrentSolo() {
-        const currentSoloDiv = document.getElementById('currentSolo');
-        const chartDisplay = document.getElementById('chartDisplay');
+    // displayCurrentSolo() {
+    //     const currentSoloDiv = document.getElementById('currentSolo');
+    //     const chartDisplay = document.getElementById('chartDisplay');
 
-        if (this.currentSolo) {
-            currentSoloDiv.innerHTML = `
-                <div class="solo-info active-solo">
-                    <div class="solo-musician">🎵 ${this.currentSolo.musician}</div>
-                    <div class="solo-details">${this.currentSolo.instrument} • ${this.currentSolo.description}</div>
-                </div>
-            `;
+    //     if (this.currentSolo) {
+    //         currentSoloDiv.innerHTML = `
+    //             <div class="solo-info active-solo">
+    //                 <div class="solo-musician">🎵 ${this.currentSolo.musician}</div>
+    //                 <div class="solo-details">${this.currentSolo.instrument} • ${this.currentSolo.description}</div>
+    //             </div>
+    //         `;
 
-            // Show chart if available
-            if (this.currentSolo.chartImage) {
-                document.getElementById('chartImage').src = this.currentSolo.chartImage;
-                document.getElementById('tokenId').textContent = this.currentSolo.chartifactTokenId;
-                chartDisplay.style.display = 'block';
+    //         // Show chart if available
+    //         if (this.currentSolo.chartImage) {
+    //             document.getElementById('chartImage').src = this.currentSolo.chartImage;
+    //             document.getElementById('tokenId').textContent = this.currentSolo.chartifactTokenId;
+    //             chartDisplay.style.display = 'block';
 
-                // Load NFT ownership (mock for now)
-                this.loadChartifactOwnership(this.currentSolo.chartifactTokenId);
-            }
-        } else {
-            currentSoloDiv.innerHTML = `
-                <div class="solo-info">
-                    <div class="solo-musician">Track playing...</div>
-                    <div class="solo-details">Background accompaniment</div>
-                </div>
-            `;
-            chartDisplay.style.display = 'none';
-        }
-    }
+    //             // Load NFT ownership (mock for now)
+    //             this.loadChartifactOwnership(this.currentSolo.chartifactTokenId);
+    //         }
+    //     } else {
+    //         currentSoloDiv.innerHTML = `
+    //             <div class="solo-info">
+    //                 <div class="solo-musician">Track playing...</div>
+    //                 <div class="solo-details">Background accompaniment</div>
+    //             </div>
+    //         `;
+    //         chartDisplay.style.display = 'none';
+    //     }
+    // }
 
     highlightTimelineMarker() {
         // Remove previous highlighting
@@ -509,19 +515,8 @@ class WebampChartifacts {
             const musicianDiv = document.getElementById(`musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`);
             if (!musicianDiv) return;
 
-            musicianDiv.style.cssText = `
-                padding: 8px;
-                margin: 4px 0;
-                border-radius: 4px;
-                border: 1px solid #ddd;
-                background: #f8f9fa;
-                transition: all 0.3s ease;
-                transform: scale(1);
-            `;
-            musicianDiv.innerHTML = `
-                <div style="font-weight: bold;">${musicianName}</div>
-                <div style="font-size: 12px; color: #666;" class="instrument">${musicianData.defaultInstrument}</div>
-            `;
+            // Use helper function to reset to default state
+            this.updateMusicianCard(musicianDiv, musicianName, musicianData.defaultInstrument);
         });
     }
 

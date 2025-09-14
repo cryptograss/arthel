@@ -3,6 +3,7 @@ import 'bootstrap';
 import 'spotlight.js';
 import '../styles/fonts.css';
 import '../styles/styles-common.css';
+import '../styles/webamp-chartifacts.css';
 import $ from 'jquery';
 
 $(document).ready(function () {

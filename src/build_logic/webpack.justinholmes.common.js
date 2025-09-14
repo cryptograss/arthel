@@ -34,6 +34,8 @@ const htmlPluginInstances = templateFiles.map(templatePath => {
         var chunks = ['main', 'add_show_for_stone_minting'];
     } else if (relativePath.startsWith('cryptograss/tools/oracle-of-bluegrass-bacon')) {
         var chunks = ['main', 'oracle_client'];
+    } else if (relativePath.startsWith('songs/') || relativePath.startsWith('songs/')) {
+        var chunks = ['main', 'charitfact_player'];
     } else {
         var chunks = ['main'];
     }
@@ -94,6 +96,7 @@ export default {
         strike_set_stone: `${frontendJSDir}/strike_set_stones.js`,
         add_show_for_stone_minting: `${frontendJSDir}/add_show_for_stone_minting.js`,
         oracle_client: `${frontendJSDir}/oracle_client.js`,
+        charitfact_player: `${frontendJSDir}/charitfact_player.js`,
     },
     module: {
         rules: [
