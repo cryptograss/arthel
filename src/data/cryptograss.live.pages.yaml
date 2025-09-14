@@ -16,3 +16,11 @@ oracle-of-bluegrass-bacon:
     page_title: "Oracle of Bluegrass Bacon"
     description: "Connect any two musicians through shows and recordings - like Six Degrees of Kevin Bacon, but for bluegrass!"
     no_video_bg: true
+
+webamp-chartifacts-demo:
+  template: tools/webamp-chartifacts-demo.njk
+  context:
+    title: "Webamp Chartifacts Demo"
+    page_title: "Webamp Chartifacts Prototype"
+    description: "Classic Winamp interface meets blockchain-integrated soloist highlighting"
+    no_video_bg: true

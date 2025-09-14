@@ -21,6 +21,8 @@ const htmlPluginInstances = templateFiles.map(templatePath => {
 
     if (relativePath.startsWith('tools/oracle-of-bluegrass-bacon')) {
         var chunks = ['main', 'oracle_client'];
+    } else if (relativePath.startsWith('tools/webamp-chartifacts-demo')) {
+        var chunks = ['main', 'webamp_chartifacts'];
     } else {
         var chunks = ['main'];
     }
@@ -84,6 +86,7 @@ export default {
         shapes: `${frontendJSDir}/shapes.js`,
         blue_railroad: `${frontendJSDir}/bazaar/blue_railroad.js`,
         oracle_client: `${frontendJSDir}/oracle_client.js`,
+        webamp_chartifacts: `${frontendJSDir}/webamp_chartifacts.js`,
     },
     module: {
         rules: [

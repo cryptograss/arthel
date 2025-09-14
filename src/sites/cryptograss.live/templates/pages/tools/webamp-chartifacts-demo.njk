@@ -1,0 +1,103 @@
+{% extends '../../blank.njk' %}
+
+{% block main %}
+<style>
+    /* Import webamp chartifacts styles */
+    @import url('/styles/webamp-chartifacts.css');
+</style>
+<div class="row">Outside webamp container
+    <div id="webamp-chartifacts-container">Inside webamp container</div>
+</div>
+
+
+<script>
+    // Mock track data for "Paint Exchange" demo with new structure
+    const mockTrackData = {
+        title: "Paint Exchange",
+        duration: 240,
+        audioFile: "/audio/0 - Paint Exchange.flac",
+
+        // Base ensemble with default instruments
+        ensemble: {
+            "Justin Holmes": { defaultInstrument: "mandolin" },
+            "Sam Grisman": { defaultInstrument: "bass" },
+            "Cory Walker": { defaultInstrument: "banjo" },
+            "Harry Clark": { defaultInstrument: "guitar" },
+            "Kaitlyn Raitz": { defaultInstrument: "cello" }
+        },
+
+        // Timeline segments keyed by start time
+        timeline: {
+            0: {
+                soloist: "Justin Holmes",
+                type: "intro"
+            },
+            13: {
+                detail: "band-in",
+            },
+            69: {
+                soloist: "Kaitlyn Raitz",
+                type: "pick up"
+            },
+            72: {
+                soloist: "Kaitlyn Raitz",
+                type: "solo"
+            },
+            83: {
+                soloist: "Harry Clark",
+                type: "solo"
+            },
+            180: {
+                // Instrument switching example
+                instrumentChanges: [
+                    { musicianId: "justin-holmes", instrument: "mandolin" },
+                    { musicianId: "jake-stargel", instrument: "guitar" }
+                ],
+                soloist: "jake-stargel",
+                solo: {
+                    description: "Jake takes guitar lead while Justin moves to mandolin",
+                    chartifactTokenId: 104,
+                    chartImage: "/assets/charts/demo/jake-guitar-chart.jpg"
+                }
+            },
+            200: {
+                // Back to defaults (no instrumentChanges needed)
+                soloist: "jake-stargel",
+                solo: {
+                    description: "Closing tremolo passage with harmonic complexity",
+                    chartifactTokenId: 103,
+                    chartImage: "/assets/charts/demo/jake-mandolin-chart.jpg"
+                }
+            }
+        }
+    };
+
+    // Initialize Webamp Chartifacts when page loads
+    window.addEventListener('load', function () {
+        try {
+            // Wait for WebampChartifacts to be available
+            function initWebampPlayer() {
+                if (typeof WebampChartifacts !== 'undefined') {
+                    new WebampChartifacts('webamp-chartifacts-container', mockTrackData);
+                } else {
+                    setTimeout(initWebampPlayer, 100);
+                }
+            }
+            initWebampPlayer();
+        } catch (error) {
+            console.error('Error initializing Webamp Chartifacts:', error);
+            document.getElementById('webamp-chartifacts-container').innerHTML = `
+                    <div style="background: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; text-align: center;">
+                        <h3>⚠️ Initialization Error</h3>
+                        <p>Failed to load Webamp integration. This may be due to browser compatibility or missing dependencies.</p>
+                        <details>
+                            <summary>Technical Details</summary>
+                            <pre style="text-align: left; margin-top: 10px;">${error.message}</pre>
+                        </details>
+                    </div>
+                `;
+        }
+
+    });
+</script>
+{% endblock %}
