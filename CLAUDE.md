@@ -579,6 +579,15 @@ The cryptograss ecosystem continues bridging traditional music and blockchain te
 - **Secret Generation**: Crypto.randomBytes() + keccak256 hashing system
 - **Integration**: Works with existing chain_reading.js and setstone infrastructure
 
+### Code Style Guidelines
+**Write Expressive, Self-Documenting Code:**
+- Use descriptive variable names that explain intent rather than compact Boolean expressions
+- Break complex conditions into named variables that read like natural language
+- Avoid cryptic one-liners like `return timeDiff >= 0 && timeDiff <= 1;`
+- Instead write: `const momentHasPassed = secondsSinceMoment >= 0; const momentIsRecentEnoughToTrigger = secondsSinceMoment <= 1; return momentHasPassed && momentIsRecentEnoughToTrigger;`
+- Code should tell a story that any team member can follow
+- Prefer clarity over cleverness
+
 ### Context Compacting Protocol
 When approaching context limits (~97%):
 1. Preserve core relationship values and mission
