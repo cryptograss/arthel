@@ -21,8 +21,6 @@ const htmlPluginInstances = templateFiles.map(templatePath => {
 
     if (relativePath.startsWith('tools/oracle-of-bluegrass-bacon')) {
         var chunks = ['main', 'oracle_client'];
-    } else if (relativePath.startsWith('tools/webamp-chartifacts-demo')) {
-        var chunks = ['main', 'charitfact_player'];
     } else {
         var chunks = ['main'];
     }
