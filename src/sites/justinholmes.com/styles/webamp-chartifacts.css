@@ -43,11 +43,49 @@
     position: relative;
 }
 
+/* Legacy solo styling */
 .musician-card.solo {
     border: 2px solid #000000;
     background: #e3f2fd;
     transform: scale(1.05);
     animation: pulse-glow 3s infinite ease-in-out;
+}
+
+/* New scene-based styling */
+.musician-card.lead {
+    border: 2px solid #000000;
+    background: #e3f2fd;
+    transform: scale(1.05);
+    animation: pulse-glow 3s infinite ease-in-out;
+}
+
+.musician-card.pickup {
+    border: 2px solid #ff9800;
+    background: #fff3e0;
+    color: #e65100;
+    transform: scale(1.02);
+    animation: pickup-rise 2s ease-in-out;
+}
+
+.musician-card.cooldown {
+    border: 2px solid #4caf50;
+    background: #f3e5f5;
+    color: #2e7d32;
+    transform: scale(0.98);
+    opacity: 0.9;
+}
+
+.musician-card.harmony {
+    border: 1px solid #9c27b0;
+    background: #fce4ec;
+    color: #7b1fa2;
+    transform: scale(0.95);
+}
+
+.musician-card.rhythm {
+    border: 1px solid #607d8b;
+    background: #eceff1;
+    color: #455a64;
 }
 
 @keyframes pulse-glow {
@@ -56,6 +94,21 @@
     }
     50% {
         box-shadow: 0 0 11px 3px rgba(255, 163, 72, 0);
+    }
+}
+
+@keyframes pickup-rise {
+    0% {
+        transform: scale(1.0);
+        box-shadow: 0 0 2px rgba(255, 152, 0, 0.5);
+    }
+    50% {
+        transform: scale(1.03);
+        box-shadow: 0 0 8px rgba(255, 152, 0, 0.8);
+    }
+    100% {
+        transform: scale(1.02);
+        box-shadow: 0 0 5px rgba(255, 152, 0, 0.6);
     }
 }
 

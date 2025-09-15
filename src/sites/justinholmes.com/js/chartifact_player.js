@@ -271,28 +271,48 @@ class WebampChartifacts {
 
     calculateDynamicWeight(musicianName, currentTime, arrangement) {
         const baseWeight = this.musicianWeights[musicianName];
-        const currentSoloist = arrangement ? arrangement.soloist : null;
-        const leadType = arrangement ? arrangement.type : null;
+        const features = arrangement ? arrangement.feature : null;
+        const musicianScene = features ? features[musicianName] : null;
 
-        // Active soloist gets top priority
-        if (currentSoloist === musicianName) {
-            if (leadType === 'solo') {
-                return 1; // Soloists always at top
-            } else if (leadType === 'pick up') {
-                // During pickup, gradually increase priority
-                return this.calculatePickupWeight(musicianName, currentTime);
-            } else if (leadType === 'intro') {
-                return 3; // Intros get moderate priority
+        // Active featured musicians get priority based on their scene
+        if (musicianScene) {
+            switch (musicianScene) {
+                case 'lead':
+                    return 1; // Lead musicians always at top
+                case 'pickup':
+                    return this.calculatePickupWeight(musicianName, currentTime);
+                case 'cooldown':
+                    return 5; // Cooldown gets moderate priority
+                case 'harmony':
+                    return 7; // Harmony gets lower priority
+                case 'rhythm':
+                    return 8; // Rhythm gets even lower
+                default:
+                    return 6; // Unknown scenes get middle priority
             }
         }
 
-        // Recently finished soloists stay near the top
+        // Legacy support: check for old soloist/type structure
+        const currentSoloist = arrangement ? arrangement.soloist : null;
+        const leadType = arrangement ? arrangement.type : null;
+
+        if (currentSoloist === musicianName) {
+            if (leadType === 'solo') {
+                return 1;
+            } else if (leadType === 'pick up') {
+                return this.calculatePickupWeight(musicianName, currentTime);
+            } else if (leadType === 'intro') {
+                return 3;
+            }
+        }
+
+        // Recently finished featured musicians stay near the top
         const recentSoloistIndex = this.recentSoloists.indexOf(musicianName);
         if (recentSoloistIndex !== -1) {
             return 10 + recentSoloistIndex; // Second priority, stacked by recency
         }
 
-        // Everyone else gets their base weight, pushed down by recent soloists
+        // Everyone else gets their base weight, pushed down by recent featured musicians
         return baseWeight + this.recentSoloists.length * 5;
     }
 
@@ -518,8 +538,17 @@ class WebampChartifacts {
 
             const instrument = currentInstruments[musicianName];
 
-            // Handle different lead types
-            if (currentSoloist === musicianName) {
+            // Handle new feature system or legacy soloist/type
+            const features = arrangement ? arrangement.feature : null;
+            const musicianScene = features ? features[musicianName] : null;
+
+            if (musicianScene) {
+                // New feature system
+                const classes = [musicianScene]; // Use scene as CSS class
+                const showStar = musicianScene === 'lead';
+                this.updateMusicianCard(musicianDiv, musicianName, instrument, classes, showStar);
+            } else if (currentSoloist === musicianName) {
+                // Legacy soloist/type system
                 const leadType = arrangement ? arrangement.type : null;
 
                 if (leadType === 'solo') {
@@ -527,11 +556,10 @@ class WebampChartifacts {
                 } else if (leadType === 'pick up') {
                     this.updateMusicianCard(musicianDiv, musicianName, instrument, ['pickup']);
                 } else {
-                    // Intro or default
                     this.updateMusicianCard(musicianDiv, musicianName, instrument, ['intro']);
                 }
             } else {
-                // Not leading - check if we need to gray out during intro
+                // Not featured - check if we need to gray out during intro
                 const leadType = arrangement ? arrangement.type : null;
                 const isIntroScene = currentSoloist && leadType === 'intro';
 
