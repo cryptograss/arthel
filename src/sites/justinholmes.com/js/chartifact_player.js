@@ -4,6 +4,7 @@
 //  */
 
 import Webamp from 'webamp';
+import Isotope from 'isotope-layout';
 
 class WebampChartifacts {
     constructor(containerId, trackData) {
@@ -17,10 +18,24 @@ class WebampChartifacts {
         this.upcomingMomentTimes = [...this.allMomentTimes]; // Moments that haven't fired yet
         this.flashInProgress = false; // Track if a flash effect is happening
 
+        // Dynamic weighting system
+        this.musicianWeights = {}; // Track each musician's dynamic weight
+        this.recentSoloists = []; // Track recently finished soloists
+        this.initializeMusicianWeights();
+
         // Inject dynamic styles if color scheme is provided
         this.injectDynamicStyles();
 
         this.init();
+    }
+
+    initializeMusicianWeights() {
+        // Initialize all musicians with base weights (order they appear in ensemble)
+        let baseWeight = 100;
+        Object.keys(this.trackData.ensemble).forEach(musicianName => {
+            this.musicianWeights[musicianName] = baseWeight;
+            baseWeight += 10;
+        });
     }
 
     injectDynamicStyles() {
@@ -57,23 +72,28 @@ class WebampChartifacts {
             partsChart.appendChild(partBox);
         });
 
-        // Create ensemble list
-        const ensembleList = document.createElement('div');
-        ensembleList.style.display = 'flex';
-        ensembleList.style.flexDirection = 'column';
+
+        // Create Isotope-style grid
+        const ensembleGrid = document.createElement('div');
+        ensembleGrid.className = 'ensemble-grid';
 
         Object.entries(this.trackData.ensemble).forEach(([musicianName, musicianData]) => {
             const musicianDiv = document.createElement('div');
             musicianDiv.id = `musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`;
-            musicianDiv.className = 'musician-card';
+            musicianDiv.className = 'musician-item musician-card';
+            musicianDiv.dataset.musician = musicianName;
+            musicianDiv.dataset.sortOrder = '100'; // Default sort order
             musicianDiv.innerHTML = `
                 <div class="musician-name">${musicianName} (${musicianData.defaultInstrument})</div>
                 <div class="chartifact-line">Chartifact "0x1234ff" owned by cryptograss.eth</div>
             `;
-            ensembleList.appendChild(musicianDiv);
+            ensembleGrid.appendChild(musicianDiv);
         });
 
-        ensembleDiv.appendChild(ensembleList);
+        ensembleDiv.appendChild(ensembleGrid);
+
+        // Initialize Isotope-style sorting (we'll use CSS transitions instead of the full library)
+        this.initEnsembleGrid(ensembleGrid);
     }
 
 
@@ -185,11 +205,15 @@ class WebampChartifacts {
     }
 
     extractSongParts() {
-        // Build chronological sequence of parts from timeline
+        // Build chronological sequence of parts from PROCESSED timeline
         const partSequence = [];
-        const timelineEntries = Object.entries(this.trackData.timeline)
+        const processedTimeline = this.processTimelineKeys();
+
+        const timelineEntries = Object.entries(processedTimeline)
             .map(([timeStr, arrangement]) => ({ time: Number(timeStr), arrangement }))
             .sort((a, b) => a.time - b.time);
+
+        console.log('extractSongParts - processed timeline entries:', timelineEntries);
 
         timelineEntries.forEach(({ arrangement }) => {
             if (arrangement.part) {
@@ -197,6 +221,7 @@ class WebampChartifacts {
             }
         });
 
+        console.log('extractSongParts - final part sequence:', partSequence);
         return partSequence;
     }
 
@@ -220,30 +245,99 @@ class WebampChartifacts {
     }
 
     getCurrentPartIndex() {
-        // Find the most recent part change in chronological order
+        // Find the most recent part change in chronological order using PROCESSED timeline
         const currentTime = this.getCurrentTime();
-        const timelineEntries = Object.entries(this.trackData.timeline)
+        const processedTimeline = this.processTimelineKeys();
+
+        const timelineEntries = Object.entries(processedTimeline)
             .map(([timeStr, arrangement]) => ({ time: Number(timeStr), arrangement }))
             .filter(({ arrangement }) => arrangement.part) // Only entries with parts
             .sort((a, b) => a.time - b.time);
+
+        console.log('getCurrentPartIndex - timeline entries with parts:', timelineEntries);
 
         // Find the last part change that has occurred
         let activePartIndex = -1;
         timelineEntries.forEach(({ time, arrangement }, chronologicalIndex) => {
             if (time <= currentTime) {
                 activePartIndex = chronologicalIndex;
+                console.log(`Part index ${chronologicalIndex} (${arrangement.part}) active at time ${time}`);
             }
         });
 
+        console.log(`Final active part index: ${activePartIndex}`);
         return activePartIndex;
     }
 
+    calculateDynamicWeight(musicianName, currentTime, arrangement) {
+        const baseWeight = this.musicianWeights[musicianName];
+        const currentSoloist = arrangement ? arrangement.soloist : null;
+        const leadType = arrangement ? arrangement.type : null;
+
+        // Active soloist gets top priority
+        if (currentSoloist === musicianName) {
+            if (leadType === 'solo') {
+                return 1; // Soloists always at top
+            } else if (leadType === 'pick up') {
+                // During pickup, gradually increase priority
+                return this.calculatePickupWeight(musicianName, currentTime);
+            } else if (leadType === 'intro') {
+                return 3; // Intros get moderate priority
+            }
+        }
+
+        // Recently finished soloists stay near the top
+        const recentSoloistIndex = this.recentSoloists.indexOf(musicianName);
+        if (recentSoloistIndex !== -1) {
+            return 10 + recentSoloistIndex; // Second priority, stacked by recency
+        }
+
+        // Everyone else gets their base weight, pushed down by recent soloists
+        return baseWeight + this.recentSoloists.length * 5;
+    }
+
+    calculatePickupWeight(musicianName, currentTime) {
+        // Find the start of this pickup using processed timeline
+        const processedTimeline = this.processTimelineKeys();
+        const timelineEntries = Object.entries(processedTimeline)
+            .map(([timeStr, arr]) => ({ time: Number(timeStr), arrangement: arr }))
+            .sort((a, b) => b.time - a.time);
+
+        const pickupStart = timelineEntries.find(entry =>
+            entry.time <= currentTime &&
+            entry.arrangement.soloist === musicianName &&
+            entry.arrangement.type === 'pick up'
+        );
+
+        if (!pickupStart) return 5;
+
+        // Calculate how far into the pickup we are
+        const pickupDuration = currentTime - pickupStart.time;
+        const maxPickupTime = 5; // Assume pickups last ~5 seconds max
+        const progressRatio = Math.min(pickupDuration / maxPickupTime, 1);
+
+        // Gradually approach weight 2 during pickup (between solo=1 and intro=3)
+        return 5 - (progressRatio * 3); // 5 -> 2 over pickup duration
+    }
+
     updateMusicianCard(musicianDiv, musicianName, instrument, classes = [], showStar = false) {
-        // Clear all state classes
-        musicianDiv.className = 'musician-card';
+        // Clear all state classes but keep base classes
+        musicianDiv.className = 'musician-item musician-card';
 
         // Add any state classes
         classes.forEach(cls => musicianDiv.classList.add(cls));
+
+        // Calculate dynamic weight for this musician
+        const currentTime = this.getCurrentTime();
+        const arrangement = this.getCurrentArrangement(currentTime);
+        const dynamicWeight = this.calculateDynamicWeight(musicianName, currentTime, arrangement);
+
+        // Debug logging for troublesome musicians
+        if (musicianName === 'Cory Walker' && classes.includes('pickup')) {
+            console.log(`Cory pickup weight: ${dynamicWeight}, time: ${currentTime}, arrangement:`, arrangement);
+        }
+
+        musicianDiv.dataset.sortOrder = dynamicWeight;
 
         // Update content
         const starPrefix = showStar ? '⭐ ' : '';
@@ -253,10 +347,96 @@ class WebampChartifacts {
         `;
     }
 
+    initEnsembleGrid(gridElement) {
+        // Initialize actual Isotope for ensemble (vertical layout)
+        this.isotope = new Isotope(gridElement, {
+            itemSelector: '.musician-item',
+            layoutMode: 'vertical',
+            getSortData: {
+                order: '[data-sort-order] parseInt'
+            },
+            sortBy: 'order',
+            transitionDuration: '0.4s'
+        });
+    }
+
+
+    addRecentSoloist(musicianName) {
+        // Add to front of recent soloists list
+        this.recentSoloists = this.recentSoloists.filter(name => name !== musicianName); // Remove if already present
+        this.recentSoloists.unshift(musicianName); // Add to front
+
+        // Keep only the 3 most recent soloists
+        this.recentSoloists = this.recentSoloists.slice(0, 3);
+    }
+
+    sortEnsemble() {
+        // Use Isotope's built-in sorting
+        if (this.isotope) {
+            console.log('Sorting ensemble - weights:',
+                Array.from(this.isotope.element.children).map(el =>
+                    `${el.dataset.musician}: ${el.dataset.sortOrder}`
+                )
+            );
+            this.isotope.updateSortData();
+            this.isotope.arrange({ sortBy: 'order' });
+        }
+    }
+
     getCurrentArrangement(currentTime) {
-        const startTimes = Object.keys(this.trackData.timeline).map(Number).sort((a, b) => b - a);
+        // Convert section-based keys to actual times
+        const processedTimeline = this.processTimelineKeys();
+        const startTimes = Object.keys(processedTimeline).map(Number).sort((a, b) => b - a);
         const currentStartTime = startTimes.find(time => time <= currentTime);
-        return this.trackData.timeline[currentStartTime];
+        return processedTimeline[currentStartTime];
+    }
+
+    processTimelineKeys() {
+        if (this._processedTimeline) {
+            return this._processedTimeline;
+        }
+
+        console.log('Processing timeline keys. Raw timeline:', this.trackData.timeline);
+        console.log('Standard section length:', this.trackData.standardSectionLength);
+
+        if (!this.trackData.standardSectionLength) {
+            // No section processing needed, just return the timeline as-is
+            this._processedTimeline = this.trackData.timeline;
+            return this._processedTimeline;
+        }
+
+        const processed = {};
+        let accumulatedTime = 0;
+
+        // Process in the order: 0, section1, section2, section3, section4, section5, then exact times
+        // Start with time 0
+        if (this.trackData.timeline['0']) {
+            processed[0] = this.trackData.timeline['0'];
+            console.log(`Exact time 0 -> time 0:`, this.trackData.timeline['0']);
+        }
+
+        // Process sections in order
+        for (let i = 1; i <= 20; i++) { // Assume max 20 sections
+            const sectionKey = `section${i}`;
+            if (this.trackData.timeline[sectionKey]) {
+                accumulatedTime += this.trackData.standardSectionLength;
+                processed[accumulatedTime] = this.trackData.timeline[sectionKey];
+                console.log(`Section ${sectionKey} -> time ${accumulatedTime}:`, this.trackData.timeline[sectionKey]);
+            }
+        }
+
+        // Process exact time keys (skip 0 since we already did it)
+        Object.entries(this.trackData.timeline).forEach(([key, value]) => {
+            if (!key.startsWith('section') && key !== '0') {
+                const exactTime = parseFloat(key);
+                processed[exactTime] = value;
+                console.log(`Exact time ${key} -> time ${exactTime}:`, value);
+            }
+        });
+
+        console.log('Final processed timeline:', processed);
+        this._processedTimeline = processed;
+        return processed;
     }
 
     getCurrentInstruments(currentTime) {
@@ -286,6 +466,22 @@ class WebampChartifacts {
         const currentInstruments = this.getCurrentInstruments(currentTime);
         const currentSoloist = arrangement ? arrangement.soloist : null;
 
+        // Log major changes (only when arrangement actually changes)
+        if (arrangement !== this.currentEra) {
+            console.log(`Time ${currentTime}: NEW arrangement =`, arrangement);
+        }
+
+        // Track soloist changes for animation and weight updates
+        const soloistChanged = this.currentSoloist !== currentSoloist;
+        const previousSoloist = this.currentSoloist;
+
+        // When a soloist finishes, add them to recent soloists list
+        if (previousSoloist && currentSoloist !== previousSoloist && this.currentEra && this.currentEra.type === 'solo') {
+            this.addRecentSoloist(previousSoloist);
+        }
+
+        this.currentSoloist = currentSoloist;
+
         // Handle moments (one-time triggers)
         this.checkForMoments(currentTime);
 
@@ -300,6 +496,20 @@ class WebampChartifacts {
         // Skip normal ensemble updates during flash effects
         if (this.flashInProgress) {
             return;
+        }
+
+        // Capture card positions BEFORE any DOM changes for animation
+        let oldPositions = null;
+        if (soloistChanged) {
+            const ensembleContainer = document.getElementById('ensemble-display').querySelector('div');
+            if (ensembleContainer) {
+                const cards = Array.from(ensembleContainer.querySelectorAll('.musician-card'));
+                oldPositions = new Map();
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    oldPositions.set(card, { x: rect.left, y: rect.top });
+                });
+            }
         }
 
         Object.entries(this.trackData.ensemble).forEach(([musicianName, musicianData]) => {
@@ -332,6 +542,14 @@ class WebampChartifacts {
                 }
             }
         });
+
+        // Trigger Isotope reordering for various conditions
+        const shouldResort = soloistChanged ||
+                           (currentSoloist && arrangement && arrangement.type === 'pick up'); // Resort during pickups for gradual movement
+
+        if (shouldResort) {
+            this.sortEnsemble();
+        }
     }
 
     flashEntireEnsemble() {

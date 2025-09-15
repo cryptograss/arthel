@@ -43,13 +43,16 @@
 
 
             {% if chartifacts_version and chartifacts_version.chartifacts %}
-            <div id="player-with-ensemble" class="container">
-            <div class="row">
-                <div id="just-the-player-goes-here" class="col-md-6">
-                    Loading interactive player...
+            <div class="webamp-chartifacts-main-container">
+                <div class="webamp-chartifacts-player-and-parts">
+                    <div id="just-the-player-goes-here" class="webamp-chartifacts-player-area">
+                        Loading interactive player...
+                    </div>
+                    <div id="parts-chart" class="webamp-chartifacts-parts-area"></div>
                 </div>
-
-                <div id="parts-chart" class="d-flex align-items-end col-md-6"></div>
+                <div id="ensemble-display" class="webamp-chartifacts-ensemble-area">
+                    <!-- Ensemble will be populated by JavaScript -->
+                </div>
             </div>
 
             <!-- WebampChartifacts loaded via webpack chunks -->
@@ -72,7 +75,10 @@
                 colorScheme: {{ chartifacts_version.chartifacts.colorScheme | dump | safe }},
 
                 // Timeline from YAML
-                timeline: {{ chartifacts_version.chartifacts.timeline | dump | safe }}
+                timeline: {{ chartifacts_version.chartifacts.timeline | dump | safe }},
+
+                // Standard section length from YAML
+                standardSectionLength: {{ chartifacts_version.chartifacts.standardSectionLength | dump | safe }}
                         };
 
                 // Initialize Webamp Chartifacts when page loads
@@ -97,12 +103,6 @@
                 });
             </script>
             {% endif %}
-
-            <div class="row">
-                <div id="ensemble-display" class="col-md-6">
-                    <!-- TODO: List the ensemble here even if there is no player (per studio release, right?)  -->
-                </div>
-            </div>
 
 
 
