@@ -4,6 +4,19 @@
     z-index: 1000 !important;
 }
 
+/* Disable dragging on Webamp windows for better styling control */
+#webamp .window {
+    pointer-events: auto !important;
+}
+#webamp .title-bar {
+    cursor: default !important;
+    pointer-events: none !important;
+}
+/* Keep controls interactive */
+#webamp .title-bar .title-bar-controls {
+    pointer-events: auto !important;
+}
+
 /* Import handwritten font */
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap');
 
@@ -29,18 +42,19 @@
 /* Musician card styling - Isotope-style transitions */
 .musician-item {
     width: 100%;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .musician-card {
-    padding: 4px 6px;
+    padding: 2px 4px;
     background: #f8f9fa;
-    line-height: 1.2;
+    line-height: 1.1;
     transform: scale(1);
-    border-radius: 4px;
+    border-radius: 2px;
     border: 1px solid #ddd;
     position: relative;
+    font-size: 12px;
 }
 
 /* Legacy solo styling */
@@ -112,6 +126,30 @@
     }
 }
 
+/* Ensemble display in Webamp */
+.ensemble-display-in-webamp {
+    background: #faf7f2 !important;
+    color: #1a365d !important;
+}
+
+.ensemble-display-in-webamp .musician-card {
+    background: #f7fafc !important;
+    color: #1a365d !important;
+    border: 1px solid #1a365d !important;
+    margin: 2px 0;
+}
+
+.ensemble-display-in-webamp .musician-name {
+    color: #1a365d !important;
+    font-weight: bold;
+}
+
+.ensemble-display-in-webamp .chartifact-line {
+    color: #b8460e !important;
+    font-size: 10px;
+    opacity: 0.8;
+}
+
 .musician-card.solo .chartifact-line {
     color: #0056b3 !important;
 }
@@ -156,22 +194,21 @@
     font-weight: bold;
 }
 
-/* Webamp container styling */
+/* Webamp container styling - accommodate Webamp + ensemble display */
 #just-the-player-goes-here {
-    height: 116px;
     width: 340px;
 }
 
 /* Ensemble display - Isotope grid container */
 #ensemble-display {
-    padding: 20px;
-    border-radius: 8px;
+    padding: 6px;
+    border-radius: 4px;
     border: 1px solid #dee2e6;
     font-family: Arial, sans-serif;
-    font-size: 27px;
+    font-size: 14px;
     color: #333;
     z-index: 1000;
-    min-width: 250px;
+    min-width: 200px;
 }
 
 .ensemble-grid {
@@ -205,9 +242,10 @@
 /* Custom layout classes to replace Bootstrap */
 .webamp-chartifacts-main-container {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-direction: column;
+    gap: 8px;
     align-items: flex-start;
+    max-width: 100%;
 }
 
 .webamp-chartifacts-player-and-parts {
@@ -232,8 +270,41 @@
 }
 
 .webamp-chartifacts-ensemble-area {
-    flex: 1 1 auto;
-    min-width: 250px;
+    width: 100%;
+    max-width: 400px;
+    align-self: flex-start;
+}
+
+/* New ensemble display inside #webamp container */
+.ensemble-display-in-webamp {
+    height: 200px;
+    position: absolute;
+    top: 115px;
+    left: 0;
+    right: 0;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    background: rgba(255, 255, 255, 0.95);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    z-index: 1001;
+    overflow-y: auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Let Webamp handle its own positioning - don't force relative */
+#webamp {
+    z-index: 1000 !important;
+    /* Removed position: relative - Webamp handles its own positioning */
+}
+
+/* Reserve space in main column when chartifacts player is active */
+/* This addresses the fundamental absolute positioning challenge:
+   absolutely positioned elements don't affect document flow */
+#main-column-left:has(.webamp-chartifacts-main-container) {
+    min-height: 350px; /* Webamp (120px) + ensemble (200px) + padding (~30px) */
 }
 
 /* Mobile/narrow screen stacking */
@@ -244,5 +315,16 @@
 
     .webamp-chartifacts-player-and-parts {
         min-width: unset;
+    }
+
+    /* Adjust ensemble positioning for mobile */
+    .ensemble-display-in-webamp {
+        height: 150px;
+        font-size: 12px;
+    }
+
+    /* Smaller space reservation on mobile */
+    #main-column-left:has(.webamp-chartifacts-main-container) {
+        min-height: 300px;
     }
 }

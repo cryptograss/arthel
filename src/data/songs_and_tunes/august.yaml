@@ -2,7 +2,7 @@ by_artist_id: 0
 instrumental: true
 studio_versions:
   0:
-    4masks:
+    Vowel Sounds:
       ensemble:
         Justin Holmes: [guitar, six-whistle]
         Kyle Tuttle: [5-string banjo]
@@ -10,3 +10,50 @@ studio_versions:
         Maddie Denton: [fiddle]
         Skyler Golden: [bass]
         Gaven Largent: [dobro]
+      chartifacts:
+        audioFile: "/audio/August.flac"
+        duration: 180
+
+        # Color scheme (investigating why this seems required)
+        colorScheme:
+          solo:
+            border: "#007bff"
+            background: "#e3f2fd"
+            textColor: "#0056b3"
+            glowColor: "rgba(0, 123, 255, 0.6)"
+          pickup:
+            border: "#6c757d"
+            background: "#f8f9fa"
+            textColor: "#495057"
+          intro:
+            border: "#28a745"
+            background: "#d4edda"
+            textColor: "#155724"
+
+        standardSectionLength: 22
+        timeline:
+            0:
+              musicians:
+                "Justin Holmes": "in"
+                "Kyle Tuttle": "out"
+                "Harry Clark": "out"
+                "Maddie Denton": "out"
+                "Skyler Golden": "out"
+                "Gaven Largent": "out"
+              soloist: "Justin Holmes"
+              type: "solo"
+              part: "A"
+            8:
+              musicians:
+                "band": "in"  # shortcut for everyone in
+              soloist: "Maddie Denton"
+              type: "solo"
+              part: "A"
+            section1:
+              soloist: "Justin Holmes"
+              type: "solo"
+              part: "A"
+            section2:
+              musicians:
+                "band": "out"  # fade out
+                type: "ending"

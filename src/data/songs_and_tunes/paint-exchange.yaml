@@ -11,3 +11,83 @@ studio_versions:
         John Mailander: [fiddle]
         Kaitlyn Raitz: [cello]
         Harry Clark: [guitar]
+
+      # Webamp Chartifacts data for this version
+      chartifacts:
+        audioFile: "/audio/0 - Paint Exchange.flac"
+        duration: 240
+
+        # Color scheme - blue/orange theme
+        colorScheme:
+          solo:
+            border: "#000000"
+            background: "#e3f2fd"
+            textColor: "#0056b3"
+            glowColor: "rgba(255, 163, 72, 0.75)"
+          pickup:
+            border: "#ff9800"
+            background: "#fff3e0"
+            textColor: "#e65100"
+          intro:
+            border: "#17a2b8"
+            background: "#e6f7ff"
+            textColor: "#117a8b"
+          flash:
+            border: "#ffd700"
+            background: "#fffbf0"
+            boxShadow: "0 0 15px #ffd700"
+            textColor: "#b8860b"
+          parts:
+            active:
+              background: "#000000"
+              textColor: "white"
+
+        # Timeline segments keyed by start time
+        timeline:
+          0:
+            soloist: "Justin Holmes"
+            type: "intro"
+            part: "A"
+          13:
+            detail: "band-in"
+          22:
+            soloist: "John Mailander"
+            type: "pick up"
+          27:
+            soloist: "John Mailander"
+            type: "solo"
+          47:
+            part: "B"
+          59:
+            part: "A"
+          69:
+            soloist: "Kaitlyn Raitz"
+            type: "pick up"
+          72:
+            soloist: "Kaitlyn Raitz"
+            type: "solo"
+          83:
+            soloist: "Harry Clark"
+            type: "solo"
+          106:
+            soloist: "Samson Grisman"
+            type: "solo"
+            part: "B"
+          118:
+            soloist: "Cory Walker"
+            type: "solo"
+            part: "A"
+          163:
+            soloist: "John Mailander"
+            type: "pickup"
+          166:
+            soloist: "John Mailander"
+            type: "solo"
+            part: "B"
+          183:
+            instrumentChanges:
+              "Justin Holmes": "throatsinging"
+            soloist: "Justin Holmes"
+            type: "solo"
+          190:
+            part: "A"

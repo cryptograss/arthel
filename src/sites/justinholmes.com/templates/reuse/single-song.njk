@@ -22,7 +22,7 @@
 <div class="container text-light long-form" id="content">
 
     <div class="row">
-        <div class="col-md-8 semi-transparent-bg">
+        <div id="main-column-left" class="col-md-8 semi-transparent-bg">
             <h1 class="container-fluid text-center">{{ song.title }}</h1>
             {% if song.traditional %}
             <h3 class="container-fluid text-center">(traditional)</h3>
@@ -71,8 +71,8 @@
                     {% endfor %}
                 },
 
-                // Color scheme from YAML
-                colorScheme: {{ chartifacts_version.chartifacts.colorScheme | dump | safe }},
+                // Color scheme from YAML (optional)
+                colorScheme: {% if chartifacts_version.chartifacts.colorScheme %}{{ chartifacts_version.chartifacts.colorScheme | dump | safe }}{% else %}null{% endif %},
 
                 // Timeline from YAML
                 timeline: {{ chartifacts_version.chartifacts.timeline | dump | safe }},

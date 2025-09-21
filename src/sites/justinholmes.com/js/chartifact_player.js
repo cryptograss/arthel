@@ -4,12 +4,22 @@
 //  */
 
 import Webamp from 'webamp';
-import Isotope from 'isotope-layout';
+import Packery from 'packery';
 
 class WebampChartifacts {
     constructor(containerId, trackData) {
+        console.log('DEBUG: WebampChartifacts constructor called with container:', containerId);
+        console.log('DEBUG: Track data:', trackData);
+
         this.container = document.getElementById(containerId);
         this.trackData = trackData;
+
+        if (!this.container) {
+            console.error('DEBUG: Could not find container with ID:', containerId);
+            return;
+        }
+
+        console.log('DEBUG: Found container, proceeding with initialization');
         this.webamp = null;
         this.currentSolo = null;
         this.timeUpdateInterval = null;
@@ -49,7 +59,9 @@ class WebampChartifacts {
             existingStyle.remove();
         }
 
-        const colors = this.trackData.colorScheme;    }
+        const colors = this.trackData.colorScheme;
+        // TODO: Implement dynamic color styling based on colors object
+    }
 
     async init() {
         this.renderSimpleUI();
@@ -58,8 +70,7 @@ class WebampChartifacts {
     }
 
     renderSimpleUI() {
-        // Add ensemble display alongside Webamp
-        const ensembleDiv = document.getElementById('ensemble-display');
+        // Add parts chart (keep this in the external container)
         const partsChart = document.getElementById('parts-chart');
 
         // Extract song parts from timeline
@@ -72,28 +83,7 @@ class WebampChartifacts {
             partsChart.appendChild(partBox);
         });
 
-
-        // Create Isotope-style grid
-        const ensembleGrid = document.createElement('div');
-        ensembleGrid.className = 'ensemble-grid';
-
-        Object.entries(this.trackData.ensemble).forEach(([musicianName, musicianData]) => {
-            const musicianDiv = document.createElement('div');
-            musicianDiv.id = `musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`;
-            musicianDiv.className = 'musician-item musician-card';
-            musicianDiv.dataset.musician = musicianName;
-            musicianDiv.dataset.sortOrder = '100'; // Default sort order
-            musicianDiv.innerHTML = `
-                <div class="musician-name">${musicianName} (${musicianData.defaultInstrument})</div>
-                <div class="chartifact-line">Chartifact "0x1234ff" owned by cryptograss.eth</div>
-            `;
-            ensembleGrid.appendChild(musicianDiv);
-        });
-
-        ensembleDiv.appendChild(ensembleGrid);
-
-        // Initialize Isotope-style sorting (we'll use CSS transitions instead of the full library)
-        this.initEnsembleGrid(ensembleGrid);
+        // Ensemble will be created after Webamp renders (moved to renderWhenReady)
     }
 
 
@@ -129,14 +119,269 @@ class WebampChartifacts {
         });
 
         // Render Webamp directly to the main container - no custom HTML
+        console.log('DEBUG: Container before rendering:', {
+            exists: !!this.container,
+            id: this.container.id,
+            className: this.container.className,
+            children: this.container.children.length,
+            style: this.container.style.cssText,
+            parentExists: !!this.container.parentElement
+        });
+
         this.webamp.renderWhenReady(this.container).then(() => {
             console.log(`rendered webamp in ${this.container}`);
+
+            console.log('DEBUG: Container after rendering:', {
+                exists: !!this.container,
+                children: this.container.children.length,
+                style: this.container.style.cssText,
+                firstChild: this.container.firstChild ? this.container.firstChild.tagName : 'none',
+                webampElement: !!document.getElementById('webamp'),
+                containerInDOM: document.contains(this.container)
+            });
+
+            // Wait a moment for Webamp to fully initialize before constraining
+            setTimeout(() => {
+                // Move the #webamp element into our container to constrain it
+                this.constrainWebampToContainer();
+
+                // Wait another moment for layout to settle before creating ensemble
+                setTimeout(() => {
+                    this.createEnsembleInsideWebamp();
+                }, 100);
+            }, 500);  // Give Webamp time to set up its dimensions
+
             // Set up event listeners for Webamp
             this.setupWebampListeners();
         }).catch(error => {
             alert(error.message)
         });
 
+    }
+
+    constrainWebampToContainer() {
+        const webampElement = document.getElementById('webamp');
+        console.log('DEBUG: constrainWebampToContainer - webamp element:', {
+            exists: !!webampElement,
+            parentBefore: webampElement ? webampElement.parentElement.tagName + '#' + webampElement.parentElement.id : 'none',
+            containerExists: !!this.container,
+            containerInDOM: this.container ? document.contains(this.container) : false
+        });
+
+        if (!webampElement) {
+            console.error('Could not find #webamp element to constrain');
+            return;
+        }
+
+        // Move the #webamp element into our container
+        console.log('DEBUG: Moving webamp element into container...');
+        this.container.appendChild(webampElement);
+
+        // Ensure Webamp is visible
+        webampElement.style.display = 'block';
+        webampElement.style.visibility = 'visible';
+        webampElement.style.opacity = '1';
+
+        console.log('DEBUG: After moving webamp:', {
+            webampParent: webampElement.parentElement.tagName + '#' + webampElement.parentElement.id,
+            containerChildren: this.container.children.length,
+            webampRect: webampElement.getBoundingClientRect(),
+            webampStyle: webampElement.style.cssText,
+            webampVisible: webampElement.offsetHeight > 0 && webampElement.offsetWidth > 0
+        });
+
+        // Set the container to relative positioning so Webamp can position within it
+        this.container.style.position = 'relative';
+
+        console.log('Webamp constrained to container');
+    }
+
+    createEnsembleInsideWebamp() {
+        console.log('DEBUG: createEnsembleInsideWebamp called');
+
+        // Wait for #main-window to exist
+        const waitForMainWindow = () => {
+            const mainWindow = document.querySelector('#main-window');
+            if (mainWindow) {
+                console.log('DEBUG: Found #main-window, creating ensemble after it');
+                this.createEnsembleAfterMainWindow(mainWindow);
+            } else {
+                console.log('DEBUG: #main-window not found yet, waiting...');
+                setTimeout(waitForMainWindow, 100);
+            }
+        };
+
+        waitForMainWindow();
+    }
+
+    createEnsembleAfterMainWindow(mainWindow) {
+        // Debug Webamp positioning - especially the parent with transform
+        const webampContainer = document.getElementById('webamp');
+        const mainWindowParent = mainWindow.parentElement;
+
+        console.log('DEBUG: Webamp positioning analysis:', {
+            webampContainer: {
+                exists: !!webampContainer,
+                style: webampContainer ? webampContainer.style.cssText : 'N/A',
+                boundingRect: webampContainer ? webampContainer.getBoundingClientRect() : 'N/A'
+            },
+            mainWindowParent: {
+                tagName: mainWindowParent.tagName,
+                className: mainWindowParent.className,
+                style: mainWindowParent.style.cssText,
+                transform: mainWindowParent.style.transform,
+                boundingRect: mainWindowParent.getBoundingClientRect()
+            },
+            mainWindow: {
+                id: mainWindow.id,
+                style: mainWindow.style.cssText,
+                boundingRect: mainWindow.getBoundingClientRect()
+            }
+        });
+
+        // Try to intercept and override the transform
+        if (mainWindowParent.style.transform) {
+            console.log('DEBUG: Found transform on parent:', mainWindowParent.style.transform);
+            console.log('DEBUG: Attempting to override transform...');
+
+            // Override the transform to position at top-left
+            mainWindowParent.style.transform = 'translate(10px, 10px)';
+            console.log('DEBUG: Override applied, new transform:', mainWindowParent.style.transform);
+        }
+
+        // Create ensemble display
+        const ensembleDiv = document.createElement('div');
+        ensembleDiv.id = 'ensemble-display-in-webamp';
+        ensembleDiv.className = 'ensemble-display-in-webamp';
+
+        // Position ensemble below main window and parts chart
+        ensembleDiv.style.position = 'absolute';
+        ensembleDiv.style.left = '0px';
+        ensembleDiv.style.top = '130px'; // Below main window (120px height + 10px gap)
+        ensembleDiv.style.width = '400px';
+        // Remove margin since we're using absolute positioning
+        // ensembleDiv.style.margin = '10px';
+
+        // Create Packery grid for smooth repositioning
+        const ensembleGrid = document.createElement('div');
+        ensembleGrid.className = 'ensemble-grid';
+
+        Object.entries(this.trackData.ensemble).forEach(([musicianName, instruments]) => {
+            const musicianDiv = document.createElement('div');
+            musicianDiv.id = `musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`;
+            musicianDiv.className = 'musician-item musician-card';
+            musicianDiv.dataset.musician = musicianName;
+            musicianDiv.dataset.sortOrder = '100'; // Default sort order
+
+            // Handle instrument display - instruments is an array in YAML
+            const primaryInstrument = Array.isArray(instruments) ? instruments[0] : instruments;
+            console.log(`DEBUG: Creating musician card for ${musicianName}, instruments:`, instruments, 'primary:', primaryInstrument);
+
+            musicianDiv.innerHTML = `
+                <div class="musician-name">${musicianName} (${primaryInstrument})</div>
+                <div class="chartifact-line">Chartifact "0x1234ff" owned by cryptograss.eth</div>
+            `;
+            ensembleGrid.appendChild(musicianDiv);
+        });
+
+        ensembleDiv.appendChild(ensembleGrid);
+
+        // Also grab the parts chart and move it in as a sibling
+        const partsChart = document.getElementById('parts-chart');
+
+        if (partsChart) {
+            // Create a container div to hold parts chart positioned to the right
+            const partsContainer = document.createElement('div');
+            partsContainer.id = 'parts-chart-in-webamp';
+            partsContainer.style.position = 'absolute';
+            partsContainer.style.left = '285px'; // Just to the right of main window (275px wide + 10px gap)
+            partsContainer.style.top = '0px';
+            partsContainer.style.width = '120px';
+
+            // Move the parts chart content into our container
+            partsContainer.appendChild(partsChart);
+
+            // Insert the parts container as a sibling of main-window
+            mainWindow.parentNode.appendChild(partsContainer);
+            console.log('DEBUG: Moved parts chart to be sibling of main-window');
+        }
+
+        // Insert ensemble right after #main-window (or after parts if it exists)
+        const insertionPoint = partsChart ? partsChart.parentNode : mainWindow.nextSibling;
+        if (insertionPoint && insertionPoint !== mainWindow.parentNode) {
+            mainWindow.parentNode.insertBefore(ensembleDiv, insertionPoint);
+            console.log('DEBUG: Inserted ensemble before:', insertionPoint);
+        } else {
+            mainWindow.parentNode.appendChild(ensembleDiv);
+            console.log('DEBUG: Appended ensemble as last child');
+        }
+
+        // Debug where the ensemble actually ended up
+        setTimeout(() => {
+            console.log('DEBUG: Final ensemble position:', {
+                ensembleRect: ensembleDiv.getBoundingClientRect(),
+                ensembleParent: ensembleDiv.parentElement.tagName + (ensembleDiv.parentElement.id ? '#' + ensembleDiv.parentElement.id : ''),
+                mainWindowRect: mainWindow.getBoundingClientRect(),
+                relativePosition: {
+                    x: ensembleDiv.getBoundingClientRect().left - mainWindow.getBoundingClientRect().left,
+                    y: ensembleDiv.getBoundingClientRect().top - mainWindow.getBoundingClientRect().top
+                }
+            });
+        }, 100);
+
+        // Watch for Webamp positioning changes and intercept them
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    // Check if this is the parent element with transform
+                    if (mutation.target === mainWindowParent &&
+                        mutation.target.style.transform &&
+                        !mutation.target.style.transform.includes('translate(10px, 10px)')) {
+
+                        console.log('DEBUG: Webamp trying to move parent! Old transform:', mutation.target.style.transform);
+                        // Override it back to our position
+                        mutation.target.style.transform = 'translate(10px, 10px)';
+                        console.log('DEBUG: Blocked Webamp transform, keeping at translate(10px, 10px)');
+                    }
+
+                    // Also log window changes
+                    if (mutation.target.classList.contains('window')) {
+                        console.log('DEBUG: Webamp window style changed:', {
+                            target: mutation.target.id,
+                            style: mutation.target.style.cssText
+                        });
+                    }
+                }
+            });
+        });
+
+        // Watch the main window
+        observer.observe(mainWindow, {
+            attributes: true,
+            attributeFilter: ['style']
+        });
+
+        // Most importantly, watch the parent element for transform changes
+        observer.observe(mainWindowParent, {
+            attributes: true,
+            attributeFilter: ['style']
+        });
+
+        // Also watch for other Webamp windows that might appear
+        if (webampContainer) {
+            const allWindows = webampContainer.querySelectorAll('.window');
+            allWindows.forEach(window => {
+                observer.observe(window, {
+                    attributes: true,
+                    attributeFilter: ['style']
+                });
+            });
+        }
+
+        // Initialize Packery for smooth repositioning
+        this.initEnsembleGrid(ensembleGrid);
+
+        console.log('DEBUG: Ensemble display created after #main-window');
     }
 
     setupWebampListeners() {
@@ -192,14 +437,31 @@ class WebampChartifacts {
     }
 
     extractMomentTimes() {
-        // Find all timeline entries that have moment-worthy details
+        // Find all timeline entries that have moment-worthy musician changes
         const momentTimes = [];
         Object.entries(this.trackData.timeline).forEach(([timeStr, arrangement]) => {
             const time = Number(timeStr);
+
+            // New musicians system - check for band-in or individual musician changes
+            if (arrangement.musicians && time > 0) { // Exclude time 0
+                const musicians = arrangement.musicians;
+
+                // Check if band-in shortcut is used
+                if (musicians.band === "in" || musicians.band === "out") {
+                    momentTimes.push(time);
+                } else {
+                    // Check if any individual musicians are changing
+                    const hasMusiciansChanging = Object.values(musicians).some(status => status === "in" || status === "out");
+                    if (hasMusiciansChanging) {
+                        momentTimes.push(time);
+                    }
+                }
+            }
+
+            // Legacy support for old "band-in" detail system
             if (arrangement.detail === "band-in" && time > 0) { // Exclude time 0
                 momentTimes.push(time);
             }
-            // Add other moment types here as needed
         });
         return momentTimes.sort((a, b) => a - b);
     }
@@ -341,11 +603,39 @@ class WebampChartifacts {
     }
 
     updateMusicianCard(musicianDiv, musicianName, instrument, classes = [], showStar = false) {
+        // Check if this update is actually necessary
+        const newClassString = ['musician-item', 'musician-card', ...classes].sort().join(' ');
+        const currentClassString = Array.from(musicianDiv.classList).sort().join(' ');
+
+        // Also check if instrument display needs updating
+        const nameDiv = musicianDiv.querySelector('.musician-name');
+        const expectedName = `${musicianName} (${instrument})`;
+        const currentName = nameDiv ? nameDiv.textContent : '';
+
+        // Skip update if nothing changed
+        if (newClassString === currentClassString && expectedName === currentName) {
+            return;
+        }
+
+        // Log excessive updates for debugging
+        if (!this.updateCounts) this.updateCounts = {};
+        if (!this.updateCounts[musicianName]) this.updateCounts[musicianName] = 0;
+        this.updateCounts[musicianName]++;
+
+        if (this.updateCounts[musicianName] % 20 === 0) {
+            console.log(`DEBUG: ${musicianName} updated ${this.updateCounts[musicianName]} times - classes: ${newClassString}, name: ${expectedName}`);
+        }
+
         // Clear all state classes but keep base classes
         musicianDiv.className = 'musician-item musician-card';
 
         // Add any state classes
         classes.forEach(cls => musicianDiv.classList.add(cls));
+
+        // Update name if it changed
+        if (nameDiv && expectedName !== currentName) {
+            nameDiv.textContent = expectedName;
+        }
 
         // Calculate dynamic weight for this musician
         const currentTime = this.getCurrentTime();
@@ -368,14 +658,11 @@ class WebampChartifacts {
     }
 
     initEnsembleGrid(gridElement) {
-        // Initialize actual Isotope for ensemble (vertical layout)
-        this.isotope = new Isotope(gridElement, {
+        // Initialize Packery for ensemble (better for smooth repositioning)
+        this.packery = new Packery(gridElement, {
             itemSelector: '.musician-item',
-            layoutMode: 'vertical',
-            getSortData: {
-                order: '[data-sort-order] parseInt'
-            },
-            sortBy: 'order',
+            columnWidth: gridElement.offsetWidth,  // Use actual grid width
+            gutter: 2,            // Small gap between items (matches CSS)
             transitionDuration: '0.4s'
         });
     }
@@ -391,15 +678,27 @@ class WebampChartifacts {
     }
 
     sortEnsemble() {
-        // Use Isotope's built-in sorting
-        if (this.isotope) {
+        // Use Packery's reordering approach
+        if (this.packery) {
+            // Get all musician items and sort them by weight
+            const items = Array.from(this.packery.element.children);
+            const sortedItems = items.sort((a, b) => {
+                const weightA = parseInt(a.dataset.sortOrder || '999');
+                const weightB = parseInt(b.dataset.sortOrder || '999');
+                return weightA - weightB;
+            });
+
             console.log('Sorting ensemble - weights:',
-                Array.from(this.isotope.element.children).map(el =>
-                    `${el.dataset.musician}: ${el.dataset.sortOrder}`
-                )
+                sortedItems.map(el => `${el.dataset.musician}: ${el.dataset.sortOrder}`)
             );
-            this.isotope.updateSortData();
-            this.isotope.arrange({ sortBy: 'order' });
+
+            // Reorder DOM elements (Packery will animate automatically)
+            sortedItems.forEach(item => {
+                this.packery.element.appendChild(item);
+            });
+
+            // Trigger Packery layout update
+            this.packery.layout();
         }
     }
 
@@ -464,8 +763,9 @@ class WebampChartifacts {
         const instruments = {};
 
         // Start with default instruments
-        Object.entries(this.trackData.ensemble).forEach(([musician, musicianData]) => {
-            instruments[musician] = musicianData.defaultInstrument;
+        Object.entries(this.trackData.ensemble).forEach(([musician, musicianInstruments]) => {
+            const primaryInstrument = Array.isArray(musicianInstruments) ? musicianInstruments[0] : musicianInstruments;
+            instruments[musician] = primaryInstrument;
         });
 
         // Apply any instrument changes for current timeline segment
@@ -482,6 +782,13 @@ class WebampChartifacts {
         ////
         /// This is the big thing that happens every 100ms
         ////
+
+        // Throttle logging to avoid spam but catch runaway issues
+        if (!this.lastLogTime || Date.now() - this.lastLogTime > 2000) {
+            console.log(`DEBUG updateEnsembleDisplay: Running at time=${currentTime}`);
+            this.lastLogTime = Date.now();
+        }
+
         const arrangement = this.getCurrentArrangement(currentTime);
         const currentInstruments = this.getCurrentInstruments(currentTime);
         const currentSoloist = arrangement ? arrangement.soloist : null;
@@ -571,7 +878,7 @@ class WebampChartifacts {
             }
         });
 
-        // Trigger Isotope reordering for various conditions
+        // Trigger Packery reordering for various conditions
         const shouldResort = soloistChanged ||
                            (currentSoloist && arrangement && arrangement.type === 'pick up'); // Resort during pickups for gradual movement
 
@@ -604,6 +911,21 @@ class WebampChartifacts {
 
             // Reset flash effect, let normal updates resume
             this.flashInProgress = false;
+        }, 300);
+    }
+
+    flashSpecificMusician(musicianName) {
+        const musicianDiv = document.getElementById(`musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`);
+        if (!musicianDiv) return;
+
+        console.log(`Flashing specific musician: ${musicianName}`);
+
+        // Apply flash class
+        musicianDiv.classList.add('flash');
+
+        // Remove flash class after brief flash
+        setTimeout(() => {
+            musicianDiv.classList.remove('flash');
         }, 300);
     }
 
@@ -643,11 +965,31 @@ class WebampChartifacts {
 
         console.log(`Triggering moment at ${momentTime}:`, arrangement);
 
-        // Handle different moment types
-            if (arrangement.detail === "band-in") {
+        // New musicians system
+        if (arrangement.musicians) {
+            const musicians = arrangement.musicians;
+
+            // Handle "band" shortcut
+            if (musicians.band === "in") {
                 this.flashEntireEnsemble();
+            } else if (musicians.band === "out") {
+                this.flashEntireEnsemble(); // Could be a different effect for "out"
+            } else {
+                // Handle individual musician changes
+                Object.entries(musicians).forEach(([musicianName, status]) => {
+                    if (status === "in") {
+                        this.flashSpecificMusician(musicianName);
+                    } else if (status === "out") {
+                        this.flashSpecificMusician(musicianName); // Could be different effect
+                    }
+                });
             }
-        // Add other moment types here as needed
+        }
+
+        // Legacy support: Handle different moment types
+        if (arrangement.detail === "band-in") {
+            this.flashEntireEnsemble();
+        }
     }
 
     // Remove showPickupEffect since pickup is now an era, not a moment
@@ -757,12 +1099,13 @@ class WebampChartifacts {
     }
 
     resetEnsembleDisplay() {
-        Object.entries(this.trackData.ensemble).forEach(([musicianName, musicianData]) => {
+        Object.entries(this.trackData.ensemble).forEach(([musicianName, musicianInstruments]) => {
             const musicianDiv = document.getElementById(`musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`);
             if (!musicianDiv) return;
 
             // Use helper function to reset to default state
-            this.updateMusicianCard(musicianDiv, musicianName, musicianData.defaultInstrument);
+            const primaryInstrument = Array.isArray(musicianInstruments) ? musicianInstruments[0] : musicianInstruments;
+            this.updateMusicianCard(musicianDiv, musicianName, primaryInstrument);
         });
     }
 

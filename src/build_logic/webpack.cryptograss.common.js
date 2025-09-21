@@ -89,7 +89,7 @@ export default {
         shapes: `${frontendJSDir}/shapes.js`,
         blue_railroad: `${frontendJSDir}/bazaar/blue_railroad.js`,
         oracle_client: `${frontendJSDir}/oracle_client.js`,
-        chartifact_player: `${frontendJSDir}/chartifact_player.js`,
+        chartifact_player: `${frontendJSDir}/chartifacts_player.js`,
     },
     module: {
         rules: [
