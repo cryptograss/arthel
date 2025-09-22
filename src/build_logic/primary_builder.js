@@ -449,6 +449,56 @@ export const runPrimaryBuild = async () => {
     }
 
     ///////////////////////////
+    // Chapter 4.2b: Embed pages for songs with chartifacts
+    ///////////////////////////
+
+    if (site === "justinholmes.com") {
+        Object.entries(songs).forEach(([song_slug, song]) => {
+            // Only create embed pages for songs that have chartifacts data
+            let chartifacts_version = null;
+            if (song.studio_versions) {
+                for (const [version_num, version] of Object.entries(song.studio_versions)) {
+                    for (const [release_name, release_data] of Object.entries(version)) {
+                        if (release_data.chartifacts) {
+                            chartifacts_version = release_data;
+                            break;
+                        }
+                    }
+                    if (chartifacts_version) break;
+                }
+            }
+
+            if (chartifacts_version && chartifacts_version.chartifacts) {
+                // Prepare song data for the embed iframe
+                const songData = {
+                    title: song.title,
+                    duration: chartifacts_version.chartifacts.duration,
+                    audioFile: chartifacts_version.chartifacts.audioFile,
+                    ensemble: chartifacts_version.ensemble,
+                    timeline: chartifacts_version.chartifacts.timeline,
+                    standardSectionLength: chartifacts_version.chartifacts.standardSectionLength,
+                    colorScheme: chartifacts_version.chartifacts.colorScheme || null
+                };
+
+                const context = {
+                    page_name: `embed_chartifacts_${song_slug}`,
+                    page_title: `Chartifacts Player - ${song.title}`,
+                    songData,
+                };
+
+                renderPage({
+                    template_path: 'pages/embed/chartifacts-player.njk',
+                    output_path: `embed/chartifacts-player/${song_slug}.html`,
+                    context: context,
+                    site: site,
+                });
+
+                console.log(`Generated embed page for song: ${song_slug}`);
+            }
+        });
+    }
+
+    ///////////////////////////
     // Chapter 4.2a: Lists of songs
     ///////////////////////////
 
