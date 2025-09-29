@@ -7,6 +7,12 @@
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run", "dev:jh"]
         },
+                {
+            "type": "node",
+            "name": "Sig:JH Dev Server",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev:jh:signals"]
+        },
         {
             "type": "node",
             "name": "CG Dev Server",
