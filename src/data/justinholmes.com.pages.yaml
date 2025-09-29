@@ -11,6 +11,30 @@ listen:
     page_title: "Listen"
     no_video_bg: true
 
+chartifact-animation-test:
+  template: chartifact-animation-test.njk
+  context:
+    page_title: "Chartifact Animation Test"
+    no_video_bg: true
+
+chartifacts-player:
+  template: chartifacts-player.njk
+  context:
+    page_title: "Chartifacts Player"
+    no_video_bg: true
+
+chartifacts-player-demo:
+  template: chartifacts-player-demo.njk
+  context:
+    page_title: "Chartifacts Player Demo"
+    no_video_bg: true
+
+chartifacts-embed-demo:
+  template: chartifacts-embed-demo.njk
+  context:
+    page_title: "Rabbit Hole Player - Embed Demo"
+    no_video_bg: true
+
 # cryptograss.eth:
 #   template: cryptograss.njk
 #   include_data_in_context:

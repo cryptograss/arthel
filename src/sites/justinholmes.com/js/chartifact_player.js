@@ -7,12 +7,14 @@ import Webamp from 'webamp';
 import Packery from 'packery';
 
 class WebampChartifacts {
-    constructor(containerId, trackData) {
+    constructor(containerId, trackData, options = {}) {
         console.log('DEBUG: WebampChartifacts constructor called with container:', containerId);
         console.log('DEBUG: Track data:', trackData);
+        console.log('DEBUG: Options:', options);
 
         this.container = document.getElementById(containerId);
         this.trackData = trackData;
+        this.options = options;
 
         if (!this.container) {
             console.error('DEBUG: Could not find container with ID:', containerId);
@@ -64,9 +66,19 @@ class WebampChartifacts {
     }
 
     async init() {
-        this.renderSimpleUI();
-        await this.initWebamp();
-        this.setupTimeTracking();
+        console.log('DEBUG: Starting init() for embed mode');
+
+        // For embed mode, skip the complex UI and focus on Webamp
+        if (this.options.embedMode) {
+            console.log('DEBUG: In embed mode - initializing Webamp only');
+            await this.initWebamp();
+            this.setupTimeTracking();
+        } else {
+            console.log('DEBUG: In full mode - initializing full UI');
+            this.renderSimpleUI();
+            await this.initWebamp();
+            this.setupTimeTracking();
+        }
     }
 
     renderSimpleUI() {
@@ -129,7 +141,7 @@ class WebampChartifacts {
         });
 
         this.webamp.renderWhenReady(this.container).then(() => {
-            console.log(`rendered webamp in ${this.container}`);
+            console.log(`DEBUG: Webamp rendered successfully in container:`, this.container.id);
 
             console.log('DEBUG: Container after rendering:', {
                 exists: !!this.container,
@@ -140,23 +152,100 @@ class WebampChartifacts {
                 containerInDOM: document.contains(this.container)
             });
 
-            // Wait a moment for Webamp to fully initialize before constraining
-            setTimeout(() => {
-                // Move the #webamp element into our container to constrain it
-                this.constrainWebampToContainer();
-
-                // Wait another moment for layout to settle before creating ensemble
+            if (this.options.embedMode) {
+                console.log('DEBUG: Embed mode - creating ensemble with simple positioning');
+                // In embed mode, create ensemble in the dedicated containers
+                this.createEnsembleForEmbed();
+                this.setupWebampListeners();
+            } else {
+                console.log('DEBUG: Full mode - setting up complex positioning');
+                // Wait a moment for Webamp to fully initialize before constraining
                 setTimeout(() => {
-                    this.createEnsembleInsideWebamp();
-                }, 100);
-            }, 500);  // Give Webamp time to set up its dimensions
+                    // Move the #webamp element into our container to constrain it
+                    this.constrainWebampToContainer();
 
-            // Set up event listeners for Webamp
-            this.setupWebampListeners();
+                    // Wait another moment for layout to settle before creating ensemble
+                    setTimeout(() => {
+                        this.createEnsembleInsideWebamp();
+                    }, 100);
+                }, 500);  // Give Webamp time to set up its dimensions
+
+                // Set up event listeners for Webamp
+                this.setupWebampListeners();
+            }
         }).catch(error => {
-            alert(error.message)
+            console.error('DEBUG: Webamp initialization failed:', error);
+            // Don't alert in embed mode - just log the error
+            if (!this.options.embedMode) {
+                alert(error.message);
+            } else {
+                console.error('Webamp failed to initialize in embed mode:', error.message);
+            }
         });
 
+    }
+
+    createEnsembleForEmbed() {
+        console.log('DEBUG: Creating ensemble for embed mode');
+
+        // Use the existing dedicated containers in the embed template
+        const ensembleContainer = document.getElementById('ensemble-display');
+        const partsContainer = document.getElementById('parts-chart');
+
+        if (!ensembleContainer || !partsContainer) {
+            console.error('DEBUG: Missing ensemble or parts containers for embed mode');
+            return;
+        }
+
+        // Create ensemble display
+        this.populateEnsembleContainer(ensembleContainer);
+
+        // Create parts chart
+        this.populatePartsContainer(partsContainer);
+
+        console.log('DEBUG: Embed ensemble and parts created successfully');
+    }
+
+    populateEnsembleContainer(container) {
+        // Clear existing content
+        container.innerHTML = '';
+
+        // Create musician cards for each ensemble member
+        Object.entries(this.trackData.ensemble).forEach(([musicianName, instruments]) => {
+            const musicianDiv = document.createElement('div');
+            musicianDiv.id = `musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`;
+            musicianDiv.className = 'musician-item musician-card';
+            musicianDiv.dataset.musician = musicianName;
+
+            const primaryInstrument = Array.isArray(instruments) ? instruments[0] : instruments;
+
+            musicianDiv.innerHTML = `
+                <div class="musician-name">${musicianName} (${primaryInstrument})</div>
+                <div class="chartifact-line">Chartifact "0x1234ff" owned by cryptograss.eth</div>
+            `;
+
+            container.appendChild(musicianDiv);
+        });
+
+        // Make musician names clickable if the function exists (embed mode)
+        if (typeof makeMusiciansClickable === 'function') {
+            makeMusiciansClickable();
+        }
+    }
+
+    populatePartsContainer(container) {
+        // Clear existing content
+        container.innerHTML = '';
+
+        // Extract song parts from timeline
+        const songParts = this.extractSongParts();
+        songParts.forEach((part, index) => {
+            const partBox = document.createElement('div');
+            partBox.id = `part-${index}`;
+            partBox.className = 'part-box';
+            partBox.textContent = part;
+            container.appendChild(partBox);
+        });
     }
 
     constrainWebampToContainer() {
@@ -1107,6 +1196,54 @@ class WebampChartifacts {
             const primaryInstrument = Array.isArray(musicianInstruments) ? musicianInstruments[0] : musicianInstruments;
             this.updateMusicianCard(musicianDiv, musicianName, primaryInstrument);
         });
+    }
+
+    loadNewSong(newTrackData) {
+        console.log('DEBUG: Loading new song:', newTrackData.title);
+
+        // Stop current tracking
+        this.stopTimeTracking();
+
+        // Update track data
+        this.trackData = newTrackData;
+
+        // Reset state
+        this.currentSolo = null;
+        this.currentEra = null;
+        this.allMomentTimes = this.extractMomentTimes();
+        this.upcomingMomentTimes = [...this.allMomentTimes];
+        this.initializeMusicianWeights();
+
+        // Update Webamp with new track
+        if (this.webamp && this.webamp.getMediaStatus) {
+            // Stop current playback
+            this.webamp.stop();
+
+            // Load new track
+            this.webamp.setTracksToPlay([{
+                url: newTrackData.audioFile,
+                defaultName: newTrackData.title
+            }]);
+        }
+
+        // Update ensemble display
+        if (this.options.embedMode) {
+            this.createEnsembleForEmbed();
+        } else {
+            // For full mode, recreate the ensemble
+            const ensembleContainer = document.getElementById('ensemble-display-in-webamp');
+            if (ensembleContainer) {
+                ensembleContainer.remove();
+            }
+            setTimeout(() => {
+                this.createEnsembleInsideWebamp();
+            }, 100);
+        }
+
+        // Restart time tracking
+        this.setupTimeTracking();
+
+        console.log('DEBUG: New song loaded successfully');
     }
 
     cleanup() {

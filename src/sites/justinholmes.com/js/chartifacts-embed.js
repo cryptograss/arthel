@@ -2,7 +2,7 @@
     'use strict';
 
     // Configuration
-    const EMBED_BASE_URL = 'https://justinholmes.com'; // TODO: Make this configurable
+    const EMBED_BASE_URL = 'http://localhost:4000'; // TODO: Make this configurable for production
 
     /**
      * Creates an iframe player for the given song
@@ -24,7 +24,7 @@
 
         // Create iframe
         const iframe = document.createElement('iframe');
-        iframe.src = `${EMBED_BASE_URL}/embed/chartifacts-player?song=${encodeURIComponent(song)}&autoplay=${autoplay}`;
+        iframe.src = `${EMBED_BASE_URL}/embed/chartifacts-player/${encodeURIComponent(song)}.html`;
         iframe.width = width;
         iframe.height = height;
         iframe.frameBorder = '0';

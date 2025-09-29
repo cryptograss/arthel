@@ -79,10 +79,73 @@ async function buildOracleData() {
         path.join(apiDir, 'graph.json'),
         JSON.stringify(fullData, null, 2)
     );
-    
+
+    // Build simplified musician-connections lookup for Rabbit Hole Player
+    const musicianConnections = {};
+
+    oracle.connections.forEach(connection => {
+        connection.musicians.forEach(musicianName => {
+            if (!musicianConnections[musicianName]) {
+                musicianConnections[musicianName] = [];
+            }
+
+            // Format context string based on connection type
+            let context = '';
+            if (connection.type === 'studio') {
+                context = `Studio recording${connection.context ? ' - ' + connection.context : ''}`;
+            } else if (connection.type === 'show') {
+                context = `Live at ${connection.venue || 'Unknown Venue'}`;
+                if (connection.location) {
+                    context += ` (${connection.location})`;
+                }
+            } else {
+                context = connection.context || 'Musical collaboration';
+            }
+
+            musicianConnections[musicianName].push({
+                song: connection.song || 'Various songs',
+                context: context,
+                type: connection.type,
+                date: connection.blockHeight, // Could be converted to actual date if needed
+                connectionId: connection.id
+            });
+        });
+    });
+
+    // Remove duplicates and sort by type (studio first, then live)
+    Object.keys(musicianConnections).forEach(musician => {
+        const connections = musicianConnections[musician];
+        const uniqueConnections = [];
+        const seen = new Set();
+
+        connections.forEach(conn => {
+            const key = `${conn.song}|${conn.context}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                uniqueConnections.push(conn);
+            }
+        });
+
+        // Sort: studio recordings first, then live shows
+        uniqueConnections.sort((a, b) => {
+            if (a.type !== b.type) {
+                return a.type === 'studio' ? -1 : 1;
+            }
+            return a.song.localeCompare(b.song);
+        });
+
+        musicianConnections[musician] = uniqueConnections;
+    });
+
+    fs.writeFileSync(
+        path.join(apiDir, 'musician-connections.json'),
+        JSON.stringify(musicianConnections, null, 2)
+    );
+
     console.log(`✅ Built Oracle data:`);
     console.log(`   - ${musicians.length} musicians`);
     console.log(`   - ${oracle.connections.length} connections`);
+    console.log(`   - ${Object.keys(musicianConnections).length} musicians with connection data`);
     console.log(`   - Output: ${apiDir}`);
 }
 

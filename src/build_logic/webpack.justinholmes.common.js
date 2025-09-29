@@ -97,6 +97,7 @@ export default {
         add_show_for_stone_minting: `${frontendJSDir}/add_show_for_stone_minting.js`,
         oracle_client: `${frontendJSDir}/oracle_client.js`,
         chartifact_player: `${frontendJSDir}/chartifact_player.js`,
+        chartifacts_embed: `${frontendJSDir}/chartifacts-embed.js`,
     },
     module: {
         rules: [

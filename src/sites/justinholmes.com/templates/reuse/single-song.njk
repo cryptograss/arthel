@@ -10,11 +10,6 @@
 {% endfor %}
 {% endfor %}
 
-{% block additional_css %}
-{% if chartifacts_version and chartifacts_version.chartifacts %}
-<link rel="stylesheet" href="/styles/webamp-chartifacts.css">
-{% endif %}
-{% endblock %}
 
 {% block main %}
 {% include 'partials/bigger-banner.njk' %}
@@ -43,66 +38,16 @@
 
 
             {% if chartifacts_version and chartifacts_version.chartifacts %}
-            <div class="webamp-chartifacts-main-container">
-                <div class="webamp-chartifacts-player-and-parts">
-                    <div id="just-the-player-goes-here" class="webamp-chartifacts-player-area">
-                        Loading interactive player...
-                    </div>
-                    <div id="parts-chart" class="webamp-chartifacts-parts-area"></div>
-                </div>
-                <div id="ensemble-display" class="webamp-chartifacts-ensemble-area">
-                    <!-- Ensemble will be populated by JavaScript -->
-                </div>
+            <div class="chartifacts-embed-container text-center" style="margin: 20px 0;">
+                <iframe src="/embed/chartifacts-player/{{ song_slug }}.html"
+                        width="500" height="400"
+                        frameborder="0"
+                        title="Chartifacts Player - {{ song.title }}"
+                        style="border: none; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+                </iframe>
             </div>
-
-            <!-- WebampChartifacts loaded via webpack chunks -->
-
-            <script>
-                // Convert YAML data to JavaScript format
-                window.songChartifactsData = {
-                    title: "{{ song.title }}",
-                    duration: {{ chartifacts_version.chartifacts.duration }},
-                audioFile: "{{ chartifacts_version.chartifacts.audioFile }}",
-
-                    // Build ensemble from YAML ensemble data (first instrument is default)
-                    ensemble: {
-                    {% for musician_name, instruments in chartifacts_version.ensemble %}
-                    "{{ musician_name }}": { defaultInstrument: "{{ instruments[0] }}" } {% if not loop.last %}, {% endif %}
-                    {% endfor %}
-                },
-
-                // Color scheme from YAML (optional)
-                colorScheme: {% if chartifacts_version.chartifacts.colorScheme %}{{ chartifacts_version.chartifacts.colorScheme | dump | safe }}{% else %}null{% endif %},
-
-                // Timeline from YAML
-                timeline: {{ chartifacts_version.chartifacts.timeline | dump | safe }},
-
-                // Standard section length from YAML
-                standardSectionLength: {{ chartifacts_version.chartifacts.standardSectionLength | dump | safe }}
-                        };
-
-                // Initialize Webamp Chartifacts when page loads
-                window.addEventListener('load', function () {
-                    try {
-                        function initWebampPlayer() {
-                            if (typeof WebampChartifacts !== 'undefined' && window.songChartifactsData) {
-                                new WebampChartifacts('just-the-player-goes-here', window.songChartifactsData);
-                            } else {
-                                setTimeout(initWebampPlayer, 100);
-                            }
-                        }
-                        initWebampPlayer();
-                    } catch (error) {
-                        console.error('Error initializing Webamp Chartifacts:', error);
-                        document.getElementById('just-the-player-goes-here').innerHTML =
-                            '<div style="background: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; text-align: center;">' +
-                            '<h3>⚠️ Player Error</h3>' +
-                            '<p>Unable to load interactive chartifacts player.</p>' +
-                            '</div>';
-                    }
-                });
-            </script>
             {% endif %}
+
 
 
 
