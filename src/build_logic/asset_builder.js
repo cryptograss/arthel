@@ -29,10 +29,10 @@ function gatherAssets() {
 
     // Ensure output directories exist
     if (!fs.existsSync(imageOutputDir)) {
-        fs.mkdirSync(imageOutputDir, {recursive: true});
+        fs.mkdirSync(imageOutputDir, {recursive: true, mode: 0o777});
     }
     if (!fs.existsSync(assetsOutputDir)) {
-        fs.mkdirSync(assetsOutputDir, { recursive: true });
+        fs.mkdirSync(assetsOutputDir, { recursive: true, mode: 0o777 });
     }
 
     if (_assets_gathered) {
@@ -56,10 +56,21 @@ function gatherAssets() {
         const thumbPath = path.join(imageOutputDir, `${path.basename(file, fileExt)}-thumb${fileExt}`);
 
         // Ensure output directory exists
-        fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+        fs.mkdirSync(path.dirname(outputPath), { recursive: true, mode: 0o777 });
 
-        // Copy original file
-        fs.copyFileSync(file, outputPath);
+        // Copy original file - ensure permissions are correct
+        try {
+            // Remove destination if it exists to avoid permission conflicts
+            if (fs.existsSync(outputPath)) {
+                fs.chmodSync(outputPath, 0o666); // Make it writable
+                fs.unlinkSync(outputPath);
+            }
+            fs.copyFileSync(file, outputPath);
+            fs.chmodSync(outputPath, 0o666); // Ensure copied file is writable
+        } catch (error) {
+            console.error(`Failed to copy ${file} to ${outputPath}:`, error.message);
+            throw error;
+        }
 
         // Generate thumbnail for images (not videos)
         if (!file.endsWith('.mp4')) {
@@ -87,7 +98,7 @@ function gatherAssets() {
     // Simply copy the fetched assets directory
     if (fs.existsSync(fetchedAssetsDir)) {
         const fetchedOutputDir = path.join(assetsOutputDir, 'fetched');
-        fs.mkdirSync(fetchedOutputDir, { recursive: true });
+        fs.mkdirSync(fetchedOutputDir, { recursive: true, mode: 0o777 });
 
         const fetchedFiles = globSync(`${fetchedAssetsDir}/**/*`, { nodir: true });
         fetchedFiles.forEach(file => {
@@ -96,7 +107,7 @@ function gatherAssets() {
 
             // TODO: Make hashes Issue #184
             // Ensure the output directory exists
-            fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+            fs.mkdirSync(path.dirname(outputPath), { recursive: true, mode: 0o777 });
 
             // Copy the file
             fs.copyFileSync(file, outputPath);

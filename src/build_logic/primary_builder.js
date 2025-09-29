@@ -26,6 +26,7 @@ import { verifyBlueRailroadVideos } from './blue_railroad.js';
 import { DateTime } from 'luxon';
 
 export const runPrimaryBuild = async () => {
+    const oldUmask = process.umask(0o000); // Ensure that proper permissions are applied
     const { outputPrimaryRootDir, dataDir, templateDir, site, outputPrimarySiteDir } = getProjectDirs();
     const { shows, songs, pickers, songsByProvenance } = getShowAndSetData();
 
@@ -39,7 +40,7 @@ export const runPrimaryBuild = async () => {
 
         dirs.forEach(dir => {
             if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
+                fs.mkdirSync(dir, { recursive: true, mode: 0o777 });
             }
         });
     };
@@ -53,9 +54,9 @@ export const runPrimaryBuild = async () => {
 
     // ...now, same for the site-specific output directory.
     if (fs.existsSync(outputPrimarySiteDir)) {
-        fs.rmSync(outputPrimarySiteDir, { recursive: true });
+        fs.rmSync(outputPrimarySiteDir, { recursive: true});
     }
-    fs.mkdirSync(outputPrimarySiteDir, { recursive: true });
+    fs.mkdirSync(outputPrimarySiteDir, { recursive: true, mode: 0o777 });
 
     /////////////////////////
     ///// Chapter one: chain data
