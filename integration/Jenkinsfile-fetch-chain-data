@@ -4,6 +4,7 @@ pipeline {
     environment {
         NODE_VERSION = '23.6.1'
         NVM_DIR = '/var/jenkins_home/.nvm'
+        SECRETS_DIR = '/var/jenkins_home/secrets'
         SHARED_DATA_DIR = '/var/jenkins_home/shared'
         CHAIN_DATA_DIR = "${SHARED_DATA_DIR}/chain_data"
     }
@@ -13,6 +14,11 @@ pipeline {
             steps {
                 sh '''
                     mkdir -p ${CHAIN_DATA_DIR}
+
+                    # Copy .env file from secrets
+                    cp ${SECRETS_DIR}/0/.env .env
+                    chmod 600 .env
+
                     export NVM_DIR="$NVM_DIR"
                     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --no-use > /dev/null
                     nvm use ${NODE_VERSION} > /dev/null
