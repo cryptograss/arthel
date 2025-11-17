@@ -18,6 +18,7 @@ async function dev_config() {
                 writeToDisk: true,
             },
             port: 4000,
+            allowedHosts: 'all',
             historyApiFallback: {
                 rewrites: [
                     { from: /\/$/, to: '/index.html' },
@@ -35,6 +36,9 @@ async function dev_config() {
                 directory: path.join(outputPrimaryRootDir, 'assets'),
                 publicPath: '/assets',
             },]
+        },
+        watchOptions: {
+            ignored: ['**/.restart-server'],
         },
         mode: 'development',
         devtool: 'eval-source-map',

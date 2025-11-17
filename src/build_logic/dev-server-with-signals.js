@@ -8,10 +8,18 @@
 import { spawn } from 'child_process';
 import { watchFile, existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
+import { runPrimaryBuild } from './primary_builder.js';
+import { initProjectDirs } from './locations.js';
 
 // Configuration
 const RESTART_SIGNAL = '.restart-server';
 const SITE_ARG = process.argv[2]; // 'jh' or 'cg'
+
+// Map site arg to full site name
+const SITE_NAME = SITE_ARG === 'jh' ? 'justinholmes.com' : 'cryptograss.live';
+
+// Initialize project directories for the site
+initProjectDirs(SITE_NAME);
 
 if (!SITE_ARG || !['jh', 'cg'].includes(SITE_ARG)) {
     console.error('Usage: node dev-server-with-signals.js [jh|cg]');
@@ -24,7 +32,7 @@ const SIGNAL_FILE = resolve(RESTART_SIGNAL);
 let serverProcess = null;
 let isRestarting = false;
 
-function startServer() {
+async function startServer() {
     if (isRestarting) return;
 
     if (serverProcess) {
@@ -40,30 +48,36 @@ function startServer() {
 
     isRestarting = true;
 
-    // Small delay to ensure port is released
+    // Small delay to ensure port is released, then run async operations
     setTimeout(() => {
-        console.log(`🎵 Starting ${SITE_ARG.toUpperCase()} dev server...`);
+        (async () => {
+            // Run primary build before starting webpack
+            console.log('🔨 Running primary build...');
+            await runPrimaryBuild();
 
-        serverProcess = spawn('npm', ['run', DEV_COMMAND], {
-            stdio: 'inherit',
-            env: { ...process.env, FORCE_COLOR: '1' },
-            detached: false
-        });
+            console.log(`🎵 Starting ${SITE_ARG.toUpperCase()} dev server...`);
 
-        serverProcess.on('error', (error) => {
-            console.error('❌ Server error:', error);
+            serverProcess = spawn('npm', ['run', DEV_COMMAND], {
+                stdio: 'inherit',
+                env: { ...process.env, FORCE_COLOR: '1' },
+                detached: false
+            });
+
+            serverProcess.on('error', (error) => {
+                console.error('❌ Server error:', error);
+                isRestarting = false;
+            });
+
+            serverProcess.on('exit', (code, signal) => {
+                if (!isRestarting) {
+                    console.log(`🔄 Server exited (code: ${code}, signal: ${signal})`);
+                }
+                isRestarting = false;
+            });
+
             isRestarting = false;
-        });
-
-        serverProcess.on('exit', (code, signal) => {
-            if (!isRestarting) {
-                console.log(`🔄 Server exited (code: ${code}, signal: ${signal})`);
-            }
-            isRestarting = false;
-        });
-
-        isRestarting = false;
-        console.log('🎯 Server started! Touch .restart-server to restart');
+            console.log('🎯 Server started! Touch .restart-server to restart');
+        })();
     }, 500);
 }
 
