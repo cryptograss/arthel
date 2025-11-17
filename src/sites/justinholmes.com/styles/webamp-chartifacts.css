@@ -32,9 +32,7 @@
 }
 
 .part-box.active {
-    padding: 16px 30px;
     background: #000000;
-    font-size: 40px;
     color: white;
     border:1px solid gray;
 }
@@ -146,7 +144,7 @@
 
 .ensemble-display-in-webamp .chartifact-line {
     color: #b8460e !important;
-    font-size: 10px;
+    font-size: 9px;
     opacity: 0.8;
 }
 

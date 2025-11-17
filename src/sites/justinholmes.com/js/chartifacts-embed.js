@@ -24,12 +24,12 @@
 
         // Create iframe
         const iframe = document.createElement('iframe');
-        iframe.src = `${EMBED_BASE_URL}/embed/chartifacts-player/${encodeURIComponent(song)}.html`;
+        iframe.src = `${EMBED_BASE_URL}/embed/rabbithole/${encodeURIComponent(song)}.html`;
         iframe.width = width;
         iframe.height = height;
         iframe.frameBorder = '0';
         iframe.allow = 'autoplay';
-        iframe.title = `Chartifacts Player - ${song}`;
+        iframe.title = `Rabbit Hole Player - ${song}`;
         iframe.style.border = 'none';
         iframe.style.borderRadius = '4px';
         iframe.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';

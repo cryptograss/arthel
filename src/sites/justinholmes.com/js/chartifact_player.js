@@ -24,6 +24,7 @@ class WebampChartifacts {
         console.log('DEBUG: Found container, proceeding with initialization');
         this.webamp = null;
         this.currentSolo = null;
+        this.lastAutoShownSoloist = null; // Track which soloist we last auto-showed
         this.timeUpdateInterval = null;
         this.currentEra = null; // Track current era for state persistence
         this.allMomentTimes = this.extractMomentTimes(); // All moments in the track
@@ -347,7 +348,9 @@ class WebampChartifacts {
         ensembleDiv.style.position = 'absolute';
         ensembleDiv.style.left = '0px';
         ensembleDiv.style.top = '130px'; // Below main window (120px height + 10px gap)
-        ensembleDiv.style.width = '400px';
+        ensembleDiv.style.width = '250px';
+        ensembleDiv.style.maxHeight = 'none'; // No height limit - show all content
+        ensembleDiv.style.overflow = 'visible'; // No scrollbars
         // Remove margin since we're using absolute positioning
         // ensembleDiv.style.margin = '10px';
 
@@ -385,7 +388,7 @@ class WebampChartifacts {
             partsContainer.style.position = 'absolute';
             partsContainer.style.left = '285px'; // Just to the right of main window (275px wide + 10px gap)
             partsContainer.style.top = '0px';
-            partsContainer.style.width = '120px';
+            partsContainer.style.width = '330px';
 
             // Move the parts chart content into our container
             partsContainer.appendChild(partsChart);
@@ -643,18 +646,14 @@ class WebampChartifacts {
             }
         }
 
-        // Legacy support: check for old soloist/type structure
-        const currentSoloist = arrangement ? arrangement.soloist : null;
-        const leadType = arrangement ? arrangement.type : null;
+        // Check for solo/pickup designation
+        const soloMusician = arrangement ? arrangement.solo : null;
+        const pickupMusician = arrangement ? arrangement.pickup : null;
 
-        if (currentSoloist === musicianName) {
-            if (leadType === 'solo') {
-                return 1;
-            } else if (leadType === 'pick up') {
-                return this.calculatePickupWeight(musicianName, currentTime);
-            } else if (leadType === 'intro') {
-                return 3;
-            }
+        if (soloMusician === musicianName) {
+            return 1; // Solo gets highest priority
+        } else if (pickupMusician === musicianName) {
+            return this.calculatePickupWeight(musicianName, currentTime);
         }
 
         // Recently finished featured musicians stay near the top
@@ -744,6 +743,21 @@ class WebampChartifacts {
             <div class="musician-name">${starPrefix}${musicianName} (${instrument})</div>
             <div class="chartifact-line">Chartifact "0x1234ff" owned by cryptograss.eth</div>
         `;
+
+        // Re-attach click handlers after innerHTML update (if in embed mode)
+        if (typeof makeMusiciansClickable === 'function') {
+            makeMusiciansClickable();
+        }
+
+        // Auto-show connections panel when musician becomes lead/soloist (only on soloist CHANGE)
+        // DISABLED until we have proper settings/options UI
+        // if (showStar && typeof showMusicianConnections === 'function') {
+        //     // Only auto-show if this is a NEW soloist (different from the last one we auto-showed)
+        //     if (this.lastAutoShownSoloist !== musicianName) {
+        //         showMusicianConnections(musicianName); // This will respect userClosedPanel flag
+        //         this.lastAutoShownSoloist = musicianName;
+        //     }
+        // }
     }
 
     initEnsembleGrid(gridElement) {
@@ -814,33 +828,62 @@ class WebampChartifacts {
         }
 
         const processed = {};
-        let accumulatedTime = 0;
 
-        // Process in the order: 0, section1, section2, section3, section4, section5, then exact times
-        // Start with time 0
-        if (this.trackData.timeline['0']) {
-            processed[0] = this.trackData.timeline['0'];
-            console.log(`Exact time 0 -> time 0:`, this.trackData.timeline['0']);
-        }
-
-        // Process sections in order
-        for (let i = 1; i <= 20; i++) { // Assume max 20 sections
-            const sectionKey = `section${i}`;
-            if (this.trackData.timeline[sectionKey]) {
-                accumulatedTime += this.trackData.standardSectionLength;
-                processed[accumulatedTime] = this.trackData.timeline[sectionKey];
-                console.log(`Section ${sectionKey} -> time ${accumulatedTime}:`, this.trackData.timeline[sectionKey]);
-            }
-        }
-
-        // Process exact time keys (skip 0 since we already did it)
+        // First, collect and process all explicit time entries
+        const explicitTimes = [];
         Object.entries(this.trackData.timeline).forEach(([key, value]) => {
-            if (!key.startsWith('section') && key !== '0') {
+            if (!key.startsWith('section')) {
                 const exactTime = parseFloat(key);
+                explicitTimes.push(exactTime);
                 processed[exactTime] = value;
                 console.log(`Exact time ${key} -> time ${exactTime}:`, value);
             }
         });
+
+        // Find the highest explicit time to start section accumulation from
+        const maxExplicitTime = explicitTimes.length > 0 ? Math.max(...explicitTimes) : 0;
+        let accumulatedTime = maxExplicitTime;
+
+        // Process sections in order, starting accumulation from the highest explicit time
+        for (let i = 1; i <= 20; i++) { // Assume max 20 sections
+            const sectionKey = `section${i}`;
+            if (this.trackData.timeline[sectionKey]) {
+                const sectionData = this.trackData.timeline[sectionKey];
+                // Use section-specific length if provided, otherwise use standardSectionLength
+                const sectionLength = sectionData.length !== undefined
+                    ? sectionData.length
+                    : this.trackData.standardSectionLength;
+
+                const sectionStartTime = accumulatedTime;
+                accumulatedTime += sectionLength;
+
+                // Extract the base section data (without time-based sub-moments)
+                const baseSectionData = {};
+                const subMoments = {};
+
+                for (const [key, value] of Object.entries(sectionData)) {
+                    // Check if key is a number (time-based sub-moment)
+                    if (!isNaN(parseFloat(key))) {
+                        subMoments[key] = value;
+                    } else {
+                        baseSectionData[key] = value;
+                    }
+                }
+
+                // Add any sub-moments within this section
+                // Note: numeric keys are treated as absolute times, not offsets
+                for (const [timeStr, momentData] of Object.entries(subMoments)) {
+                    const absoluteTime = parseFloat(timeStr);
+                    // Merge with base section data (sub-moment overrides)
+                    processed[absoluteTime] = { ...baseSectionData, ...momentData };
+                    console.log(`  Sub-moment at absolute time ${timeStr}s:`, momentData);
+                }
+
+                // Add the base section data at the END (so it doesn't override sub-moments)
+                processed[accumulatedTime] = baseSectionData;
+                console.log(`Section ${sectionKey} (length ${sectionLength}s) -> time ${accumulatedTime}:`, baseSectionData);
+            }
+        }
 
         console.log('Final processed timeline:', processed);
         this._processedTimeline = processed;
@@ -880,23 +923,24 @@ class WebampChartifacts {
 
         const arrangement = this.getCurrentArrangement(currentTime);
         const currentInstruments = this.getCurrentInstruments(currentTime);
-        const currentSoloist = arrangement ? arrangement.soloist : null;
+        const currentSolo = arrangement ? arrangement.solo : null;
+        const currentPickup = arrangement ? arrangement.pickup : null;
 
         // Log major changes (only when arrangement actually changes)
         if (arrangement !== this.currentEra) {
             console.log(`Time ${currentTime}: NEW arrangement =`, arrangement);
         }
 
-        // Track soloist changes for animation and weight updates
-        const soloistChanged = this.currentSoloist !== currentSoloist;
-        const previousSoloist = this.currentSoloist;
+        // Track solo changes for animation and weight updates
+        const soloChanged = this.currentSolo !== currentSolo;
+        const previousSolo = this.currentSolo;
 
-        // When a soloist finishes, add them to recent soloists list
-        if (previousSoloist && currentSoloist !== previousSoloist && this.currentEra && this.currentEra.type === 'solo') {
-            this.addRecentSoloist(previousSoloist);
+        // When a solo finishes, add them to recent soloists list
+        if (previousSolo && currentSolo !== previousSolo) {
+            this.addRecentSoloist(previousSolo);
         }
 
-        this.currentSoloist = currentSoloist;
+        this.currentSolo = currentSolo;
 
         // Handle moments (one-time triggers)
         this.checkForMoments(currentTime);
@@ -916,7 +960,7 @@ class WebampChartifacts {
 
         // Capture card positions BEFORE any DOM changes for animation
         let oldPositions = null;
-        if (soloistChanged) {
+        if (soloChanged) {
             const ensembleContainer = document.getElementById('ensemble-display').querySelector('div');
             if (ensembleContainer) {
                 const cards = Array.from(ensembleContainer.querySelectorAll('.musician-card'));
@@ -934,42 +978,28 @@ class WebampChartifacts {
 
             const instrument = currentInstruments[musicianName];
 
-            // Handle new feature system or legacy soloist/type
-            const features = arrangement ? arrangement.feature : null;
-            const musicianScene = features ? features[musicianName] : null;
-
-            if (musicianScene) {
-                // New feature system
-                const classes = [musicianScene]; // Use scene as CSS class
-                const showStar = musicianScene === 'lead';
-                this.updateMusicianCard(musicianDiv, musicianName, instrument, classes, showStar);
-            } else if (currentSoloist === musicianName) {
-                // Legacy soloist/type system
-                const leadType = arrangement ? arrangement.type : null;
-
-                if (leadType === 'solo') {
-                    this.updateMusicianCard(musicianDiv, musicianName, instrument, ['solo'], true);
-                } else if (leadType === 'pick up') {
-                    this.updateMusicianCard(musicianDiv, musicianName, instrument, ['pickup']);
-                } else {
-                    this.updateMusicianCard(musicianDiv, musicianName, instrument, ['intro']);
-                }
+            // Check if this musician has a role
+            if (currentSolo === musicianName) {
+                // This musician is soloing
+                this.updateMusicianCard(musicianDiv, musicianName, instrument, ['lead'], true);
+            } else if (currentPickup === musicianName) {
+                // This musician is doing pickup
+                this.updateMusicianCard(musicianDiv, musicianName, instrument, ['pickup'], false);
             } else {
-                // Not featured - check if we need to gray out during intro
-                const leadType = arrangement ? arrangement.type : null;
-                const isIntroScene = currentSoloist && leadType === 'intro';
+                // Not featured - check musician's in/out state
+                const musicianStatus = this.getMusicianStatus(musicianName, currentTime);
 
-                if (isIntroScene) {
-                    this.updateMusicianCard(musicianDiv, musicianName, instrument, ['grayed']);
+                if (musicianStatus === 'out') {
+                    this.updateMusicianCard(musicianDiv, musicianName, instrument, ['out']);
                 } else {
+                    // Musician is in but not featured
                     this.updateMusicianCard(musicianDiv, musicianName, instrument, []);
                 }
             }
         });
 
         // Trigger Packery reordering for various conditions
-        const shouldResort = soloistChanged ||
-                           (currentSoloist && arrangement && arrangement.type === 'pick up'); // Resort during pickups for gradual movement
+        const shouldResort = soloChanged || currentPickup; // Resort when solo changes or during pickups
 
         if (shouldResort) {
             this.sortEnsemble();
@@ -1082,6 +1112,35 @@ class WebampChartifacts {
     }
 
     // Remove showPickupEffect since pickup is now an era, not a moment
+
+    getMusicianStatus(musicianName, currentTime) {
+        // Walk through timeline chronologically to find musician's current status
+        const processedTimeline = this.processTimelineKeys();
+        const timelineEntries = Object.entries(processedTimeline)
+            .map(([timeStr, arrangement]) => ({ time: Number(timeStr), arrangement }))
+            .filter(({ arrangement }) => arrangement.musicians)
+            .sort((a, b) => a.time - b.time);
+
+        let status = 'out'; // Default to out
+
+        for (const { time, arrangement } of timelineEntries) {
+            if (time > currentTime) break;
+
+            const musicians = arrangement.musicians;
+
+            // Check band shortcut
+            if (musicians.band === 'in') {
+                status = 'in';
+            } else if (musicians.band === 'out') {
+                status = 'out';
+            } else if (musicians[musicianName]) {
+                // Individual musician status
+                status = musicians[musicianName];
+            }
+        }
+
+        return status;
+    }
 
     getCurrentTime() {
         if (this.webamp && this.webamp.store) {

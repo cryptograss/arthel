@@ -488,8 +488,8 @@ export const runPrimaryBuild = async () => {
                 };
 
                 renderPage({
-                    template_path: 'pages/embed/chartifacts-player.njk',
-                    output_path: `embed/chartifacts-player/${song_slug}.html`,
+                    template_path: 'pages/embed/rabbithole.njk',
+                    output_path: `embed/rabbithole/${song_slug}.html`,
                     context: context,
                     site: site,
                 });

@@ -14,7 +14,7 @@ description: Learn how to embed the Rabbit Hole Player on your website
     <p>Here's the Rabbit Hole Player embedded on this page:</p>
 
     <div class="embed-demo-container">
-        <iframe src="/embed/chartifacts-player/august.html"
+        <iframe src="/embed/rabbithole/august.html"
                 width="500" height="400"
                 frameborder="0"
                 title="Rabbit Hole Player - August"
@@ -28,10 +28,10 @@ description: Learn how to embed the Rabbit Hole Player on your website
     <p>Copy and paste this HTML code into your website:</p>
 
     <div class="code-block">
-        <pre><code>&lt;iframe src="https://justinholmes.com/embed/chartifacts-player/august.html"
+        <pre><code>&lt;iframe src="https://justinholmes.com/embed/rabbithole/august.html"
         width="500" height="400"
         frameborder="0"
-        title="Chartifacts Player - August"
+        title="Rabbit Hole Player - August"
         style="border: none; border-radius: 8px;"&gt;
 &lt;/iframe&gt;</code></pre>
     </div>
@@ -46,15 +46,15 @@ description: Learn how to embed the Rabbit Hole Player on your website
         <div class="song-card">
             <h3>{{ song.title }}</h3>
             <div class="song-embed">
-                <iframe src="/embed/chartifacts-player/{{ song.slug }}.html"
+                <iframe src="/embed/rabbithole/{{ song.slug }}.html"
                         width="300" height="250"
                         frameborder="0"
-                        title="Chartifacts Player - {{ song.title }}"
+                        title="Rabbit Hole Player - {{ song.title }}"
                         style="border: 1px solid #ddd; border-radius: 4px;">
                 </iframe>
             </div>
             <div class="embed-code-snippet">
-                <pre><code>&lt;iframe src="https://justinholmes.com/embed/chartifacts-player/{{ song.slug }}.html" width="500" height="400" frameborder="0" title="Chartifacts Player - {{ song.title }}"&gt;&lt;/iframe&gt;</code></pre>
+                <pre><code>&lt;iframe src="https://justinholmes.com/embed/rabbithole/{{ song.slug }}.html" width="500" height="400" frameborder="0" title="Rabbit Hole Player - {{ song.title }}"&gt;&lt;/iframe&gt;</code></pre>
                 <button onclick="copyCode(this)" class="copy-small">Copy</button>
             </div>
         </div>
@@ -200,10 +200,10 @@ description: Learn how to embed the Rabbit Hole Player on your website
 
 <script>
 function copyEmbedCode() {
-    const code = `<iframe src="https://justinholmes.com/embed/chartifacts-player/august.html"
+    const code = `<iframe src="https://justinholmes.com/embed/rabbithole/august.html"
         width="500" height="400"
         frameborder="0"
-        title="Chartifacts Player - August"
+        title="Rabbit Hole Player - August"
         style="border: none; border-radius: 8px;">
 </iframe>`;
 

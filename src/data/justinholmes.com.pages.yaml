@@ -11,10 +11,18 @@ listen:
     page_title: "Listen"
     no_video_bg: true
 
-chartifacts-player:
-  template: chartifacts-player.njk
+rabbithole:
+  template: rabbithole.njk
   context:
-    page_title: "Chartifacts Player"
+    page_title: "Rabbit Hole Player"
+    no_video_bg: true
+
+rabbithole-player:
+  template: rabbithole-player.njk
+  include_data_in_context:
+    - songs
+  context:
+    page_title: "Rabbit Hole Player - Dynamic"
     no_video_bg: true
 
 chartifacts-embed-demo:

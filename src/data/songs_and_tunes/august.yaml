@@ -30,7 +30,7 @@ studio_versions:
             background: "#d4edda"
             textColor: "#155724"
 
-        standardSectionLength: 22
+        standardSectionLength: 13.68
         timeline:
             0:
               musicians:
@@ -40,20 +40,49 @@ studio_versions:
                 "Maddie Denton": "out"
                 "Skyler Golden": "out"
                 "Gaven Largent": "out"
-              soloist: "Justin Holmes"
-              type: "solo"
-              part: "A"
-            8:
+              solo: "Justin Holmes"
+              part: "intro"
+            7.2:
+              musicians:
+                "Maddie Denton": "in"
+              pickup: "Maddie Denton"
+            8.3:
               musicians:
                 "band": "in"  # shortcut for everyone in
-              soloist: "Maddie Denton"
-              type: "solo"
+              solo: "Maddie Denton"
               part: "A"
             section1:
-              soloist: "Justin Holmes"
-              type: "solo"
+              solo: "Justin Holmes"
               part: "A"
+              instrumentChanges:
+                "Justin Holmes": "tin whistle"
             section2:
-              musicians:
-                "band": "out"  # fade out
-                type: "ending"
+              solo: "Justin Holmes"
+              part: "B"
+              instrumentChanges:
+                "Justin Holmes": "tin whistle"
+              40:
+                pickup: "Maddie Denton"
+              42.5:
+                solo: "Maddie Denton"
+            section3:
+              solo: "Harry Clark"
+              part: "A"
+            section4: 
+              solo: "Harry Clark"
+              part: "A"
+            section5:
+              solo: "Kyle Tuttle"
+              part: "B"
+            section6:
+              solo: "Justin Holmes"
+              part: "A"
+            section7:
+              solo: "Justin Holmes"
+              part: "A"
+            section8:
+              solo: "Justin Holmes"
+              part: "B"
+            section9:
+              solo: "Maddie Denton"
+              part: "B"
