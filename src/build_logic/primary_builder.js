@@ -11,7 +11,7 @@ import nunjucks from "nunjucks";
 // Local utilities and helpers
 import { getProjectDirs } from "./locations.js";
 import { slugify } from "./utils/text_utils.js";
-import { renderPage } from "./utils/rendering_utils.js";
+import { renderPage, generateSitemapXML, generateSitemapHTML, getSitemap, clearSitemap } from "./utils/rendering_utils.js";
 import { registerHelpers } from './utils/template_helpers.js';
 
 // Data and asset management
@@ -26,6 +26,7 @@ import { verifyBlueRailroadVideos } from './blue_railroad.js';
 import { DateTime } from 'luxon';
 
 export const runPrimaryBuild = async () => {
+    const oldUmask = process.umask(0o000); // Ensure that proper permissions are applied
     const { outputPrimaryRootDir, dataDir, templateDir, site, outputPrimarySiteDir } = getProjectDirs();
     const { shows, songs, pickers, songsByProvenance } = getShowAndSetData();
 
@@ -39,20 +40,23 @@ export const runPrimaryBuild = async () => {
 
         dirs.forEach(dir => {
             if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
+                fs.mkdirSync(dir, { recursive: true, mode: 0o777 });
             }
         });
     };
     ensureDirectories();
     console.time('primary-build');
+    
+    // Clear sitemap from any previous builds
+    clearSitemap();
 
     // TODO: Do we need to make sure the root output directory exists?
 
     // ...now, same for the site-specific output directory.
     if (fs.existsSync(outputPrimarySiteDir)) {
-        fs.rmSync(outputPrimarySiteDir, { recursive: true });
+        fs.rmSync(outputPrimarySiteDir, { recursive: true});
     }
-    fs.mkdirSync(outputPrimarySiteDir, { recursive: true });
+    fs.mkdirSync(outputPrimarySiteDir, { recursive: true, mode: 0o777 });
 
     /////////////////////////
     ///// Chapter one: chain data
@@ -446,6 +450,56 @@ export const runPrimaryBuild = async () => {
     }
 
     ///////////////////////////
+    // Chapter 4.2b: Embed pages for songs with chartifacts
+    ///////////////////////////
+
+    if (site === "justinholmes.com") {
+        Object.entries(songs).forEach(([song_slug, song]) => {
+            // Only create embed pages for songs that have chartifacts data
+            let chartifacts_version = null;
+            if (song.studio_versions) {
+                for (const [version_num, version] of Object.entries(song.studio_versions)) {
+                    for (const [release_name, release_data] of Object.entries(version)) {
+                        if (release_data.chartifacts) {
+                            chartifacts_version = release_data;
+                            break;
+                        }
+                    }
+                    if (chartifacts_version) break;
+                }
+            }
+
+            if (chartifacts_version && chartifacts_version.chartifacts) {
+                // Prepare song data for the embed iframe
+                const songData = {
+                    title: song.title,
+                    duration: chartifacts_version.chartifacts.duration,
+                    audioFile: chartifacts_version.chartifacts.audioFile,
+                    ensemble: chartifacts_version.ensemble,
+                    timeline: chartifacts_version.chartifacts.timeline,
+                    standardSectionLength: chartifacts_version.chartifacts.standardSectionLength,
+                    colorScheme: chartifacts_version.chartifacts.colorScheme || null
+                };
+
+                const context = {
+                    page_name: `embed_chartifacts_${song_slug}`,
+                    page_title: `Chartifacts Player - ${song.title}`,
+                    songData,
+                };
+
+                renderPage({
+                    template_path: 'pages/embed/rabbithole.njk',
+                    output_path: `embed/rabbithole/${song_slug}.html`,
+                    context: context,
+                    site: site,
+                });
+
+                console.log(`Generated embed page for song: ${song_slug}`);
+            }
+        });
+    }
+
+    ///////////////////////////
     // Chapter 4.2a: Lists of songs
     ///////////////////////////
 
@@ -580,6 +634,24 @@ export const runPrimaryBuild = async () => {
     unusedImages.forEach(image => {
     console.warn(`Image not used: ${image}`);
     });
+
+    // Generate sitemaps
+    console.time('sitemap-generation');
+    const sitemap = getSitemap();
+    console.log(`Generated sitemap with ${sitemap.size} pages`);
+    
+    // Generate XML sitemap (for search engines - goes in normal location)
+    const baseUrl = site === 'cryptograss.live' ? 'https://cryptograss.live' : 'https://justinholmes.com';
+    const xmlSitemap = generateSitemapXML(site, baseUrl);
+    fs.writeFileSync(path.join(outputPrimarySiteDir, 'sitemap.xml'), xmlSitemap);
+    
+    // Generate HTML sitemap (debug tool - goes outside webpack reach)
+    const htmlSitemap = generateSitemapHTML(site);
+    const debugSitemapPath = path.join(outputPrimarySiteDir, `sitemap.html`);
+    fs.writeFileSync(debugSitemapPath, htmlSitemap);
+    console.log(`Debug sitemap written to: ${debugSitemapPath}`);
+    
+    console.timeEnd('sitemap-generation');
 
     console.timeEnd('primary-build');
     return true; // TODO: Return something useful.

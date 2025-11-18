@@ -1,0 +1,236 @@
+---
+layout: layout.njk
+title: Rabbit Hole Player - Embed Demo
+description: Learn how to embed the Rabbit Hole Player on your website
+---
+
+<div class="page-header">
+    <h1>Rabbit Hole Player Embed Demo</h1>
+    <p>Interactive music player with real-time solo visualization and NFT chartifacts</p>
+</div>
+
+<div class="content-section">
+    <h2>Live Demo</h2>
+    <p>Here's the Rabbit Hole Player embedded on this page:</p>
+
+    <div class="embed-demo-container">
+        <iframe src="/embed/rabbithole/august.html"
+                width="500" height="400"
+                frameborder="0"
+                title="Rabbit Hole Player - August"
+                style="border: 1px solid #ddd; border-radius: 8px; background: white;">
+        </iframe>
+    </div>
+</div>
+
+<div class="content-section">
+    <h2>How to Embed</h2>
+    <p>Copy and paste this HTML code into your website:</p>
+
+    <div class="code-block">
+        <pre><code>&lt;iframe src="https://justinholmes.com/embed/rabbithole/august.html"
+        width="500" height="400"
+        frameborder="0"
+        title="Rabbit Hole Player - August"
+        style="border: none; border-radius: 8px;"&gt;
+&lt;/iframe&gt;</code></pre>
+    </div>
+
+    <button onclick="copyEmbedCode()" class="copy-button">Copy Embed Code</button>
+</div>
+
+<div class="content-section">
+    <h2>Available Songs</h2>
+    <div class="song-grid">
+        {% for song in chartifactsSongs %}
+        <div class="song-card">
+            <h3>{{ song.title }}</h3>
+            <div class="song-embed">
+                <iframe src="/embed/rabbithole/{{ song.slug }}.html"
+                        width="300" height="250"
+                        frameborder="0"
+                        title="Rabbit Hole Player - {{ song.title }}"
+                        style="border: 1px solid #ddd; border-radius: 4px;">
+                </iframe>
+            </div>
+            <div class="embed-code-snippet">
+                <pre><code>&lt;iframe src="https://justinholmes.com/embed/rabbithole/{{ song.slug }}.html" width="500" height="400" frameborder="0" title="Rabbit Hole Player - {{ song.title }}"&gt;&lt;/iframe&gt;</code></pre>
+                <button onclick="copyCode(this)" class="copy-small">Copy</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="content-section">
+    <h2>Customization Options</h2>
+    <div class="options-grid">
+        <div class="option">
+            <h3>Size Options</h3>
+            <ul>
+                <li><strong>Minimum:</strong> 400x300</li>
+                <li><strong>Recommended:</strong> 500x400</li>
+                <li><strong>Large:</strong> 600x450</li>
+            </ul>
+        </div>
+        <div class="option">
+            <h3>Styling</h3>
+            <ul>
+                <li>Add <code>border-radius</code> for rounded corners</li>
+                <li>Use <code>box-shadow</code> for depth</li>
+                <li>Set <code>background</code> color if needed</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+.embed-demo-container {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.code-block {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: 16px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    overflow-x: auto;
+}
+
+.copy-button, .copy-small {
+    background: #4299e1;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.copy-button:hover, .copy-small:hover {
+    background: #3182ce;
+}
+
+.song-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.song-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.song-card h3 {
+    margin-top: 0;
+    color: #2d3748;
+    font-size: 18px;
+}
+
+.song-embed {
+    margin: 16px 0;
+    text-align: center;
+}
+
+.embed-code-snippet {
+    background: #f7fafc;
+    border-radius: 4px;
+    padding: 12px;
+    position: relative;
+}
+
+.embed-code-snippet pre {
+    margin: 0;
+    font-size: 11px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.embed-code-snippet .copy-small {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.option {
+    background: #f7fafc;
+    padding: 20px;
+    border-radius: 6px;
+    border-left: 4px solid #4299e1;
+}
+
+.option h3 {
+    margin-top: 0;
+    color: #2d3748;
+}
+
+.option ul {
+    margin-bottom: 0;
+}
+
+.option code {
+    background: #e2e8f0;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+</style>
+
+<script>
+function copyEmbedCode() {
+    const code = `<iframe src="https://justinholmes.com/embed/rabbithole/august.html"
+        width="500" height="400"
+        frameborder="0"
+        title="Rabbit Hole Player - August"
+        style="border: none; border-radius: 8px;">
+</iframe>`;
+
+    navigator.clipboard.writeText(code).then(() => {
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.style.background = '#38a169';
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.background = '#4299e1';
+        }, 2000);
+    });
+}
+
+function copyCode(button) {
+    const codeElement = button.parentElement.querySelector('code');
+    const code = codeElement.textContent;
+
+    navigator.clipboard.writeText(code).then(() => {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.style.background = '#38a169';
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.background = '#4299e1';
+        }, 2000);
+    });
+}
+</script>

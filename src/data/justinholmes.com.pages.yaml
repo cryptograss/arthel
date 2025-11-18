@@ -11,6 +11,26 @@ listen:
     page_title: "Listen"
     no_video_bg: true
 
+rabbithole:
+  template: rabbithole.njk
+  context:
+    page_title: "Rabbit Hole Player"
+    no_video_bg: true
+
+rabbithole-player:
+  template: rabbithole-player.njk
+  include_data_in_context:
+    - songs
+  context:
+    page_title: "Rabbit Hole Player - Dynamic"
+    no_video_bg: true
+
+chartifacts-embed-demo:
+  template: chartifacts-embed-demo.njk
+  context:
+    page_title: "Rabbit Hole Player - Embed Demo"
+    no_video_bg: true
+
 # cryptograss.eth:
 #   template: cryptograss.njk
 #   include_data_in_context:

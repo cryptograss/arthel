@@ -8,3 +8,42 @@ studio_versions:
         Harry Clark: [mandolin]
         Maddie Denton: [fiddle]
         Skyler Golden: [bass]
+      chartifacts:
+        audioFile: "/audio/silver-44.flac"
+        duration: 180
+
+        # Timeline segments - typical jig structure (A-A-B-B pattern)
+        standardSectionLength: 21.5
+        timeline:
+          0:
+            soloist: "Kyle Tuttle"
+            type: "intro"
+            part: "A"
+          section1:
+            instrumentChanges:
+              "Justin Holmes": "tin whistle"
+            soloist: "Justin Holmes"
+            type: "solo"
+            part: "A"
+          section2:
+            instrumentChanges:
+              "Justin Holmes": "tin whistle"
+            soloist: "Justin Holmes"
+            type: "solo"
+            part: "A"
+          section3:
+            part: "B"
+            instrumentChanges:
+              "Justin Holmes": "tin whistle"
+            soloist: "Justin Holmes"
+            type: "solo"
+          section4:
+            part: "B"
+            instrumentChanges:
+              "Justin Holmes": "tin whistle"
+            soloist: "Justin Holmes"
+            type: "solo"
+          section5:
+            soloist: "Christian Ward"
+            type: "solo"
+            part: "A"

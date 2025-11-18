@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rabbit Hole Player - {{ songData.title }}</title>
+
+    <!-- Self-contained CSS - no external dependencies -->
+    <style>
+        body {
+            margin: 0;
+            padding: 8px;
+            font-family: Arial, sans-serif;
+            background: #faf7f2;
+            color: #1a365d;
+            overflow: hidden; /* Prevent scrollbars in iframe */
+        }
+
+        .embed-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            min-height: 450px; /* Increased to ensure space for all elements */
+        }
+
+        .webamp-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 275px;
+            height: auto;
+        }
+
+        .ensemble-display {
+            position: absolute;
+            top: 145px;
+            left: 10px;
+            width: 300px;
+            height: auto;
+            max-height: 250px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 8px;
+            overflow-y: auto; /* Allow scrolling if needed */
+            font-size: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .parts-chart {
+            position: absolute;
+            top: -8px;
+            left: 300px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            max-width: 150px;
+            z-index: 25; /* Higher than ensemble */
+        }
+
+        .part-box {
+            padding: 3px 8px;
+            background: #f8f9fa;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            font-family: 'Caveat', cursive, Arial;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .part-box.active {
+            padding: 12px 20px;
+            background: #000000;
+            font-size: 24px;
+            color: white;
+            border: 1px solid gray;
+            z-index: 30;
+            position: relative;
+        }
+
+        .musician-card {
+            padding: 4px 6px;
+            background: #f7fafc;
+            border: 1px solid #1a365d;
+            margin: 2px 0;
+            border-radius: 3px;
+            font-size: 12px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            transition: all 0.3s ease;
+        }
+
+        .musician-card.out {
+            opacity: 0.35;
+            background: #e8e8e8;
+            border-color: #999;
+        }
+
+        .musician-card.lead {
+            border: 2px solid #000000;
+            background: #e3f2fd;
+            animation: pulse-glow 3s infinite ease-in-out;
+            opacity: 1;
+        }
+
+        .musician-card.pickup {
+            border: 2px solid #ff9800;
+            background: #fff3e0;
+            color: #e65100;
+            opacity: 1;
+        }
+
+        .musician-name {
+            font-weight: bold;
+            font-family: 'Caveat', cursive, Arial;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .chartifact-line {
+            font-size: 9px;
+            color: #b8460e;
+            font-family: monospace;
+            line-height: 1.2;
+        }
+
+        .musician-name.clickable {
+            cursor: pointer;
+            text-decoration: underline;
+            color: #2563eb;
+        }
+
+        .musician-name.clickable:hover {
+            color: #1d4ed8;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 2px;
+        }
+
+        .connections-panel {
+            position: absolute;
+            top: 145px; /* Same as ensemble */
+            left: 320px; /* Right of ensemble (ensemble width 300px + 20px gap) */
+            width: 280px;
+            height: 250px;
+            background: white;
+            border: 2px solid #2563eb;
+            border-radius: 6px;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 50;
+            overflow-y: auto;
+            font-size: 12px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .connections-panel.visible {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .connections-header {
+            background: #2563eb;
+            color: white;
+            padding: 8px 12px;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        .connections-close {
+            float: right;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .connections-content {
+            padding: 10px;
+        }
+
+        .connection-song {
+            margin-bottom: 8px;
+            padding: 6px;
+            background: #f8fafc;
+            border-left: 3px solid #2563eb;
+            border-radius: 3px;
+        }
+
+        .connection-song-title {
+            font-weight: bold;
+            color: #1e40af;
+        }
+
+        .connection-context {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 3px 2px rgba(255, 163, 72, 0.75); }
+            50% { box-shadow: 0 0 11px 3px rgba(255, 163, 72, 0); }
+        }
+        .upload-section {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            padding: 8px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            z-index: 5;
+        }
+
+        .upload-section label {
+            font-size: 12px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .upload-section input[type="file"] {
+            font-size: 12px;
+        }
+
+        #cache-status {
+            font-size: 11px;
+            margin-top: 4px;
+            color: #666;
+            display: none;
+        }
+
+        #clear-cache-btn {
+            margin-left: 8px;
+            font-size: 10px;
+            padding: 2px 6px;
+            display: none;
+        }
+    </style>
+
+    <!-- Load Google Fonts for handwritten feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="embed-container">
+        <div id="webamp-player" class="webamp-container">
+            Loading chartifacts player...
+        </div>
+        <div id="parts-chart" class="parts-chart"></div>
+        <div id="ensemble-display" class="ensemble-display"></div>
+        <div id="connections-panel" class="connections-panel">
+            <div class="connections-header">
+                <span id="connections-title">Musician Connections</span>
+                <span class="connections-close" onclick="hideConnections()">&times;</span>
+            </div>
+            <div class="connections-content" id="connections-content">
+                <!-- Connection data will be populated here -->
+            </div>
+        </div>
+        <div class="upload-section">
+            <label for="audio-file-input">
+                Load local audio file (optional):
+            </label>
+            <input type="file" id="audio-file-input" accept="audio/*">
+            <div id="cache-status">
+                <span id="cache-indicator"></span>
+                <button id="clear-cache-btn">Clear cached file</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // IndexedDB for persistent audio file storage
+        const DB_NAME = 'chartifacts-audio';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'audio-files';
+
+        function openAudioDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME);
+                    }
+                };
+            });
+        }
+
+        async function saveAudioFile(songTitle, file) {
+            try {
+                const db = await openAudioDB();
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+
+                await new Promise((resolve, reject) => {
+                    const request = store.put(file, songTitle);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+
+                console.log(`Saved audio file for "${songTitle}" to IndexedDB`);
+            } catch (error) {
+                console.error('Error saving audio file:', error);
+            }
+        }
+
+        async function loadAudioFile(songTitle) {
+            try {
+                const db = await openAudioDB();
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+
+                return new Promise((resolve, reject) => {
+                    const request = store.get(songTitle);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (error) {
+                console.error('Error loading audio file:', error);
+                return null;
+            }
+        }
+
+        async function deleteAudioFile(songTitle) {
+            try {
+                const db = await openAudioDB();
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+
+                await new Promise((resolve, reject) => {
+                    const request = store.delete(songTitle);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+
+                console.log(`Deleted audio file for "${songTitle}" from IndexedDB`);
+            } catch (error) {
+                console.error('Error deleting audio file:', error);
+            }
+        }
+
+        // Musician connections functionality
+        let oracleData = null;
+        let userClosedPanel = false; // Track if user manually closed the panel
+
+        async function loadMusicianConnections() {
+            if (oracleData) return oracleData;
+
+            try {
+                // Try to load simplified musician connections data
+                const response = await fetch('/api/oracle/musician-connections.json');
+                if (response.ok) {
+                    oracleData = await response.json();
+                    console.log('DEBUG: Loaded musician connections data:', Object.keys(oracleData).length, 'musicians');
+                    return oracleData;
+                }
+            } catch (error) {
+                console.log('Musician connections data not available:', error);
+            }
+            return null;
+        }
+
+        function makeMusiciansClickable() {
+            const musicianNames = document.querySelectorAll('.musician-name');
+            musicianNames.forEach(nameEl => {
+                nameEl.classList.add('clickable');
+                nameEl.addEventListener('click', () => showMusicianConnections(nameEl.textContent.trim(), true)); // true = explicit user click
+            });
+        }
+
+        async function showMusicianConnections(musicianName, isExplicitClick = false) {
+            // If user manually closed the panel and this is an auto-show, respect their choice
+            if (userClosedPanel && !isExplicitClick) {
+                return; // Don't auto-show if user explicitly closed it
+            }
+
+            const panel = document.getElementById('connections-panel');
+            const title = document.getElementById('connections-title');
+            const content = document.getElementById('connections-content');
+
+            // If this is an explicit click, reset the "closed" flag
+            if (isExplicitClick) {
+                userClosedPanel = false;
+            }
+
+            title.textContent = `${musicianName} - Other Songs`;
+            content.innerHTML = '<div style="padding: 20px; text-align: center;">Loading connections...</div>';
+            panel.classList.add('visible');
+
+            // Load musician connections data
+            const connectionsData = await loadMusicianConnections();
+
+            // Find this musician's connections (works with real data or falls back to mock)
+            const connections = findMusicianConnections(musicianName, connectionsData);
+            displayConnections(connections, musicianName);
+        }
+
+        function findMusicianConnections(musicianName, connectionsData) {
+            // Debug: log the musician name being searched
+            console.log('DEBUG: Looking up connections for musician:', `"${musicianName}"`);
+
+            // If we have real Oracle data, use it
+            if (connectionsData) {
+                // Clean musician name (remove instrument info)
+                const cleanName = musicianName.replace(/\s*\([^)]*\)$/, '').trim();
+
+                // Try exact match first
+                if (connectionsData[cleanName]) {
+                    console.log('DEBUG: Found exact match in Oracle data for:', cleanName);
+                    return connectionsData[cleanName];
+                }
+
+                // Try partial matches
+                for (const [oracleName, connections] of Object.entries(connectionsData)) {
+                    if (cleanName.includes(oracleName.split(' ')[0]) || oracleName.includes(cleanName.split(' ')[0])) {
+                        console.log('DEBUG: Found partial match in Oracle data:', oracleName, 'for', cleanName);
+                        return connections;
+                    }
+                }
+
+                console.log('DEBUG: No match found in Oracle data for:', cleanName);
+            }
+
+            // No fallback - if we don't have Oracle data, show an error
+            console.log('ERROR: No Oracle data available and no connection found for:', musicianName);
+            return [{
+                song: 'Data Error',
+                context: 'Oracle connection data not available. Please rebuild Oracle data.'
+            }];
+        }
+
+        function displayConnections(connections, musicianName) {
+            const content = document.getElementById('connections-content');
+
+            // Create PickiPedia link
+            const cleanName = musicianName.replace(/\s*\([^)]*\)$/, '').trim();
+            const pickipediaSlug = cleanName.replace(/\s+/g, '_');
+            const pickipediaLink = `https://pickipedia.xyz/wiki/${pickipediaSlug}`;
+
+            if (connections.length === 0) {
+                content.innerHTML = `
+                    <div style="margin-bottom: 12px;">
+                        <a href="${pickipediaLink}" target="_blank" style="color: #2563eb; text-decoration: none; font-weight: bold;">
+                            📖 View ${cleanName} on PickiPedia →
+                        </a>
+                    </div>
+                    <div style="padding: 20px; color: #64748b;">No other recorded appearances found for ${musicianName}.</div>
+                `;
+                return;
+            }
+
+            const connectionsHtml = connections.map(conn => `
+                <div class="connection-song">
+                    <div class="connection-song-title">${conn.song}</div>
+                    <div class="connection-context">${conn.context}</div>
+                </div>
+            `).join('');
+
+            content.innerHTML = `
+                <div style="margin-bottom: 12px;">
+                    <a href="${pickipediaLink}" target="_blank" style="color: #2563eb; text-decoration: none; font-weight: bold; display: block; margin-bottom: 8px;">
+                        📖 View ${cleanName} on PickiPedia →
+                    </a>
+                    <div style="font-weight: bold; color: #1e40af;">
+                        Found ${connections.length} other appearance${connections.length === 1 ? '' : 's'}:
+                    </div>
+                </div>
+                ${connectionsHtml}
+            `;
+        }
+
+        function hideConnections() {
+            document.getElementById('connections-panel').classList.remove('visible');
+            userClosedPanel = true; // Remember that user manually closed the panel
+        }
+
+        // Embed-specific song data (passed from parent)
+        window.songChartifactsData = {
+            title: "{{ songData.title }}",
+            duration: {{ songData.duration }},
+            audioFile: "{{ songData.audioFile }}",
+            ensemble: {{ songData.ensemble | dump | safe }},
+            timeline: {{ songData.timeline | dump | safe }},
+            standardSectionLength: {{ songData.standardSectionLength | dump | safe }},
+            colorScheme: {{ songData.colorScheme | dump | safe }}
+        };
+
+        // Helper function to update cache status UI
+        function updateCacheStatusUI(hasCachedFile) {
+            const statusDiv = document.getElementById('cache-status');
+            const indicator = document.getElementById('cache-indicator');
+            const clearBtn = document.getElementById('clear-cache-btn');
+
+            if (hasCachedFile) {
+                statusDiv.style.display = 'block';
+                indicator.textContent = '✓ Using cached audio file';
+                indicator.style.color = '#28a745';
+                clearBtn.style.display = 'inline-block';
+            } else {
+                statusDiv.style.display = 'none';
+                clearBtn.style.display = 'none';
+            }
+        }
+
+        // Helper function to load audio from file object
+        function loadAudioFromFile(file) {
+            const url = URL.createObjectURL(file);
+            const updatedSongData = {
+                ...window.songChartifactsData,
+                audioFile: url
+            };
+            window.songChartifactsData.audioFile = url;
+
+            // If player already initialized, update it without page reload
+            if (window.chartifactsPlayer && typeof window.chartifactsPlayer.loadNewSong === 'function') {
+                window.chartifactsPlayer.loadNewSong(updatedSongData);
+            }
+
+            // Update UI
+            updateCacheStatusUI(true);
+        }
+
+        // Handle local file input
+        document.getElementById('audio-file-input').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Save to IndexedDB for persistence
+                await saveAudioFile(window.songChartifactsData.title, file);
+
+                // Load it immediately
+                loadAudioFromFile(file);
+
+                console.log(`Audio file cached. Will load automatically on next visit.`);
+            }
+        });
+
+        // Handle clear cache button
+        document.getElementById('clear-cache-btn').addEventListener('click', async function() {
+            await deleteAudioFile(window.songChartifactsData.title);
+            updateCacheStatusUI(false);
+
+            // Reload page to use default audio source
+            window.location.reload();
+        });
+
+        // Initialize when page loads
+        window.addEventListener('load', async function() {
+            // Check if we have a cached audio file for this song
+            const cachedFile = await loadAudioFile(window.songChartifactsData.title);
+            if (cachedFile) {
+                console.log(`Loading cached audio file for "${window.songChartifactsData.title}"`);
+                loadAudioFromFile(cachedFile);
+            }
+
+            // Import the chartifacts player logic
+            const script = document.createElement('script');
+            script.src = '/chartifact_player.js';
+            script.onload = function() {
+                // Initialize the player in embed mode
+                if (typeof WebampChartifacts !== 'undefined') {
+                    window.chartifactsPlayer = new WebampChartifacts('webamp-player', window.songChartifactsData, {
+                        embedMode: true,
+                        fixedPosition: true
+                    });
+                }
+            };
+            document.head.appendChild(script);
+        });
+    </script>
+</body>
+</html>
