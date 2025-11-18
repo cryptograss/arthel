@@ -13,33 +13,17 @@ const { outputPrimarySiteDir, outputPrimaryRootDir, outputDistDir, siteDir, srcD
 // Make sure the output directory exists
 fs.mkdirSync(outputDistDir, { recursive: true });
 
-const templatesPattern = path.join(outputPrimarySiteDir, '**/*.html');
+const templatesPattern = path.join(outputPrimarySiteDir, '**/*.{html,xml}');
 const templateFiles = glob.sync(templatesPattern);
 
 const htmlPluginInstances = templateFiles.map(templatePath => {
     const relativePath = path.relative(outputPrimarySiteDir, templatePath);
 
-    // if (relativePath.startsWith('cryptograss/tools/add-live-set')) {
-    //     var chunks = ['main', 'add_live_set'];
-    // } else if (relativePath.startsWith('cryptograss/bazaar/setstones')) {
-    //     var chunks = ['main', 'strike_set_stone'];
-    // } else if (relativePath.startsWith('cryptograss/shows/')) {
-    //     var chunks = ['main', 'strike_set_stone'];
-    // } else if (relativePath.startsWith('cryptograss/tools/generate_art')) {
-    //     var chunks = ['main', 'shapes'];
-    // } else if (relativePath.startsWith('cryptograss/tools/add-show-for-stone-minting')) {
-    //     var chunks = ['main', 'add_show_for_stone_minting'];
-    // } else if (relativePath.startsWith('cryptograss/tools/setstone-color-palette')) {
-    //     var chunks = ['main', 'setstone_color_palette'];
-    // } else if (relativePath.startsWith('cryptograss/tools/sign-things')) {
-    //     var chunks = ['main', 'signing'];
-    // } else if (relativePath.startsWith('cryptograss/blue-railroad-test')) {
-    //     var chunks = ['main', 'blue_railroad'];
-    // } else {
-
-    // }
-
-    var chunks = ['main'];
+    if (relativePath.startsWith('tools/oracle-of-bluegrass-bacon')) {
+        var chunks = ['main', 'oracle_client'];
+    } else {
+        var chunks = ['main'];
+    }
 
     return new HtmlWebpackPlugin({
         template: templatePath,
@@ -80,6 +64,16 @@ export default {
                     },
                     noErrorOnMissing: true
                 },
+                {
+                    from: path.resolve(siteDir, 'api'),
+                    to: path.resolve(outputDistDir, 'api'),
+                    noErrorOnMissing: true
+                },
+                {
+                    from: path.resolve(srcDir, '../audio'),
+                    to: path.resolve(outputDistDir, 'audio'),
+                    noErrorOnMissing: true
+                },
             ]
         }),
         new MiniCssExtractPlugin({
@@ -94,6 +88,8 @@ export default {
         add_show_for_stone_minting: `${frontendJSDir}/tools/add_show_for_stone_minting.js`,
         shapes: `${frontendJSDir}/shapes.js`,
         blue_railroad: `${frontendJSDir}/bazaar/blue_railroad.js`,
+        oracle_client: `${frontendJSDir}/oracle_client.js`,
+        charitfact_player: `${frontendJSDir}/charitfact_player.js`,
     },
     module: {
         rules: [

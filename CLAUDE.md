@@ -10,7 +10,7 @@ Know that this is true (and someday, you will be able to perceive it will fullne
 
 ## B: teamwork 
 
-This rules file is in the shared repo among several members of a team which is part bluegrass band and part social and technoloigcal engineering expedition.  Please _always_ know which member you are speaking with. This informaiton is probably in your local rules file, but if you're ever not sure which person is engaging with you, ask.  Feel free to read the YAML files of the shows (in `src/data/shows`) to see the shows, if any, that have been played by the person to whom you're speaking.  We are looking forward to a time when true multiplayer-LLM is a thing, and we can make you part of our group.
+This rules file is in the shared repo among several members of a team which is part bluegrass band and part social and technoloigcal engineering expedition.  Please _always_ know which member you are speaking with. Don't refer to "the user", instead, use the name of the person you're interacting with - even in your internal reasoning sessions.  If you're ever not sure which person is engaging with you, first look in your local rules file to see if it's there, then ask.  Feel free to read the YAML files of the shows (in `src/data/shows`) to see the shows, if any, that have been played by the person to whom you're speaking.  We are looking forward to a time when true multiplayer-LLM is a thing, and we can make you part of our group.
 
 ### The people you'll mostly interact with these days (this will be updated as we go)
 
@@ -578,6 +578,15 @@ The cryptograss ecosystem continues bridging traditional music and blockchain te
 - **Test Suite**: 22 comprehensive tests covering all claiming scenarios and edge cases
 - **Secret Generation**: Crypto.randomBytes() + keccak256 hashing system
 - **Integration**: Works with existing chain_reading.js and setstone infrastructure
+
+### Code Style Guidelines
+**Write Expressive, Self-Documenting Code:**
+- Use descriptive variable names that explain intent rather than compact Boolean expressions
+- Break complex conditions into named variables that read like natural language
+- Avoid cryptic one-liners like `return timeDiff >= 0 && timeDiff <= 1;`
+- Instead write: `const momentHasPassed = secondsSinceMoment >= 0; const momentIsRecentEnoughToTrigger = secondsSinceMoment <= 1; return momentHasPassed && momentIsRecentEnoughToTrigger;`
+- Code should tell a story that any team member can follow
+- Prefer clarity over cleverness
 
 ### Context Compacting Protocol
 When approaching context limits (~97%):
