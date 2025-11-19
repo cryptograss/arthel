@@ -34,7 +34,7 @@ const htmlPluginInstances = templateFiles.map(templatePath => {
         var chunks = ['main', 'add_show_for_stone_minting'];
     } else if (relativePath.startsWith('cryptograss/tools/oracle-of-bluegrass-bacon')) {
         var chunks = ['main', 'oracle_client'];
-    } else if (relativePath.startsWith('songs/') || relativePath.startsWith('songs/')) {
+    } else if (relativePath.startsWith('songs/') || relativePath.startsWith('rabbithole-player')) {
         var chunks = ['main', 'chartifact_player'];
     } else {
         var chunks = ['main'];
