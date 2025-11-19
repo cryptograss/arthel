@@ -18,12 +18,14 @@ async function dev_config() {
                 writeToDisk: true,
             },
             port: 4000,
+            allowedHosts: 'all',
             historyApiFallback: {
                 rewrites: [
                     { from: /\/$/, to: '/index.html' },
                     {
-                        from: /\/(.+)$/, to: function (context) {
-                            // Rewrite URLs like '/things' to '/things.html'
+                        from: /^\/([^.]+)$/, to: function (context) {
+                            // Only rewrite URLs that don't contain a dot (no file extension)
+                            // This will match '/things' but not '/things.css' or '/things.js'
                             return '/' + context.match[1] + '.html';
                         }
                     },
@@ -34,6 +36,9 @@ async function dev_config() {
                 directory: path.join(outputPrimaryRootDir, 'assets'),
                 publicPath: '/assets',
             },]
+        },
+        watchOptions: {
+            ignored: ['**/.restart-server'],
         },
         mode: 'development',
         devtool: 'eval-source-map',

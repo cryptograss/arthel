@@ -15,7 +15,7 @@ const { outputDistDir, outputPrimaryRootDir, outputPrimarySiteDir, siteDir, site
 // Make sure the output directory exists
 fs.mkdirSync(outputDistDir, { recursive: true });
 
-const templatesPattern = path.join(outputPrimarySiteDir, '**/*.html');
+const templatesPattern = path.join(outputPrimarySiteDir, '**/*.{html,xml}');
 const templateFiles = glob.sync(templatesPattern);
 
 const htmlPluginInstances = templateFiles.map(templatePath => {
@@ -32,6 +32,10 @@ const htmlPluginInstances = templateFiles.map(templatePath => {
         var chunks = ['main', 'magic_hat'];
     } else if (relativePath.startsWith('cryptograss/tools/add-show-for-stone-minting')) {
         var chunks = ['main', 'add_show_for_stone_minting'];
+    } else if (relativePath.startsWith('cryptograss/tools/oracle-of-bluegrass-bacon')) {
+        var chunks = ['main', 'oracle_client'];
+    } else if (relativePath.startsWith('songs/') || relativePath.startsWith('songs/')) {
+        var chunks = ['main', 'chartifact_player'];
     } else {
         var chunks = ['main'];
     }
@@ -65,6 +69,16 @@ export default {
                     },
                     noErrorOnMissing: true
                 },
+                {
+                    from: path.resolve(siteDir, 'api'),
+                    to: path.resolve(outputDistDir, 'api'),
+                    noErrorOnMissing: true
+                },
+                {
+                    from: path.resolve(srcDir, '../audio'),
+                    to: path.resolve(outputDistDir, 'audio'),
+                    noErrorOnMissing: true
+                },
             ]
         }),
         new MiniCssExtractPlugin({
@@ -81,6 +95,9 @@ export default {
         magic_hat: `${frontendJSDir}/magic_hat.js`,
         strike_set_stone: `${frontendJSDir}/strike_set_stones.js`,
         add_show_for_stone_minting: `${frontendJSDir}/add_show_for_stone_minting.js`,
+        oracle_client: `${frontendJSDir}/oracle_client.js`,
+        chartifact_player: `${frontendJSDir}/chartifact_player.js`,
+        chartifacts_embed: `${frontendJSDir}/chartifacts-embed.js`,
     },
     module: {
         rules: [

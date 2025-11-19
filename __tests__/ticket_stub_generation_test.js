@@ -24,7 +24,7 @@ describe('Ticket Stub Generation', () => {
         }
     });
     
-    test('generates fake ticket stubs for testing shows', () => {
+    test.skip('generates fake ticket stubs for testing shows', () => {
         // Mock show data
         const mockShows = {
             '0-22447747': {

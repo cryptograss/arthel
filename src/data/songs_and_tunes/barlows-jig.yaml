@@ -4,7 +4,7 @@ studio_versions:
   0:
     Vowel Sounds:
       ensemble:
-        Justin Holmes: [vocals, guitar, throatsinging, six-whistle]
+        Justin Holmes: [guitar, throatsinging, six-whistle]
         Cory Walker: [5-string banjo]
         Harry Clark: [mandolin]
         Christian Ward: [fiddle]
@@ -12,6 +12,111 @@ studio_versions:
         Allen Cooke: [dobro]
         Luna Lavender: [spoken word]
         Jakub Vysoky: [mandolin]
+
+      chartifacts:
+        audioFile: "/audio/barlows-jig.flac"
+        duration: 180
+
+        # Earthy color scheme - warmer, traditional tones
+        colorScheme:
+          solo:
+            border: "#d2691e"           # saddle brown
+            background: "#fdf5e6"       # old lace
+            textColor: "#8b4513"        # darker brown
+            glowColor: "rgba(210, 105, 30, 0.6)"
+          pickup:
+            border: "#cd853f"           # peru
+            background: "#fff8dc"       # cornsilk
+            textColor: "#a0522d"        # sienna
+          intro:
+            border: "#daa520"           # goldenrod
+            background: "#fafad2"       # light goldenrod yellow
+            textColor: "#b8860b"        # dark goldenrod
+          flash:
+            border: "#ff6347"           # tomato
+            background: "#ffe4e1"       # misty rose
+            boxShadow: "0 0 15px #ff6347"
+            textColor: "#dc143c"        # crimson
+          parts:
+            active:
+              background: "#8b4513"     # saddle brown
+              textColor: "white"
+
+        # Timeline segments - typical jig structure (A-A-B-B pattern)
+        standardSectionLength: 7.7
+        timeline:
+          0:
+            part: "intro"
+          section1:
+            instrumentChanges:
+              "Justin Holmes": "tin whistle"
+            soloist: "Justin Holmes"
+            type: "solo"
+            part: "A"
+          section2:
+            instrumentChanges:
+              "Justin Holmes": "tin whistle"
+            soloist: "Justin Holmes"
+            type: "solo"
+            part: "A"
+          section3:
+            part: "B"
+            instrumentChanges:
+              "Justin Holmes": "tin whistle"
+            soloist: "Justin Holmes"
+            type: "solo"
+          section4:
+            part: "B"
+            instrumentChanges:
+              "Justin Holmes": "tin whistle"
+            soloist: "Justin Holmes"
+            type: "solo"
+          section5:
+            soloist: "Christian Ward"
+            type: "solo"
+            part: "A"
+          54:
+            soloist: "Christian Ward"
+            type: "solo"
+            part: "A"
+          69:
+            instrumentChanges:
+              "Justin Holmes": "tin whistle"
+            soloist: "Justin Holmes"
+            type: "solo"
+            part: "C"
+          84.5:
+            feature:
+              "Cory Walker": "pickup"
+          86:
+            feature:
+              "Cory Walker": "lead"
+            part: "A"
+          101:
+            soloist: "Harry Clark"
+            type: "solo"
+            part: "B"
+          117:
+            soloist: "Allen Cooke"
+            type: "solo"
+            part: "C"
+          133:
+            instrumentChanges:
+              "Justin Holmes": "melodica"
+            soloist: "Justin Holmes"
+            type: "solo"
+            part: "A"
+          142:
+            soloist: "Jake Stargel"
+            type: "pickup"
+          144:
+            soloist: "Jake Stargel"
+            type: "solo"
+            part: "A"
+          160:
+            part: "B"
+          176:
+            detail: "ending"
     4masks:
       ensemble:
         Justin Holmes: [guitar, six-whistle]

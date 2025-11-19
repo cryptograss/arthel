@@ -1,0 +1,328 @@
+/* Webamp Chartifacts Player Styles */
+
+#webamp {
+    z-index: 1000 !important;
+}
+
+/* Disable dragging on Webamp windows for better styling control */
+#webamp .window {
+    pointer-events: auto !important;
+}
+#webamp .title-bar {
+    cursor: default !important;
+    pointer-events: none !important;
+}
+/* Keep controls interactive */
+#webamp .title-bar .title-bar-controls {
+    pointer-events: auto !important;
+}
+
+/* Import handwritten font */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap');
+
+/* Parts chart styling */
+.part-box {
+    padding: 3px 8px;
+    background: #f8f9fa;
+    font-size: 20px;
+    font-weight: bold;
+    color: #666;
+    font-family: 'Caveat', cursive, sans-serif;
+    transition: all 0.3s ease;
+}
+
+.part-box.active {
+    background: #000000;
+    color: white;
+    border:1px solid gray;
+}
+
+/* Musician card styling - Isotope-style transitions */
+.musician-item {
+    width: 100%;
+    margin-bottom: 1px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.musician-card {
+    padding: 2px 4px;
+    background: #f8f9fa;
+    line-height: 1.1;
+    transform: scale(1);
+    border-radius: 2px;
+    border: 1px solid #ddd;
+    position: relative;
+    font-size: 12px;
+}
+
+/* Legacy solo styling */
+.musician-card.solo {
+    border: 2px solid #000000;
+    background: #e3f2fd;
+    transform: scale(1.05);
+    animation: pulse-glow 3s infinite ease-in-out;
+}
+
+/* New scene-based styling */
+.musician-card.lead {
+    border: 2px solid #000000;
+    background: #e3f2fd;
+    transform: scale(1.05);
+    animation: pulse-glow 3s infinite ease-in-out;
+}
+
+.musician-card.pickup {
+    border: 2px solid #ff9800;
+    background: #fff3e0;
+    color: #e65100;
+    transform: scale(1.02);
+    animation: pickup-rise 2s ease-in-out;
+}
+
+.musician-card.cooldown {
+    border: 2px solid #4caf50;
+    background: #f3e5f5;
+    color: #2e7d32;
+    transform: scale(0.98);
+    opacity: 0.9;
+}
+
+.musician-card.harmony {
+    border: 1px solid #9c27b0;
+    background: #fce4ec;
+    color: #7b1fa2;
+    transform: scale(0.95);
+}
+
+.musician-card.rhythm {
+    border: 1px solid #607d8b;
+    background: #eceff1;
+    color: #455a64;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 3px 2px rgba(255, 163, 72, 0.75);
+    }
+    50% {
+        box-shadow: 0 0 11px 3px rgba(255, 163, 72, 0);
+    }
+}
+
+@keyframes pickup-rise {
+    0% {
+        transform: scale(1.0);
+        box-shadow: 0 0 2px rgba(255, 152, 0, 0.5);
+    }
+    50% {
+        transform: scale(1.03);
+        box-shadow: 0 0 8px rgba(255, 152, 0, 0.8);
+    }
+    100% {
+        transform: scale(1.02);
+        box-shadow: 0 0 5px rgba(255, 152, 0, 0.6);
+    }
+}
+
+/* Ensemble display in Webamp */
+.ensemble-display-in-webamp {
+    background: #faf7f2 !important;
+    color: #1a365d !important;
+}
+
+.ensemble-display-in-webamp .musician-card {
+    background: #f7fafc !important;
+    color: #1a365d !important;
+    border: 1px solid #1a365d !important;
+    margin: 2px 0;
+}
+
+.ensemble-display-in-webamp .musician-name {
+    color: #1a365d !important;
+    font-weight: bold;
+}
+
+.ensemble-display-in-webamp .chartifact-line {
+    color: #b8460e !important;
+    font-size: 9px;
+    opacity: 0.8;
+}
+
+.musician-card.solo .chartifact-line {
+    color: #0056b3 !important;
+}
+
+.musician-card.pickup {
+    border: 2px solid #ff9800;
+    background: #fff3e0;
+    transform: scale(1.02);
+}
+
+.musician-card.pickup .chartifact-line {
+    color: #e65100 !important;
+}
+
+.musician-card.intro {
+    border: 1px solid #17a2b8;
+    background: #e6f7ff;
+    transform: scale(1.02);
+}
+
+.musician-card.intro .chartifact-line {
+    color: #117a8b !important;
+}
+
+.musician-card.grayed {
+    border: 1px solid #e0e0e0;
+    background: #f5f5f5;
+    opacity: 0.5;
+}
+
+.musician-card.grayed .chartifact-line {
+    color: #bbb !important;
+}
+
+.musician-card.grayed .musician-name {
+    font-weight: normal !important;
+    color: #999 !important;
+}
+
+.musician-card.flash {
+    box-shadow: 0 0 2px #ffd700;
+    font-weight: bold;
+}
+
+/* Webamp container styling - accommodate Webamp + ensemble display */
+#just-the-player-goes-here {
+    width: 340px;
+}
+
+/* Ensemble display - Isotope grid container */
+#ensemble-display {
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    z-index: 1000;
+    min-width: 200px;
+}
+
+.ensemble-grid {
+    /* Isotope grid container */
+}
+
+.musician-item {
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+/* Parts chart container */
+#parts-chart {
+
+}
+
+/* Musician name styling */
+.musician-name {
+    font-family: 'Caveat', cursive, sans-serif;
+    font-weight: bold;
+    margin-bottom: 1px;
+}
+
+/* Chartifact ownership line */
+.chartifact-line {
+    font-size: 9px;
+    color: #666;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom layout classes to replace Bootstrap */
+.webamp-chartifacts-main-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    max-width: 100%;
+}
+
+.webamp-chartifacts-player-and-parts {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex: 1 1 auto;
+    min-width: 400px; /* Webamp + parts minimum */
+}
+
+.webamp-chartifacts-player-area {
+    flex: 0 0 auto;
+    width: 275px; /* Webamp's standard width */
+}
+
+.webamp-chartifacts-parts-area {
+    flex: 1 1 auto;
+    min-width: 120px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.webamp-chartifacts-ensemble-area {
+    width: 100%;
+    max-width: 400px;
+    align-self: flex-start;
+}
+
+/* New ensemble display inside #webamp container */
+.ensemble-display-in-webamp {
+    height: 200px;
+    position: absolute;
+    top: 115px;
+    left: 0;
+    right: 0;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    background: rgba(255, 255, 255, 0.95);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    z-index: 1001;
+    overflow-y: auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Let Webamp handle its own positioning - don't force relative */
+#webamp {
+    z-index: 1000 !important;
+    /* Removed position: relative - Webamp handles its own positioning */
+}
+
+/* Reserve space in main column when chartifacts player is active */
+/* This addresses the fundamental absolute positioning challenge:
+   absolutely positioned elements don't affect document flow */
+#main-column-left:has(.webamp-chartifacts-main-container) {
+    min-height: 350px; /* Webamp (120px) + ensemble (200px) + padding (~30px) */
+}
+
+/* Mobile/narrow screen stacking */
+@media (max-width: 768px) {
+    .webamp-chartifacts-main-container {
+        flex-direction: column;
+    }
+
+    .webamp-chartifacts-player-and-parts {
+        min-width: unset;
+    }
+
+    /* Adjust ensemble positioning for mobile */
+    .ensemble-display-in-webamp {
+        height: 150px;
+        font-size: 12px;
+    }
+
+    /* Smaller space reservation on mobile */
+    #main-column-left:has(.webamp-chartifacts-main-container) {
+        min-height: 300px;
+    }
+}

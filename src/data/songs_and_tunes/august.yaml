@@ -2,7 +2,7 @@ by_artist_id: 0
 instrumental: true
 studio_versions:
   0:
-    4masks:
+    Vowel Sounds:
       ensemble:
         Justin Holmes: [guitar, six-whistle]
         Kyle Tuttle: [5-string banjo]
@@ -10,3 +10,79 @@ studio_versions:
         Maddie Denton: [fiddle]
         Skyler Golden: [bass]
         Gaven Largent: [dobro]
+      chartifacts:
+        audioFile: "/audio/August.flac"
+        duration: 180
+
+        # Color scheme (investigating why this seems required)
+        colorScheme:
+          solo:
+            border: "#007bff"
+            background: "#e3f2fd"
+            textColor: "#0056b3"
+            glowColor: "rgba(0, 123, 255, 0.6)"
+          pickup:
+            border: "#6c757d"
+            background: "#f8f9fa"
+            textColor: "#495057"
+          intro:
+            border: "#28a745"
+            background: "#d4edda"
+            textColor: "#155724"
+
+        standardSectionLength: 13.68
+        timeline:
+            0:
+              musicians:
+                "Justin Holmes": "in"
+                "Kyle Tuttle": "out"
+                "Harry Clark": "out"
+                "Maddie Denton": "out"
+                "Skyler Golden": "out"
+                "Gaven Largent": "out"
+              solo: "Justin Holmes"
+              part: "intro"
+            7.2:
+              musicians:
+                "Maddie Denton": "in"
+              pickup: "Maddie Denton"
+            8.3:
+              musicians:
+                "band": "in"  # shortcut for everyone in
+              solo: "Maddie Denton"
+              part: "A"
+            section1:
+              solo: "Justin Holmes"
+              part: "A"
+              instrumentChanges:
+                "Justin Holmes": "tin whistle"
+            section2:
+              solo: "Justin Holmes"
+              part: "B"
+              instrumentChanges:
+                "Justin Holmes": "tin whistle"
+              40:
+                pickup: "Maddie Denton"
+              42.5:
+                solo: "Maddie Denton"
+            section3:
+              solo: "Harry Clark"
+              part: "A"
+            section4: 
+              solo: "Harry Clark"
+              part: "A"
+            section5:
+              solo: "Kyle Tuttle"
+              part: "B"
+            section6:
+              solo: "Justin Holmes"
+              part: "A"
+            section7:
+              solo: "Justin Holmes"
+              part: "A"
+            section8:
+              solo: "Justin Holmes"
+              part: "B"
+            section9:
+              solo: "Maddie Denton"
+              part: "B"

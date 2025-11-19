@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rabbit Hole Player</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #ffffff;
+            color: #333333;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .player-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header with branding */
+        .player-header {
+            background: linear-gradient(135deg, #9db89a 0%, #87a96b 100%);
+            padding: 12px 20px;
+            border-bottom: 2px solid #4a7c59;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-title {
+            font-size: 24px;
+            font-weight: 400;
+            font-family: 'VT323', monospace;
+            color: #2d5016;
+            margin: 0;
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .player-subtitle {
+            font-size: 11px;
+            color: #4a7c59;
+            margin-top: 2px;
+        }
+
+        .rabbit-icon {
+            height: 48px;
+            width: auto;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .toggle-mode-btn {
+            background: #4a7c59;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            color: #c8dbbe;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-mode-btn:hover {
+            background: #2d5016;
+            transform: translateY(-1px);
+        }
+
+        .toggle-mode-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Main content area */
+        .player-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            padding: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Footer mode styles */
+        .player-container.footer-mode {
+            height: 80px;
+        }
+
+        .player-container.footer-mode .player-header {
+            padding: 8px 16px;
+        }
+
+        .player-container.footer-mode .player-title {
+            font-size: 14px;
+        }
+
+        .player-container.footer-mode .player-subtitle {
+            display: none;
+        }
+
+        .player-container.footer-mode .player-content {
+            display: none;
+        }
+
+        .player-container.footer-mode .webamp-wrapper {
+            padding: 4px;
+        }
+
+        .player-container.footer-mode .upload-section {
+            display: none;
+        }
+
+        /* Mini player in footer mode */
+        .mini-player {
+            display: none;
+            align-items: center;
+            gap: 15px;
+            padding: 8px 16px;
+            background: #fafafa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .player-container.footer-mode .mini-player {
+            display: flex;
+        }
+
+        .mini-player .song-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mini-player .current-musicians {
+            font-size: 11px;
+            color: #666;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .mini-player .lead-musician {
+            color: #4a7c59;
+            font-weight: 600;
+        }
+
+        /* Left sidebar - Webamp and ensemble */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative; /* For absolute positioning of connections panel */
+        }
+
+        .ensemble-display {
+            display: none; /* Hide the static ensemble display - it's dynamically created inside Webamp */
+        }
+
+        .ensemble-display h3 {
+            display: none; /* Hide the Ensemble heading */
+        }
+
+        /* Right panel - parts chart and connections */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        .parts-chart {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .part-box {
+            padding: 4px 10px;
+            background: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            color: #999;
+            font-family: 'Caveat', cursive, Arial;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .part-box.active {
+            padding: 14px 24px;
+            background: #4a7c59;
+            font-size: 28px;
+            color: #ffffff;
+            border: 2px solid #2d5016;
+            box-shadow: 0 0 20px rgba(74, 124, 89, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* Musician cards */
+        .musician-card {
+            padding: 6px 8px;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            margin: 4px 0;
+            border-radius: 4px;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .musician-card.out {
+            opacity: 0.3;
+            background: #f5f5f5;
+        }
+
+        .musician-card.lead {
+            border: 2px solid #4a7c59;
+            background: rgba(74, 124, 89, 0.1);
+            animation: pulse-glow 3s infinite ease-in-out;
+            box-shadow: 0 0 15px rgba(74, 124, 89, 0.3);
+        }
+
+        .musician-card.pickup {
+            border: 2px solid #87a96b;
+            background: rgba(135, 169, 107, 0.1);
+            color: #87a96b;
+        }
+
+        .musician-name {
+            font-weight: 600;
+            font-family: 'Caveat', cursive, Arial;
+            font-size: 18px;
+            margin-bottom: 2px;
+            color: #333;
+        }
+
+        .musician-name.clickable {
+            cursor: pointer;
+            color: #4a7c59;
+        }
+
+        .musician-name.clickable:hover {
+            text-decoration: underline;
+        }
+
+        .chartifact-line {
+            font-size: 9px;
+            color: #666;
+            font-family: monospace;
+        }
+
+        /* Connections panel */
+        .connections-panel {
+            position: absolute;
+            top: 158px;
+            left: 100%;
+            margin-left: 15px;
+            transform: translateX(-100%);
+            width: 320px;
+            max-height: 500px;
+            background: #ffffff;
+            border: 2px solid #4a7c59;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            z-index: 100;
+            overflow-y: auto;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .connections-panel.visible {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .connections-header {
+            background: linear-gradient(135deg, #9db89a 0%, #87a96b 100%);
+            color: #2d5016;
+            padding: 12px 15px;
+            font-weight: 600;
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .connections-close {
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 1;
+            opacity: 0.9;
+            transition: opacity 0.2s ease;
+        }
+
+        .connections-close:hover {
+            opacity: 1;
+        }
+
+        .connections-content {
+            padding: 15px;
+            background: #fafafa;
+        }
+
+        .connection-song {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #ffffff;
+            border-left: 3px solid #4a7c59;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .connection-song:hover {
+            transform: translateX(2px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        }
+
+        .connection-song-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .connection-context {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .connections-content a {
+            color: #4a7c59;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .connections-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading state */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(74, 124, 89, 0.2);
+            border-top-color: #4a7c59;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #4a7c59;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(74, 124, 89, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(74, 124, 89, 0.5); }
+        }
+
+        /* Upload section at bottom */
+        .upload-section {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 11px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-section label {
+            color: #666;
+            margin-right: 8px;
+        }
+
+        .upload-section input[type="file"] {
+            font-size: 11px;
+            color: #333;
+        }
+
+        #cache-status {
+            font-size: 10px;
+            margin-top: 4px;
+            color: #666;
+            display: none;
+        }
+
+        #clear-cache-btn {
+            margin-left: 8px;
+            font-size: 10px;
+            padding: 2px 6px;
+            background: #4a7c59;
+            border: none;
+            border-radius: 3px;
+            color: #ffffff;
+            cursor: pointer;
+            display: none;
+        }
+
+        #clear-cache-btn:hover {
+            background: #2d5016;
+        }
+    </style>
+
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="player-container">
+        <div class="player-header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="/assets/images/rabbit.png" alt="Rabbit" class="rabbit-icon">
+                <div>
+                    <h1 class="player-title">rabbithole</h1>
+                    <div class="player-subtitle">Real-time chartifacts visualization</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div id="current-song-info" style="text-align: right; font-size: 13px;">
+                    <div style="color: #4a7c59; font-weight: 600;">August</div>
+                    <div style="color: #888; font-size: 11px;">Vowel Sounds</div>
+                </div>
+                <button id="toggle-mode-btn" class="toggle-mode-btn" onclick="togglePlayerMode()">
+                    Minimize ⬇
+                </button>
+            </div>
+        </div>
+
+        <div class="player-content">
+            <div class="left-panel">
+                <div class="webamp-wrapper">
+                    <div id="webamp-player">Loading player...</div>
+                </div>
+                <div class="ensemble-display">
+                    <h3>Ensemble</h3>
+                    <div id="ensemble-display"></div>
+                </div>
+
+                <div id="connections-panel" class="connections-panel">
+                    <div class="connections-header">
+                        <span id="connections-title">Musician Connections</span>
+                        <span class="connections-close" onclick="hideConnections()">&times;</span>
+                    </div>
+                    <div class="connections-content" id="connections-content">
+                        <!-- Connection data will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="parts-chart-wrapper">
+                    <div id="parts-chart" class="parts-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <label for="audio-file-input">Load local audio:</label>
+            <input type="file" id="audio-file-input" accept="audio/*">
+            <div id="cache-status">
+                <span id="cache-indicator"></span>
+                <button id="clear-cache-btn">Clear</button>
+            </div>
+        </div>
+
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading song...</div>
+        </div>
+
+        <div class="mini-player">
+            <div class="song-info">
+                <div id="mini-song-title" style="font-weight: 600; color: #4a7c59;">August</div>
+                <div class="current-musicians">
+                    <span id="mini-current-part">Intro</span> •
+                    <span id="mini-lead-musician" class="lead-musician">Justin Holmes</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default song to load
+        {% set augustSong = songs['august'] %}
+        {% set vowelSoundsVersion = augustSong.studio_versions[0]['Vowel Sounds'] %}
+        window.songChartifactsData = {
+            title: "{{ augustSong.title }}",
+            duration: {{ vowelSoundsVersion.chartifacts.duration }},
+            audioFile: "{{ vowelSoundsVersion.chartifacts.audioFile }}",
+            ensemble: {{ vowelSoundsVersion.ensemble | dump | safe }},
+            timeline: {{ vowelSoundsVersion.chartifacts.timeline | dump | safe }},
+            standardSectionLength: {{ vowelSoundsVersion.chartifacts.standardSectionLength | dump | safe }},
+            colorScheme: {{ vowelSoundsVersion.chartifacts.colorScheme | dump | safe }}
+        };
+
+        // Musician connections functionality
+        let oracleData = null;
+        let userClosedPanel = false;
+
+        window.loadMusicianConnections = async function() {
+            if (oracleData) return oracleData;
+
+            try {
+                const response = await fetch('/api/oracle/musician-connections.json');
+                if (response.ok) {
+                    oracleData = await response.json();
+                    console.log('Loaded musician connections data:', Object.keys(oracleData).length, 'musicians');
+                    return oracleData;
+                }
+            } catch (error) {
+                console.log('Musician connections data not available:', error);
+            }
+            return null;
+        };
+
+        window.makeMusiciansClickable = function() {
+            const musicianNames = document.querySelectorAll('.musician-name');
+            musicianNames.forEach(nameEl => {
+                nameEl.classList.add('clickable');
+                nameEl.addEventListener('click', () => window.showMusicianConnections(nameEl.textContent.trim(), true));
+            });
+        };
+
+        window.showMusicianConnections = async function(musicianName, isExplicitClick = false) {
+            if (userClosedPanel && !isExplicitClick) {
+                return;
+            }
+
+            const panel = document.getElementById('connections-panel');
+            const title = document.getElementById('connections-title');
+            const content = document.getElementById('connections-content');
+
+            if (isExplicitClick) {
+                userClosedPanel = false;
+            }
+
+            title.textContent = `${musicianName} - Other Songs`;
+            content.innerHTML = '<div style="padding: 20px; text-align: center;">Loading connections...</div>';
+            panel.classList.add('visible');
+
+            const connectionsData = await window.loadMusicianConnections();
+            const connections = window.findMusicianConnections(musicianName, connectionsData);
+            window.displayConnections(connections, musicianName);
+        };
+
+        window.findMusicianConnections = function(musicianName, connectionsData) {
+            console.log('Looking up connections for musician:', `"${musicianName}"`);
+
+            if (connectionsData) {
+                const cleanName = musicianName.replace(/\s*\([^)]*\)$/, '').trim();
+
+                if (connectionsData[cleanName]) {
+                    console.log('Found exact match in Oracle data for:', cleanName);
+                    return connectionsData[cleanName];
+                }
+
+                for (const [oracleName, connections] of Object.entries(connectionsData)) {
+                    if (cleanName.includes(oracleName.split(' ')[0]) || oracleName.includes(cleanName.split(' ')[0])) {
+                        console.log('Found partial match in Oracle data:', oracleName, 'for', cleanName);
+                        return connections;
+                    }
+                }
+
+                console.log('No match found in Oracle data for:', cleanName);
+            }
+
+            return [{
+                song: 'Data Error',
+                context: 'Oracle connection data not available. Please rebuild Oracle data.'
+            }];
+        };
+
+        window.displayConnections = function(connections, musicianName) {
+            const content = document.getElementById('connections-content');
+            const cleanName = musicianName.replace(/\s*\([^)]*\)$/, '').trim();
+            const pickipediaSlug = cleanName.replace(/\s+/g, '_');
+            const pickipediaLink = `https://pickipedia.xyz/wiki/${pickipediaSlug}`;
+
+            if (connections.length === 0) {
+                content.innerHTML = `
+                    <div style="margin-bottom: 12px;">
+                        <a href="${pickipediaLink}" target="_blank">
+                            📖 View ${cleanName} on PickiPedia →
+                        </a>
+                    </div>
+                    <div style="padding: 20px; color: #666; text-align: center;">No other recorded appearances found for ${musicianName}.</div>
+                `;
+                return;
+            }
+
+            const connectionsHtml = connections.map(conn => `
+                <div class="connection-song">
+                    <div class="connection-song-title">${conn.song}</div>
+                    <div class="connection-context">${conn.context}</div>
+                </div>
+            `).join('');
+
+            content.innerHTML = `
+                <div style="margin-bottom: 15px; padding-bottom: 12px; border-bottom: 2px solid #e0e0e0;">
+                    <a href="${pickipediaLink}" target="_blank" style="display: block; margin-bottom: 10px;">
+                        📖 View ${cleanName} on PickiPedia →
+                    </a>
+                    <div style="font-weight: 600; color: #333; font-size: 12px;">
+                        Found ${connections.length} other appearance${connections.length === 1 ? '' : 's'}:
+                    </div>
+                </div>
+                ${connectionsHtml}
+            `;
+        };
+
+        window.hideConnections = function() {
+            document.getElementById('connections-panel').classList.remove('visible');
+            userClosedPanel = true;
+        };
+
+        // Function to load audio from a local file
+        function loadAudioFromFile(file) {
+            const url = URL.createObjectURL(file);
+            const updatedSongData = {
+                ...window.songChartifactsData,
+                audioFile: url
+            };
+            window.songChartifactsData.audioFile = url;
+
+            // If player already initialized, update it without page reload
+            if (window.chartifactsPlayer && typeof window.chartifactsPlayer.loadNewSong === 'function') {
+                window.chartifactsPlayer.loadNewSong(updatedSongData);
+            }
+        }
+
+        // Handle local file input
+        document.getElementById('audio-file-input').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                loadAudioFromFile(file);
+                console.log(`Loaded audio file: ${file.name}`);
+            }
+        });
+
+        // Player mode state
+        let playerMode = 'full'; // 'full' or 'footer'
+
+        // Toggle between full and footer modes
+        function togglePlayerMode() {
+            const container = document.querySelector('.player-container');
+            const toggleBtn = document.getElementById('toggle-mode-btn');
+
+            if (playerMode === 'full') {
+                playerMode = 'footer';
+                container.classList.add('footer-mode');
+                toggleBtn.textContent = 'Maximize ⬆';
+
+                // Notify parent window if in iframe
+                if (window.parent !== window) {
+                    window.parent.postMessage({ type: 'PLAYER_MODE_CHANGED', mode: 'footer' }, '*');
+                }
+            } else {
+                playerMode = 'full';
+                container.classList.remove('footer-mode');
+                toggleBtn.textContent = 'Minimize ⬇';
+
+                // Notify parent window if in iframe
+                if (window.parent !== window) {
+                    window.parent.postMessage({ type: 'PLAYER_MODE_CHANGED', mode: 'full' }, '*');
+                }
+            }
+
+            console.log('Player mode changed to:', playerMode);
+        }
+
+        // Update mini player with current state
+        function updateMiniPlayer(currentPart, leadMusician) {
+            const partEl = document.getElementById('mini-current-part');
+            const musicianEl = document.getElementById('mini-lead-musician');
+
+            if (partEl && currentPart) {
+                partEl.textContent = currentPart;
+            }
+
+            if (musicianEl && leadMusician) {
+                musicianEl.textContent = leadMusician;
+            }
+        }
+
+        // postMessage API for loading songs dynamically
+        window.addEventListener('message', function(event) {
+            // For security, validate origin in production
+            // if (event.origin !== 'https://pickipedia.xyz') return;
+
+            const { type, payload } = event.data;
+
+            if (type === 'LOAD_SONG') {
+                loadSongFromPayload(payload);
+            } else if (type === 'SET_MODE') {
+                // Allow parent to control mode
+                if (payload.mode === 'footer' && playerMode !== 'footer') {
+                    togglePlayerMode();
+                } else if (payload.mode === 'full' && playerMode !== 'full') {
+                    togglePlayerMode();
+                }
+            }
+        });
+
+        async function loadSongFromPayload(payload) {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.classList.add('active');
+
+            try {
+                // Payload structure:
+                // {
+                //   title: "August",
+                //   audioUrl: "/path/to/audio.mp3",
+                //   chartifacts: { timeline, ensemble, duration, etc. }
+                // }
+
+                const newSongData = {
+                    title: payload.title || "Unknown Song",
+                    duration: payload.chartifacts?.duration || 0,
+                    audioFile: payload.audioUrl || payload.chartifacts?.audioFile,
+                    ensemble: payload.chartifacts?.ensemble || [],
+                    timeline: payload.chartifacts?.timeline || [],
+                    standardSectionLength: payload.chartifacts?.standardSectionLength || {},
+                    colorScheme: payload.chartifacts?.colorScheme || {}
+                };
+
+                // Update song info in header
+                const songInfoEl = document.getElementById('current-song-info');
+                if (songInfoEl) {
+                    songInfoEl.innerHTML = `
+                        <div style="color: #4a7c59; font-weight: 600;">${newSongData.title}</div>
+                        <div style="color: #888; font-size: 11px;">${payload.album || 'Album'}</div>
+                    `;
+                }
+
+                // Update global song data
+                window.songChartifactsData = newSongData;
+
+                // If player already initialized, reload it
+                if (window.chartifactsPlayer && typeof window.chartifactsPlayer.loadNewSong === 'function') {
+                    await window.chartifactsPlayer.loadNewSong(newSongData);
+                    console.log('Loaded new song:', newSongData.title);
+
+                    // Wait for ensemble to be recreated, then make names clickable again
+                    setTimeout(() => {
+                        const waitForNewEnsemble = setInterval(() => {
+                            const musicianNames = document.querySelectorAll('.musician-name');
+                            if (musicianNames.length > 0 && typeof window.makeMusiciansClickable === 'function') {
+                                clearInterval(waitForNewEnsemble);
+                                window.makeMusiciansClickable();
+                                console.log('Made musician names clickable for new song:', musicianNames.length, 'names found');
+                            }
+                        }, 100);
+                    }, 500);
+                }
+            } catch (error) {
+                console.error('Error loading song:', error);
+            } finally {
+                loadingOverlay.classList.remove('active');
+            }
+        }
+
+        // Load the player script
+        const script = document.createElement('script');
+        script.src = '/chartifact_player.js';
+        script.onload = function() {
+            // Initialize the player
+            if (typeof WebampChartifacts !== 'undefined') {
+                window.chartifactsPlayer = new WebampChartifacts('webamp-player', window.songChartifactsData, {
+                    embedMode: false,
+                    fixedPosition: false
+                });
+
+                // Wait for ensemble to be created, then make musician names clickable
+                const waitForEnsemble = setInterval(() => {
+                    const musicianNames = document.querySelectorAll('.musician-name');
+                    if (musicianNames.length > 0 && typeof window.makeMusiciansClickable === 'function') {
+                        clearInterval(waitForEnsemble);
+                        window.makeMusiciansClickable();
+                        console.log('Made musician names clickable:', musicianNames.length, 'names found');
+                    }
+                }, 100);
+            }
+        };
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>
