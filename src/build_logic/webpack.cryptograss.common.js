@@ -70,7 +70,7 @@ export default {
                     noErrorOnMissing: true
                 },
                 {
-                    from: path.resolve(srcDir, '../audio'),
+                    from: path.resolve(srcDir, 'audio'),
                     to: path.resolve(outputDistDir, 'audio'),
                     noErrorOnMissing: true
                 },
