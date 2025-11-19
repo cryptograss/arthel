@@ -96,7 +96,7 @@ export default {
         strike_set_stone: `${frontendJSDir}/strike_set_stones.js`,
         add_show_for_stone_minting: `${frontendJSDir}/add_show_for_stone_minting.js`,
         oracle_client: `${frontendJSDir}/oracle_client.js`,
-        chartifact_player: `${frontendJSDir}/chartifact_player.js`,
+        chartifact_player: `${frontendJSDir}/rabbithole_player.js`,
         chartifacts_embed: `${frontendJSDir}/chartifacts-embed.js`,
     },
     module: {
