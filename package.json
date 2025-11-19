@@ -9,6 +9,8 @@
     "dev:cg": "SKIP_CHAIN_DATA=true NODE_ENV=development webpack serve --config src/build_logic/webpack.cryptograss.dev.js",
     "dev:jh:signals": "node src/build_logic/dev-server-with-signals.js jh",
     "dev:cg:signals": "node src/build_logic/dev-server-with-signals.js cg",
+    "dev:jh:tmux": "node src/build_logic/dev-server-tmux.js jh",
+    "dev:cg:tmux": "node src/build_logic/dev-server-tmux.js cg",
     "restart-server": "node src/build_logic/restart-dev-server.js",
     "seed-dice": "node src/build_logic/seed_phrase_dice.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
