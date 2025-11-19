@@ -217,6 +217,16 @@ pipeline {
                         sh """
                             rsync -av output/dist/* ${PR_BUILDS_DIR}/production
                         """
+
+                        // Deploy to production hosting (NearlyFreeSpeech)
+                        echo "Deploying to production hosting..."
+                        sh """
+                            rsync -vah --progress --delete \
+                                -e "ssh -i /var/jenkins_home/.ssh/id_ed25519_nfs -o StrictHostKeyChecking=no" \
+                                ${PR_BUILDS_DIR}/production/* \
+                                jmyles_justinholmescom@ssh.nyc1.nearlyfreespeech.net:
+                        """
+                        echo "Production deployment complete"
                     }
                 }
             }
