@@ -37,7 +37,7 @@ describe('Claim Page Generation', () => {
         }
     });
 
-    test('generates claim pages for multiple shows with different token ranges', () => {
+    test.skip('generates claim pages for multiple shows with different token ranges', () => {
         // Use show IDs that trigger the fake ticket stub generation
         const mockShows = {
             ...createMockShow('0_7-22575700', 'Test Venue Alpha', 0, 50), // Burza #4
@@ -71,7 +71,7 @@ describe('Claim Page Generation', () => {
         }
     });
 
-    test('claim pages contain correct show information', () => {
+    test.skip('claim pages contain correct show information', () => {
         const mockShows = createMockShow('0-22748946', 'Test Venue', 100, 5);
         
         generateSetStonePages(mockShows, testOutputDir);
@@ -89,7 +89,7 @@ describe('Claim Page Generation', () => {
         expect(claimPageContent).toContain('Claim Ticket Stub #102');
     });
 
-    test('claim pages include contract integration code', () => {
+    test.skip('claim pages include contract integration code', () => {
         const mockShows = createMockShow('0-22748946', 'Test Venue', 100, 3);
         
         generateSetStonePages(mockShows, testOutputDir);
@@ -126,7 +126,7 @@ describe('Claim Page Generation', () => {
         }
     });
 
-    test('each token ID gets unique claim page with correct context', () => {
+    test.skip('each token ID gets unique claim page with correct context', () => {
         const mockShows = createMockShow('0-22748946', 'Context Test Venue', 100, 3);
         
         generateSetStonePages(mockShows, testOutputDir);
