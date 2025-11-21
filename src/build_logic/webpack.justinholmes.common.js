@@ -51,7 +51,10 @@ const htmlPluginInstances = templateFiles.map(templatePath => {
 const frontendJSDir = path.resolve(siteDir, 'js');
 
 export default {
-    output: { path: outputDistDir },
+    output: {
+        path: outputDistDir,
+        filename: '[name].js'
+    },
     plugins: [
         new CopyPlugin({
             patterns: [
