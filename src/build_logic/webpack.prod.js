@@ -83,7 +83,7 @@ export async function generateProductionConfig() {
                 },
             },
         ], output: {
-            filename: '[name].bundle.js',
+            filename: '[name].js',
             path: outputDistDir,
         }
     });
