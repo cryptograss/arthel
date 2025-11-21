@@ -90,7 +90,6 @@ export const runPrimaryBuild = async () => {
     //////////////////////////////////
     gatherAssets();
 
-
     ////////////////////////////////////////////////
     ///// Chapter three: One-off Pages
     /////////////////////////////////////////////
@@ -460,7 +459,7 @@ export const runPrimaryBuild = async () => {
             if (song.studio_versions) {
                 for (const [version_num, version] of Object.entries(song.studio_versions)) {
                     for (const [release_name, release_data] of Object.entries(version)) {
-                        if (release_data.chartifacts) {
+                        if (release_data.rabbithole) {
                             chartifacts_version = release_data;
                             break;
                         }
@@ -469,16 +468,16 @@ export const runPrimaryBuild = async () => {
                 }
             }
 
-            if (chartifacts_version && chartifacts_version.chartifacts) {
+            if (chartifacts_version && chartifacts_version.rabbithole) {
                 // Prepare song data for the embed iframe
                 const songData = {
                     title: song.title,
-                    duration: chartifacts_version.chartifacts.duration,
-                    audioFile: chartifacts_version.chartifacts.audioFile,
+                    duration: chartifacts_version.rabbithole.duration,
+                    audioFile: chartifacts_version.rabbithole.audioFile,
                     ensemble: chartifacts_version.ensemble,
-                    timeline: chartifacts_version.chartifacts.timeline,
-                    standardSectionLength: chartifacts_version.chartifacts.standardSectionLength,
-                    colorScheme: chartifacts_version.chartifacts.colorScheme || null
+                    timeline: chartifacts_version.rabbithole.timeline,
+                    standardSectionLength: chartifacts_version.rabbithole.standardSectionLength,
+                    colorScheme: chartifacts_version.rabbithole.colorScheme || null
                 };
 
                 const context = {

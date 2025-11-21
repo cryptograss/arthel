@@ -1,0 +1,2010 @@
+{
+  "Justin Holmes": [
+    {
+      "song": "Various songs",
+      "context": "Live at Unknown Venue (Barcelona, Catalonia)",
+      "type": "show",
+      "date": "11908068",
+      "connectionId": "show-0-11908068.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Unknown Venue (Amsterdam, Netherlands)",
+      "type": "show",
+      "date": "14635630",
+      "connectionId": "show-0-14635630.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Centre Convencions International Barcelona (Barcelona, Catalonia)",
+      "type": "show",
+      "date": "15232479",
+      "connectionId": "show-0-15232479.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Unknown Venue (Berlin, Germany)",
+      "type": "show",
+      "date": "15539549",
+      "connectionId": "show-0-15539549.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Full Node (Berlin, Germany)",
+      "type": "show",
+      "date": "15540733",
+      "connectionId": "show-0-15540733.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Treptower Bridge (Berlin, Germany)",
+      "type": "show",
+      "date": "15546631",
+      "connectionId": "show-0-15546631.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at chiva lounge (Bogotá, Colombia)",
+      "type": "show",
+      "date": "15735471",
+      "connectionId": "show-0-15735471.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at River Bar Denver (Denver, Colorado)",
+      "type": "show",
+      "date": "16751390",
+      "connectionId": "show-0-16751390.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at National Western Stock Show (Denver, Colorado)",
+      "type": "show",
+      "date": "16758794",
+      "connectionId": "show-0-16758794.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Farmě v Krabčicích (Krabčicích, Czech Republic)",
+      "type": "show",
+      "date": "17350845",
+      "connectionId": "show-0-17350845.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Roudnice Castle (RCNL Podzámčí) (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "17359159",
+      "connectionId": "show-0-17359159.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at La Fabrika (Prague, Czech Republic)",
+      "type": "show",
+      "date": "17451407",
+      "connectionId": "show-0-17451407.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at BIG C (Barcelona, Catalonia)",
+      "type": "show",
+      "date": "17642973",
+      "connectionId": "show-0-17642973.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Bridgespace (Portland, Oregon)",
+      "type": "show",
+      "date": "18344309",
+      "connectionId": "show-0-18344309.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Gitcoin House (Denver, Colorado)",
+      "type": "show",
+      "date": "19336308",
+      "connectionId": "show-0-19336308.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Tunesmith Studios (Nashville, Tennessee)",
+      "type": "show",
+      "date": "19569155",
+      "connectionId": "show-0-19569155.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at North Country Camp (Lancaster, New Hampshire)",
+      "type": "show",
+      "date": "20150677",
+      "connectionId": "show-0-20150677.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Commons Hub Brussels (Brussels, Belgium)",
+      "type": "show",
+      "date": "20226737",
+      "connectionId": "show-0-20226737.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Brussels Doubletree (Brussels, Belgium)",
+      "type": "show",
+      "date": "20254790",
+      "connectionId": "show-0-20254790.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Brussels Aquaponic Farm - BIGH Anderlecht (Brussels, Belgium)",
+      "type": "show",
+      "date": "20477451",
+      "connectionId": "show-0-20477451.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Bar Vorovka (Vědomice-Roudnice, Czech Republic)",
+      "type": "show",
+      "date": "20528222",
+      "connectionId": "show-0-20528222.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Klub Betlémská (Prague, Czech Republic)",
+      "type": "show",
+      "date": "20535679",
+      "connectionId": "show-0-20535679.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at MOOS Space (Berlin, Germany)",
+      "type": "show",
+      "date": "20550008",
+      "connectionId": "show-0-20550008.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Funkhaus Berlin (Berlin, Germany)",
+      "type": "show",
+      "date": "20570887",
+      "connectionId": "show-0-20570887.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at The Riverside (Boulder, Colorado)",
+      "type": "show",
+      "date": "21904604",
+      "connectionId": "show-0-21904604.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Gitcoin Church (Denver, Colorado)",
+      "type": "show",
+      "date": "21933658",
+      "connectionId": "show-0-21933658.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Number 38 (Denver, Colorado)",
+      "type": "show",
+      "date": "21940657",
+      "connectionId": "show-0-21940657.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Crucible (Breckenridge, Colorado)",
+      "type": "show",
+      "date": "21984926",
+      "connectionId": "show-0-21984926.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Kulturní dům Říp (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "22390575",
+      "connectionId": "show-0-22390575.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Variace Olomouc (Olomouc, Czech Republic)",
+      "type": "show",
+      "date": "22394175",
+      "connectionId": "show-0-22394175.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Vinckovo (Jesenik, Czech Republic)",
+      "type": "show",
+      "date": "22406012",
+      "connectionId": "show-0-22406012.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Pakhuis de Zwijger (Amsterdam, Netherlands)",
+      "type": "show",
+      "date": "22447747",
+      "connectionId": "show-0-22447747.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Koruna (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "22504683",
+      "connectionId": "show-0-22504683.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Burza #4 (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22575700",
+      "connectionId": "show-0_7-22575700.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Bike Jesus (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22590100",
+      "connectionId": "show-0_7-22590100.yaml-base-0-1"
+    },
+    {
+      "song": "august",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-august.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "bank-run",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "bank-run",
+      "context": "Nanny State Fiddler",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Nanny State Fiddler-0-1"
+    },
+    {
+      "song": "barlows-jig",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-barlows-jig.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "barlows-jig",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-barlows-jig.yaml-4masks-0-1"
+    },
+    {
+      "song": "cicada-song",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-cicada-song.yaml-4masks-0-1"
+    },
+    {
+      "song": "cork-board",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-cork-board.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "drowsy-maggie",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-drowsy-maggie.yaml-4masks-0-1"
+    },
+    {
+      "song": "gm",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-gm.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "hohw",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-hohw.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "lost",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-lost.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "moon-factory",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-moon-factory.yaml-4masks-0-1"
+    },
+    {
+      "song": "nanny-state-fiddler",
+      "context": "Nanny State Fiddler",
+      "type": "recording",
+      "connectionId": "studio-nanny-state-fiddler.yaml-Nanny State Fiddler-0-1"
+    },
+    {
+      "song": "paint-exchange",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-paint-exchange.yaml-4masks-0-1"
+    },
+    {
+      "song": "power-underneath",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-power-underneath.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "proximity",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-proximity.yaml-4masks-0-1"
+    },
+    {
+      "song": "rollups-and-rearview-mirrors",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-rollups-and-rearview-mirrors.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "silver-44",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-silver-44.yaml-4masks-0-1"
+    },
+    {
+      "song": "swords-to-ploughshares",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-swords-to-ploughshares.yaml-4masks-0-1"
+    },
+    {
+      "song": "the-place-to-which-ill-return-someday",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-the-place-to-which-ill-return-someday.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "victory-ff7",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-victory-ff7.yaml-4masks-0-1"
+    },
+    {
+      "song": "vowel-sounds",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-vowel-sounds.yaml-Vowel Sounds-0-1"
+    }
+  ],
+  "Leify Green": [
+    {
+      "song": "Various songs",
+      "context": "Live at Unknown Venue (Barcelona, Catalonia)",
+      "type": "show",
+      "date": "11908068",
+      "connectionId": "show-0-11908068.yaml-base-0-1"
+    }
+  ],
+  "Jakub Vysoky": [
+    {
+      "song": "Various songs",
+      "context": "Live at Unknown Venue (Amsterdam, Netherlands)",
+      "type": "show",
+      "date": "14635630",
+      "connectionId": "show-0-14635630.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Centre Convencions International Barcelona (Barcelona, Catalonia)",
+      "type": "show",
+      "date": "15232479",
+      "connectionId": "show-0-15232479.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Unknown Venue (Berlin, Germany)",
+      "type": "show",
+      "date": "15539549",
+      "connectionId": "show-0-15539549.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Full Node (Berlin, Germany)",
+      "type": "show",
+      "date": "15540733",
+      "connectionId": "show-0-15540733.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Treptower Bridge (Berlin, Germany)",
+      "type": "show",
+      "date": "15546631",
+      "connectionId": "show-0-15546631.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at chiva lounge (Bogotá, Colombia)",
+      "type": "show",
+      "date": "15735471",
+      "connectionId": "show-0-15735471.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at River Bar Denver (Denver, Colorado)",
+      "type": "show",
+      "date": "16751390",
+      "connectionId": "show-0-16751390.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at National Western Stock Show (Denver, Colorado)",
+      "type": "show",
+      "date": "16758794",
+      "connectionId": "show-0-16758794.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Farmě v Krabčicích (Krabčicích, Czech Republic)",
+      "type": "show",
+      "date": "17350845",
+      "connectionId": "show-0-17350845.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Roudnice Castle (RCNL Podzámčí) (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "17359159",
+      "connectionId": "show-0-17359159.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at La Fabrika (Prague, Czech Republic)",
+      "type": "show",
+      "date": "17451407",
+      "connectionId": "show-0-17451407.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at BIG C (Barcelona, Catalonia)",
+      "type": "show",
+      "date": "17642973",
+      "connectionId": "show-0-17642973.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Gitcoin House (Denver, Colorado)",
+      "type": "show",
+      "date": "19336308",
+      "connectionId": "show-0-19336308.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Bar Vorovka (Vědomice-Roudnice, Czech Republic)",
+      "type": "show",
+      "date": "20528222",
+      "connectionId": "show-0-20528222.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Klub Betlémská (Prague, Czech Republic)",
+      "type": "show",
+      "date": "20535679",
+      "connectionId": "show-0-20535679.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at MOOS Space (Berlin, Germany)",
+      "type": "show",
+      "date": "20550008",
+      "connectionId": "show-0-20550008.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Funkhaus Berlin (Berlin, Germany)",
+      "type": "show",
+      "date": "20570887",
+      "connectionId": "show-0-20570887.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Kulturní dům Říp (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "22390575",
+      "connectionId": "show-0-22390575.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Variace Olomouc (Olomouc, Czech Republic)",
+      "type": "show",
+      "date": "22394175",
+      "connectionId": "show-0-22394175.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Vinckovo (Jesenik, Czech Republic)",
+      "type": "show",
+      "date": "22406012",
+      "connectionId": "show-0-22406012.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Pakhuis de Zwijger (Amsterdam, Netherlands)",
+      "type": "show",
+      "date": "22447747",
+      "connectionId": "show-0-22447747.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Koruna (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "22504683",
+      "connectionId": "show-0-22504683.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Burza #4 (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22575700",
+      "connectionId": "show-0_7-22575700.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Bike Jesus (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22590100",
+      "connectionId": "show-0_7-22590100.yaml-base-0-2"
+    },
+    {
+      "song": "bank-run",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Vowel Sounds-0-6"
+    },
+    {
+      "song": "barlows-jig",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-barlows-jig.yaml-Vowel Sounds-0-7"
+    },
+    {
+      "song": "gm",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-gm.yaml-Vowel Sounds-0-6"
+    },
+    {
+      "song": "hohw",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-hohw.yaml-Vowel Sounds-0-6"
+    },
+    {
+      "song": "lost",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-lost.yaml-Vowel Sounds-0-6"
+    },
+    {
+      "song": "rollups-and-rearview-mirrors",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-rollups-and-rearview-mirrors.yaml-Vowel Sounds-0-6"
+    }
+  ],
+  "Shaka Lei Kaumaka": [
+    {
+      "song": "Various songs",
+      "context": "Live at Unknown Venue (Amsterdam, Netherlands)",
+      "type": "show",
+      "date": "14655789",
+      "connectionId": "show-0-14655789.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Centre Convencions International Barcelona (Barcelona, Catalonia)",
+      "type": "show",
+      "date": "15232479",
+      "connectionId": "show-0-15232479.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Unknown Venue (Berlin, Germany)",
+      "type": "show",
+      "date": "15539549",
+      "connectionId": "show-0-15539549.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Full Node (Berlin, Germany)",
+      "type": "show",
+      "date": "15540733",
+      "connectionId": "show-0-15540733.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Treptower Bridge (Berlin, Germany)",
+      "type": "show",
+      "date": "15546631",
+      "connectionId": "show-0-15546631.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at chiva lounge (Bogotá, Colombia)",
+      "type": "show",
+      "date": "15735471",
+      "connectionId": "show-0-15735471.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Burza #4 (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22575700",
+      "connectionId": "show-0_7-22575700.yaml-song-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Bike Jesus (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22590100",
+      "connectionId": "show-0_7-22590100.yaml-song-0-4"
+    }
+  ],
+  "David Flores Pradillas": [
+    {
+      "song": "Various songs",
+      "context": "Live at Centre Convencions International Barcelona (Barcelona, Catalonia)",
+      "type": "show",
+      "date": "15232479",
+      "connectionId": "show-0-15232479.yaml-base-0-2"
+    }
+  ],
+  "Viv Ford": [
+    {
+      "song": "Various songs",
+      "context": "Live at Unknown Venue (Berlin, Germany)",
+      "type": "show",
+      "date": "15539549",
+      "connectionId": "show-0-15539549.yaml-song-0-3"
+    }
+  ],
+  "Pepa Lopera": [
+    {
+      "song": "Various songs",
+      "context": "Live at chiva lounge (Bogotá, Colombia)",
+      "type": "show",
+      "date": "15735471",
+      "connectionId": "show-0-15735471.yaml-base-0-2"
+    }
+  ],
+  "Jonathan Mann": [
+    {
+      "song": "Various songs",
+      "context": "Live at chiva lounge (Bogotá, Colombia)",
+      "type": "show",
+      "date": "15742928",
+      "connectionId": "show-0-15742928.yaml-song-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Number 38 (Denver, Colorado)",
+      "type": "show",
+      "date": "21940657",
+      "connectionId": "show-0-21940657.yaml-song-0-5"
+    }
+  ],
+  "Matteo Tambussi": [
+    {
+      "song": "Various songs",
+      "context": "Live at chiva lounge (Bogotá, Colombia)",
+      "type": "show",
+      "date": "15742928",
+      "connectionId": "show-0-15742928.yaml-song-0-5"
+    }
+  ],
+  "Scotty Poi": [
+    {
+      "song": "Various songs",
+      "context": "Live at chiva lounge (Bogotá, Colombia)",
+      "type": "show",
+      "date": "15742928",
+      "connectionId": "show-0-15742928.yaml-song-0-6"
+    }
+  ],
+  "Cory Walker": [
+    {
+      "song": "Various songs",
+      "context": "Live at River Bar Denver (Denver, Colorado)",
+      "type": "show",
+      "date": "16751390",
+      "connectionId": "show-0-16751390.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at National Western Stock Show (Denver, Colorado)",
+      "type": "show",
+      "date": "16758794",
+      "connectionId": "show-0-16758794.yaml-base-0-2"
+    },
+    {
+      "song": "bank-run",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "bank-run",
+      "context": "Nanny State Fiddler",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Nanny State Fiddler-0-1"
+    },
+    {
+      "song": "barlows-jig",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-barlows-jig.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "cork-board",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-cork-board.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "gm",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-gm.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "hohw",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-hohw.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "lost",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-lost.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "moon-factory",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-moon-factory.yaml-4masks-0-1"
+    },
+    {
+      "song": "nanny-state-fiddler",
+      "context": "Nanny State Fiddler",
+      "type": "recording",
+      "connectionId": "studio-nanny-state-fiddler.yaml-Nanny State Fiddler-0-1"
+    },
+    {
+      "song": "paint-exchange",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-paint-exchange.yaml-4masks-0-1"
+    },
+    {
+      "song": "power-underneath",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-power-underneath.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "rollups-and-rearview-mirrors",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-rollups-and-rearview-mirrors.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "the-place-to-which-ill-return-someday",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-the-place-to-which-ill-return-someday.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "vowel-sounds",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-vowel-sounds.yaml-Vowel Sounds-0-1"
+    }
+  ],
+  "Christian Ward": [
+    {
+      "song": "Various songs",
+      "context": "Live at River Bar Denver (Denver, Colorado)",
+      "type": "show",
+      "date": "16751390",
+      "connectionId": "show-0-16751390.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at National Western Stock Show (Denver, Colorado)",
+      "type": "show",
+      "date": "16758794",
+      "connectionId": "show-0-16758794.yaml-base-0-3"
+    },
+    {
+      "song": "bank-run",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Vowel Sounds-0-3"
+    },
+    {
+      "song": "barlows-jig",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-barlows-jig.yaml-Vowel Sounds-0-3"
+    },
+    {
+      "song": "cork-board",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-cork-board.yaml-Vowel Sounds-0-3"
+    },
+    {
+      "song": "gm",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-gm.yaml-Vowel Sounds-0-3"
+    },
+    {
+      "song": "hohw",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-hohw.yaml-Vowel Sounds-0-3"
+    },
+    {
+      "song": "lost",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-lost.yaml-Vowel Sounds-0-3"
+    },
+    {
+      "song": "power-underneath",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-power-underneath.yaml-Vowel Sounds-0-3"
+    },
+    {
+      "song": "rollups-and-rearview-mirrors",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-rollups-and-rearview-mirrors.yaml-Vowel Sounds-0-3"
+    },
+    {
+      "song": "the-place-to-which-ill-return-someday",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-the-place-to-which-ill-return-someday.yaml-Vowel Sounds-0-3"
+    },
+    {
+      "song": "vowel-sounds",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-vowel-sounds.yaml-Vowel Sounds-0-3"
+    }
+  ],
+  "Jake Stargel": [
+    {
+      "song": "Various songs",
+      "context": "Live at River Bar Denver (Denver, Colorado)",
+      "type": "show",
+      "date": "16751390",
+      "connectionId": "show-0-16751390.yaml-base-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at National Western Stock Show (Denver, Colorado)",
+      "type": "show",
+      "date": "16758794",
+      "connectionId": "show-0-16758794.yaml-base-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at The Riverside (Boulder, Colorado)",
+      "type": "show",
+      "date": "21904604",
+      "connectionId": "show-0-21904604.yaml-base-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Gitcoin Church (Denver, Colorado)",
+      "type": "show",
+      "date": "21933658",
+      "connectionId": "show-0-21933658.yaml-base-0-5"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Number 38 (Denver, Colorado)",
+      "type": "show",
+      "date": "21940657",
+      "connectionId": "show-0-21940657.yaml-base-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Crucible (Breckenridge, Colorado)",
+      "type": "show",
+      "date": "21984926",
+      "connectionId": "show-0-21984926.yaml-base-0-3"
+    },
+    {
+      "song": "bank-run",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Vowel Sounds-0-4"
+    },
+    {
+      "song": "barlows-jig",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-barlows-jig.yaml-Vowel Sounds-0-4"
+    },
+    {
+      "song": "cork-board",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-cork-board.yaml-Vowel Sounds-0-4"
+    },
+    {
+      "song": "gm",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-gm.yaml-Vowel Sounds-0-4"
+    },
+    {
+      "song": "hohw",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-hohw.yaml-Vowel Sounds-0-4"
+    },
+    {
+      "song": "lost",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-lost.yaml-Vowel Sounds-0-4"
+    },
+    {
+      "song": "power-underneath",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-power-underneath.yaml-Vowel Sounds-0-4"
+    },
+    {
+      "song": "rollups-and-rearview-mirrors",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-rollups-and-rearview-mirrors.yaml-Vowel Sounds-0-4"
+    },
+    {
+      "song": "the-place-to-which-ill-return-someday",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-the-place-to-which-ill-return-someday.yaml-Vowel Sounds-0-4"
+    },
+    {
+      "song": "victory-ff7",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-victory-ff7.yaml-4masks-0-5"
+    },
+    {
+      "song": "vowel-sounds",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-vowel-sounds.yaml-Vowel Sounds-0-4"
+    }
+  ],
+  "Honza Špringl": [
+    {
+      "song": "Various songs",
+      "context": "Live at Farmě v Krabčicích (Krabčicích, Czech Republic)",
+      "type": "show",
+      "date": "17350845",
+      "connectionId": "show-0-17350845.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Roudnice Castle (RCNL Podzámčí) (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "17359159",
+      "connectionId": "show-0-17359159.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at La Fabrika (Prague, Czech Republic)",
+      "type": "show",
+      "date": "17451407",
+      "connectionId": "show-0-17451407.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Koruna (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "22504683",
+      "connectionId": "show-0-22504683.yaml-base-0-3"
+    }
+  ],
+  "Kuba Hejhal": [
+    {
+      "song": "Various songs",
+      "context": "Live at Farmě v Krabčicích (Krabčicích, Czech Republic)",
+      "type": "show",
+      "date": "17350845",
+      "connectionId": "show-0-17350845.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Roudnice Castle (RCNL Podzámčí) (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "17359159",
+      "connectionId": "show-0-17359159.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at La Fabrika (Prague, Czech Republic)",
+      "type": "show",
+      "date": "17451407",
+      "connectionId": "show-0-17451407.yaml-base-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at BIG C (Barcelona, Catalonia)",
+      "type": "show",
+      "date": "17642973",
+      "connectionId": "show-0-17642973.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Brussels Doubletree (Brussels, Belgium)",
+      "type": "show",
+      "date": "20254790",
+      "connectionId": "show-0-20254790.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Commons Hub Brussels (Brussels, Belgium)",
+      "type": "show",
+      "date": "20277935",
+      "connectionId": "show-0-20277935.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Brussels Aquaponic Farm - BIGH Anderlecht (Brussels, Belgium)",
+      "type": "show",
+      "date": "20477451",
+      "connectionId": "show-0-20477451.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Bar Vorovka (Vědomice-Roudnice, Czech Republic)",
+      "type": "show",
+      "date": "20528222",
+      "connectionId": "show-0-20528222.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Klub Betlémská (Prague, Czech Republic)",
+      "type": "show",
+      "date": "20535679",
+      "connectionId": "show-0-20535679.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at MOOS Space (Berlin, Germany)",
+      "type": "show",
+      "date": "20550008",
+      "connectionId": "show-0-20550008.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Funkhaus Berlin (Berlin, Germany)",
+      "type": "show",
+      "date": "20570887",
+      "connectionId": "show-0-20570887.yaml-base-0-2"
+    }
+  ],
+  "Jirka Hoření": [
+    {
+      "song": "Various songs",
+      "context": "Live at Farmě v Krabčicích (Krabčicích, Czech Republic)",
+      "type": "show",
+      "date": "17350845",
+      "connectionId": "show-0-17350845.yaml-base-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Roudnice Castle (RCNL Podzámčí) (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "17359159",
+      "connectionId": "show-0-17359159.yaml-base-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at La Fabrika (Prague, Czech Republic)",
+      "type": "show",
+      "date": "17451407",
+      "connectionId": "show-0-17451407.yaml-base-0-5"
+    }
+  ],
+  "Petr Potoček": [
+    {
+      "song": "Various songs",
+      "context": "Live at Farmě v Krabčicích (Krabčicích, Czech Republic)",
+      "type": "show",
+      "date": "17350845",
+      "connectionId": "show-0-17350845.yaml-base-0-5"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at La Fabrika (Prague, Czech Republic)",
+      "type": "show",
+      "date": "17451407",
+      "connectionId": "show-0-17451407.yaml-base-0-3"
+    }
+  ],
+  "Jarda Vysoky": [
+    {
+      "song": "Various songs",
+      "context": "Live at Farmě v Krabčicích (Krabčicích, Czech Republic)",
+      "type": "show",
+      "date": "17350845",
+      "connectionId": "show-0-17350845.yaml-base-0-6"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Roudnice Castle (RCNL Podzámčí) (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "17359159",
+      "connectionId": "show-0-17359159.yaml-base-0-5"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at La Fabrika (Prague, Czech Republic)",
+      "type": "show",
+      "date": "17451407",
+      "connectionId": "show-0-17451407.yaml-base-0-6"
+    }
+  ],
+  "Fabian Aguilera": [
+    {
+      "song": "Various songs",
+      "context": "Live at BIG C (Barcelona, Catalonia)",
+      "type": "show",
+      "date": "17642973",
+      "connectionId": "show-0-17642973.yaml-base-0-3"
+    }
+  ],
+  "Open Tony": [
+    {
+      "song": "Various songs",
+      "context": "Live at Bridgespace (Portland, Oregon)",
+      "type": "show",
+      "date": "18344309",
+      "connectionId": "show-0-18344309.yaml-base-0-1"
+    }
+  ],
+  "Miriam Hacksaw": [
+    {
+      "song": "Various songs",
+      "context": "Live at Bridgespace (Portland, Oregon)",
+      "type": "show",
+      "date": "18344309",
+      "connectionId": "show-0-18344309.yaml-base-0-2"
+    }
+  ],
+  "Kyle Bestape": [
+    {
+      "song": "Various songs",
+      "context": "Live at Bridgespace (Portland, Oregon)",
+      "type": "show",
+      "date": "18344309",
+      "connectionId": "show-0-18344309.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Commons Hub Brussels (Brussels, Belgium)",
+      "type": "show",
+      "date": "20277935",
+      "connectionId": "show-0-20277935.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Brussels Aquaponic Farm - BIGH Anderlecht (Brussels, Belgium)",
+      "type": "show",
+      "date": "20477451",
+      "connectionId": "show-0-20477451.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at The Riverside (Boulder, Colorado)",
+      "type": "show",
+      "date": "21904604",
+      "connectionId": "show-0-21904604.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Gitcoin Church (Denver, Colorado)",
+      "type": "show",
+      "date": "21933658",
+      "connectionId": "show-0-21933658.yaml-base-0-2"
+    }
+  ],
+  "Skyler Golden": [
+    {
+      "song": "Various songs",
+      "context": "Live at Gitcoin House (Denver, Colorado)",
+      "type": "show",
+      "date": "19336308",
+      "connectionId": "show-0-19336308.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at North Country Camp (Lancaster, New Hampshire)",
+      "type": "show",
+      "date": "20150677",
+      "connectionId": "show-0-20150677.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Commons Hub Brussels (Brussels, Belgium)",
+      "type": "show",
+      "date": "20226737",
+      "connectionId": "show-0-20226737.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Brussels Doubletree (Brussels, Belgium)",
+      "type": "show",
+      "date": "20254790",
+      "connectionId": "show-0-20254790.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Brussels Aquaponic Farm - BIGH Anderlecht (Brussels, Belgium)",
+      "type": "show",
+      "date": "20477451",
+      "connectionId": "show-0-20477451.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Bar Vorovka (Vědomice-Roudnice, Czech Republic)",
+      "type": "show",
+      "date": "20528222",
+      "connectionId": "show-0-20528222.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Klub Betlémská (Prague, Czech Republic)",
+      "type": "show",
+      "date": "20535679",
+      "connectionId": "show-0-20535679.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at MOOS Space (Berlin, Germany)",
+      "type": "show",
+      "date": "20550008",
+      "connectionId": "show-0-20550008.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Funkhaus Berlin (Berlin, Germany)",
+      "type": "show",
+      "date": "20570887",
+      "connectionId": "show-0-20570887.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at The Riverside (Boulder, Colorado)",
+      "type": "show",
+      "date": "21904604",
+      "connectionId": "show-0-21904604.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Gitcoin Church (Denver, Colorado)",
+      "type": "show",
+      "date": "21933658",
+      "connectionId": "show-0-21933658.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Number 38 (Denver, Colorado)",
+      "type": "show",
+      "date": "21940657",
+      "connectionId": "show-0-21940657.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Crucible (Breckenridge, Colorado)",
+      "type": "show",
+      "date": "21984926",
+      "connectionId": "show-0-21984926.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Kulturní dům Říp (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "22390575",
+      "connectionId": "show-0-22390575.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Variace Olomouc (Olomouc, Czech Republic)",
+      "type": "show",
+      "date": "22394175",
+      "connectionId": "show-0-22394175.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Vinckovo (Jesenik, Czech Republic)",
+      "type": "show",
+      "date": "22406012",
+      "connectionId": "show-0-22406012.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Pakhuis de Zwijger (Amsterdam, Netherlands)",
+      "type": "show",
+      "date": "22447747",
+      "connectionId": "show-0-22447747.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Koruna (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "22504683",
+      "connectionId": "show-0-22504683.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Burza #4 (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22575700",
+      "connectionId": "show-0_7-22575700.yaml-base-0-1"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Bike Jesus (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22590100",
+      "connectionId": "show-0_7-22590100.yaml-base-0-1"
+    },
+    {
+      "song": "august",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-august.yaml-Vowel Sounds-0-4"
+    },
+    {
+      "song": "cicada-song",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-cicada-song.yaml-4masks-0-1"
+    },
+    {
+      "song": "proximity",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-proximity.yaml-4masks-0-1"
+    },
+    {
+      "song": "silver-44",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-silver-44.yaml-4masks-0-4"
+    },
+    {
+      "song": "swords-to-ploughshares",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-swords-to-ploughshares.yaml-4masks-0-1"
+    },
+    {
+      "song": "victory-ff7",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-victory-ff7.yaml-4masks-0-4"
+    }
+  ],
+  "Laura Quam": [
+    {
+      "song": "Various songs",
+      "context": "Live at Gitcoin House (Denver, Colorado)",
+      "type": "show",
+      "date": "19336308",
+      "connectionId": "show-0-19336308.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at The Riverside (Boulder, Colorado)",
+      "type": "show",
+      "date": "21904604",
+      "connectionId": "show-0-21904604.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Gitcoin Church (Denver, Colorado)",
+      "type": "show",
+      "date": "21933658",
+      "connectionId": "show-0-21933658.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Number 38 (Denver, Colorado)",
+      "type": "show",
+      "date": "21940657",
+      "connectionId": "show-0-21940657.yaml-base-0-2"
+    }
+  ],
+  "Fibonacci Emery Holmes": [
+    {
+      "song": "Various songs",
+      "context": "Live at Gitcoin House (Denver, Colorado)",
+      "type": "show",
+      "date": "19336308",
+      "connectionId": "show-0-19336308.yaml-song-0-4"
+    }
+  ],
+  "David Grier": [
+    {
+      "song": "Various songs",
+      "context": "Live at Tunesmith Studios (Nashville, Tennessee)",
+      "type": "show",
+      "date": "19569155",
+      "connectionId": "show-0-19569155.yaml-base-0-1"
+    },
+    {
+      "song": "barlows-jig",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-barlows-jig.yaml-4masks-0-1"
+    },
+    {
+      "song": "drowsy-maggie",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-drowsy-maggie.yaml-4masks-0-1"
+    }
+  ],
+  "Mike Merenda": [
+    {
+      "song": "Various songs",
+      "context": "Live at North Country Camp (Lancaster, New Hampshire)",
+      "type": "show",
+      "date": "20150677",
+      "connectionId": "show-0-20150677.yaml-base-0-2"
+    }
+  ],
+  "Brendan Daniel": [
+    {
+      "song": "Various songs",
+      "context": "Live at North Country Camp (Lancaster, New Hampshire)",
+      "type": "show",
+      "date": "20150677",
+      "connectionId": "show-0-20150677.yaml-base-0-3"
+    }
+  ],
+  "Chris Elliott": [
+    {
+      "song": "Various songs",
+      "context": "Live at Gitcoin Church (Denver, Colorado)",
+      "type": "show",
+      "date": "21933658",
+      "connectionId": "show-0-21933658.yaml-base-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Number 38 (Denver, Colorado)",
+      "type": "show",
+      "date": "21940657",
+      "connectionId": "show-0-21940657.yaml-base-0-3"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Crucible (Breckenridge, Colorado)",
+      "type": "show",
+      "date": "21984926",
+      "connectionId": "show-0-21984926.yaml-base-0-2"
+    }
+  ],
+  "Myron Davis": [
+    {
+      "song": "Various songs",
+      "context": "Live at Number 38 (Denver, Colorado)",
+      "type": "show",
+      "date": "21940657",
+      "connectionId": "show-0-21940657.yaml-song-0-5"
+    }
+  ],
+  "Nick Jennings": [
+    {
+      "song": "Various songs",
+      "context": "Live at Kulturní dům Říp (Roudnice nad Labem, Czech Republic)",
+      "type": "show",
+      "date": "22390575",
+      "connectionId": "show-0-22390575.yaml-base-0-2"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Burza #4 (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22575700",
+      "connectionId": "show-0_7-22575700.yaml-song-0-5"
+    }
+  ],
+  "Bogdan": [
+    {
+      "song": "Various songs",
+      "context": "Live at Variace Olomouc (Olomouc, Czech Republic)",
+      "type": "show",
+      "date": "22394175",
+      "connectionId": "show-0-22394175.yaml-base-0-3"
+    }
+  ],
+  "Ondra Kozak": [
+    {
+      "song": "Various songs",
+      "context": "Live at Vinckovo (Jesenik, Czech Republic)",
+      "type": "show",
+      "date": "22406012",
+      "connectionId": "show-0-22406012.yaml-base-0-3"
+    }
+  ],
+  "Steve Willis": [
+    {
+      "song": "Various songs",
+      "context": "Live at Vinckovo (Jesenik, Czech Republic)",
+      "type": "show",
+      "date": "22406012",
+      "connectionId": "show-0-22406012.yaml-song-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Bike Jesus (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22590100",
+      "connectionId": "show-0_7-22590100.yaml-song-0-4"
+    }
+  ],
+  "Band No. 7": [
+    {
+      "song": "Various songs",
+      "context": "Live at Vinckovo (Jesenik, Czech Republic)",
+      "type": "show",
+      "date": "22406012",
+      "connectionId": "show-0-22406012.yaml-song-0-4"
+    },
+    {
+      "song": "Various songs",
+      "context": "Live at Bike Jesus (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22590100",
+      "connectionId": "show-0_7-22590100.yaml-song-0-4"
+    }
+  ],
+  "Bones": [
+    {
+      "song": "Various songs",
+      "context": "Live at Pakhuis de Zwijger (Amsterdam, Netherlands)",
+      "type": "show",
+      "date": "22447747",
+      "connectionId": "show-0-22447747.yaml-base-0-3"
+    }
+  ],
+  "Seamus": [
+    {
+      "song": "Various songs",
+      "context": "Live at Pakhuis de Zwijger (Amsterdam, Netherlands)",
+      "type": "show",
+      "date": "22447747",
+      "connectionId": "show-0-22447747.yaml-base-0-4"
+    }
+  ],
+  "Joshua": [
+    {
+      "song": "Various songs",
+      "context": "Live at Pakhuis de Zwijger (Amsterdam, Netherlands)",
+      "type": "show",
+      "date": "22447747",
+      "connectionId": "show-0-22447747.yaml-base-0-5"
+    }
+  ],
+  "Mark Hansen": [
+    {
+      "song": "Various songs",
+      "context": "Live at North Country Camp (Lancaster, New Hampshire)",
+      "type": "show",
+      "date": "22748946",
+      "connectionId": "show-0-22748946.yaml-song-0-2"
+    }
+  ],
+  "Dominika Stašová": [
+    {
+      "song": "Various songs",
+      "context": "Live at Burza #4 (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22575700",
+      "connectionId": "show-0_7-22575700.yaml-song-0-3"
+    }
+  ],
+  "Ludvik": [
+    {
+      "song": "Various songs",
+      "context": "Live at Burza #4 (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22575700",
+      "connectionId": "show-0_7-22575700.yaml-song-0-4"
+    }
+  ],
+  "Eliška": [
+    {
+      "song": "Various songs",
+      "context": "Live at Burza #4 (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22575700",
+      "connectionId": "show-0_7-22575700.yaml-song-0-6"
+    }
+  ],
+  "Pavel Bohm": [
+    {
+      "song": "Various songs",
+      "context": "Live at Bike Jesus (Prague, Czech Republic)",
+      "type": "show",
+      "date": "22590100",
+      "connectionId": "show-0_7-22590100.yaml-base-0-3"
+    }
+  ],
+  "Kyle Tuttle": [
+    {
+      "song": "august",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-august.yaml-Vowel Sounds-0-1"
+    },
+    {
+      "song": "silver-44",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-silver-44.yaml-4masks-0-1"
+    },
+    {
+      "song": "victory-ff7",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-victory-ff7.yaml-4masks-0-1"
+    }
+  ],
+  "Harry Clark": [
+    {
+      "song": "august",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-august.yaml-Vowel Sounds-0-2"
+    },
+    {
+      "song": "bank-run",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Vowel Sounds-0-2"
+    },
+    {
+      "song": "barlows-jig",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-barlows-jig.yaml-Vowel Sounds-0-2"
+    },
+    {
+      "song": "cicada-song",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-cicada-song.yaml-4masks-0-4"
+    },
+    {
+      "song": "cork-board",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-cork-board.yaml-Vowel Sounds-0-2"
+    },
+    {
+      "song": "gm",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-gm.yaml-Vowel Sounds-0-2"
+    },
+    {
+      "song": "hohw",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-hohw.yaml-Vowel Sounds-0-2"
+    },
+    {
+      "song": "lost",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-lost.yaml-Vowel Sounds-0-2"
+    },
+    {
+      "song": "moon-factory",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-moon-factory.yaml-4masks-0-5"
+    },
+    {
+      "song": "paint-exchange",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-paint-exchange.yaml-4masks-0-5"
+    },
+    {
+      "song": "power-underneath",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-power-underneath.yaml-Vowel Sounds-0-2"
+    },
+    {
+      "song": "proximity",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-proximity.yaml-4masks-0-4"
+    },
+    {
+      "song": "rollups-and-rearview-mirrors",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-rollups-and-rearview-mirrors.yaml-Vowel Sounds-0-2"
+    },
+    {
+      "song": "silver-44",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-silver-44.yaml-4masks-0-2"
+    },
+    {
+      "song": "swords-to-ploughshares",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-swords-to-ploughshares.yaml-4masks-0-4"
+    },
+    {
+      "song": "the-place-to-which-ill-return-someday",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-the-place-to-which-ill-return-someday.yaml-Vowel Sounds-0-2"
+    },
+    {
+      "song": "victory-ff7",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-victory-ff7.yaml-4masks-0-2"
+    },
+    {
+      "song": "vowel-sounds",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-vowel-sounds.yaml-Vowel Sounds-0-2"
+    }
+  ],
+  "Maddie Denton": [
+    {
+      "song": "august",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-august.yaml-Vowel Sounds-0-3"
+    },
+    {
+      "song": "cicada-song",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-cicada-song.yaml-4masks-0-3"
+    },
+    {
+      "song": "proximity",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-proximity.yaml-4masks-0-3"
+    },
+    {
+      "song": "silver-44",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-silver-44.yaml-4masks-0-3"
+    },
+    {
+      "song": "swords-to-ploughshares",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-swords-to-ploughshares.yaml-4masks-0-3"
+    },
+    {
+      "song": "victory-ff7",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-victory-ff7.yaml-4masks-0-3"
+    }
+  ],
+  "Gaven Largent": [
+    {
+      "song": "august",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-august.yaml-Vowel Sounds-0-5"
+    },
+    {
+      "song": "cicada-song",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-cicada-song.yaml-4masks-0-2"
+    },
+    {
+      "song": "proximity",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-proximity.yaml-4masks-0-2"
+    },
+    {
+      "song": "swords-to-ploughshares",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-swords-to-ploughshares.yaml-4masks-0-2"
+    }
+  ],
+  "Allen Cooke": [
+    {
+      "song": "bank-run",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Vowel Sounds-0-5"
+    },
+    {
+      "song": "barlows-jig",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-barlows-jig.yaml-Vowel Sounds-0-5"
+    },
+    {
+      "song": "cork-board",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-cork-board.yaml-Vowel Sounds-0-5"
+    },
+    {
+      "song": "gm",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-gm.yaml-Vowel Sounds-0-5"
+    },
+    {
+      "song": "hohw",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-hohw.yaml-Vowel Sounds-0-5"
+    },
+    {
+      "song": "lost",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-lost.yaml-Vowel Sounds-0-5"
+    },
+    {
+      "song": "power-underneath",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-power-underneath.yaml-Vowel Sounds-0-5"
+    },
+    {
+      "song": "rollups-and-rearview-mirrors",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-rollups-and-rearview-mirrors.yaml-Vowel Sounds-0-5"
+    },
+    {
+      "song": "the-place-to-which-ill-return-someday",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-the-place-to-which-ill-return-someday.yaml-Vowel Sounds-0-5"
+    },
+    {
+      "song": "vowel-sounds",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-vowel-sounds.yaml-Vowel Sounds-0-5"
+    }
+  ],
+  "Dani Jaye": [
+    {
+      "song": "bank-run",
+      "context": "Nanny State Fiddler",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Nanny State Fiddler-0-2"
+    },
+    {
+      "song": "nanny-state-fiddler",
+      "context": "Nanny State Fiddler",
+      "type": "recording",
+      "connectionId": "studio-nanny-state-fiddler.yaml-Nanny State Fiddler-0-2"
+    }
+  ],
+  "Jeff Fehlauer": [
+    {
+      "song": "bank-run",
+      "context": "Nanny State Fiddler",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Nanny State Fiddler-0-3"
+    },
+    {
+      "song": "nanny-state-fiddler",
+      "context": "Nanny State Fiddler",
+      "type": "recording",
+      "connectionId": "studio-nanny-state-fiddler.yaml-Nanny State Fiddler-0-3"
+    }
+  ],
+  "Ice Quilitz": [
+    {
+      "song": "bank-run",
+      "context": "Nanny State Fiddler",
+      "type": "recording",
+      "connectionId": "studio-bank-run.yaml-Nanny State Fiddler-0-4"
+    },
+    {
+      "song": "nanny-state-fiddler",
+      "context": "Nanny State Fiddler",
+      "type": "recording",
+      "connectionId": "studio-nanny-state-fiddler.yaml-Nanny State Fiddler-0-4"
+    }
+  ],
+  "Luna Lavender": [
+    {
+      "song": "barlows-jig",
+      "context": "Vowel Sounds",
+      "type": "recording",
+      "connectionId": "studio-barlows-jig.yaml-Vowel Sounds-0-6"
+    }
+  ],
+  "Samson Grisman": [
+    {
+      "song": "moon-factory",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-moon-factory.yaml-4masks-0-2"
+    },
+    {
+      "song": "paint-exchange",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-paint-exchange.yaml-4masks-0-2"
+    }
+  ],
+  "John Mailander": [
+    {
+      "song": "moon-factory",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-moon-factory.yaml-4masks-0-3"
+    },
+    {
+      "song": "paint-exchange",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-paint-exchange.yaml-4masks-0-3"
+    }
+  ],
+  "Kaitlyn Raitz": [
+    {
+      "song": "moon-factory",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-moon-factory.yaml-4masks-0-4"
+    },
+    {
+      "song": "paint-exchange",
+      "context": "4masks",
+      "type": "recording",
+      "connectionId": "studio-paint-exchange.yaml-4masks-0-4"
+    }
+  ]
+}
