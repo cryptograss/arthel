@@ -6,23 +6,29 @@
     <title>Rabbit Hole Player</title>
 
     <script>
-        // Polyfill: Make adoptedStyleSheets behave like an array for Webamp compatibility
-        if (document.adoptedStyleSheets && !Array.isArray(document.adoptedStyleSheets)) {
-            const original = Object.getOwnPropertyDescriptor(Document.prototype, 'adoptedStyleSheets');
-            if (original && original.get) {
-                Object.defineProperty(Document.prototype, 'adoptedStyleSheets', {
-                    get() {
-                        return Array.from(original.get.call(this));
-                    },
-                    set(value) {
-                        if (original.set) {
-                            original.set.call(this, value);
-                        }
-                    },
-                    configurable: true
-                });
+        // Polyfill: Add array methods to StyleSheetList for Webamp compatibility
+        // Webamp's minified code calls .filter() on adoptedStyleSheets which is a StyleSheetList
+        (function() {
+            // Get the StyleSheetList prototype from an actual instance
+            const styleSheetListProto = Object.getPrototypeOf(document.styleSheets);
+
+            // Add array methods that Webamp might need
+            if (!styleSheetListProto.filter) {
+                styleSheetListProto.filter = function(...args) {
+                    return Array.from(this).filter(...args);
+                };
             }
-        }
+            if (!styleSheetListProto.map) {
+                styleSheetListProto.map = function(...args) {
+                    return Array.from(this).map(...args);
+                };
+            }
+            if (!styleSheetListProto.forEach) {
+                styleSheetListProto.forEach = function(...args) {
+                    return Array.from(this).forEach(...args);
+                };
+            }
+        })();
     </script>
 
     <style>
@@ -828,11 +834,8 @@
             }
         }
 
-        // Load the player script
-        const script = document.createElement('script');
-        script.src = '/rabbithole.js';
-        script.onload = function() {
-            // Initialize the player
+        // Wait for Webpack-injected rabbithole.js to load and define WebampChartifacts
+        function initPlayer() {
             if (typeof WebampChartifacts !== 'undefined') {
                 window.chartifactsPlayer = new WebampChartifacts('webamp-player', window.songChartifactsData, {
                     embedMode: false,
@@ -848,9 +851,18 @@
                         console.log('Made musician names clickable:', musicianNames.length, 'names found');
                     }
                 }, 100);
+            } else {
+                // Webpack script not loaded yet, wait and retry
+                setTimeout(initPlayer, 50);
             }
-        };
-        document.head.appendChild(script);
+        }
+
+        // Start initialization after DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPlayer);
+        } else {
+            initPlayer();
+        }
     </script>
 </body>
 </html>
