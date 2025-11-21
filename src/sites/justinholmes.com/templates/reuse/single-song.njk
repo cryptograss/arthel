@@ -1,10 +1,10 @@
 {% extends 'shared/layouts/base.njk' %}
 
-{# Check if any studio version has chartifacts data #}
+{# Check if any studio version has rabbithole data #}
 {% set chartifacts_version = null %}
 {% for version_num, version in song.studio_versions if not chartifacts_version %}
 {% for release_name, release_data in version if not chartifacts_version %}
-{% if release_data.chartifacts %}
+{% if release_data.rabbithole %}
 {% set chartifacts_version = release_data %}
 {% endif %}
 {% endfor %}
@@ -37,7 +37,7 @@
             {% endif %}
 
 
-            {% if chartifacts_version and chartifacts_version.chartifacts %}
+            {% if chartifacts_version and chartifacts_version.rabbithole %}
             <div class="chartifacts-embed-container text-center" style="margin: 20px 0;">
                 <iframe src="/embed/rabbithole/{{ song_slug }}.html"
                         width="500" height="400"

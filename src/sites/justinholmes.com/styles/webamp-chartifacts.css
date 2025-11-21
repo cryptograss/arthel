@@ -137,6 +137,20 @@
     margin: 2px 0;
 }
 
+/* Engineer card - gray styling */
+.ensemble-display-in-webamp .engineer-card {
+    background: #e2e8f0 !important;
+    border: 1px solid #718096 !important;
+}
+
+.ensemble-display-in-webamp .engineer-card .musician-name {
+    color: #4a5568 !important;
+}
+
+.ensemble-display-in-webamp .engineer-card .chartifact-line {
+    color: #718096 !important;
+}
+
 .ensemble-display-in-webamp .musician-name {
     color: #1a365d !important;
     font-weight: bold;

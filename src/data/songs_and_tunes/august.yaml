@@ -10,7 +10,7 @@ studio_versions:
         Maddie Denton: [fiddle]
         Skyler Golden: [bass]
         Gaven Largent: [dobro]
-      chartifacts:
+      rabbithole:
         audioFile: "/audio/August.flac"
         duration: 180
 

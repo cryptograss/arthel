@@ -42,8 +42,14 @@
             font-family: 'Helvetica Neue', Arial, sans-serif;
             background: #ffffff;
             color: #333333;
-            overflow: hidden;
-            height: 100vh;
+            overflow: auto;
+            min-height: 100vh;
+        }
+
+        /* Reset text-shadow for entire rabbithole player */
+        .player-container,
+        .player-container * {
+            text-shadow: none !important;
         }
 
         .player-container {
@@ -72,7 +78,6 @@
             font-family: 'VT323', monospace;
             color: #2d5016;
             margin: 0;
-            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
             letter-spacing: 1px;
         }
 
@@ -109,6 +114,31 @@
             transform: translateY(0);
         }
 
+        /* Song info header */
+        .song-info-header {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .song-title-display {
+            font-family: 'Caveat', cursive, sans-serif;
+            font-size: 28px;
+            margin: 0 0 5px 0;
+            color: #2d5016;
+        }
+
+        .recording-metadata {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .recording-metadata span {
+            margin: 0 8px;
+        }
+
         /* Main content area */
         .player-content {
             flex: 1;
@@ -116,7 +146,7 @@
             grid-template-columns: 300px 1fr;
             gap: 20px;
             padding: 20px;
-            overflow: hidden;
+            overflow: visible;
             transition: all 0.3s ease;
         }
 
@@ -476,6 +506,98 @@
         #clear-cache-btn:hover {
             background: #2d5016;
         }
+
+        /* Status indicator bar */
+        .status-indicators {
+            display: flex;
+            gap: 12px;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 11px;
+            font-family: 'VT323', monospace;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-indicator .label {
+            color: #888;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+
+        .status-indicator .value {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-indicator .value.local {
+            background: #4a7c59;
+            color: white;
+        }
+
+        .status-indicator .value.stream {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        /* Rabbithole icon in ensemble */
+        .rabbithole-icon {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 12px;
+            animation: rabbitBounce 1s ease-in-out infinite;
+        }
+
+        @keyframes rabbitBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        /* Playable song styling */
+        .connection-song.playable {
+            border-left-color: #8b5cf6;
+        }
+
+        .connection-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .connection-actions button {
+            padding: 4px 8px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .connection-actions button:first-child {
+            background: #4a7c59;
+            color: white;
+        }
+
+        .connection-actions button:first-child:hover {
+            background: #3d6a4a;
+        }
+
+        .connection-actions button:last-child {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .connection-actions button:last-child:hover {
+            background: #7c3aed;
+        }
     </style>
 
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=VT323&display=swap" rel="stylesheet">
@@ -501,7 +623,20 @@
             </div>
         </div>
 
+        <div class="status-indicators">
+            <div class="status-indicator">
+                <span class="label">source:</span>
+                <span id="source-indicator" class="value stream">stream</span>
+            </div>
+        </div>
+
         <div class="player-content">
+            <!-- Song info header -->
+            <div class="song-info-header" id="song-info-header">
+                <h2 id="song-title-display" class="song-title-display">Loading...</h2>
+                <div id="recording-metadata" class="recording-metadata"></div>
+            </div>
+
             <div class="left-panel">
                 <div class="webamp-wrapper">
                     <div id="webamp-player">Loading player...</div>
@@ -555,18 +690,158 @@
     </div>
 
     <script>
+        // Catalog of songs with rabbithole data
+        window.rabbitholeeCatalog = {
+            {% for song_slug, song in songs %}
+            {% for version_num, version in song.studio_versions %}
+            {% for release_name, release_data in version %}
+            {% if release_data.rabbithole %}
+            '{{ song_slug }}': {
+                title: '{{ song.title | replace("'", "\\'") }}',
+                release: '{{ release_name | replace("'", "\\'") }}',
+                duration: {{ release_data.rabbithole.duration | default(0) }},
+                audioFile: '{{ release_data.rabbithole.audioFile }}',
+                ensemble: {{ release_data.ensemble | dump | safe }},
+                timeline: {{ release_data.rabbithole.timeline | dump | safe }},
+                standardSectionLength: {{ release_data.rabbithole.standardSectionLength | dump | default('null') | safe }},
+                colorScheme: {{ release_data.rabbithole.colorScheme | dump | default('null') | safe }},
+                engineer: {{ release_data.engineer | dump | default('null') | safe }},
+                studio: {{ release_data.studio | dump | default('null') | safe }},
+                recordDate: {{ release_data.record | dump | default('null') | safe }}
+            },
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+            {% endfor %}
+        };
+
         // Default song to load
         {% set augustSong = songs['august'] %}
         {% set vowelSoundsVersion = augustSong.studio_versions[0]['Vowel Sounds'] %}
         window.songChartifactsData = {
             title: "{{ augustSong.title }}",
-            duration: {{ vowelSoundsVersion.chartifacts.duration }},
-            audioFile: "{{ vowelSoundsVersion.chartifacts.audioFile }}",
+            duration: {{ vowelSoundsVersion.rabbithole.duration }},
+            audioFile: "{{ vowelSoundsVersion.rabbithole.audioFile }}",
             ensemble: {{ vowelSoundsVersion.ensemble | dump | safe }},
-            timeline: {{ vowelSoundsVersion.chartifacts.timeline | dump | safe }},
-            standardSectionLength: {{ vowelSoundsVersion.chartifacts.standardSectionLength | dump | safe }},
-            colorScheme: {{ vowelSoundsVersion.chartifacts.colorScheme | dump | safe }}
+            timeline: {{ vowelSoundsVersion.rabbithole.timeline | dump | safe }},
+            standardSectionLength: {{ vowelSoundsVersion.rabbithole.standardSectionLength | dump | safe }},
+            colorScheme: {{ vowelSoundsVersion.rabbithole.colorScheme | dump | safe }}
         };
+
+        // Check for URL parameter to override default song
+        const urlParams = new URLSearchParams(window.location.search);
+        const songParam = urlParams.get('song');
+        if (songParam && window.rabbitholeeCatalog && window.rabbitholeeCatalog[songParam]) {
+            const songData = window.rabbitholeeCatalog[songParam];
+            window.songChartifactsData = {
+                title: songData.title,
+                duration: songData.duration,
+                audioFile: songData.audioFile,
+                ensemble: songData.ensemble,
+                timeline: songData.timeline,
+                standardSectionLength: songData.standardSectionLength,
+                colorScheme: songData.colorScheme,
+                engineer: songData.engineer,
+                studio: songData.studio,
+                recordDate: songData.recordDate
+            };
+            console.log('Loaded song from URL parameter:', songParam);
+        }
+
+        // IndexedDB audio caching for persistence across refreshes
+        const AUDIO_CACHE_DB = 'rabbithole-audio-cache';
+        const AUDIO_CACHE_STORE = 'audio-files';
+
+        function openAudioCache() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(AUDIO_CACHE_DB, 1);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(AUDIO_CACHE_STORE)) {
+                        db.createObjectStore(AUDIO_CACHE_STORE, { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+
+        async function cacheAudioFile(file) {
+            try {
+                const db = await openAudioCache();
+                const arrayBuffer = await file.arrayBuffer();
+                const tx = db.transaction(AUDIO_CACHE_STORE, 'readwrite');
+                const store = tx.objectStore(AUDIO_CACHE_STORE);
+                store.put({
+                    id: 'current-audio',
+                    data: arrayBuffer,
+                    name: file.name,
+                    type: file.type,
+                    timestamp: Date.now()
+                });
+                await tx.complete;
+                console.log(`Cached audio file: ${file.name} (${(arrayBuffer.byteLength / 1024 / 1024).toFixed(2)} MB)`);
+            } catch (err) {
+                console.warn('Failed to cache audio:', err);
+            }
+        }
+
+        async function loadCachedAudio() {
+            try {
+                const db = await openAudioCache();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(AUDIO_CACHE_STORE, 'readonly');
+                    const store = tx.objectStore(AUDIO_CACHE_STORE);
+                    const request = store.get('current-audio');
+                    request.onsuccess = () => {
+                        if (request.result) {
+                            const blob = new Blob([request.result.data], { type: request.result.type });
+                            const url = URL.createObjectURL(blob);
+                            console.log(`Loaded cached audio: ${request.result.name}`);
+                            resolve({ url, name: request.result.name });
+                        } else {
+                            resolve(null);
+                        }
+                    };
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (err) {
+                console.warn('Failed to load cached audio:', err);
+                return null;
+            }
+        }
+
+        async function clearAudioCache() {
+            try {
+                const db = await openAudioCache();
+                const tx = db.transaction(AUDIO_CACHE_STORE, 'readwrite');
+                tx.objectStore(AUDIO_CACHE_STORE).clear();
+                console.log('Audio cache cleared');
+            } catch (err) {
+                console.warn('Failed to clear audio cache:', err);
+            }
+        }
+
+        // Update source indicator
+        function setSourceIndicator(isLocal) {
+            const indicator = document.getElementById('source-indicator');
+            if (indicator) {
+                indicator.textContent = isLocal ? 'local' : 'stream';
+                indicator.className = 'value ' + (isLocal ? 'local' : 'stream');
+            }
+        }
+
+        // Check for cached audio on page load
+        (async function() {
+            const cached = await loadCachedAudio();
+            if (cached) {
+                window.songChartifactsData.audioFile = cached.url;
+                setSourceIndicator(true);
+                console.log(`Using cached audio file: ${cached.name}`);
+            } else {
+                setSourceIndicator(false);
+            }
+        })();
 
         // Musician connections functionality
         let oracleData = null;
@@ -663,17 +938,38 @@
                 return;
             }
 
-            const connectionsHtml = connections.map(conn => `
-                <div class="connection-song">
-                    <div class="connection-song-title">${conn.song}</div>
-                    <div class="connection-context">${conn.context}</div>
-                </div>
-            `).join('');
+            const connectionsHtml = connections.map(conn => {
+                // Check if this song has rabbithole data
+                const songSlug = conn.song.toLowerCase().replace(/\s+/g, '-');
+                const hasRabbithole = window.rabbitholeeCatalog && window.rabbitholeeCatalog[songSlug];
+
+                const playButtons = hasRabbithole ? `
+                    <div class="connection-actions">
+                        <button onclick="event.stopPropagation(); window.playSongNow('${songSlug}')" title="Play now">
+                            ▶️ Play
+                        </button>
+                        <button onclick="event.stopPropagation(); window.addToRabbithole('${songSlug}')" title="Add to rabbithole">
+                            🐰 Queue
+                        </button>
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="connection-song ${hasRabbithole ? 'playable' : ''}">
+                        <div class="connection-song-title">${conn.song}</div>
+                        <div class="connection-context">${conn.context}</div>
+                        ${playButtons}
+                    </div>
+                `;
+            }).join('');
 
             content.innerHTML = `
                 <div style="margin-bottom: 15px; padding-bottom: 12px; border-bottom: 2px solid #e0e0e0;">
                     <a href="${pickipediaLink}" target="_blank" style="display: block; margin-bottom: 10px;">
                         📖 View ${cleanName} on PickiPedia →
+                    </a>
+                    <a href="#" onclick="event.preventDefault(); window.goDownRabbithole('${cleanName.replace(/'/g, "\\'")}');" style="display: block; margin-bottom: 10px; color: #8b5cf6;">
+                        🐰 Go down a ${cleanName} rabbithole
                     </a>
                     <div style="font-weight: 600; color: #333; font-size: 12px;">
                         Found ${connections.length} other appearance${connections.length === 1 ? '' : 's'}:
@@ -686,6 +982,95 @@
         window.hideConnections = function() {
             document.getElementById('connections-panel').classList.remove('visible');
             userClosedPanel = true;
+        };
+
+        // Track which musicians are in "rabbithole mode"
+        window.rabbitholeMusicians = new Set();
+
+        window.goDownRabbithole = function(musicianName) {
+            // Add rabbit icon to musician's ensemble box
+            const musicianId = `musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`;
+            const musicianDiv = document.getElementById(musicianId);
+
+            if (musicianDiv) {
+                // Toggle rabbithole mode for this musician
+                if (window.rabbitholeMusicians.has(musicianName)) {
+                    window.rabbitholeMusicians.delete(musicianName);
+                    const existingRabbit = musicianDiv.querySelector('.rabbithole-icon');
+                    if (existingRabbit) existingRabbit.remove();
+                    console.log(`Exited ${musicianName}'s rabbithole`);
+                } else {
+                    window.rabbitholeMusicians.add(musicianName);
+                    // Add rabbit icon if not already present
+                    if (!musicianDiv.querySelector('.rabbithole-icon')) {
+                        const rabbitIcon = document.createElement('span');
+                        rabbitIcon.className = 'rabbithole-icon';
+                        rabbitIcon.textContent = '🐰';
+                        rabbitIcon.title = `Following ${musicianName}'s rabbithole`;
+                        musicianDiv.appendChild(rabbitIcon);
+                    }
+                    console.log(`Now following ${musicianName}'s rabbithole - next song will feature them`);
+                    // TODO: Queue a song featuring this musician
+                }
+            }
+
+            // Close the connections panel
+            window.hideConnections();
+        };
+
+        // Rabbithole queue
+        window.rabbitholeQueue = [];
+
+        // Play a song immediately
+        window.playSongNow = async function(songSlug) {
+            const songData = window.rabbitholeeCatalog[songSlug];
+            if (!songData) {
+                console.error('Song not found in catalog:', songSlug);
+                return;
+            }
+
+            console.log('Playing now:', songData.title);
+
+            // Update the global song data so file picker uses correct ensemble
+            window.songChartifactsData = {
+                title: songData.title,
+                duration: songData.duration,
+                audioFile: songData.audioFile,
+                ensemble: songData.ensemble,
+                timeline: songData.timeline,
+                standardSectionLength: songData.standardSectionLength,
+                colorScheme: songData.colorScheme
+            };
+
+            // Load the new song
+            if (window.chartifactsPlayer && typeof window.chartifactsPlayer.loadNewSong === 'function') {
+                await window.chartifactsPlayer.loadNewSong(window.songChartifactsData);
+            }
+
+            // Update source indicator to stream
+            setSourceIndicator(false);
+
+            // Close the panel
+            window.hideConnections();
+        };
+
+        // Add a song to the rabbithole queue
+        window.addToRabbithole = function(songSlug) {
+            const songData = window.rabbitholeeCatalog[songSlug];
+            if (!songData) {
+                console.error('Song not found in catalog:', songSlug);
+                return;
+            }
+
+            // Add to queue
+            window.rabbitholeQueue.push(songSlug);
+            console.log(`Added ${songData.title} to rabbithole queue. Queue length: ${window.rabbitholeQueue.length}`);
+
+            // TODO: Show queue indicator somewhere in UI
+            alert(`Added "${songData.title}" to queue (${window.rabbitholeQueue.length} songs queued)`);
+
+            // Close the panel
+            window.hideConnections();
         };
 
         // Function to load audio from a local file
@@ -708,6 +1093,9 @@
             const file = e.target.files[0];
             if (file) {
                 loadAudioFromFile(file);
+                // Cache the file for persistence across refreshes
+                await cacheAudioFile(file);
+                setSourceIndicator(true);
                 console.log(`Loaded audio file: ${file.name}`);
             }
         });
@@ -841,6 +1229,16 @@
                     embedMode: false,
                     fixedPosition: false
                 });
+
+                // Populate song title and recording metadata
+                const songData = window.songChartifactsData;
+                document.getElementById('song-title-display').textContent = songData.title || 'Untitled';
+
+                const metadataEl = document.getElementById('recording-metadata');
+                const metadataParts = [];
+                if (songData.recordDate) metadataParts.push(`<span>Recorded ${songData.recordDate}</span>`);
+                if (songData.studio) metadataParts.push(`<span>${songData.studio}</span>`);
+                metadataEl.innerHTML = metadataParts.join('•');
 
                 // Wait for ensemble to be created, then make musician names clickable
                 const waitForEnsemble = setInterval(() => {

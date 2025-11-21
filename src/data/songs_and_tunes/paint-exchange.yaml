@@ -4,16 +4,20 @@ is_instrumental: true
 studio_versions:
   0:
     4masks:
+      record: 14 May 2024
+      studio: Tunesmith Studios, Nashville TN
+      session-type: booth compilation
+      engineer: Jake Stargel
       ensemble:
         Justin Holmes: [mandolin, throatsinging]
         Cory Walker: [5-string banjo]
-        Samson Grisman: [bass]
+        Harry Clark: [guitar]
         John Mailander: [fiddle]
         Kaitlyn Raitz: [cello]
-        Harry Clark: [guitar]
+        Sam Grisman: [bass]
 
       # Webamp Chartifacts data for this version
-      chartifacts:
+      rabbithole:
         audioFile: "/audio/0 - Paint Exchange.flac"
         duration: 240
 
@@ -42,52 +46,69 @@ studio_versions:
               background: "#000000"
               textColor: "white"
 
-        # Timeline segments keyed by start time
+        standardSectionLength: 11.8
         timeline:
           0:
-            soloist: "Justin Holmes"
-            type: "intro"
+            part: A
+            musicians:
+              Justin Holmes: "in"
+              Cory Walker: "out"
+              Sam Grisman: "out"
+              John Mailander: "out"
+              Kaitlyn Raitz: "out"
+              Harry Clark: "out"
+          section2:
+            12.8:
+              musicians:
+                "band": "in"  # shortcut for everyone in
+            22:
+              pickup: "John Mailander"
+          section3:
+            solo: "John Mailander"
             part: "A"
-          13:
-            detail: "band-in"
-          22:
-            soloist: "John Mailander"
-            type: "pick up"
-          27:
-            soloist: "John Mailander"
-            type: "solo"
-          47:
+          section4: {}
+          section5:
             part: "B"
-          59:
+          section6:
+            part: A
+            64:
+              flourish: Cory Walker
+            69:
+              pickup: "Kaitlyn Raitz"
+          section7:
+            solo: "Kaitlyn Raitz"
+            72:
+              spotlight: "Kaitlyn Raitz"
+              spotlightBlackout: 4   # 4 seconds of full blackout
+              spotlightGlow: 3       # then 3 more seconds of just the glow
+          section8:
+            solo: "Harry Clark"
+            part: A
+          section9:
+            solo: "Harry Clark"
+          section10:
+            solo: "Sam Grisman"
+            part: "B"
+          section11:
+            solo: "Cory Walker"
             part: "A"
-          69:
-            soloist: "Kaitlyn Raitz"
-            type: "pick up"
-          72:
-            soloist: "Kaitlyn Raitz"
-            type: "solo"
-          83:
-            soloist: "Harry Clark"
-            type: "solo"
-          106:
-            soloist: "Samson Grisman"
-            type: "solo"
+          section12:
+            solo: "Cory Walker"
+          section13:
+            solo: Cory Walker
+            part: A
+          section14:
+            solo: Cory Walker
+            164:
+              pickup: "John Mailander"
+          section15:
+            solo: "John Mailander"
             part: "B"
-          118:
-            soloist: "Cory Walker"
-            type: "solo"
-            part: "A"
-          163:
-            soloist: "John Mailander"
-            type: "pickup"
-          166:
-            soloist: "John Mailander"
-            type: "solo"
-            part: "B"
-          183:
-            instrumentChanges:
-              "Justin Holmes": "throatsinging"
-            soloist: "Justin Holmes"
-            type: "solo"
-          190:
+          section16:
+            solo: John Mailander
+            183:
+              instrumentChanges:
+                "Justin Holmes": "throatsinging"
+              solo: "Justin Holmes"
+          section17:
             part: "A"
