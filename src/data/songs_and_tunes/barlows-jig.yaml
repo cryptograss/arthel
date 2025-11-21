@@ -13,7 +13,7 @@ studio_versions:
         Luna Lavender: [spoken word]
         Jakub Vysoky: [mandolin]
 
-      chartifacts:
+      rabbithole:
         audioFile: "/audio/barlows-jig.flac"
         duration: 180
 

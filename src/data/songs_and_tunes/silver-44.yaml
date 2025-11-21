@@ -8,7 +8,7 @@ studio_versions:
         Harry Clark: [mandolin]
         Maddie Denton: [fiddle]
         Skyler Golden: [bass]
-      chartifacts:
+      rabbithole:
         audioFile: "/audio/silver-44.flac"
         duration: 180
 
