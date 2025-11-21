@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rabbit Hole Player</title>
 
+    <script>
+        // Polyfill: Make adoptedStyleSheets behave like an array for Webamp compatibility
+        if (document.adoptedStyleSheets && !Array.isArray(document.adoptedStyleSheets)) {
+            const original = Object.getOwnPropertyDescriptor(Document.prototype, 'adoptedStyleSheets');
+            if (original && original.get) {
+                Object.defineProperty(Document.prototype, 'adoptedStyleSheets', {
+                    get() {
+                        return Array.from(original.get.call(this));
+                    },
+                    set(value) {
+                        if (original.set) {
+                            original.set.call(this, value);
+                        }
+                    },
+                    configurable: true
+                });
+            }
+        }
+    </script>
+
     <style>
         * {
             box-sizing: border-box;
