@@ -70,6 +70,11 @@ export default {
                     noErrorOnMissing: true
                 },
                 {
+                    from: path.resolve(outputPrimarySiteDir, 'api'),
+                    to: path.resolve(outputDistDir, 'api'),
+                    noErrorOnMissing: true
+                },
+                {
                     from: path.resolve(srcDir, '../audio'),
                     to: path.resolve(outputDistDir, 'audio'),
                     noErrorOnMissing: true

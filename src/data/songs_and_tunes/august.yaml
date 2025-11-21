@@ -14,13 +14,13 @@ studio_versions:
         audioFile: "/audio/August.flac"
         duration: 180
 
-        # Color scheme (investigating why this seems required)
+        # Color scheme for musician states
         colorScheme:
           solo:
-            border: "#007bff"
-            background: "#e3f2fd"
-            textColor: "#0056b3"
-            glowColor: "rgba(0, 123, 255, 0.6)"
+            border: "#ff6b35"
+            background: "#fff4ed"
+            textColor: "#d94a1a"
+            glowColor: "rgba(255, 107, 53, 0.4)"
           pickup:
             border: "#6c757d"
             background: "#f8f9fa"
@@ -30,7 +30,7 @@ studio_versions:
             background: "#d4edda"
             textColor: "#155724"
 
-        standardSectionLength: 13.68
+        standardSectionLength: 13.65
         timeline:
             0:
               musicians:
@@ -83,6 +83,11 @@ studio_versions:
             section8:
               solo: "Justin Holmes"
               part: "B"
+              123:
+                flourish: "Gaven Largent"
             section9:
+              solo: "Maddie Denton"
+              part: "A"
+            section10:
               solo: "Maddie Denton"
               part: "B"

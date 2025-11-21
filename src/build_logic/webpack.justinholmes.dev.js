@@ -6,7 +6,7 @@ import path from 'path';
 
 import { runPrimaryBuild } from './primary_builder.js';
 
-const { outputDistDir, outputPrimaryRootDir, srcDir } = getProjectDirs();
+const { outputDistDir, outputPrimaryRootDir, outputPrimarySiteDir, srcDir } = getProjectDirs();
 
 async function dev_config() {
     await runPrimaryBuild();
@@ -35,6 +35,10 @@ async function dev_config() {
             static: [{
                 directory: path.join(outputPrimaryRootDir, 'assets'),
                 publicPath: '/assets',
+            },
+            {
+                directory: path.join(outputPrimarySiteDir, 'api'),
+                publicPath: '/api',
             },]
         },
         watchOptions: {
