@@ -82,10 +82,7 @@ export async function generateProductionConfig() {
                     });
                 },
             },
-        ], output: {
-            filename: '[name].js',
-            path: outputDistDir,
-        }
+        ]
     });
 }
 
