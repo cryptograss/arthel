@@ -4,6 +4,7 @@ is_instrumental: true
 studio_versions:
   0:
     4masks:
+      audioFile: "/audio/paint-exchange.flac"
       record: 14 May 2024
       studio: Tunesmith Studios, Nashville TN
       session-type: booth compilation

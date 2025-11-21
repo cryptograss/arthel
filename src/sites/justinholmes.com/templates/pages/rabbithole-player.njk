@@ -63,7 +63,7 @@
         /* Header with branding */
         .player-header {
             background: linear-gradient(135deg, #9db89a 0%, #87a96b 100%);
-            padding: 12px 20px;
+            padding: 6px 20px;
             border-bottom: 2px solid #4a7c59;
             display: flex;
             justify-content: space-between;
@@ -88,7 +88,7 @@
         }
 
         .rabbit-icon {
-            height: 48px;
+            height: 32px;
             width: auto;
             filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
         }
@@ -116,38 +116,43 @@
 
         /* Song info header */
         .song-info-header {
-            grid-column: 1 / -1;
             text-align: center;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 10px;
+            padding-bottom: 2px;
+            margin-bottom: 0;
         }
 
         .song-title-display {
             font-family: 'Caveat', cursive, sans-serif;
-            font-size: 28px;
-            margin: 0 0 5px 0;
+            font-size: 22px;
+            margin: 0 0 2px 0;
             color: #2d5016;
         }
 
         .recording-metadata {
-            font-size: 12px;
+            font-size: 10px;
             color: #666;
         }
 
         .recording-metadata span {
-            margin: 0 8px;
+            margin: 0 4px;
         }
 
         /* Main content area */
         .player-content {
             flex: 1;
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 20px;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 6px 20px;
             overflow: visible;
             transition: all 0.3s ease;
+        }
+
+        /* Parts chart row - spans full width above player */
+        .parts-chart-row {
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         /* Footer mode styles */
@@ -623,7 +628,7 @@
             </div>
         </div>
 
-        <div class="status-indicators">
+        <div class="status-indicators" style="display: none;">
             <div class="status-indicator">
                 <span class="label">source:</span>
                 <span id="source-indicator" class="value stream">stream</span>
@@ -657,10 +662,9 @@
                 </div>
             </div>
 
-            <div class="right-panel">
-                <div class="parts-chart-wrapper">
-                    <div id="parts-chart" class="parts-chart"></div>
-                </div>
+            <!-- Parts chart - at bottom -->
+            <div class="parts-chart-row">
+                <div id="parts-chart" class="parts-chart"></div>
             </div>
         </div>
 
@@ -707,7 +711,8 @@
                 colorScheme: {{ release_data.rabbithole.colorScheme | dump | default('null') | safe }},
                 engineer: {{ release_data.engineer | dump | default('null') | safe }},
                 studio: {{ release_data.studio | dump | default('null') | safe }},
-                recordDate: {{ release_data.record | dump | default('null') | safe }}
+                recordDate: {{ release_data.record | dump | default('null') | safe }},
+                sessionType: {{ release_data['session-type'] | dump | default('null') | safe }}
             },
             {% endif %}
             {% endfor %}
@@ -743,7 +748,8 @@
                 colorScheme: songData.colorScheme,
                 engineer: songData.engineer,
                 studio: songData.studio,
-                recordDate: songData.recordDate
+                recordDate: songData.recordDate,
+                sessionType: songData.sessionType
             };
             console.log('Loaded song from URL parameter:', songParam);
         }
@@ -1235,10 +1241,13 @@
                 document.getElementById('song-title-display').textContent = songData.title || 'Untitled';
 
                 const metadataEl = document.getElementById('recording-metadata');
-                const metadataParts = [];
-                if (songData.recordDate) metadataParts.push(`<span>Recorded ${songData.recordDate}</span>`);
-                if (songData.studio) metadataParts.push(`<span>${songData.studio}</span>`);
-                metadataEl.innerHTML = metadataParts.join('•');
+                let metadataText = '';
+                if (songData.recordDate) {
+                    metadataText = `Recorded ${songData.recordDate}`;
+                    if (songData.studio) metadataText += ` at ${songData.studio}`;
+                    if (songData.sessionType) metadataText += ` (session type: ${songData.sessionType})`;
+                }
+                metadataEl.textContent = metadataText;
 
                 // Wait for ensemble to be created, then make musician names clickable
                 const waitForEnsemble = setInterval(() => {

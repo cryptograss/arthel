@@ -455,46 +455,18 @@ class WebampChartifacts {
             ensembleDiv.appendChild(engineerDiv);
         }
 
-        // Also grab the parts chart and move it in as a sibling
+        // Populate the parts chart in place (it's already in the HTML above the player)
         const partsChart = document.getElementById('parts-chart');
 
         if (partsChart) {
-            // Create a container div to hold parts chart positioned to the right
-            const partsContainer = document.createElement('div');
-            partsContainer.id = 'parts-chart-in-webamp';
-
-            // Use relative positioning on mobile for proper stacking
-            if (isMobile) {
-                partsContainer.style.position = 'relative';
-                partsContainer.style.width = '100%';
-                partsContainer.style.marginTop = '10px';
-            } else {
-                partsContainer.style.position = 'absolute';
-                partsContainer.style.left = '285px'; // Just to the right of main window (275px wide + 10px gap)
-                partsContainer.style.top = '0px';
-                partsContainer.style.width = '330px';
-            }
-
             // Repopulate parts chart with new song's parts
             this.populatePartsContainer(partsChart);
-
-            // Move the parts chart content into our container
-            partsContainer.appendChild(partsChart);
-
-            // Insert the parts container as a sibling of main-window
-            mainWindow.parentNode.appendChild(partsContainer);
-            console.debug('DEBUG: Moved parts chart to be sibling of main-window');
+            console.debug('DEBUG: Populated parts chart in place');
         }
 
-        // Insert ensemble right after #main-window (or after parts if it exists)
-        const insertionPoint = partsChart ? partsChart.parentNode : mainWindow.nextSibling;
-        if (insertionPoint && insertionPoint !== mainWindow.parentNode) {
-            mainWindow.parentNode.insertBefore(ensembleDiv, insertionPoint);
-            console.debug('DEBUG: Inserted ensemble before:', insertionPoint);
-        } else {
-            mainWindow.parentNode.appendChild(ensembleDiv);
-            console.debug('DEBUG: Appended ensemble as last child');
-        }
+        // Insert ensemble right after #main-window
+        mainWindow.parentNode.appendChild(ensembleDiv);
+        console.debug('DEBUG: Appended ensemble after main-window');
 
         // Debug where the ensemble actually ended up
         setTimeout(() => {
