@@ -543,12 +543,17 @@ class WebampChartifacts {
             this.cleanup();
         });
 
+        // Track previous status to detect transitions
+        let previousStatus = null;
+        let wasPlaying = false;
+
         // Access Webamp's Redux store to monitor playback state
         const unsubscribe = this.webamp.store.subscribe(() => {
             const state = this.webamp.store.getState();
-            const { timeElapsed, status } = state.media;
+            const { timeElapsed, status, length } = state.media;
 
             if (status === 'PLAYING') {
+                wasPlaying = true;
                 if (!this.timeUpdateInterval) {
                     this.startTimeTracking();
                 }
@@ -556,7 +561,22 @@ class WebampChartifacts {
                 this.stopTimeTracking();
                 // Reset ensemble display when not playing
                 this.resetEnsembleDisplay();
+
+                // Detect track end: was playing, now stopped, and near the end
+                if (wasPlaying && status === 'STOPPED' && previousStatus === 'PLAYING') {
+                    const nearEnd = length && timeElapsed >= length - 1;
+                    if (nearEnd) {
+                        console.log('🐰 Track ended - checking rabbithole queue');
+                        // Dispatch to window for rabbithole handling
+                        if (typeof window.playNextInRabbithole === 'function') {
+                            setTimeout(() => window.playNextInRabbithole(), 500);
+                        }
+                    }
+                    wasPlaying = false;
+                }
             }
+
+            previousStatus = status;
         });
 
         this.unsubscribeWebamp = unsubscribe;
@@ -801,11 +821,26 @@ class WebampChartifacts {
 
         musicianDiv.dataset.sortOrder = dynamicWeight;
 
+        // Check if this musician has the rabbit before we replace innerHTML
+        const hadRabbit = musicianDiv.querySelector('.rabbithole-icon') !== null;
+
         // Update content (starPrefix already calculated above for change detection)
         musicianDiv.innerHTML = `
             <div class="musician-name">${starPrefix}${musicianName} (${instrument})</div>
             <div class="chartifact-line">Chartifact "0x1234ff" owned by cryptograss.eth</div>
         `;
+
+        // Re-add rabbit if this musician had it
+        if (hadRabbit) {
+            const nameEl = musicianDiv.querySelector('.musician-name');
+            if (nameEl) {
+                const rabbitIcon = document.createElement('span');
+                rabbitIcon.className = 'rabbithole-icon';
+                rabbitIcon.textContent = ' 🐰';
+                rabbitIcon.title = `Following ${musicianName}'s rabbithole`;
+                nameEl.appendChild(rabbitIcon);
+            }
+        }
 
         // Re-attach click handlers after innerHTML update (if in embed mode)
         if (typeof makeMusiciansClickable === 'function') {
