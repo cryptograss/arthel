@@ -1067,7 +1067,8 @@ class WebampChartifacts {
 
         // Check for flourishes - only trigger on arrangement change
         const currentFlourish = arrangement ? arrangement.flourish : null;
-        const flourishDuration = arrangement ? (arrangement.flourishDuration || 0.6) : 0.6;  // Default 0.6s
+        const flourishDuration = arrangement ? (arrangement.flourishDuration || 1.5) : 1.5;  // Total effect duration
+        const flourishPulseSpeed = arrangement ? (arrangement.flourishPulseSpeed || 1.2) : 1.2;  // Single pulse cycle (slightly faster than spotlight's 1.5s)
         const flourishIntensity = arrangement ? (arrangement.flourishIntensity || 0.7) : 0.7;
 
         // Check for spotlight effect
@@ -1092,7 +1093,7 @@ class WebampChartifacts {
 
             // Check if this musician is doing a flourish - only trigger when arrangement changes
             if (currentFlourish === musicianName && arrangementChanged) {
-                this.triggerFlourish(musicianDiv, musicianName, flourishDuration, flourishIntensity);
+                this.triggerFlourish(musicianDiv, musicianName, flourishDuration, flourishPulseSpeed, flourishIntensity);
             }
 
             // Check if this musician gets spotlight - only trigger when arrangement changes
@@ -1156,7 +1157,7 @@ class WebampChartifacts {
         };
     }
 
-    triggerFlourish(musicianDiv, musicianName, duration = 0.6, intensity = 0.5) {
+    triggerFlourish(musicianDiv, musicianName, duration = 2.0, pulseSpeed = 1.2, intensity = 0.7) {
         // Track which flourishes we've already triggered to prevent re-triggering
         if (!this.triggeredFlourishes) {
             this.triggeredFlourishes = new Set();
@@ -1179,11 +1180,13 @@ class WebampChartifacts {
             this.triggeredFlourishes.delete(flourishId);
         }, (duration + 1) * 1000);
 
+        console.log(`🌸 FLOURISH on ${musicianName}: duration=${duration}s, pulseSpeed=${pulseSpeed}s, intensity=${intensity}`);
+
         // Add flourish class
         musicianDiv.classList.add('flourish-active');
 
         // Get coral glow values scaled by intensity (flourish uses smaller glow)
-        const glow = this.createCoralGlowKeyframes(intensity * 0.4);
+        const glow = this.createCoralGlowKeyframes(intensity * 0.6);
 
         // Create pulsing animation with CSS keyframes
         const animName = `flourish-pulse-${Date.now()}`;
@@ -1203,15 +1206,24 @@ class WebampChartifacts {
         `;
         document.head.appendChild(styleSheet);
 
-        // Apply animation
-        musicianDiv.style.animation = `${animName} ${duration}s ease-in-out`;
+        // Apply animation - pulseSpeed is cycle time, infinite repeat for duration
+        musicianDiv.style.animation = `${animName} ${pulseSpeed}s ease-in-out infinite`;
 
         // Store style element for cleanup
         musicianDiv._flourishStyleSheet = styleSheet;
 
-        // Reset after duration
+        // Fade out smoothly before stopping
+        const fadeOutTime = 0.5; // seconds
         setTimeout(() => {
+            // Stop the infinite animation and transition to no glow
             musicianDiv.style.animation = '';
+            musicianDiv.style.transition = `box-shadow ${fadeOutTime}s ease-out`;
+            musicianDiv.style.boxShadow = 'none';
+        }, (duration - fadeOutTime) * 1000);
+
+        // Final cleanup after fade completes
+        setTimeout(() => {
+            musicianDiv.style.transition = '';
             musicianDiv.style.boxShadow = '';
             musicianDiv.classList.remove('flourish-active');
 
@@ -1305,12 +1317,28 @@ class WebampChartifacts {
             musicianDiv._playerContent = playerContent;
         }
 
-        // Position the card and apply glow directly
-        musicianDiv.style.position = 'relative';
+        // Style the card and apply glow - use transform for zoom effect
         musicianDiv.style.zIndex = '10001';
         musicianDiv.style.borderColor = '#ffd700';
         musicianDiv.style.borderWidth = '3px';
         musicianDiv.style.background = 'linear-gradient(135deg, #fffde7, #fff8e1)';
+        musicianDiv.style.transformOrigin = 'center center';
+
+        // Slow zoom from solo size (1.05) to spotlight size (1.15)
+        const zoomDuration = blackoutDuration * 0.8;
+        console.log(`🔍 Spotlight zoom: ${zoomDuration}s transition`);
+
+        // Force the browser to acknowledge current state
+        const currentTransform = getComputedStyle(musicianDiv).transform;
+        musicianDiv.style.transform = currentTransform === 'none' ? 'scale(1)' : currentTransform;
+
+        // Force reflow to ensure browser registers current state
+        musicianDiv.offsetHeight;
+
+        // Now apply transition and target scale
+        // Use setProperty with important to override CSS transitions
+        musicianDiv.style.setProperty('transition', `transform ${zoomDuration}s ease-out`, 'important');
+        musicianDiv.style.transform = 'scale(1.15)';
 
         // Create a glowing backdrop element behind the musician card
         const glowBackdrop = document.createElement('div');
@@ -1332,12 +1360,11 @@ class WebampChartifacts {
             pointer-events: none;
         `;
 
-        // Make musician div position relative for the backdrop
-        musicianDiv.style.position = 'relative';
+        // Insert backdrop - musician div should already have position relative from CSS
         musicianDiv.insertBefore(glowBackdrop, musicianDiv.firstChild);
 
         // Apply intense box-shadow animation using reusable coral glow
-        const glow = this.createCoralGlowKeyframes(2.0); // Full intensity for spotlight
+        const glow = this.createCoralGlowKeyframes(1.6); // Slightly reduced intensity for spotlight
         const animName = `spotlight-pulse-${Date.now()}`;
         const styleSheet = document.createElement('style');
         styleSheet.textContent = `
@@ -1404,12 +1431,22 @@ class WebampChartifacts {
         // Phase 2: End glow after blackoutDuration + glowDuration
         const glowFadeTime = 2.0; // slower fade for the glow
         setTimeout(() => {
-            // Fade out the glow smoothly
-            musicianDiv.style.transition = `box-shadow ${glowFadeTime}s ease-out, border-color ${glowFadeTime}s ease-out`;
-            musicianDiv.style.boxShadow = 'none';
-            musicianDiv.style.borderColor = '';
-            musicianDiv.classList.remove('spotlight-active');
-            musicianDiv.style.animation = '';
+            // Fade out the glow and scale back to solo size (1.05) smoothly
+            // Clear previous transition first, then set new one
+            musicianDiv.style.removeProperty('transition');
+            musicianDiv.offsetHeight; // Force reflow
+            musicianDiv.style.setProperty('transition', `box-shadow ${glowFadeTime}s ease-out, border-color ${glowFadeTime}s ease-out, transform ${glowFadeTime}s ease-out, background ${glowFadeTime}s ease-out, border-width ${glowFadeTime}s ease-out`, 'important');
+
+            // Small delay to let transition register
+            setTimeout(() => {
+                musicianDiv.style.boxShadow = 'none';
+                musicianDiv.style.borderColor = '';
+                musicianDiv.style.borderWidth = '';
+                musicianDiv.style.background = '';
+                musicianDiv.style.transform = 'scale(1.05)';  // Solo size, not normal
+                musicianDiv.classList.remove('spotlight-active');
+                musicianDiv.style.animation = '';
+            }, 50);
 
             // Clean up after glow fade completes
             setTimeout(() => {
@@ -1430,9 +1467,12 @@ class WebampChartifacts {
                     delete musicianDiv._playerContent;
                 }
 
-                // Clear transitions
+                // Clear all spotlight styles
                 musicianDiv.style.transition = '';
                 musicianDiv.style.boxShadow = '';
+                musicianDiv.style.zIndex = '';
+                musicianDiv.style.transform = '';
+                musicianDiv.style.transformOrigin = '';
                 Object.entries(this.trackData.ensemble).forEach(([name]) => {
                     const div = document.getElementById(`musician-${name.replace(/\s+/g, '-').toLowerCase()}`);
                     if (div) div.style.transition = '';

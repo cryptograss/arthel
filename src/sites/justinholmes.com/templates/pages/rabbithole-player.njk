@@ -326,18 +326,18 @@
         /* Connections panel */
         .connections-panel {
             position: absolute;
-            top: 158px;
+            top: 0;
             left: 100%;
-            margin-left: 15px;
-            transform: translateX(-100%);
+            margin-left: 10px;
+            transform: translateX(-20px);
             width: 320px;
-            max-height: 500px;
+            max-height: 400px;
             background: #ffffff;
             border: 2px solid #4a7c59;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             transition: transform 0.3s ease, opacity 0.3s ease;
-            z-index: 100;
+            z-index: 1000;
             overflow-y: auto;
             opacity: 0;
             pointer-events: none;
@@ -628,7 +628,7 @@
             </div>
         </div>
 
-        <div class="status-indicators" style="display: none;">
+        <div class="status-indicators">
             <div class="status-indicator">
                 <span class="label">source:</span>
                 <span id="source-indicator" class="value stream">stream</span>
