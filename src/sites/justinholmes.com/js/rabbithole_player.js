@@ -808,6 +808,9 @@ class WebampChartifacts {
         // Add any state classes
         classes.forEach(cls => musicianDiv.classList.add(cls));
 
+        // Check if this musician has the rabbit BEFORE any content changes
+        const hadRabbit = musicianDiv.querySelector('.rabbithole-icon') !== null;
+
         // Update name if it changed
         if (nameDiv && expectedName !== currentName) {
             nameDiv.textContent = expectedName;
@@ -820,9 +823,6 @@ class WebampChartifacts {
 
 
         musicianDiv.dataset.sortOrder = dynamicWeight;
-
-        // Check if this musician has the rabbit before we replace innerHTML
-        const hadRabbit = musicianDiv.querySelector('.rabbithole-icon') !== null;
 
         // Update content (starPrefix already calculated above for change detection)
         musicianDiv.innerHTML = `
@@ -837,7 +837,7 @@ class WebampChartifacts {
                 const rabbitIcon = document.createElement('span');
                 rabbitIcon.className = 'rabbithole-icon';
                 rabbitIcon.textContent = ' 🐰';
-                rabbitIcon.title = `Following ${musicianName}'s rabbithole`;
+                rabbitIcon.title = `Following ${musicianName}'s rabbithole - click for options, Shift+click others to switch`;
                 nameEl.appendChild(rabbitIcon);
             }
         }
@@ -1767,9 +1767,25 @@ class WebampChartifacts {
             const musicianDiv = document.getElementById(`musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`);
             if (!musicianDiv) return;
 
+            // Check if this musician has the rabbit before reset
+            const hadRabbit = musicianDiv.querySelector('.rabbithole-icon') !== null;
+
             // Use helper function to reset to default state
             const primaryInstrument = Array.isArray(musicianInstruments) ? musicianInstruments[0] : musicianInstruments;
             this.updateMusicianCard(musicianDiv, musicianName, primaryInstrument);
+
+            // Re-add rabbit if this musician had it (updateMusicianCard should handle this,
+            // but double-check in case the card was fully rebuilt)
+            if (hadRabbit && !musicianDiv.querySelector('.rabbithole-icon')) {
+                const nameEl = musicianDiv.querySelector('.musician-name');
+                if (nameEl) {
+                    const rabbitIcon = document.createElement('span');
+                    rabbitIcon.className = 'rabbithole-icon';
+                    rabbitIcon.textContent = ' 🐰';
+                    rabbitIcon.title = `Following ${musicianName}'s rabbithole - click for options, Shift+click others to switch`;
+                    nameEl.appendChild(rabbitIcon);
+                }
+            }
         });
     }
 

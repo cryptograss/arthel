@@ -864,8 +864,54 @@
         window.makeMusiciansClickable = function() {
             const musicianNames = document.querySelectorAll('.musician-name');
             musicianNames.forEach(nameEl => {
+                // Skip if we've already attached handlers to this element
+                if (nameEl.dataset.clickableAttached) return;
+                nameEl.dataset.clickableAttached = 'true';
+
                 nameEl.classList.add('clickable');
-                nameEl.addEventListener('click', () => window.showMusicianConnections(nameEl.textContent.trim(), true));
+
+                // Extract clean musician name (without instrument)
+                const getMusicianName = () => {
+                    let text = nameEl.textContent.trim();
+                    // Remove rabbit emoji if present
+                    text = text.replace(/\s*🐰\s*$/, '');
+                    // Remove instrument in parentheses
+                    return text.replace(/\s*\([^)]*\)$/, '').trim();
+                };
+
+                nameEl.addEventListener('click', (e) => {
+                    const musicianName = getMusicianName();
+
+                    // Shift+click moves rabbit to this musician
+                    if (e.shiftKey) {
+                        e.stopPropagation();
+                        window.setRabbitholeMusician(musicianName);
+                        console.log(`🐰 Moved rabbit to ${musicianName} (shift+click)`);
+                        return;
+                    }
+
+                    // Regular click shows connections panel
+                    window.showMusicianConnections(musicianName, true);
+                });
+            });
+
+            // Separately handle rabbit icons (they get re-created when cards update)
+            const rabbitIcons = document.querySelectorAll('.rabbithole-icon');
+            rabbitIcons.forEach(rabbitIcon => {
+                if (rabbitIcon.dataset.clickableAttached) return;
+                rabbitIcon.dataset.clickableAttached = 'true';
+
+                rabbitIcon.style.cursor = 'pointer';
+                rabbitIcon.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Don't trigger parent click
+                    const nameEl = rabbitIcon.closest('.musician-name');
+                    if (nameEl) {
+                        let text = nameEl.textContent.trim();
+                        text = text.replace(/\s*🐰\s*$/, '');
+                        const musicianName = text.replace(/\s*\([^)]*\)$/, '').trim();
+                        window.showMusicianConnections(musicianName, true);
+                    }
+                });
             });
         };
 
@@ -993,6 +1039,50 @@
         // Track which musicians are in "rabbithole mode" (legacy, will migrate)
         window.rabbitholeMusicians = new Set();
 
+        // localStorage persistence
+        window.saveRabbitholeState = function() {
+            try {
+                const toSave = {
+                    followingMusician: window.rabbitholeState.followingMusician,
+                    playedSongs: Array.from(window.rabbitholeState.playedSongs),
+                    currentSongSlug: window.rabbitholeState.currentSongSlug,
+                    followMode: window.rabbitholeState.followMode
+                };
+                localStorage.setItem('rabbitholeState', JSON.stringify(toSave));
+                console.log('🐰 State saved to localStorage');
+            } catch (e) {
+                console.warn('🐰 Could not save state:', e);
+            }
+        };
+
+        window.loadRabbitholeState = function() {
+            try {
+                const saved = localStorage.getItem('rabbitholeState');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    window.rabbitholeState.playedSongs = new Set(parsed.playedSongs || []);
+                    window.rabbitholeState.followMode = parsed.followMode || 'same';
+                    // Don't restore followingMusician or currentSongSlug yet - do that when ensemble loads
+                    console.log('🐰 State loaded from localStorage:', parsed.playedSongs?.length || 0, 'played songs');
+                    return parsed;
+                }
+            } catch (e) {
+                console.warn('🐰 Could not load state:', e);
+            }
+            return null;
+        };
+
+        window.clearRabbitholeState = function() {
+            localStorage.removeItem('rabbitholeState');
+            window.rabbitholeState.playedSongs.clear();
+            window.rabbitholeState.followingMusician = null;
+            window.rabbitholeState.currentSongSlug = null;
+            console.log('🐰 State cleared');
+        };
+
+        // Load saved state on startup
+        const savedState = window.loadRabbitholeState();
+
         // Select a random musician from current ensemble and place rabbit on them
         window.selectRandomMusician = function() {
             const musicianNames = document.querySelectorAll('.musician-name');
@@ -1035,7 +1125,7 @@
                     const rabbitIcon = document.createElement('span');
                     rabbitIcon.className = 'rabbithole-icon';
                     rabbitIcon.textContent = ' 🐰';
-                    rabbitIcon.title = `Following ${musicianName}'s rabbithole - click to change`;
+                    rabbitIcon.title = `Following ${musicianName}'s rabbithole - click for options, Shift+click others to switch`;
                     nameEl.appendChild(rabbitIcon);
                 }
             }
@@ -1043,7 +1133,8 @@
             window.rabbitholeState.followingMusician = musicianName;
             console.log(`🐰 Rabbit now following: ${musicianName}`);
 
-            // Queue next song
+            // Save state and queue next song
+            window.saveRabbitholeState();
             window.queueNextSongByMusician(musicianName);
         };
 
@@ -1065,8 +1156,10 @@
             });
 
             if (playableSongs.length === 0) {
-                console.log(`🐰 No more unplayed songs for ${musicianName} - will find a bandmate`);
-                // TODO: Follow a bandmate when we run out
+                console.log(`🐰 No unplayed songs available for ${musicianName} in catalog`);
+                // Don't auto-switch here - rabbit stays on this musician
+                // We'll switch to a bandmate when playNextInRabbithole is called
+                window.updateNextUpDisplay('No songs queued', `${musicianName} has no rabbithole songs yet`);
                 return;
             }
 
@@ -1102,7 +1195,34 @@
         // Play the next song in the rabbithole queue
         window.playNextInRabbithole = async function() {
             if (window.rabbitholeQueue.length === 0) {
-                console.log('🐰 Rabbithole queue empty');
+                console.log('🐰 Rabbithole queue empty - finding a bandmate');
+
+                // Get all musicians from current ensemble (excluding the one we're following)
+                const musicianNames = document.querySelectorAll('.musician-name');
+                const currentMusician = window.rabbitholeState.followingMusician;
+                const bandmates = Array.from(musicianNames)
+                    .map(el => {
+                        let text = el.textContent.trim();
+                        text = text.replace(/\s*🐰\s*$/, '');  // Remove rabbit emoji
+                        return text.replace(/\s*\([^)]*\)$/, '').trim();  // Remove instrument
+                    })
+                    .filter(name => name && name !== currentMusician && !name.includes('console'));
+
+                if (bandmates.length === 0) {
+                    console.log('🐰 No bandmates to follow - end of rabbithole');
+                    window.updateNextUpDisplay('End of rabbithole', 'no more songs');
+                    return;
+                }
+
+                // Pick a random bandmate and try their queue
+                const randomBandmate = bandmates[Math.floor(Math.random() * bandmates.length)];
+                console.log(`🐰 Switching to bandmate: ${randomBandmate}`);
+                window.setRabbitholeMusician(randomBandmate);
+
+                // Try to play from new musician's queue
+                if (window.rabbitholeQueue.length > 0) {
+                    return window.playNextInRabbithole();
+                }
                 return;
             }
 
@@ -1111,6 +1231,9 @@
 
             await window.playSongNow(nextSlug);
             window.rabbitholeState.currentSongSlug = nextSlug;
+
+            // Save state after playing new song
+            window.saveRabbitholeState();
 
             // Re-select musician in new song's ensemble
             // Wait for ensemble to be created
