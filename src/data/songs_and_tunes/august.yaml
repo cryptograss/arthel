@@ -1,4 +1,5 @@
 by_artist_id: 0
+music_by: Justin Holmes
 instrumental: true
 studio_versions:
   0:
@@ -84,14 +85,37 @@ studio_versions:
             section7:
               solo: "Justin Holmes"
               part: "A"
+              110:
+                instrumentChanges:
+                  "Justin Holmes": "guitar, tin whistle"
             section8:
               solo: "Justin Holmes"
               part: "B"
               123:
                 flourish: "Gaven Largent"
+                flourishDuration: 2.8
+                flourishPulseSpeed: 2.3
+                flourishIntensity: 1.4
+              126:
+                flourish: "Gaven Largent"
+                flourishPulseSpeed: 2.3
+                flourishDuration: 5
+                flourishColor: purple
             section9:
               solo: "Maddie Denton"
               part: "A"
             section10:
               solo: "Maddie Denton"
               part: "B"
+              instrumentChanges:
+                  "Justin Holmes": "tin whistle"
+              161.3:
+                flourish: "Gaven Largent"
+              165:
+                flourish: Justin Holmes
+                flourishColor: gold
+                flourishDuration: 6
+                flourishPulseSpeed: 5
+                solo: Maddie Denton
+              170:
+                solo: false

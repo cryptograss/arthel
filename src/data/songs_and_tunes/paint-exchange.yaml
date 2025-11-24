@@ -1,4 +1,5 @@
 by_artist_id: 0
+music_by: Justin Holmes
 on_release: "4masks"
 is_instrumental: true
 studio_versions:
@@ -46,7 +47,7 @@ studio_versions:
               background: "#000000"
               textColor: "white"
 
-        standardSectionLength: 11.8
+        standardSectionLength: 11.75  
         timeline:
           0:
             part: A
@@ -61,14 +62,36 @@ studio_versions:
             12.8:
               musicians:
                 "band": "in"  # shortcut for everyone in
-            22:
-              pickup: "John Mailander"
+            15.5:
+              flourish: Sam Grisman
+              flourishColor: brown
+              flourishDuration: 2
+              flourishIntensity: .6
+              flourishPulseSpeed: 1.5
+            23.5:
+              flourish: "John Mailander"
+              flourishDuration: 5
+              flourishIntensity: .4
+              flourishPulseSpeed: 4.5
+            28:
+              flourish: "John Mailander"
+              flourishColor: gold
+              flourishDuration: 2
+              flourishIntensity: .8
+              flourishPulseSpeed: 2
+
           section3:
-            solo: "John Mailander"
             part: "A"
+            36:
+              flourish: "Justin Holmes"
+              flourishColor: "blue"
+              flourishDuration: 1.5
+              flourishIntensity: .5
+              flourishPulseSpeed: 1
           section4: {}
           section5:
             part: "B"
+            bandFlash: true
           section6:
             part: A
             64:
@@ -77,10 +100,10 @@ studio_versions:
               pickup: "Kaitlyn Raitz"
           section7:
             solo: "Kaitlyn Raitz"
-            72:
+            71:
               spotlight: "Kaitlyn Raitz"
-              spotlightBlackout: 4   # 4 seconds of full blackout
-              spotlightGlow: 3       # then 3 more seconds of just the glow
+              spotlightBlackout: 5   # 4 seconds of full blackout
+              spotlightGlow: 3.5       # then 3 more seconds of just the glow
           section8:
             solo: "Harry Clark"
             part: A
@@ -99,7 +122,7 @@ studio_versions:
             part: A
           section14:
             solo: Cory Walker
-            164:
+            163.5:
               pickup: "John Mailander"
           section15:
             solo: "John Mailander"
@@ -107,8 +130,20 @@ studio_versions:
           section16:
             solo: John Mailander
             183:
+              flourish: "Justin Holmes"
+              flourishColor: "blue"
+              flourishDuration: 7
+              flourishIntensity: .6
+              flourishPulseSpeed: 2.5
               instrumentChanges:
                 "Justin Holmes": "throatsinging"
-              solo: "Justin Holmes"
           section17:
+            solo: John Mailander
             part: "A"
+            instrumentChanges:
+                "Justin Holmes": "throatsinging"
+            190:
+              instrumentChanges:
+                  "Justin Holmes": "mandolin"
+              solo: false
+

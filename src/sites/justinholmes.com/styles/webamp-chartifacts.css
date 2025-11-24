@@ -288,7 +288,7 @@
 }
 
 /* New ensemble display inside #webamp container */
-.ensemble-display-in-webamp {
+/* .ensemble-display-in-webamp {
     height: 200px;
     position: absolute;
     top: 115px;
@@ -304,7 +304,7 @@
     z-index: 1001;
     overflow-y: auto;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+} */
 
 /* Let Webamp handle its own positioning - don't force relative */
 #webamp {
@@ -329,9 +329,25 @@
         min-width: unset;
     }
 
-    /* Adjust ensemble positioning for mobile */
+    /* Webamp container needs explicit width on mobile for children with width: 100% */
+    #webamp {
+        width: 100%;
+        position: relative;
+    }
+
+    /* Main window needs to be in flow on mobile, not absolute */
+    /* Must match webamp's specificity: #webamp #main-window */
+    #webamp #main-window {
+        position: relative;
+        top: auto;
+        left: auto;
+    }
+
+    /* Adjust ensemble positioning for mobile - push below absolutely-positioned webamp */
     .ensemble-display-in-webamp {
-        height: 150px;
+        position: relative;
+        top: 120px;
+        width: 100%;
         font-size: 12px;
     }
 

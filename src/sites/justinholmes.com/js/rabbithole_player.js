@@ -414,11 +414,11 @@ class WebampChartifacts {
             ensembleDiv.style.marginTop = '10px';
         } else {
             ensembleDiv.style.position = 'absolute';
-            ensembleDiv.style.left = '0px';
-            ensembleDiv.style.top = '130px'; // Below main window (120px height + 10px gap)
-            ensembleDiv.style.width = '250px';
+            // ensembleDiv.style.left = '0px';
+            ensembleDiv.style.top = '120px'; // Below main window (120px height + 10px gap)
+            ensembleDiv.style.width = '269px';
         }
-        ensembleDiv.style.maxHeight = 'none'; // No height limit - show all content
+        // ensembleDiv.style.maxHeight = 'none'; // No height limit - show all content
         ensembleDiv.style.overflow = 'visible'; // No scrollbars
 
         // Add musician cards directly to ensembleDiv (no wrapper needed)
@@ -1105,11 +1105,20 @@ class WebampChartifacts {
         const flourishDuration = arrangement ? (arrangement.flourishDuration || 1.5) : 1.5;  // Total effect duration
         const flourishPulseSpeed = arrangement ? (arrangement.flourishPulseSpeed || 1.2) : 1.2;  // Single pulse cycle (slightly faster than spotlight's 1.5s)
         const flourishIntensity = arrangement ? (arrangement.flourishIntensity || 0.7) : 0.7;
+        const flourishColor = arrangement ? (arrangement.flourishColor || 'coral') : 'coral';
 
         // Check for spotlight effect
         const currentSpotlight = arrangement ? arrangement.spotlight : null;
         const spotlightBlackout = arrangement ? (arrangement.spotlightBlackout || 3) : 3;  // Default 3s blackout
         const spotlightGlow = arrangement ? (arrangement.spotlightGlow || 2) : 2;  // Default 2s glow-only
+        const spotlightColor = arrangement ? (arrangement.spotlightColor || 'coral') : 'coral';
+
+        // Check for band flash effect
+        const bandFlash = arrangement ? arrangement.bandFlash : false;
+        const bandFlashDuration = arrangement ? (arrangement.bandFlashDuration || 0.8) : 0.8;
+        const bandFlashPulseSpeed = arrangement ? (arrangement.bandFlashPulseSpeed || 0.6) : 0.6;
+        const bandFlashIntensity = arrangement ? (arrangement.bandFlashIntensity || 0.5) : 0.5;
+        const bandFlashColor = arrangement ? (arrangement.bandFlashColor || 'coral') : 'coral';
 
         // Track the last arrangement to detect changes
         if (!this.lastArrangement) {
@@ -1120,6 +1129,14 @@ class WebampChartifacts {
             this.lastArrangement = arrangement;
         }
 
+        // Trigger band flash if arrangement changed and bandFlash is set
+        if (arrangementChanged && arrangement) {
+            console.log('Arrangement changed:', arrangement, 'bandFlash:', bandFlash);
+        }
+        if (bandFlash && arrangementChanged) {
+            this.triggerBandFlash(bandFlashDuration, bandFlashPulseSpeed, bandFlashIntensity, bandFlashColor);
+        }
+
         Object.entries(this.trackData.ensemble).forEach(([musicianName, musicianData]) => {
             const musicianDiv = document.getElementById(`musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`);
             if (!musicianDiv) return;
@@ -1128,12 +1145,12 @@ class WebampChartifacts {
 
             // Check if this musician is doing a flourish - only trigger when arrangement changes
             if (currentFlourish === musicianName && arrangementChanged) {
-                this.triggerFlourish(musicianDiv, musicianName, flourishDuration, flourishPulseSpeed, flourishIntensity);
+                this.triggerFlourish(musicianDiv, musicianName, flourishDuration, flourishPulseSpeed, flourishIntensity, flourishColor);
             }
 
             // Check if this musician gets spotlight - only trigger when arrangement changes
             if (currentSpotlight === musicianName && arrangementChanged) {
-                this.triggerSpotlight(musicianDiv, musicianName, spotlightBlackout, spotlightGlow);
+                this.triggerSpotlight(musicianDiv, musicianName, spotlightBlackout, spotlightGlow, spotlightColor);
             }
 
             // Check if this musician has a role
@@ -1170,29 +1187,108 @@ class WebampChartifacts {
         }
     }
 
-    // Reusable coral glow effect - used by both flourish and spotlight
-    createCoralGlowKeyframes(intensity = 1.0) {
-        // Scale all values by intensity (0.0 to 1.0+)
+    // Color presets with primary and derived secondary colors for glow effects
+    getGlowColors(colorName = 'coral') {
+        const colorPresets = {
+            coral: {
+                primary: [255, 127, 80],      // #ff7f50
+                secondary: [255, 99, 71],     // tomato
+                tertiary: [255, 69, 100],     // pinkish
+                outer: [255, 20, 80]          // deep pink
+            },
+            red: {
+                primary: [255, 60, 60],       // bright red
+                secondary: [220, 20, 60],     // crimson
+                tertiary: [178, 34, 34],      // firebrick
+                outer: [139, 0, 0]            // dark red
+            },
+            blue: {
+                primary: [100, 149, 237],     // cornflower blue
+                secondary: [65, 105, 225],    // royal blue
+                tertiary: [30, 144, 255],     // dodger blue
+                outer: [0, 0, 205]            // medium blue
+            },
+            green: {
+                primary: [50, 205, 50],       // lime green
+                secondary: [34, 139, 34],     // forest green
+                tertiary: [0, 128, 0],        // green
+                outer: [0, 100, 0]            // dark green
+            },
+            gold: {
+                primary: [255, 215, 0],       // gold
+                secondary: [255, 193, 37],    // goldenrod
+                tertiary: [218, 165, 32],     // darker gold
+                outer: [184, 134, 11]         // dark goldenrod
+            },
+            purple: {
+                primary: [147, 112, 219],     // medium purple
+                secondary: [138, 43, 226],    // blue violet
+                tertiary: [128, 0, 128],      // purple
+                outer: [75, 0, 130]           // indigo
+            },
+            brown: {
+                primary: [205, 133, 63],      // peru
+                secondary: [160, 82, 45],     // sienna
+                tertiary: [139, 69, 19],      // saddle brown
+                outer: [101, 67, 33]          // dark brown
+            },
+            white: {
+                primary: [255, 255, 255],     // white
+                secondary: [245, 245, 245],   // white smoke
+                tertiary: [220, 220, 220],    // gainsboro
+                outer: [192, 192, 192]        // silver
+            },
+            cyan: {
+                primary: [0, 255, 255],       // cyan
+                secondary: [0, 206, 209],     // dark turquoise
+                tertiary: [32, 178, 170],     // light sea green
+                outer: [0, 139, 139]          // dark cyan
+            },
+            orange: {
+                primary: [255, 165, 0],       // orange
+                secondary: [255, 140, 0],     // dark orange
+                tertiary: [255, 69, 0],       // red-orange
+                outer: [204, 85, 0]           // burnt orange
+            }
+        };
+
+        return colorPresets[colorName.toLowerCase()] || colorPresets.coral;
+    }
+
+    // Generate glow keyframes from a color name
+    createGlowKeyframes(colorName = 'coral', intensity = 1.0) {
+        const colors = this.getGlowColors(colorName);
         const scale = intensity;
+
+        const [pr, pg, pb] = colors.primary;
+        const [sr, sg, sb] = colors.secondary;
+        const [tr, tg, tb] = colors.tertiary;
+        const [or, og, ob] = colors.outer;
+
         return {
             min: `
-                0 0 0 ${3 * scale}px #ff7f50,
-                0 0 ${15 * scale}px ${8 * scale}px rgba(255, 127, 80, ${0.8 * scale}),
-                0 0 ${30 * scale}px ${15 * scale}px rgba(255, 99, 71, ${0.6 * scale}),
-                0 0 ${50 * scale}px ${25 * scale}px rgba(255, 69, 100, ${0.4 * scale}),
-                0 0 ${75 * scale}px ${38 * scale}px rgba(255, 20, 80, ${0.2 * scale})
+                0 0 0 ${3 * scale}px rgb(${pr}, ${pg}, ${pb}),
+                0 0 ${15 * scale}px ${8 * scale}px rgba(${pr}, ${pg}, ${pb}, ${0.8 * scale}),
+                0 0 ${30 * scale}px ${15 * scale}px rgba(${sr}, ${sg}, ${sb}, ${0.6 * scale}),
+                0 0 ${50 * scale}px ${25 * scale}px rgba(${tr}, ${tg}, ${tb}, ${0.4 * scale}),
+                0 0 ${75 * scale}px ${38 * scale}px rgba(${or}, ${og}, ${ob}, ${0.2 * scale})
             `,
             max: `
-                0 0 0 ${5 * scale}px #ff7f50,
-                0 0 ${25 * scale}px ${12 * scale}px rgba(255, 127, 80, ${1.0 * scale}),
-                0 0 ${50 * scale}px ${25 * scale}px rgba(255, 99, 71, ${0.8 * scale}),
-                0 0 ${75 * scale}px ${38 * scale}px rgba(255, 69, 100, ${0.6 * scale}),
-                0 0 ${100 * scale}px ${50 * scale}px rgba(255, 20, 80, ${0.3 * scale})
+                0 0 0 ${5 * scale}px rgb(${pr}, ${pg}, ${pb}),
+                0 0 ${25 * scale}px ${12 * scale}px rgba(${pr}, ${pg}, ${pb}, ${1.0 * scale}),
+                0 0 ${50 * scale}px ${25 * scale}px rgba(${sr}, ${sg}, ${sb}, ${0.8 * scale}),
+                0 0 ${75 * scale}px ${38 * scale}px rgba(${tr}, ${tg}, ${tb}, ${0.6 * scale}),
+                0 0 ${100 * scale}px ${50 * scale}px rgba(${or}, ${og}, ${ob}, ${0.3 * scale})
             `
         };
     }
 
-    triggerFlourish(musicianDiv, musicianName, duration = 2.0, pulseSpeed = 1.2, intensity = 0.7) {
+    // Legacy method for backwards compatibility
+    createCoralGlowKeyframes(intensity = 1.0) {
+        return this.createGlowKeyframes('coral', intensity);
+    }
+
+    triggerFlourish(musicianDiv, musicianName, duration = 2.0, pulseSpeed = 1.2, intensity = 0.7, color = 'coral') {
         // Track which flourishes we've already triggered to prevent re-triggering
         if (!this.triggeredFlourishes) {
             this.triggeredFlourishes = new Set();
@@ -1215,13 +1311,13 @@ class WebampChartifacts {
             this.triggeredFlourishes.delete(flourishId);
         }, (duration + 1) * 1000);
 
-        console.log(`🌸 FLOURISH on ${musicianName}: duration=${duration}s, pulseSpeed=${pulseSpeed}s, intensity=${intensity}`);
+        console.log(`🌸 FLOURISH on ${musicianName}: duration=${duration}s, pulseSpeed=${pulseSpeed}s, intensity=${intensity}, color=${color}`);
 
         // Add flourish class
         musicianDiv.classList.add('flourish-active');
 
-        // Get coral glow values scaled by intensity (flourish uses smaller glow)
-        const glow = this.createCoralGlowKeyframes(intensity * 0.6);
+        // Get glow values scaled by intensity (flourish uses smaller glow)
+        const glow = this.createGlowKeyframes(color, intensity * 0.6);
 
         // Create pulsing animation with CSS keyframes
         const animName = `flourish-pulse-${Date.now()}`;
@@ -1270,7 +1366,95 @@ class WebampChartifacts {
         }, duration * 1000);
     }
 
-    triggerSpotlight(musicianDiv, musicianName, blackoutDuration = 3, glowDuration = 2) {
+    triggerBandFlash(duration = 1.5, pulseSpeed = 0.8, intensity = 0.9, color = 'coral') {
+        // Track band flashes to prevent re-triggering
+        if (!this.triggeredBandFlashes) {
+            this.triggeredBandFlashes = new Set();
+        }
+
+        const currentTime = this.getCurrentTime();
+        const flashId = `band-${Math.floor(currentTime)}`;
+
+        if (this.triggeredBandFlashes.has(flashId)) {
+            return;
+        }
+
+        this.triggeredBandFlashes.add(flashId);
+
+        setTimeout(() => {
+            this.triggeredBandFlashes.delete(flashId);
+        }, (duration + 1) * 1000);
+
+        console.log(`⚡ BAND FLASH: duration=${duration}s, pulseSpeed=${pulseSpeed}s, intensity=${intensity}, color=${color}`);
+
+        // Find the ensemble container - check non-embed (in-webamp) first, then embed
+        const ensembleContainer = document.getElementById('ensemble-display-in-webamp') ||
+                                  document.getElementById('ensemble-display');
+        if (!ensembleContainer) {
+            console.warn('Band flash: ensemble container not found (tried ensemble-display and ensemble-display-in-webamp)');
+            return;
+        }
+
+        console.log('Band flash: Found container', ensembleContainer.id, ensembleContainer);
+
+        // Ensure container and ancestors allow overflow for glow
+        ensembleContainer.style.overflow = 'visible';
+        if (ensembleContainer.parentElement) {
+            ensembleContainer.parentElement.style.overflow = 'visible';
+        }
+
+        // Add flash class
+        ensembleContainer.classList.add('band-flash-active');
+
+        // Get glow values scaled by intensity (band flash uses larger glow)
+        const glow = this.createGlowKeyframes(color, intensity);
+
+        // Create pulsing animation with CSS keyframes
+        const animName = `band-flash-pulse-${Date.now()}`;
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = `
+            @keyframes ${animName} {
+                0% {
+                    box-shadow: none;
+                }
+                50% {
+                    box-shadow: ${glow.max};
+                }
+                100% {
+                    box-shadow: none;
+                }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // Apply animation
+        ensembleContainer.style.animation = `${animName} ${pulseSpeed}s ease-in-out infinite`;
+
+        // Store style element for cleanup
+        ensembleContainer._bandFlashStyleSheet = styleSheet;
+
+        // Fade out smoothly before stopping
+        const fadeOutTime = 0.3;
+        setTimeout(() => {
+            ensembleContainer.style.animation = '';
+            ensembleContainer.style.transition = `box-shadow ${fadeOutTime}s ease-out`;
+            ensembleContainer.style.boxShadow = 'none';
+        }, (duration - fadeOutTime) * 1000);
+
+        // Final cleanup after fade completes
+        setTimeout(() => {
+            ensembleContainer.style.transition = '';
+            ensembleContainer.style.boxShadow = '';
+            ensembleContainer.classList.remove('band-flash-active');
+
+            if (ensembleContainer._bandFlashStyleSheet) {
+                ensembleContainer._bandFlashStyleSheet.remove();
+                delete ensembleContainer._bandFlashStyleSheet;
+            }
+        }, duration * 1000);
+    }
+
+    triggerSpotlight(musicianDiv, musicianName, blackoutDuration = 3, glowDuration = 2, color = 'coral') {
         // Track which spotlights we've already triggered
         if (!this.triggeredSpotlights) {
             this.triggeredSpotlights = new Set();
@@ -1295,43 +1479,45 @@ class WebampChartifacts {
             this.triggeredSpotlights.delete(spotlightId);
         }, (totalDuration + 2) * 1000);
 
-        console.log(`🔦 SPOTLIGHT on ${musicianName}: ${blackoutDuration}s blackout + ${glowDuration}s glow`);
+        // Store color for use later in the method
+        this._currentSpotlightColor = color;
 
-        // Create overlay to darken the page
-        const overlay = document.createElement('div');
-        overlay.id = 'spotlight-overlay';
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0);
-            z-index: 9998;
-            pointer-events: none;
-            transition: background ${blackoutDuration * 0.15}s ease-in;
-        `;
-        document.body.appendChild(overlay);
+        console.log(`🔦 SPOTLIGHT on ${musicianName}: ${blackoutDuration}s blackout + ${glowDuration}s glow, color=${color}`);
 
-        // Fade to black
-        requestAnimationFrame(() => {
-            overlay.style.background = 'rgba(0, 0, 0, 0.92)';
+        // Darken the body background instead of using overlay
+        const originalBodyBg = document.body.style.background;
+        document.body.style.transition = `background ${blackoutDuration * 0.15}s ease-in`;
+        document.body.style.background = '#111';
+
+        // Fade everything except the spotlighted musician using :not selector
+        // Get all direct children of body and major containers, fade them all
+        const elementsToFade = [];
+
+        // All musician cards except this one
+        document.querySelectorAll('.musician-card').forEach(card => {
+            if (card !== musicianDiv) {
+                elementsToFade.push(card);
+            }
         });
 
-        // Bring the player container and spotlight musician to front
-        const playerContainer = document.querySelector('.player-container');
-        if (playerContainer) {
-            playerContainer.style.position = 'relative';
-            playerContainer.style.zIndex = '9999';
-        }
+        // All major page sections
+        document.querySelectorAll('.player-container > *:not(#webamp), .left-panel > *:not(#webamp-player), .right-panel, header, nav, .next-up, #rabbithole-next-up, .file-selector, .song-selector, #song-selector').forEach(el => {
+            if (!el.contains(musicianDiv)) {
+                elementsToFade.push(el);
+            }
+        });
 
-        // Dim other page elements (parts chart, webamp controls, etc.)
+        // Parts chart and main window
         const partsChart = document.getElementById('parts-chart-in-webamp') || document.getElementById('parts-chart');
         const mainWindow = document.getElementById('main-window');
-        const elementsToFade = [partsChart, mainWindow].filter(Boolean);
+        if (partsChart) elementsToFade.push(partsChart);
+        if (mainWindow) elementsToFade.push(mainWindow);
+
+        // Store original body background for cleanup
+        musicianDiv._originalBodyBg = originalBodyBg;
 
         elementsToFade.forEach(el => {
-            el.style.opacity = '0.15';
+            el.style.opacity = '0.08';
             el.style.transition = `opacity ${blackoutDuration * 0.15}s ease`;
         });
 
@@ -1353,6 +1539,7 @@ class WebampChartifacts {
         }
 
         // Style the card and apply glow - use transform for zoom effect
+        musicianDiv.style.position = 'relative';
         musicianDiv.style.zIndex = '10001';
         musicianDiv.style.borderColor = '#ffd700';
         musicianDiv.style.borderWidth = '3px';
@@ -1398,8 +1585,8 @@ class WebampChartifacts {
         // Insert backdrop - musician div should already have position relative from CSS
         musicianDiv.insertBefore(glowBackdrop, musicianDiv.firstChild);
 
-        // Apply intense box-shadow animation using reusable coral glow
-        const glow = this.createCoralGlowKeyframes(1.6); // Slightly reduced intensity for spotlight
+        // Apply intense box-shadow animation using color-based glow
+        const glow = this.createGlowKeyframes(this._currentSpotlightColor || 'coral', 1.6);
         const animName = `spotlight-pulse-${Date.now()}`;
         const styleSheet = document.createElement('style');
         styleSheet.textContent = `
@@ -1414,7 +1601,6 @@ class WebampChartifacts {
 
             #${musicianDiv.id}.spotlight-active {
                 animation: ${animName} 1.5s ease-in-out infinite !important;
-                transition: box-shadow 0.5s ease-out !important;
             }
         `;
         document.head.appendChild(styleSheet);
@@ -1436,10 +1622,6 @@ class WebampChartifacts {
         // Phase 1: End blackout after blackoutDuration (keep glow)
         const fadeOutTime = 1.0; // seconds for transitions
         setTimeout(() => {
-            // Fade out overlay
-            overlay.style.transition = `background ${fadeOutTime}s ease-out`;
-            overlay.style.background = 'rgba(0, 0, 0, 0)';
-
             // Fade other musicians back in smoothly
             Object.entries(this.trackData.ensemble).forEach(([name]) => {
                 if (name !== musicianName) {
@@ -1457,10 +1639,9 @@ class WebampChartifacts {
                 el.style.opacity = '';
             });
 
-            // Remove overlay after fade
-            setTimeout(() => {
-                overlay.remove();
-            }, fadeOutTime * 1000 + 100);
+            // Restore body background
+            document.body.style.transition = `background ${fadeOutTime}s ease-out`;
+            document.body.style.background = musicianDiv._originalBodyBg || '';
         }, blackoutDuration * 1000);
 
         // Phase 2: End glow after blackoutDuration + glowDuration
@@ -1485,11 +1666,6 @@ class WebampChartifacts {
 
             // Clean up after glow fade completes
             setTimeout(() => {
-                // Reset player container z-index
-                if (playerContainer) {
-                    playerContainer.style.zIndex = '';
-                }
-
                 // Remove stylesheet and backdrop
                 styleSheet.remove();
                 if (musicianDiv._spotlightBackdrop) {
@@ -1502,11 +1678,12 @@ class WebampChartifacts {
                     delete musicianDiv._playerContent;
                 }
 
-                // Clear all spotlight styles
+                // Clear all spotlight styles (keep transform at solo size - don't snap back)
+                musicianDiv.style.position = '';
                 musicianDiv.style.transition = '';
                 musicianDiv.style.boxShadow = '';
                 musicianDiv.style.zIndex = '';
-                musicianDiv.style.transform = '';
+                // Don't clear transform - keep it at scale(1.05) for solo state
                 musicianDiv.style.transformOrigin = '';
                 Object.entries(this.trackData.ensemble).forEach(([name]) => {
                     const div = document.getElementById(`musician-${name.replace(/\s+/g, '-').toLowerCase()}`);
