@@ -55,6 +55,22 @@
     font-size: 12px;
 }
 
+/* Rabbit icon for followed musician */
+.musician-card .rabbithole-icon {
+    position: absolute;
+    right: 2px;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    opacity: 0.8;
+}
+
+.musician-card.has-rabbit {
+    padding-right: 24px;
+}
+
 /* Legacy solo styling */
 .musician-card.solo {
     border: 2px solid #000000;

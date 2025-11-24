@@ -832,14 +832,12 @@ class WebampChartifacts {
 
         // Re-add rabbit if this musician had it
         if (hadRabbit) {
-            const nameEl = musicianDiv.querySelector('.musician-name');
-            if (nameEl) {
-                const rabbitIcon = document.createElement('span');
-                rabbitIcon.className = 'rabbithole-icon';
-                rabbitIcon.textContent = ' 🐰';
-                rabbitIcon.title = `Following ${musicianName}'s rabbithole - click for options, Shift+click others to switch`;
-                nameEl.appendChild(rabbitIcon);
-            }
+            const rabbitIcon = document.createElement('span');
+            rabbitIcon.className = 'rabbithole-icon';
+            rabbitIcon.textContent = '🐰';
+            rabbitIcon.title = `Following ${musicianName}'s rabbithole - click for options, Shift+click others to switch`;
+            musicianDiv.appendChild(rabbitIcon);
+            musicianDiv.classList.add('has-rabbit');
         }
 
         // Re-attach click handlers after innerHTML update (if in embed mode)
@@ -1954,14 +1952,12 @@ class WebampChartifacts {
             // Re-add rabbit if this musician had it (updateMusicianCard should handle this,
             // but double-check in case the card was fully rebuilt)
             if (hadRabbit && !musicianDiv.querySelector('.rabbithole-icon')) {
-                const nameEl = musicianDiv.querySelector('.musician-name');
-                if (nameEl) {
-                    const rabbitIcon = document.createElement('span');
-                    rabbitIcon.className = 'rabbithole-icon';
-                    rabbitIcon.textContent = ' 🐰';
-                    rabbitIcon.title = `Following ${musicianName}'s rabbithole - click for options, Shift+click others to switch`;
-                    nameEl.appendChild(rabbitIcon);
-                }
+                const rabbitIcon = document.createElement('span');
+                rabbitIcon.className = 'rabbithole-icon';
+                rabbitIcon.textContent = '🐰';
+                rabbitIcon.title = `Following ${musicianName}'s rabbithole - click for options, Shift+click others to switch`;
+                musicianDiv.appendChild(rabbitIcon);
+                musicianDiv.classList.add('has-rabbit');
             }
         });
     }

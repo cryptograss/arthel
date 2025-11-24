@@ -608,7 +608,7 @@
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="/assets/images/rabbit.png" alt="Rabbit" class="rabbit-icon">
                 <div>
-                    <h1 class="player-title">rabbithole</h1>
+                    <h1 class="player-title">rabbithole <span style="font-size: 12px; opacity: 0.6;">v.3a</span></h1>
                     <div class="player-subtitle">discover music by connections, not algorithms</div>
                 </div>
             </div>
@@ -907,13 +907,7 @@
                 rabbitIcon.style.cursor = 'pointer';
                 rabbitIcon.addEventListener('click', (e) => {
                     e.stopPropagation(); // Don't trigger parent click
-                    const nameEl = rabbitIcon.closest('.musician-name');
-                    if (nameEl) {
-                        let text = nameEl.textContent.trim();
-                        text = text.replace(/\s*🐰\s*$/, '');
-                        const musicianName = text.replace(/\s*\([^)]*\)$/, '').trim();
-                        window.showMusicianConnections(musicianName, true);
-                    }
+                    window.showPlaylistPopup();
                 });
             });
         };
@@ -1038,6 +1032,12 @@
             currentSongSlug: null,    // Current song being played
             followMode: 'same'        // 'same' (stay on musician), 'random' (hop to bandmate), 'manual'
         };
+
+        // Play history: array of {songSlug, songTitle, viaMusician}
+        window.rabbitholeHistory = [];
+
+        // Next song info: {songSlug, songTitle, viaMusician}
+        window.rabbitholeNextSong = null;
 
         // Track which musicians are in "rabbithole mode" (legacy, will migrate)
         window.rabbitholeMusicians = new Set();
@@ -1181,6 +1181,10 @@
 
         // Update the "next up" display at bottom of page
         window.updateNextUpDisplay = function(songTitle, viaMusician) {
+            // Store next song info for playlist popup
+            const songSlug = songTitle.toLowerCase().replace(/\s+/g, '-');
+            window.rabbitholeNextSong = { songSlug, songTitle, viaMusician };
+
             let nextUpEl = document.getElementById('rabbithole-next-up');
             if (!nextUpEl) {
                 // Create it if it doesn't exist
@@ -1193,6 +1197,102 @@
                 }
             }
             nextUpEl.innerHTML = `<strong>🐰 Next up:</strong> ${songTitle} <span style="color: #666;">via ${viaMusician}</span>`;
+        };
+
+        // Show playlist popup when rabbit is clicked
+        window.showPlaylistPopup = function() {
+            // Remove existing popup if any
+            let popup = document.getElementById('rabbithole-playlist-popup');
+            if (popup) {
+                popup.remove();
+                return; // Toggle off
+            }
+
+            // Create popup
+            popup = document.createElement('div');
+            popup.id = 'rabbithole-playlist-popup';
+            popup.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #faf7f2;
+                border: 2px solid #1a365d;
+                border-radius: 8px;
+                padding: 16px;
+                min-width: 280px;
+                max-width: 400px;
+                z-index: 10000;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                font-family: Arial, sans-serif;
+            `;
+
+            let html = '<div style="font-weight: bold; margin-bottom: 12px; color: #1a365d;">🐰 Rabbithole</div>';
+
+            // Previous songs (history)
+            if (window.rabbitholeHistory.length > 0) {
+                const lastPlayed = window.rabbitholeHistory[window.rabbitholeHistory.length - 1];
+                html += `
+                    <div style="padding: 8px; background: #e8e8e8; border-radius: 4px; opacity: 0.7; position: relative;">
+                        <div style="font-size: 12px; color: #666;">Previous</div>
+                        <div style="font-weight: bold;">${lastPlayed.songTitle}</div>
+                    </div>
+                    <div style="text-align: center; margin: -8px 0; position: relative; z-index: 1;">
+                        <span style="display: inline-block; padding: 2px 8px; background: #b8460e; color: white; border-radius: 10px; font-size: 10px;">
+                            ${lastPlayed.viaMusician}
+                        </span>
+                    </div>
+                `;
+            }
+
+            // Current song
+            const currentSongData = window.rabbitholeeCatalog[window.rabbitholeState.currentSongSlug];
+            if (currentSongData) {
+                html += `
+                    <div style="padding: 8px; background: #1a365d; color: white; border-radius: 4px; position: relative;">
+                        <div style="font-size: 12px; opacity: 0.8;">Now Playing</div>
+                        <div style="font-weight: bold;">${currentSongData.title}</div>
+                    </div>
+                `;
+            }
+
+            // Next song
+            if (window.rabbitholeNextSong && window.rabbitholeNextSong.songTitle !== 'No songs queued' && window.rabbitholeNextSong.songTitle !== 'End of rabbithole') {
+                html += `
+                    <div style="text-align: center; margin: -8px 0; position: relative; z-index: 1;">
+                        <span style="display: inline-block; padding: 2px 8px; background: #b8460e; color: white; border-radius: 10px; font-size: 10px;">
+                            ${window.rabbitholeNextSong.viaMusician}
+                        </span>
+                    </div>
+                    <div style="padding: 8px; background: #f0f0f0; border-radius: 4px; opacity: 0.8; position: relative;">
+                        <div style="font-size: 12px; color: #666;">Up Next</div>
+                        <div style="font-weight: bold;">${window.rabbitholeNextSong.songTitle}</div>
+                    </div>
+                `;
+            }
+
+            // Close button
+            html += `
+                <div style="text-align: center; margin-top: 12px;">
+                    <button onclick="document.getElementById('rabbithole-playlist-popup').remove()"
+                            style="padding: 4px 12px; border: 1px solid #1a365d; background: white; border-radius: 4px; cursor: pointer;">
+                        Close
+                    </button>
+                </div>
+            `;
+
+            popup.innerHTML = html;
+            document.body.appendChild(popup);
+
+            // Close on click outside
+            setTimeout(() => {
+                document.addEventListener('click', function closePopup(e) {
+                    if (!popup.contains(e.target) && !e.target.closest('.rabbithole-icon')) {
+                        popup.remove();
+                        document.removeEventListener('click', closePopup);
+                    }
+                });
+            }, 100);
         };
 
         // Play the next song in the rabbithole queue
@@ -1230,6 +1330,21 @@
             }
 
             const nextSlug = window.rabbitholeQueue.shift();
+
+            // Add current song to history before moving to next
+            if (window.rabbitholeState.currentSongSlug && window.rabbitholeNextSong) {
+                const currentSongData = window.rabbitholeeCatalog[window.rabbitholeState.currentSongSlug];
+                if (currentSongData) {
+                    // Find who connected this song to the next
+                    const viaMusician = window.rabbitholeNextSong.viaMusician;
+                    window.rabbitholeHistory.push({
+                        songSlug: window.rabbitholeState.currentSongSlug,
+                        songTitle: currentSongData.title,
+                        viaMusician: viaMusician
+                    });
+                }
+            }
+
             window.rabbitholeState.playedSongs.add(window.rabbitholeState.currentSongSlug);
 
             await window.playSongNow(nextSlug);
