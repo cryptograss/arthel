@@ -608,13 +608,13 @@
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="/assets/images/rabbit.png" alt="Rabbit" class="rabbit-icon">
                 <div>
-                    <h1 class="player-title">rabbithole <span style="font-size: 12px; opacity: 0.6;">v.3a</span></h1>
+                    <h1 class="player-title">rabbithole <span style="font-size: 12px; opacity: 0.6;">a4</span></h1>
                     <div class="player-subtitle">discover music by connections, not algorithms</div>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
                 <div id="current-song-info" style="text-align: right; font-size: 13px;">
-                    <div style="color: #4a7c59; font-weight: 600;">August</div>
+                    <div id="current-song-title" style="color: #4a7c59; font-weight: 600;">August</div>
                     <div style="color: #888; font-size: 11px;">Vowel Sounds</div>
                 </div>
                 <button id="toggle-mode-btn" class="toggle-mode-btn" onclick="togglePlayerMode()">
@@ -1169,20 +1169,24 @@
             // Pick a random song from available ones
             const randomIndex = Math.floor(Math.random() * playableSongs.length);
             const nextSong = playableSongs[randomIndex];
-            const nextSlug = nextSong.song.toLowerCase().replace(/\s+/g, '-');
+            const nextSlug = nextSong.song.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+
+            // Get the actual title from catalog
+            const catalogEntry = window.rabbitholeeCatalog[nextSlug];
+            const songTitle = catalogEntry ? catalogEntry.title : nextSong.song;
 
             // Clear queue and add this song
             window.rabbitholeQueue = [nextSlug];
-            console.log(`🐰 Next up: "${nextSong.song}" via ${musicianName}`);
+            console.log(`🐰 Next up: "${songTitle}" via ${musicianName}`);
 
             // Update the "next up" display
-            window.updateNextUpDisplay(nextSong.song, musicianName);
+            window.updateNextUpDisplay(songTitle, musicianName);
         };
 
         // Update the "next up" display at bottom of page
         window.updateNextUpDisplay = function(songTitle, viaMusician) {
-            // Store next song info for playlist popup
-            const songSlug = songTitle.toLowerCase().replace(/\s+/g, '-');
+            // Store next song info for playlist popup (don't convert title to slug here!)
+            const songSlug = songTitle.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
             window.rabbitholeNextSong = { songSlug, songTitle, viaMusician };
 
             let nextUpEl = document.getElementById('rabbithole-next-up');
@@ -1233,7 +1237,10 @@
             if (window.rabbitholeHistory.length > 0) {
                 const lastPlayed = window.rabbitholeHistory[window.rabbitholeHistory.length - 1];
                 html += `
-                    <div style="padding: 8px; background: #e8e8e8; border-radius: 4px; opacity: 0.7; position: relative;">
+                    <div onclick="window.skipToPrevious(); document.getElementById('rabbithole-playlist-popup').remove();"
+                         style="padding: 8px; background: #e8e8e8; border-radius: 4px; opacity: 0.7; position: relative; cursor: pointer; transition: background 0.2s;"
+                         onmouseover="this.style.background='#d8d8d8'"
+                         onmouseout="this.style.background='#e8e8e8'">
                         <div style="font-size: 12px; color: #666;">Previous</div>
                         <div style="font-weight: bold;">${lastPlayed.songTitle}</div>
                     </div>
@@ -1264,7 +1271,10 @@
                             ${window.rabbitholeNextSong.viaMusician}
                         </span>
                     </div>
-                    <div style="padding: 8px; background: #f0f0f0; border-radius: 4px; opacity: 0.8; position: relative;">
+                    <div onclick="window.skipToNext(); document.getElementById('rabbithole-playlist-popup').remove();"
+                         style="padding: 8px; background: #f0f0f0; border-radius: 4px; opacity: 0.8; position: relative; cursor: pointer; transition: background 0.2s;"
+                         onmouseover="this.style.background='#e0e0e0'"
+                         onmouseout="this.style.background='#f0f0f0'">
                         <div style="font-size: 12px; color: #666;">Up Next</div>
                         <div style="font-weight: bold;">${window.rabbitholeNextSong.songTitle}</div>
                     </div>
@@ -1293,6 +1303,34 @@
                     }
                 });
             }, 100);
+        };
+
+        // Skip to next song in rabbithole
+        window.skipToNext = async function() {
+            if (window.rabbitholeNextSong && window.rabbitholeQueue.length > 0) {
+                console.log('🐰 Skipping to next song');
+                await window.playNextInRabbithole();
+            }
+        };
+
+        // Skip to previous song in rabbithole
+        window.skipToPrevious = async function() {
+            if (window.rabbitholeHistory.length > 0) {
+                const previousSong = window.rabbitholeHistory.pop();
+                console.log('🐰 Skipping to previous song:', previousSong.songTitle);
+
+                // Remove from played songs set
+                window.rabbitholeState.playedSongs.delete(previousSong.songSlug);
+
+                // Play the previous song
+                await window.playSongNow(previousSong.songSlug);
+                window.rabbitholeState.currentSongSlug = previousSong.songSlug;
+
+                // Re-queue the musician
+                if (window.rabbitholeState.followingMusician) {
+                    window.queueNextSongByMusician(window.rabbitholeState.followingMusician);
+                }
+            }
         };
 
         // Play the next song in the rabbithole queue
@@ -1406,6 +1444,15 @@
             // Load the new song
             if (window.chartifactsPlayer && typeof window.chartifactsPlayer.loadNewSong === 'function') {
                 await window.chartifactsPlayer.loadNewSong(window.songChartifactsData);
+            }
+
+            // Update the song title display in header
+            const titleEl = document.getElementById('current-song-title');
+            if (titleEl) {
+                titleEl.textContent = songData.title;
+                console.log('🐰 Updated header title to:', songData.title);
+            } else {
+                console.error('🐰 Could not find #current-song-title element');
             }
 
             // Update source indicator to stream

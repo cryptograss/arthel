@@ -1,5 +1,19 @@
 # Rabbithole Changelog
 
+## a4 (November 2025)
+
+### New Features
+- **Next/Previous navigation** - Webamp next/previous buttons now navigate through rabbithole queue
+- **Clickable previous song** - Click previous song in playlist popup to go back
+- **Title updates** - Page header title now updates when songs change
+- **Proper song titles** - Displays actual song titles instead of slugs throughout
+
+### Bug Fixes
+- Fixed title lookup from catalog instead of showing slugs
+- Added catalog title fallback for missing entries
+
+---
+
 ## v.3a (November 2025)
 
 ### New Features
