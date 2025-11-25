@@ -8,9 +8,9 @@ import Packery from 'packery';
 
 class WebampChartifacts {
     constructor(containerId, trackData, options = {}) {
-        console.log('DEBUG: WebampChartifacts constructor called with container:', containerId);
-        console.log('DEBUG: Track data:', trackData);
-        console.log('DEBUG: Options:', options);
+        console.debug('DEBUG: WebampChartifacts constructor called with container:', containerId);
+        console.debug('DEBUG: Track data:', trackData);
+        console.debug('DEBUG: Options:', options);
 
         this.container = document.getElementById(containerId);
         this.trackData = trackData;
@@ -21,7 +21,7 @@ class WebampChartifacts {
             return;
         }
 
-        console.log('DEBUG: Found container, proceeding with initialization');
+        console.debug('DEBUG: Found container, proceeding with initialization');
         this.webamp = null;
         this.currentSolo = null;
         this.lastAutoShownSoloist = null; // Track which soloist we last auto-showed
@@ -43,7 +43,8 @@ class WebampChartifacts {
     }
 
     initializeMusicianWeights() {
-        // Initialize all musicians with base weights (order they appear in ensemble)
+        // Clear old weights and initialize all musicians with base weights (order they appear in ensemble)
+        this.musicianWeights = {};
         let baseWeight = 100;
         Object.keys(this.trackData.ensemble).forEach(musicianName => {
             this.musicianWeights[musicianName] = baseWeight;
@@ -53,7 +54,9 @@ class WebampChartifacts {
 
     injectDynamicStyles() {
         // Only inject styles if a color scheme is provided
-        if (!this.trackData.colorScheme) return;
+        if (!this.trackData.colorScheme) {
+            return;
+        }
 
         const styleId = `webamp-chartifacts-dynamic-styles`;
         // Remove existing dynamic styles if they exist
@@ -63,19 +66,67 @@ class WebampChartifacts {
         }
 
         const colors = this.trackData.colorScheme;
-        // TODO: Implement dynamic color styling based on colors object
+
+        // Build dynamic CSS from color scheme
+        let css = '';
+
+        if (colors.solo) {
+            css += `
+                /* Dynamic color scheme from YAML */
+                .musician-item.musician-card.lead,
+                .musician-card.lead {
+                    border: 2px solid ${colors.solo.border} !important;
+                    background: ${colors.solo.background} !important;
+                    color: ${colors.solo.textColor} !important;
+                }
+                .musician-item.musician-card.lead .musician-name,
+                .musician-card.lead .musician-name {
+                    color: ${colors.solo.textColor} !important;
+                }
+                @keyframes pulse-glow {
+                    0%, 100% { box-shadow: 0 0 15px ${colors.solo.glowColor} !important; }
+                    50% { box-shadow: 0 0 25px ${colors.solo.glowColor} !important; }
+                }
+            `;
+        }
+
+        if (colors.pickup) {
+            css += `
+                .musician-card.pickup {
+                    border: 2px solid ${colors.pickup.border} !important;
+                    background: ${colors.pickup.background} !important;
+                    color: ${colors.pickup.textColor} !important;
+                }
+            `;
+        }
+
+        if (colors.intro) {
+            css += `
+                .musician-card.intro {
+                    border: 2px solid ${colors.intro.border} !important;
+                    background: ${colors.intro.background} !important;
+                    color: ${colors.intro.textColor} !important;
+                }
+            `;
+        }
+
+        // Inject the styles
+        const styleElement = document.createElement('style');
+        styleElement.id = styleId;
+        styleElement.textContent = css;
+        document.head.appendChild(styleElement);
     }
 
     async init() {
-        console.log('DEBUG: Starting init() for embed mode');
+        console.debug('DEBUG: Starting init() for embed mode');
 
         // For embed mode, skip the complex UI and focus on Webamp
         if (this.options.embedMode) {
-            console.log('DEBUG: In embed mode - initializing Webamp only');
+            console.debug('DEBUG: In embed mode - initializing Webamp only');
             await this.initWebamp();
             this.setupTimeTracking();
         } else {
-            console.log('DEBUG: In full mode - initializing full UI');
+            console.debug('DEBUG: In full mode - initializing full UI');
             this.renderSimpleUI();
             await this.initWebamp();
             this.setupTimeTracking();
@@ -132,7 +183,7 @@ class WebampChartifacts {
         });
 
         // Render Webamp directly to the main container - no custom HTML
-        console.log('DEBUG: Container before rendering:', {
+        console.debug('DEBUG: Container before rendering:', {
             exists: !!this.container,
             id: this.container.id,
             className: this.container.className,
@@ -142,9 +193,9 @@ class WebampChartifacts {
         });
 
         this.webamp.renderWhenReady(this.container).then(() => {
-            console.log(`DEBUG: Webamp rendered successfully in container:`, this.container.id);
+            console.debug(`DEBUG: Webamp rendered successfully in container:`, this.container.id);
 
-            console.log('DEBUG: Container after rendering:', {
+            console.debug('DEBUG: Container after rendering:', {
                 exists: !!this.container,
                 children: this.container.children.length,
                 style: this.container.style.cssText,
@@ -154,12 +205,12 @@ class WebampChartifacts {
             });
 
             if (this.options.embedMode) {
-                console.log('DEBUG: Embed mode - creating ensemble with simple positioning');
+                console.debug('DEBUG: Embed mode - creating ensemble with simple positioning');
                 // In embed mode, create ensemble in the dedicated containers
                 this.createEnsembleForEmbed();
                 this.setupWebampListeners();
             } else {
-                console.log('DEBUG: Full mode - setting up complex positioning');
+                console.debug('DEBUG: Full mode - setting up complex positioning');
                 // Wait a moment for Webamp to fully initialize before constraining
                 setTimeout(() => {
                     // Move the #webamp element into our container to constrain it
@@ -187,7 +238,7 @@ class WebampChartifacts {
     }
 
     createEnsembleForEmbed() {
-        console.log('DEBUG: Creating ensemble for embed mode');
+        console.debug('DEBUG: Creating ensemble for embed mode');
 
         // Use the existing dedicated containers in the embed template
         const ensembleContainer = document.getElementById('ensemble-display');
@@ -204,7 +255,7 @@ class WebampChartifacts {
         // Create parts chart
         this.populatePartsContainer(partsContainer);
 
-        console.log('DEBUG: Embed ensemble and parts created successfully');
+        console.debug('DEBUG: Embed ensemble and parts created successfully');
     }
 
     populateEnsembleContainer(container) {
@@ -251,7 +302,7 @@ class WebampChartifacts {
 
     constrainWebampToContainer() {
         const webampElement = document.getElementById('webamp');
-        console.log('DEBUG: constrainWebampToContainer - webamp element:', {
+        console.debug('DEBUG: constrainWebampToContainer - webamp element:', {
             exists: !!webampElement,
             parentBefore: webampElement ? webampElement.parentElement.tagName + '#' + webampElement.parentElement.id : 'none',
             containerExists: !!this.container,
@@ -264,7 +315,7 @@ class WebampChartifacts {
         }
 
         // Move the #webamp element into our container
-        console.log('DEBUG: Moving webamp element into container...');
+        console.debug('DEBUG: Moving webamp element into container...');
         this.container.appendChild(webampElement);
 
         // Ensure Webamp is visible
@@ -272,7 +323,7 @@ class WebampChartifacts {
         webampElement.style.visibility = 'visible';
         webampElement.style.opacity = '1';
 
-        console.log('DEBUG: After moving webamp:', {
+        console.debug('DEBUG: After moving webamp:', {
             webampParent: webampElement.parentElement.tagName + '#' + webampElement.parentElement.id,
             containerChildren: this.container.children.length,
             webampRect: webampElement.getBoundingClientRect(),
@@ -287,16 +338,16 @@ class WebampChartifacts {
     }
 
     createEnsembleInsideWebamp() {
-        console.log('DEBUG: createEnsembleInsideWebamp called');
+        console.debug('DEBUG: createEnsembleInsideWebamp called');
 
         // Wait for #main-window to exist
         const waitForMainWindow = () => {
             const mainWindow = document.querySelector('#main-window');
             if (mainWindow) {
-                console.log('DEBUG: Found #main-window, creating ensemble after it');
+                console.debug('DEBUG: Found #main-window, creating ensemble after it');
                 this.createEnsembleAfterMainWindow(mainWindow);
             } else {
-                console.log('DEBUG: #main-window not found yet, waiting...');
+                console.debug('DEBUG: #main-window not found yet, waiting...');
                 setTimeout(waitForMainWindow, 100);
             }
         };
@@ -309,7 +360,7 @@ class WebampChartifacts {
         const webampContainer = document.getElementById('webamp');
         const mainWindowParent = mainWindow.parentElement;
 
-        console.log('DEBUG: Webamp positioning analysis:', {
+        console.debug('DEBUG: Webamp positioning analysis:', {
             webampContainer: {
                 exists: !!webampContainer,
                 style: webampContainer ? webampContainer.style.cssText : 'N/A',
@@ -329,14 +380,26 @@ class WebampChartifacts {
             }
         });
 
+        // Detect mobile viewport
+        const isMobile = window.innerWidth <= 768;
+
         // Try to intercept and override the transform
         if (mainWindowParent.style.transform) {
-            console.log('DEBUG: Found transform on parent:', mainWindowParent.style.transform);
-            console.log('DEBUG: Attempting to override transform...');
+            console.debug('DEBUG: Found transform on parent:', mainWindowParent.style.transform);
+            console.debug('DEBUG: Attempting to override transform...');
 
             // Override the transform to position at top-left
             mainWindowParent.style.transform = 'translate(10px, 10px)';
-            console.log('DEBUG: Override applied, new transform:', mainWindowParent.style.transform);
+
+            // On mobile, make the parent container full width for proper stacking
+            if (isMobile) {
+                mainWindowParent.style.width = '100%';
+                mainWindowParent.style.position = 'relative';
+                mainWindowParent.style.left = '0';
+                mainWindowParent.style.transform = 'none'; // Remove transform on mobile
+            }
+
+            console.debug('DEBUG: Override applied, new transform:', mainWindowParent.style.transform);
         }
 
         // Create ensemble display
@@ -344,20 +407,21 @@ class WebampChartifacts {
         ensembleDiv.id = 'ensemble-display-in-webamp';
         ensembleDiv.className = 'ensemble-display-in-webamp';
 
-        // Position ensemble below main window and parts chart
-        ensembleDiv.style.position = 'absolute';
-        ensembleDiv.style.left = '0px';
-        ensembleDiv.style.top = '130px'; // Below main window (120px height + 10px gap)
-        ensembleDiv.style.width = '250px';
-        ensembleDiv.style.maxHeight = 'none'; // No height limit - show all content
+        // Position ensemble - use relative positioning on mobile for proper flow
+        if (isMobile) {
+            ensembleDiv.style.position = 'relative';
+            ensembleDiv.style.width = '100%';
+            ensembleDiv.style.marginTop = '10px';
+        } else {
+            ensembleDiv.style.position = 'absolute';
+            // ensembleDiv.style.left = '0px';
+            ensembleDiv.style.top = '120px'; // Below main window (120px height + 10px gap)
+            ensembleDiv.style.width = '269px';
+        }
+        // ensembleDiv.style.maxHeight = 'none'; // No height limit - show all content
         ensembleDiv.style.overflow = 'visible'; // No scrollbars
-        // Remove margin since we're using absolute positioning
-        // ensembleDiv.style.margin = '10px';
 
-        // Create Packery grid for smooth repositioning
-        const ensembleGrid = document.createElement('div');
-        ensembleGrid.className = 'ensemble-grid';
-
+        // Add musician cards directly to ensembleDiv (no wrapper needed)
         Object.entries(this.trackData.ensemble).forEach(([musicianName, instruments]) => {
             const musicianDiv = document.createElement('div');
             musicianDiv.id = `musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`;
@@ -367,50 +431,46 @@ class WebampChartifacts {
 
             // Handle instrument display - instruments is an array in YAML
             const primaryInstrument = Array.isArray(instruments) ? instruments[0] : instruments;
-            console.log(`DEBUG: Creating musician card for ${musicianName}, instruments:`, instruments, 'primary:', primaryInstrument);
+            console.debug(`DEBUG: Creating musician card for ${musicianName}, instruments:`, instruments, 'primary:', primaryInstrument);
 
             musicianDiv.innerHTML = `
                 <div class="musician-name">${musicianName} (${primaryInstrument})</div>
                 <div class="chartifact-line">Chartifact "0x1234ff" owned by cryptograss.eth</div>
             `;
-            ensembleGrid.appendChild(musicianDiv);
+            ensembleDiv.appendChild(musicianDiv);
         });
 
-        ensembleDiv.appendChild(ensembleGrid);
+        // Add engineer card if present (gray styling, instrument = "console")
+        if (this.trackData.engineer) {
+            const engineerDiv = document.createElement('div');
+            engineerDiv.id = `musician-${this.trackData.engineer.replace(/\s+/g, '-').toLowerCase()}`;
+            engineerDiv.className = 'musician-item musician-card engineer-card';
+            engineerDiv.dataset.musician = this.trackData.engineer;
+            engineerDiv.dataset.sortOrder = '200'; // Sort after musicians
 
-        // Also grab the parts chart and move it in as a sibling
+            engineerDiv.innerHTML = `
+                <div class="musician-name">${this.trackData.engineer} (console)</div>
+                <div class="chartifact-line">Engineer</div>
+            `;
+            ensembleDiv.appendChild(engineerDiv);
+        }
+
+        // Populate the parts chart in place (it's already in the HTML above the player)
         const partsChart = document.getElementById('parts-chart');
 
         if (partsChart) {
-            // Create a container div to hold parts chart positioned to the right
-            const partsContainer = document.createElement('div');
-            partsContainer.id = 'parts-chart-in-webamp';
-            partsContainer.style.position = 'absolute';
-            partsContainer.style.left = '285px'; // Just to the right of main window (275px wide + 10px gap)
-            partsContainer.style.top = '0px';
-            partsContainer.style.width = '330px';
-
-            // Move the parts chart content into our container
-            partsContainer.appendChild(partsChart);
-
-            // Insert the parts container as a sibling of main-window
-            mainWindow.parentNode.appendChild(partsContainer);
-            console.log('DEBUG: Moved parts chart to be sibling of main-window');
+            // Repopulate parts chart with new song's parts
+            this.populatePartsContainer(partsChart);
+            console.debug('DEBUG: Populated parts chart in place');
         }
 
-        // Insert ensemble right after #main-window (or after parts if it exists)
-        const insertionPoint = partsChart ? partsChart.parentNode : mainWindow.nextSibling;
-        if (insertionPoint && insertionPoint !== mainWindow.parentNode) {
-            mainWindow.parentNode.insertBefore(ensembleDiv, insertionPoint);
-            console.log('DEBUG: Inserted ensemble before:', insertionPoint);
-        } else {
-            mainWindow.parentNode.appendChild(ensembleDiv);
-            console.log('DEBUG: Appended ensemble as last child');
-        }
+        // Insert ensemble right after #main-window
+        mainWindow.parentNode.appendChild(ensembleDiv);
+        console.debug('DEBUG: Appended ensemble after main-window');
 
         // Debug where the ensemble actually ended up
         setTimeout(() => {
-            console.log('DEBUG: Final ensemble position:', {
+            console.debug('DEBUG: Final ensemble position:', {
                 ensembleRect: ensembleDiv.getBoundingClientRect(),
                 ensembleParent: ensembleDiv.parentElement.tagName + (ensembleDiv.parentElement.id ? '#' + ensembleDiv.parentElement.id : ''),
                 mainWindowRect: mainWindow.getBoundingClientRect(),
@@ -430,15 +490,15 @@ class WebampChartifacts {
                         mutation.target.style.transform &&
                         !mutation.target.style.transform.includes('translate(10px, 10px)')) {
 
-                        console.log('DEBUG: Webamp trying to move parent! Old transform:', mutation.target.style.transform);
+                        console.debug('DEBUG: Webamp trying to move parent! Old transform:', mutation.target.style.transform);
                         // Override it back to our position
                         mutation.target.style.transform = 'translate(10px, 10px)';
-                        console.log('DEBUG: Blocked Webamp transform, keeping at translate(10px, 10px)');
+                        console.debug('DEBUG: Blocked Webamp transform, keeping at translate(10px, 10px)');
                     }
 
                     // Also log window changes
                     if (mutation.target.classList.contains('window')) {
-                        console.log('DEBUG: Webamp window style changed:', {
+                        console.debug('DEBUG: Webamp window style changed:', {
                             target: mutation.target.id,
                             style: mutation.target.style.cssText
                         });
@@ -471,9 +531,9 @@ class WebampChartifacts {
         }
 
         // Initialize Packery for smooth repositioning
-        this.initEnsembleGrid(ensembleGrid);
+        this.initEnsembleGrid(ensembleDiv);
 
-        console.log('DEBUG: Ensemble display created after #main-window');
+        console.debug('DEBUG: Ensemble display created after #main-window');
     }
 
     setupWebampListeners() {
@@ -483,12 +543,17 @@ class WebampChartifacts {
             this.cleanup();
         });
 
+        // Track previous status to detect transitions
+        let previousStatus = null;
+        let wasPlaying = false;
+
         // Access Webamp's Redux store to monitor playback state
         const unsubscribe = this.webamp.store.subscribe(() => {
             const state = this.webamp.store.getState();
-            const { timeElapsed, status } = state.media;
+            const { timeElapsed, status, length } = state.media;
 
             if (status === 'PLAYING') {
+                wasPlaying = true;
                 if (!this.timeUpdateInterval) {
                     this.startTimeTracking();
                 }
@@ -496,7 +561,22 @@ class WebampChartifacts {
                 this.stopTimeTracking();
                 // Reset ensemble display when not playing
                 this.resetEnsembleDisplay();
+
+                // Detect track end: was playing, now stopped, and near the end
+                if (wasPlaying && status === 'STOPPED' && previousStatus === 'PLAYING') {
+                    const nearEnd = length && timeElapsed >= length - 1;
+                    if (nearEnd) {
+                        console.log('🐰 Track ended - checking rabbithole queue');
+                        // Dispatch to window for rabbithole handling
+                        if (typeof window.playNextInRabbithole === 'function') {
+                            setTimeout(() => window.playNextInRabbithole(), 500);
+                        }
+                    }
+                    wasPlaying = false;
+                }
             }
+
+            previousStatus = status;
         });
 
         this.unsubscribeWebamp = unsubscribe;
@@ -559,6 +639,13 @@ class WebampChartifacts {
     }
 
     extractSongParts() {
+        // Cache the result since song parts don't change during playback
+        if (this._cachedSongParts) {
+            return this._cachedSongParts;
+        }
+
+        console.debug('DEBUG extractSongParts: Building parts from timeline keys:', Object.keys(this.trackData.timeline));
+
         // Build chronological sequence of parts from PROCESSED timeline
         const partSequence = [];
         const processedTimeline = this.processTimelineKeys();
@@ -567,15 +654,15 @@ class WebampChartifacts {
             .map(([timeStr, arrangement]) => ({ time: Number(timeStr), arrangement }))
             .sort((a, b) => a.time - b.time);
 
-        console.log('extractSongParts - processed timeline entries:', timelineEntries);
-
+        // Build sequence from section starts and explicit times only (skip sub-moments)
         timelineEntries.forEach(({ arrangement }) => {
-            if (arrangement.part) {
+            // Include if: has a part AND (is a section start OR not a sub-moment)
+            if (arrangement.part && (arrangement._isSectionStart || !arrangement._isSubMoment)) {
                 partSequence.push(arrangement.part);
             }
         });
 
-        console.log('extractSongParts - final part sequence:', partSequence);
+        this._cachedSongParts = partSequence;
         return partSequence;
     }
 
@@ -600,26 +687,26 @@ class WebampChartifacts {
 
     getCurrentPartIndex() {
         // Find the most recent part change in chronological order using PROCESSED timeline
+        // Must match the filtering logic in extractSongParts() to get correct indices
         const currentTime = this.getCurrentTime();
         const processedTimeline = this.processTimelineKeys();
 
         const timelineEntries = Object.entries(processedTimeline)
             .map(([timeStr, arrangement]) => ({ time: Number(timeStr), arrangement }))
-            .filter(({ arrangement }) => arrangement.part) // Only entries with parts
+            .filter(({ arrangement }) => {
+                // Same logic as extractSongParts: skip sub-moments
+                return arrangement.part && (arrangement._isSectionStart || !arrangement._isSubMoment);
+            })
             .sort((a, b) => a.time - b.time);
-
-        console.log('getCurrentPartIndex - timeline entries with parts:', timelineEntries);
 
         // Find the last part change that has occurred
         let activePartIndex = -1;
         timelineEntries.forEach(({ time, arrangement }, chronologicalIndex) => {
             if (time <= currentTime) {
                 activePartIndex = chronologicalIndex;
-                console.log(`Part index ${chronologicalIndex} (${arrangement.part}) active at time ${time}`);
             }
         });
 
-        console.log(`Final active part index: ${activePartIndex}`);
         return activePartIndex;
     }
 
@@ -695,9 +782,10 @@ class WebampChartifacts {
         const newClassString = ['musician-item', 'musician-card', ...classes].sort().join(' ');
         const currentClassString = Array.from(musicianDiv.classList).sort().join(' ');
 
-        // Also check if instrument display needs updating
+        // Check if name/star needs updating
         const nameDiv = musicianDiv.querySelector('.musician-name');
-        const expectedName = `${musicianName} (${instrument})`;
+        const starPrefix = showStar ? '\u2B50 ' : ''; // Unicode for star emoji
+        const expectedName = `${starPrefix}${musicianName} (${instrument})`;
         const currentName = nameDiv ? nameDiv.textContent : '';
 
         // Skip update if nothing changed
@@ -705,20 +793,23 @@ class WebampChartifacts {
             return;
         }
 
-        // Log excessive updates for debugging
+        // Track update counts (for debugging if needed)
         if (!this.updateCounts) this.updateCounts = {};
         if (!this.updateCounts[musicianName]) this.updateCounts[musicianName] = 0;
         this.updateCounts[musicianName]++;
 
-        if (this.updateCounts[musicianName] % 20 === 0) {
-            console.log(`DEBUG: ${musicianName} updated ${this.updateCounts[musicianName]} times - classes: ${newClassString}, name: ${expectedName}`);
-        }
-
-        // Clear all state classes but keep base classes
+        // Clear all state classes but keep base classes and preserve spotlight
+        const hadSpotlight = musicianDiv.classList.contains('spotlight-active');
         musicianDiv.className = 'musician-item musician-card';
+        if (hadSpotlight) {
+            musicianDiv.classList.add('spotlight-active');
+        }
 
         // Add any state classes
         classes.forEach(cls => musicianDiv.classList.add(cls));
+
+        // Check if this musician has the rabbit BEFORE any content changes
+        const hadRabbit = musicianDiv.querySelector('.rabbithole-icon') !== null;
 
         // Update name if it changed
         if (nameDiv && expectedName !== currentName) {
@@ -730,19 +821,24 @@ class WebampChartifacts {
         const arrangement = this.getCurrentArrangement(currentTime);
         const dynamicWeight = this.calculateDynamicWeight(musicianName, currentTime, arrangement);
 
-        // Debug logging for troublesome musicians
-        if (musicianName === 'Cory Walker' && classes.includes('pickup')) {
-            console.log(`Cory pickup weight: ${dynamicWeight}, time: ${currentTime}, arrangement:`, arrangement);
-        }
 
         musicianDiv.dataset.sortOrder = dynamicWeight;
 
-        // Update content
-        const starPrefix = showStar ? '⭐ ' : '';
+        // Update content (starPrefix already calculated above for change detection)
         musicianDiv.innerHTML = `
             <div class="musician-name">${starPrefix}${musicianName} (${instrument})</div>
             <div class="chartifact-line">Chartifact "0x1234ff" owned by cryptograss.eth</div>
         `;
+
+        // Re-add rabbit if this musician had it
+        if (hadRabbit) {
+            const rabbitIcon = document.createElement('span');
+            rabbitIcon.className = 'rabbithole-icon';
+            rabbitIcon.textContent = '🐰';
+            rabbitIcon.title = `Following ${musicianName}'s rabbithole - click for options, Shift+click others to switch`;
+            musicianDiv.appendChild(rabbitIcon);
+            musicianDiv.classList.add('has-rabbit');
+        }
 
         // Re-attach click handlers after innerHTML update (if in embed mode)
         if (typeof makeMusiciansClickable === 'function') {
@@ -802,7 +898,41 @@ class WebampChartifacts {
 
             // Trigger Packery layout update
             this.packery.layout();
+
+            // Fix transforms for lead musicians (combine Packery's translate with CSS scale)
+            // Use requestAnimationFrame to ensure Packery has applied transforms first
+            requestAnimationFrame(() => {
+                this.fixLeadMusicianTransforms();
+            });
         }
+    }
+
+    fixLeadMusicianTransforms() {
+        // Packery applies inline transform: translate(x, y) which overrides CSS transform: scale(1.05)
+        // We need to combine both transforms for musician cards with the 'lead' class
+        if (!this.packery || !this.packery.element) {
+            return;
+        }
+
+        const musicianCards = this.packery.element.querySelectorAll('.musician-card');
+
+        musicianCards.forEach(card => {
+            const hasLeadClass = card.classList.contains('lead');
+            const currentTransform = card.style.transform;
+
+            // If card has lead class and Packery has set a transform
+            if (hasLeadClass && currentTransform) {
+                // Extract the translate values from Packery's transform
+                // Format is typically: translate(123px, 456px)
+                const translateMatch = currentTransform.match(/translate\(([^)]+)\)/);
+
+                if (translateMatch) {
+                    const translateValues = translateMatch[1];
+                    // Combine Packery's translate with our scale
+                    card.style.transform = `translate(${translateValues}) scale(1.05)`;
+                }
+            }
+        });
     }
 
     getCurrentArrangement(currentTime) {
@@ -817,9 +947,6 @@ class WebampChartifacts {
         if (this._processedTimeline) {
             return this._processedTimeline;
         }
-
-        console.log('Processing timeline keys. Raw timeline:', this.trackData.timeline);
-        console.log('Standard section length:', this.trackData.standardSectionLength);
 
         if (!this.trackData.standardSectionLength) {
             // No section processing needed, just return the timeline as-is
@@ -836,7 +963,6 @@ class WebampChartifacts {
                 const exactTime = parseFloat(key);
                 explicitTimes.push(exactTime);
                 processed[exactTime] = value;
-                console.log(`Exact time ${key} -> time ${exactTime}:`, value);
             }
         });
 
@@ -854,8 +980,9 @@ class WebampChartifacts {
                     ? sectionData.length
                     : this.trackData.standardSectionLength;
 
-                const sectionStartTime = accumulatedTime;
+                // Add section length first, so section starts AFTER the previous entry
                 accumulatedTime += sectionLength;
+                const sectionStartTime = accumulatedTime;
 
                 // Extract the base section data (without time-based sub-moments)
                 const baseSectionData = {};
@@ -875,17 +1002,16 @@ class WebampChartifacts {
                 for (const [timeStr, momentData] of Object.entries(subMoments)) {
                     const absoluteTime = parseFloat(timeStr);
                     // Merge with base section data (sub-moment overrides)
-                    processed[absoluteTime] = { ...baseSectionData, ...momentData };
-                    console.log(`  Sub-moment at absolute time ${timeStr}s:`, momentData);
+                    // Mark as sub-moment so extractSongParts can skip it
+                    processed[absoluteTime] = { ...baseSectionData, ...momentData, _isSubMoment: true };
                 }
 
-                // Add the base section data at the END (so it doesn't override sub-moments)
-                processed[accumulatedTime] = baseSectionData;
-                console.log(`Section ${sectionKey} (length ${sectionLength}s) -> time ${accumulatedTime}:`, baseSectionData);
+                // Add the base section data at the section START time
+                // Mark as section start for extractSongParts
+                processed[sectionStartTime] = { ...baseSectionData, _isSectionStart: true };
             }
         }
 
-        console.log('Final processed timeline:', processed);
         this._processedTimeline = processed;
         return processed;
     }
@@ -923,7 +1049,7 @@ class WebampChartifacts {
 
         const arrangement = this.getCurrentArrangement(currentTime);
         const currentInstruments = this.getCurrentInstruments(currentTime);
-        const currentSolo = arrangement ? arrangement.solo : null;
+        const currentSolo = arrangement ? (arrangement.solo || arrangement.soloist) : null;
         const currentPickup = arrangement ? arrangement.pickup : null;
 
         // Log major changes (only when arrangement actually changes)
@@ -972,11 +1098,58 @@ class WebampChartifacts {
             }
         }
 
+        // Check for flourishes - only trigger on arrangement change
+        const currentFlourish = arrangement ? arrangement.flourish : null;
+        const flourishDuration = arrangement ? (arrangement.flourishDuration || 1.5) : 1.5;  // Total effect duration
+        const flourishPulseSpeed = arrangement ? (arrangement.flourishPulseSpeed || 1.2) : 1.2;  // Single pulse cycle (slightly faster than spotlight's 1.5s)
+        const flourishIntensity = arrangement ? (arrangement.flourishIntensity || 0.7) : 0.7;
+        const flourishColor = arrangement ? (arrangement.flourishColor || 'coral') : 'coral';
+
+        // Check for spotlight effect
+        const currentSpotlight = arrangement ? arrangement.spotlight : null;
+        const spotlightBlackout = arrangement ? (arrangement.spotlightBlackout || 3) : 3;  // Default 3s blackout
+        const spotlightGlow = arrangement ? (arrangement.spotlightGlow || 2) : 2;  // Default 2s glow-only
+        const spotlightColor = arrangement ? (arrangement.spotlightColor || 'coral') : 'coral';
+
+        // Check for band flash effect
+        const bandFlash = arrangement ? arrangement.bandFlash : false;
+        const bandFlashDuration = arrangement ? (arrangement.bandFlashDuration || 0.8) : 0.8;
+        const bandFlashPulseSpeed = arrangement ? (arrangement.bandFlashPulseSpeed || 0.6) : 0.6;
+        const bandFlashIntensity = arrangement ? (arrangement.bandFlashIntensity || 0.5) : 0.5;
+        const bandFlashColor = arrangement ? (arrangement.bandFlashColor || 'coral') : 'coral';
+
+        // Track the last arrangement to detect changes
+        if (!this.lastArrangement) {
+            this.lastArrangement = null;
+        }
+        const arrangementChanged = arrangement !== this.lastArrangement;
+        if (arrangementChanged) {
+            this.lastArrangement = arrangement;
+        }
+
+        // Trigger band flash if arrangement changed and bandFlash is set
+        if (arrangementChanged && arrangement) {
+            console.log('Arrangement changed:', arrangement, 'bandFlash:', bandFlash);
+        }
+        if (bandFlash && arrangementChanged) {
+            this.triggerBandFlash(bandFlashDuration, bandFlashPulseSpeed, bandFlashIntensity, bandFlashColor);
+        }
+
         Object.entries(this.trackData.ensemble).forEach(([musicianName, musicianData]) => {
             const musicianDiv = document.getElementById(`musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`);
             if (!musicianDiv) return;
 
             const instrument = currentInstruments[musicianName];
+
+            // Check if this musician is doing a flourish - only trigger when arrangement changes
+            if (currentFlourish === musicianName && arrangementChanged) {
+                this.triggerFlourish(musicianDiv, musicianName, flourishDuration, flourishPulseSpeed, flourishIntensity, flourishColor);
+            }
+
+            // Check if this musician gets spotlight - only trigger when arrangement changes
+            if (currentSpotlight === musicianName && arrangementChanged) {
+                this.triggerSpotlight(musicianDiv, musicianName, spotlightBlackout, spotlightGlow, spotlightColor);
+            }
 
             // Check if this musician has a role
             if (currentSolo === musicianName) {
@@ -1003,7 +1176,522 @@ class WebampChartifacts {
 
         if (shouldResort) {
             this.sortEnsemble();
+        } else {
+            // Even if we didn't resort, we still need to fix transforms for lead musicians
+            // because updateMusicianCard may have added/removed the 'lead' class
+            requestAnimationFrame(() => {
+                this.fixLeadMusicianTransforms();
+            });
         }
+    }
+
+    // Color presets with primary and derived secondary colors for glow effects
+    getGlowColors(colorName = 'coral') {
+        const colorPresets = {
+            coral: {
+                primary: [255, 127, 80],      // #ff7f50
+                secondary: [255, 99, 71],     // tomato
+                tertiary: [255, 69, 100],     // pinkish
+                outer: [255, 20, 80]          // deep pink
+            },
+            red: {
+                primary: [255, 60, 60],       // bright red
+                secondary: [220, 20, 60],     // crimson
+                tertiary: [178, 34, 34],      // firebrick
+                outer: [139, 0, 0]            // dark red
+            },
+            blue: {
+                primary: [100, 149, 237],     // cornflower blue
+                secondary: [65, 105, 225],    // royal blue
+                tertiary: [30, 144, 255],     // dodger blue
+                outer: [0, 0, 205]            // medium blue
+            },
+            green: {
+                primary: [50, 205, 50],       // lime green
+                secondary: [34, 139, 34],     // forest green
+                tertiary: [0, 128, 0],        // green
+                outer: [0, 100, 0]            // dark green
+            },
+            gold: {
+                primary: [255, 215, 0],       // gold
+                secondary: [255, 193, 37],    // goldenrod
+                tertiary: [218, 165, 32],     // darker gold
+                outer: [184, 134, 11]         // dark goldenrod
+            },
+            purple: {
+                primary: [147, 112, 219],     // medium purple
+                secondary: [138, 43, 226],    // blue violet
+                tertiary: [128, 0, 128],      // purple
+                outer: [75, 0, 130]           // indigo
+            },
+            brown: {
+                primary: [205, 133, 63],      // peru
+                secondary: [160, 82, 45],     // sienna
+                tertiary: [139, 69, 19],      // saddle brown
+                outer: [101, 67, 33]          // dark brown
+            },
+            white: {
+                primary: [255, 255, 255],     // white
+                secondary: [245, 245, 245],   // white smoke
+                tertiary: [220, 220, 220],    // gainsboro
+                outer: [192, 192, 192]        // silver
+            },
+            cyan: {
+                primary: [0, 255, 255],       // cyan
+                secondary: [0, 206, 209],     // dark turquoise
+                tertiary: [32, 178, 170],     // light sea green
+                outer: [0, 139, 139]          // dark cyan
+            },
+            orange: {
+                primary: [255, 165, 0],       // orange
+                secondary: [255, 140, 0],     // dark orange
+                tertiary: [255, 69, 0],       // red-orange
+                outer: [204, 85, 0]           // burnt orange
+            }
+        };
+
+        return colorPresets[colorName.toLowerCase()] || colorPresets.coral;
+    }
+
+    // Generate glow keyframes from a color name
+    createGlowKeyframes(colorName = 'coral', intensity = 1.0) {
+        const colors = this.getGlowColors(colorName);
+        const scale = intensity;
+
+        const [pr, pg, pb] = colors.primary;
+        const [sr, sg, sb] = colors.secondary;
+        const [tr, tg, tb] = colors.tertiary;
+        const [or, og, ob] = colors.outer;
+
+        return {
+            min: `
+                0 0 0 ${3 * scale}px rgb(${pr}, ${pg}, ${pb}),
+                0 0 ${15 * scale}px ${8 * scale}px rgba(${pr}, ${pg}, ${pb}, ${0.8 * scale}),
+                0 0 ${30 * scale}px ${15 * scale}px rgba(${sr}, ${sg}, ${sb}, ${0.6 * scale}),
+                0 0 ${50 * scale}px ${25 * scale}px rgba(${tr}, ${tg}, ${tb}, ${0.4 * scale}),
+                0 0 ${75 * scale}px ${38 * scale}px rgba(${or}, ${og}, ${ob}, ${0.2 * scale})
+            `,
+            max: `
+                0 0 0 ${5 * scale}px rgb(${pr}, ${pg}, ${pb}),
+                0 0 ${25 * scale}px ${12 * scale}px rgba(${pr}, ${pg}, ${pb}, ${1.0 * scale}),
+                0 0 ${50 * scale}px ${25 * scale}px rgba(${sr}, ${sg}, ${sb}, ${0.8 * scale}),
+                0 0 ${75 * scale}px ${38 * scale}px rgba(${tr}, ${tg}, ${tb}, ${0.6 * scale}),
+                0 0 ${100 * scale}px ${50 * scale}px rgba(${or}, ${og}, ${ob}, ${0.3 * scale})
+            `
+        };
+    }
+
+    // Legacy method for backwards compatibility
+    createCoralGlowKeyframes(intensity = 1.0) {
+        return this.createGlowKeyframes('coral', intensity);
+    }
+
+    triggerFlourish(musicianDiv, musicianName, duration = 2.0, pulseSpeed = 1.2, intensity = 0.7, color = 'coral') {
+        // Track which flourishes we've already triggered to prevent re-triggering
+        if (!this.triggeredFlourishes) {
+            this.triggeredFlourishes = new Set();
+        }
+
+        // Get current time to create a unique flourish ID
+        const currentTime = this.getCurrentTime();
+        const flourishId = `${musicianName}-${Math.floor(currentTime)}`;
+
+        // Skip if we already triggered this flourish
+        if (this.triggeredFlourishes.has(flourishId)) {
+            return;
+        }
+
+        // Mark as triggered
+        this.triggeredFlourishes.add(flourishId);
+
+        // Clean up old flourish IDs after they're definitely done
+        setTimeout(() => {
+            this.triggeredFlourishes.delete(flourishId);
+        }, (duration + 1) * 1000);
+
+        console.log(`🌸 FLOURISH on ${musicianName}: duration=${duration}s, pulseSpeed=${pulseSpeed}s, intensity=${intensity}, color=${color}`);
+
+        // Add flourish class
+        musicianDiv.classList.add('flourish-active');
+
+        // Get glow values scaled by intensity (flourish uses smaller glow)
+        const glow = this.createGlowKeyframes(color, intensity * 0.6);
+
+        // Create pulsing animation with CSS keyframes
+        const animName = `flourish-pulse-${Date.now()}`;
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = `
+            @keyframes ${animName} {
+                0% {
+                    box-shadow: none;
+                }
+                50% {
+                    box-shadow: ${glow.max};
+                }
+                100% {
+                    box-shadow: none;
+                }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // Apply animation - pulseSpeed is cycle time, infinite repeat for duration
+        musicianDiv.style.animation = `${animName} ${pulseSpeed}s ease-in-out infinite`;
+
+        // Store style element for cleanup
+        musicianDiv._flourishStyleSheet = styleSheet;
+
+        // Fade out smoothly before stopping
+        const fadeOutTime = 0.5; // seconds
+        setTimeout(() => {
+            // Stop the infinite animation and transition to no glow
+            musicianDiv.style.animation = '';
+            musicianDiv.style.transition = `box-shadow ${fadeOutTime}s ease-out`;
+            musicianDiv.style.boxShadow = 'none';
+        }, (duration - fadeOutTime) * 1000);
+
+        // Final cleanup after fade completes
+        setTimeout(() => {
+            musicianDiv.style.transition = '';
+            musicianDiv.style.boxShadow = '';
+            musicianDiv.classList.remove('flourish-active');
+
+            // Clean up the style element
+            if (musicianDiv._flourishStyleSheet) {
+                musicianDiv._flourishStyleSheet.remove();
+                delete musicianDiv._flourishStyleSheet;
+            }
+        }, duration * 1000);
+    }
+
+    triggerBandFlash(duration = 1.5, pulseSpeed = 0.8, intensity = 0.9, color = 'coral') {
+        // Track band flashes to prevent re-triggering
+        if (!this.triggeredBandFlashes) {
+            this.triggeredBandFlashes = new Set();
+        }
+
+        const currentTime = this.getCurrentTime();
+        const flashId = `band-${Math.floor(currentTime)}`;
+
+        if (this.triggeredBandFlashes.has(flashId)) {
+            return;
+        }
+
+        this.triggeredBandFlashes.add(flashId);
+
+        setTimeout(() => {
+            this.triggeredBandFlashes.delete(flashId);
+        }, (duration + 1) * 1000);
+
+        console.log(`⚡ BAND FLASH: duration=${duration}s, pulseSpeed=${pulseSpeed}s, intensity=${intensity}, color=${color}`);
+
+        // Find the ensemble container - check non-embed (in-webamp) first, then embed
+        const ensembleContainer = document.getElementById('ensemble-display-in-webamp') ||
+                                  document.getElementById('ensemble-display');
+        if (!ensembleContainer) {
+            console.warn('Band flash: ensemble container not found (tried ensemble-display and ensemble-display-in-webamp)');
+            return;
+        }
+
+        console.log('Band flash: Found container', ensembleContainer.id, ensembleContainer);
+
+        // Ensure container and ancestors allow overflow for glow
+        ensembleContainer.style.overflow = 'visible';
+        if (ensembleContainer.parentElement) {
+            ensembleContainer.parentElement.style.overflow = 'visible';
+        }
+
+        // Add flash class
+        ensembleContainer.classList.add('band-flash-active');
+
+        // Get glow values scaled by intensity (band flash uses larger glow)
+        const glow = this.createGlowKeyframes(color, intensity);
+
+        // Create pulsing animation with CSS keyframes
+        const animName = `band-flash-pulse-${Date.now()}`;
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = `
+            @keyframes ${animName} {
+                0% {
+                    box-shadow: none;
+                }
+                50% {
+                    box-shadow: ${glow.max};
+                }
+                100% {
+                    box-shadow: none;
+                }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // Apply animation
+        ensembleContainer.style.animation = `${animName} ${pulseSpeed}s ease-in-out infinite`;
+
+        // Store style element for cleanup
+        ensembleContainer._bandFlashStyleSheet = styleSheet;
+
+        // Fade out smoothly before stopping
+        const fadeOutTime = 0.3;
+        setTimeout(() => {
+            ensembleContainer.style.animation = '';
+            ensembleContainer.style.transition = `box-shadow ${fadeOutTime}s ease-out`;
+            ensembleContainer.style.boxShadow = 'none';
+        }, (duration - fadeOutTime) * 1000);
+
+        // Final cleanup after fade completes
+        setTimeout(() => {
+            ensembleContainer.style.transition = '';
+            ensembleContainer.style.boxShadow = '';
+            ensembleContainer.classList.remove('band-flash-active');
+
+            if (ensembleContainer._bandFlashStyleSheet) {
+                ensembleContainer._bandFlashStyleSheet.remove();
+                delete ensembleContainer._bandFlashStyleSheet;
+            }
+        }, duration * 1000);
+    }
+
+    triggerSpotlight(musicianDiv, musicianName, blackoutDuration = 3, glowDuration = 2, color = 'coral') {
+        // Track which spotlights we've already triggered
+        if (!this.triggeredSpotlights) {
+            this.triggeredSpotlights = new Set();
+        }
+
+        // Get current time to create a unique spotlight ID
+        const currentTime = this.getCurrentTime();
+        const spotlightId = `${musicianName}-${Math.floor(currentTime)}`;
+
+        // Skip if we already triggered this spotlight
+        if (this.triggeredSpotlights.has(spotlightId)) {
+            return;
+        }
+
+        // Mark as triggered
+        this.triggeredSpotlights.add(spotlightId);
+
+        const totalDuration = blackoutDuration + glowDuration;
+
+        // Clean up old spotlight IDs after they're definitely done
+        setTimeout(() => {
+            this.triggeredSpotlights.delete(spotlightId);
+        }, (totalDuration + 2) * 1000);
+
+        // Store color for use later in the method
+        this._currentSpotlightColor = color;
+
+        console.log(`🔦 SPOTLIGHT on ${musicianName}: ${blackoutDuration}s blackout + ${glowDuration}s glow, color=${color}`);
+
+        // Darken the body background instead of using overlay
+        const originalBodyBg = document.body.style.background;
+        document.body.style.transition = `background ${blackoutDuration * 0.15}s ease-in`;
+        document.body.style.background = '#111';
+
+        // Fade everything except the spotlighted musician using :not selector
+        // Get all direct children of body and major containers, fade them all
+        const elementsToFade = [];
+
+        // All musician cards except this one
+        document.querySelectorAll('.musician-card').forEach(card => {
+            if (card !== musicianDiv) {
+                elementsToFade.push(card);
+            }
+        });
+
+        // All major page sections
+        document.querySelectorAll('.player-container > *:not(#webamp), .left-panel > *:not(#webamp-player), .right-panel, header, nav, .next-up, #rabbithole-next-up, .file-selector, .song-selector, #song-selector').forEach(el => {
+            if (!el.contains(musicianDiv)) {
+                elementsToFade.push(el);
+            }
+        });
+
+        // Parts chart and main window
+        const partsChart = document.getElementById('parts-chart-in-webamp') || document.getElementById('parts-chart');
+        const mainWindow = document.getElementById('main-window');
+        if (partsChart) elementsToFade.push(partsChart);
+        if (mainWindow) elementsToFade.push(mainWindow);
+
+        // Store original body background for cleanup
+        musicianDiv._originalBodyBg = originalBodyBg;
+
+        elementsToFade.forEach(el => {
+            el.style.opacity = '0.08';
+            el.style.transition = `opacity ${blackoutDuration * 0.15}s ease`;
+        });
+
+        // Add intense glow to the spotlighted musician
+        musicianDiv.classList.add('spotlight-active');
+
+        // Ensure glow isn't clipped - check ancestor containers
+        const ensembleContainer = musicianDiv.closest('#ensemble-display') || musicianDiv.parentElement;
+        if (ensembleContainer) {
+            ensembleContainer.style.overflow = 'visible';
+        }
+        musicianDiv.parentElement.style.overflow = 'visible';
+
+        // CRITICAL: Override player-content overflow which clips the glow
+        const playerContent = musicianDiv.closest('.player-content');
+        if (playerContent) {
+            playerContent.style.overflow = 'visible';
+            musicianDiv._playerContent = playerContent;
+        }
+
+        // Style the card and apply glow - use transform for zoom effect
+        musicianDiv.style.position = 'relative';
+        musicianDiv.style.zIndex = '10001';
+        musicianDiv.style.borderColor = '#ffd700';
+        musicianDiv.style.borderWidth = '3px';
+        musicianDiv.style.background = 'linear-gradient(135deg, #fffde7, #fff8e1)';
+        musicianDiv.style.transformOrigin = 'center center';
+
+        // Slow zoom from solo size (1.05) to spotlight size (1.15)
+        const zoomDuration = blackoutDuration * 0.8;
+        console.log(`🔍 Spotlight zoom: ${zoomDuration}s transition`);
+
+        // Force the browser to acknowledge current state
+        const currentTransform = getComputedStyle(musicianDiv).transform;
+        musicianDiv.style.transform = currentTransform === 'none' ? 'scale(1)' : currentTransform;
+
+        // Force reflow to ensure browser registers current state
+        musicianDiv.offsetHeight;
+
+        // Now apply transition and target scale
+        // Use setProperty with important to override CSS transitions
+        musicianDiv.style.setProperty('transition', `transform ${zoomDuration}s ease-out`, 'important');
+        musicianDiv.style.transform = 'scale(1.15)';
+
+        // Create a glowing backdrop element behind the musician card
+        const glowBackdrop = document.createElement('div');
+        glowBackdrop.className = 'spotlight-glow-backdrop';
+        glowBackdrop.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(ellipse at center,
+                rgba(255, 215, 0, 0.8) 0%,
+                rgba(255, 140, 0, 0.6) 30%,
+                rgba(255, 69, 0, 0.4) 50%,
+                transparent 70%);
+            border-radius: 20px;
+            z-index: -1;
+            pointer-events: none;
+        `;
+
+        // Insert backdrop - musician div should already have position relative from CSS
+        musicianDiv.insertBefore(glowBackdrop, musicianDiv.firstChild);
+
+        // Apply intense box-shadow animation using color-based glow
+        const glow = this.createGlowKeyframes(this._currentSpotlightColor || 'coral', 1.6);
+        const animName = `spotlight-pulse-${Date.now()}`;
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = `
+            @keyframes ${animName} {
+                0%, 100% {
+                    box-shadow: ${glow.min};
+                }
+                50% {
+                    box-shadow: ${glow.max};
+                }
+            }
+
+            #${musicianDiv.id}.spotlight-active {
+                animation: ${animName} 1.5s ease-in-out infinite !important;
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // Store references for cleanup
+        musicianDiv._spotlightBackdrop = glowBackdrop;
+
+        // Dim other musicians
+        Object.entries(this.trackData.ensemble).forEach(([name]) => {
+            if (name !== musicianName) {
+                const otherDiv = document.getElementById(`musician-${name.replace(/\s+/g, '-').toLowerCase()}`);
+                if (otherDiv) {
+                    otherDiv.style.opacity = '0.1';
+                    otherDiv.style.transition = `opacity ${blackoutDuration * 0.15}s ease`;
+                }
+            }
+        });
+
+        // Phase 1: End blackout after blackoutDuration (keep glow)
+        const fadeOutTime = 1.0; // seconds for transitions
+        setTimeout(() => {
+            // Fade other musicians back in smoothly
+            Object.entries(this.trackData.ensemble).forEach(([name]) => {
+                if (name !== musicianName) {
+                    const otherDiv = document.getElementById(`musician-${name.replace(/\s+/g, '-').toLowerCase()}`);
+                    if (otherDiv) {
+                        otherDiv.style.transition = `opacity ${fadeOutTime}s ease-out`;
+                        otherDiv.style.opacity = '';
+                    }
+                }
+            });
+
+            // Fade other page elements back in smoothly
+            elementsToFade.forEach(el => {
+                el.style.transition = `opacity ${fadeOutTime}s ease-out`;
+                el.style.opacity = '';
+            });
+
+            // Restore body background
+            document.body.style.transition = `background ${fadeOutTime}s ease-out`;
+            document.body.style.background = musicianDiv._originalBodyBg || '';
+        }, blackoutDuration * 1000);
+
+        // Phase 2: End glow after blackoutDuration + glowDuration
+        const glowFadeTime = 2.0; // slower fade for the glow
+        setTimeout(() => {
+            // Fade out the glow and scale back to solo size (1.05) smoothly
+            // Clear previous transition first, then set new one
+            musicianDiv.style.removeProperty('transition');
+            musicianDiv.offsetHeight; // Force reflow
+            musicianDiv.style.setProperty('transition', `box-shadow ${glowFadeTime}s ease-out, border-color ${glowFadeTime}s ease-out, transform ${glowFadeTime}s ease-out, background ${glowFadeTime}s ease-out, border-width ${glowFadeTime}s ease-out`, 'important');
+
+            // Small delay to let transition register
+            setTimeout(() => {
+                musicianDiv.style.boxShadow = 'none';
+                musicianDiv.style.borderColor = '';
+                musicianDiv.style.borderWidth = '';
+                musicianDiv.style.background = '';
+                musicianDiv.style.transform = 'scale(1.05)';  // Solo size, not normal
+                musicianDiv.classList.remove('spotlight-active');
+                musicianDiv.style.animation = '';
+            }, 50);
+
+            // Clean up after glow fade completes
+            setTimeout(() => {
+                // Remove stylesheet and backdrop
+                styleSheet.remove();
+                if (musicianDiv._spotlightBackdrop) {
+                    musicianDiv._spotlightBackdrop.remove();
+                    delete musicianDiv._spotlightBackdrop;
+                }
+                // Restore player-content overflow
+                if (musicianDiv._playerContent) {
+                    musicianDiv._playerContent.style.overflow = '';
+                    delete musicianDiv._playerContent;
+                }
+
+                // Clear all spotlight styles (keep transform at solo size - don't snap back)
+                musicianDiv.style.position = '';
+                musicianDiv.style.transition = '';
+                musicianDiv.style.boxShadow = '';
+                musicianDiv.style.zIndex = '';
+                // Don't clear transform - keep it at scale(1.05) for solo state
+                musicianDiv.style.transformOrigin = '';
+                Object.entries(this.trackData.ensemble).forEach(([name]) => {
+                    const div = document.getElementById(`musician-${name.replace(/\s+/g, '-').toLowerCase()}`);
+                    if (div) div.style.transition = '';
+                });
+                elementsToFade.forEach(el => {
+                    el.style.transition = '';
+                });
+            }, glowFadeTime * 1000 + 100);
+        }, (blackoutDuration + glowDuration) * 1000);
     }
 
     flashEntireEnsemble() {
@@ -1247,28 +1935,52 @@ class WebampChartifacts {
     }
 
     resetEnsembleDisplay() {
+        // Don't reset while loading a new song
+        if (this.isLoadingNewSong) return;
+
         Object.entries(this.trackData.ensemble).forEach(([musicianName, musicianInstruments]) => {
             const musicianDiv = document.getElementById(`musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`);
             if (!musicianDiv) return;
 
+            // Check if this musician has the rabbit before reset
+            const hadRabbit = musicianDiv.querySelector('.rabbithole-icon') !== null;
+
             // Use helper function to reset to default state
             const primaryInstrument = Array.isArray(musicianInstruments) ? musicianInstruments[0] : musicianInstruments;
             this.updateMusicianCard(musicianDiv, musicianName, primaryInstrument);
+
+            // Re-add rabbit if this musician had it (updateMusicianCard should handle this,
+            // but double-check in case the card was fully rebuilt)
+            if (hadRabbit && !musicianDiv.querySelector('.rabbithole-icon')) {
+                const rabbitIcon = document.createElement('span');
+                rabbitIcon.className = 'rabbithole-icon';
+                rabbitIcon.textContent = '🐰';
+                rabbitIcon.title = `Following ${musicianName}'s rabbithole - click for options, Shift+click others to switch`;
+                musicianDiv.appendChild(rabbitIcon);
+                musicianDiv.classList.add('has-rabbit');
+            }
         });
     }
 
     loadNewSong(newTrackData) {
-        console.log('DEBUG: Loading new song:', newTrackData.title);
+        console.debug('DEBUG: Loading new song:', newTrackData.title);
+        console.debug('DEBUG: New ensemble:', Object.keys(newTrackData.ensemble));
+
+        // Set loading flag to prevent resetEnsembleDisplay from running
+        this.isLoadingNewSong = true;
 
         // Stop current tracking
         this.stopTimeTracking();
 
         // Update track data
         this.trackData = newTrackData;
+        console.debug('DEBUG: trackData.ensemble after update:', Object.keys(this.trackData.ensemble));
 
         // Reset state
         this.currentSolo = null;
         this.currentEra = null;
+        this._cachedSongParts = null; // Clear cached parts from previous song
+        this._processedTimeline = null; // Clear cached processed timeline from previous song
         this.allMomentTimes = this.extractMomentTimes();
         this.upcomingMomentTimes = [...this.allMomentTimes];
         this.initializeMusicianWeights();
@@ -1288,6 +2000,7 @@ class WebampChartifacts {
         // Update ensemble display
         if (this.options.embedMode) {
             this.createEnsembleForEmbed();
+            this.isLoadingNewSong = false;
         } else {
             // For full mode, recreate the ensemble
             const ensembleContainer = document.getElementById('ensemble-display-in-webamp');
@@ -1296,13 +2009,14 @@ class WebampChartifacts {
             }
             setTimeout(() => {
                 this.createEnsembleInsideWebamp();
+                this.isLoadingNewSong = false;
             }, 100);
         }
 
         // Restart time tracking
         this.setupTimeTracking();
 
-        console.log('DEBUG: New song loaded successfully');
+        console.debug('DEBUG: New song loaded successfully');
     }
 
     cleanup() {

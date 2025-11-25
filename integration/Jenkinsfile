@@ -42,7 +42,12 @@ pipeline {
                     # Ensure NVM script is executable
                     chmod +x "$NVM_DIR/nvm.sh"
 
+                    # Source NVM and activate Node version
+                    . "$NVM_DIR/nvm.sh" --silent
                     nvm use ${NODE_VERSION} --silent
+
+                    # Always install pinned pnpm version for lockfile compatibility
+                    npm install -g pnpm@9.15.9
 
                     # Copy .env file from secrets
                     cp ${SECRETS_DIR}/0/.env .env
@@ -54,12 +59,12 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                // Only install if node_modules doesn't exist or package.json changed
+                // Only install if node_modules doesn't exist or lockfile changed
                 sh '''#!/bin/bash
-                    if [ ! -d "node_modules" ] || [ package.json -nt node_modules ]; then
+                    if [ ! -d "node_modules" ] || [ pnpm-lock.yaml -nt node_modules ]; then
                         . "$NVM_DIR/nvm.sh" --silent
                         nvm use ${NODE_VERSION} --silent
-                        npm install
+                        pnpm install --no-frozen-lockfile --config.ignore-scripts=false
                     fi
                 '''
             }

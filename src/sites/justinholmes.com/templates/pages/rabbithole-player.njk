@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rabbit Hole Player</title>
 
+    <script>
+        // Polyfill: Add array methods to StyleSheetList for Webamp compatibility
+        // Webamp's minified code calls .filter() on adoptedStyleSheets which is a StyleSheetList
+        (function() {
+            // Get the StyleSheetList prototype from an actual instance
+            const styleSheetListProto = Object.getPrototypeOf(document.styleSheets);
+
+            // Add array methods that Webamp might need
+            if (!styleSheetListProto.filter) {
+                styleSheetListProto.filter = function(...args) {
+                    return Array.from(this).filter(...args);
+                };
+            }
+            if (!styleSheetListProto.map) {
+                styleSheetListProto.map = function(...args) {
+                    return Array.from(this).map(...args);
+                };
+            }
+            if (!styleSheetListProto.forEach) {
+                styleSheetListProto.forEach = function(...args) {
+                    return Array.from(this).forEach(...args);
+                };
+            }
+        })();
+    </script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -16,8 +42,14 @@
             font-family: 'Helvetica Neue', Arial, sans-serif;
             background: #ffffff;
             color: #333333;
-            overflow: hidden;
-            height: 100vh;
+            overflow: auto;
+            min-height: 100vh;
+        }
+
+        /* Reset text-shadow for entire rabbithole player */
+        .player-container,
+        .player-container * {
+            text-shadow: none !important;
         }
 
         .player-container {
@@ -31,7 +63,7 @@
         /* Header with branding */
         .player-header {
             background: linear-gradient(135deg, #9db89a 0%, #87a96b 100%);
-            padding: 12px 20px;
+            padding: 6px 20px;
             border-bottom: 2px solid #4a7c59;
             display: flex;
             justify-content: space-between;
@@ -46,18 +78,20 @@
             font-family: 'VT323', monospace;
             color: #2d5016;
             margin: 0;
-            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
             letter-spacing: 1px;
         }
 
         .player-subtitle {
             font-size: 11px;
-            color: #4a7c59;
-            margin-top: 2px;
+            color: white;
+            margin-top: -2px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-weight: bold;
+            font-style: italic;
         }
 
         .rabbit-icon {
-            height: 48px;
+            height: 39px;
             width: auto;
             filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
         }
@@ -83,15 +117,45 @@
             transform: translateY(0);
         }
 
+        /* Song info header */
+        .song-info-header {
+            text-align: center;
+            padding-bottom: 2px;
+            margin-bottom: 0;
+        }
+
+        .song-title-display {
+            font-family: 'Caveat', cursive, sans-serif;
+            font-size: 22px;
+            margin: 0 0 2px 0;
+            color: #2d5016;
+        }
+
+        .recording-metadata {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .recording-metadata span {
+            margin: 0 4px;
+        }
+
         /* Main content area */
         .player-content {
             flex: 1;
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 20px;
-            padding: 20px;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 6px 20px;
+            overflow: visible;
             transition: all 0.3s ease;
+        }
+
+        /* Parts chart row - spans full width above player */
+        .parts-chart-row {
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         /* Footer mode styles */
@@ -264,22 +328,21 @@
 
         /* Connections panel */
         .connections-panel {
-            position: absolute;
-            top: 158px;
-            left: 100%;
-            margin-left: 15px;
-            transform: translateX(-100%);
+            position: fixed;
+            top: 120px;
+            right: 20px;
             width: 320px;
-            max-height: 500px;
+            max-height: 60vh;
             background: #ffffff;
             border: 2px solid #4a7c59;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             transition: transform 0.3s ease, opacity 0.3s ease;
-            z-index: 100;
+            z-index: 10000;
             overflow-y: auto;
             opacity: 0;
             pointer-events: none;
+            transform: translateX(50px);
         }
 
         .connections-panel.visible {
@@ -450,6 +513,91 @@
         #clear-cache-btn:hover {
             background: #2d5016;
         }
+
+        /* Status indicator bar */
+        .status-indicators {
+            display: flex;
+            gap: 12px;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 11px;
+            font-family: 'VT323', monospace;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-indicator .label {
+            color: #888;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+
+        .status-indicator .value {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-indicator .value.local {
+            background: #4a7c59;
+            color: white;
+        }
+
+        .status-indicator .value.stream {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        /* Rabbithole icon in ensemble */
+        .rabbithole-icon {
+            display: inline;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        /* Playable song styling */
+        .connection-song.playable {
+            border-left-color: #8b5cf6;
+        }
+
+        .connection-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .connection-actions button {
+            padding: 4px 8px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .connection-actions button:first-child {
+            background: #4a7c59;
+            color: white;
+        }
+
+        .connection-actions button:first-child:hover {
+            background: #3d6a4a;
+        }
+
+        .connection-actions button:last-child {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .connection-actions button:last-child:hover {
+            background: #7c3aed;
+        }
     </style>
 
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=VT323&display=swap" rel="stylesheet">
@@ -460,13 +608,13 @@
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="/assets/images/rabbit.png" alt="Rabbit" class="rabbit-icon">
                 <div>
-                    <h1 class="player-title">rabbithole</h1>
-                    <div class="player-subtitle">Real-time chartifacts visualization</div>
+                    <h1 class="player-title">rabbithole <span style="font-size: 12px; opacity: 0.6;">a4</span></h1>
+                    <div class="player-subtitle">discover music by connections, not algorithms</div>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
                 <div id="current-song-info" style="text-align: right; font-size: 13px;">
-                    <div style="color: #4a7c59; font-weight: 600;">August</div>
+                    <div id="current-song-title" style="color: #4a7c59; font-weight: 600;">August</div>
                     <div style="color: #888; font-size: 11px;">Vowel Sounds</div>
                 </div>
                 <button id="toggle-mode-btn" class="toggle-mode-btn" onclick="togglePlayerMode()">
@@ -475,7 +623,20 @@
             </div>
         </div>
 
+        <div class="status-indicators">
+            <div class="status-indicator">
+                <span class="label">source:</span>
+                <span id="source-indicator" class="value stream">stream</span>
+            </div>
+        </div>
+
         <div class="player-content">
+            <!-- Song info header -->
+            <div class="song-info-header" id="song-info-header">
+                <h2 id="song-title-display" class="song-title-display">Loading...</h2>
+                <div id="recording-metadata" class="recording-metadata"></div>
+            </div>
+
             <div class="left-panel">
                 <div class="webamp-wrapper">
                     <div id="webamp-player">Loading player...</div>
@@ -496,10 +657,9 @@
                 </div>
             </div>
 
-            <div class="right-panel">
-                <div class="parts-chart-wrapper">
-                    <div id="parts-chart" class="parts-chart"></div>
-                </div>
+            <!-- Parts chart - at bottom -->
+            <div class="parts-chart-row">
+                <div id="parts-chart" class="parts-chart"></div>
             </div>
         </div>
 
@@ -529,18 +689,160 @@
     </div>
 
     <script>
+        // Catalog of songs with rabbithole data
+        window.rabbitholeeCatalog = {
+            {% for song_slug, song in songs %}
+            {% for version_num, version in song.studio_versions %}
+            {% for release_name, release_data in version %}
+            {% if release_data.rabbithole %}
+            '{{ song_slug }}': {
+                title: '{{ song.title | replace("'", "\\'") }}',
+                release: '{{ release_name | replace("'", "\\'") }}',
+                duration: {{ release_data.rabbithole.duration | default(0) }},
+                audioFile: '{{ release_data.rabbithole.audioFile }}',
+                ensemble: {{ release_data.ensemble | dump | safe }},
+                timeline: {{ release_data.rabbithole.timeline | dump | safe }},
+                standardSectionLength: {{ release_data.rabbithole.standardSectionLength | dump | default('null') | safe }},
+                colorScheme: {{ release_data.rabbithole.colorScheme | dump | default('null') | safe }},
+                engineer: {{ release_data.engineer | dump | default('null') | safe }},
+                studio: {{ release_data.studio | dump | default('null') | safe }},
+                recordDate: {{ release_data.record | dump | default('null') | safe }},
+                sessionType: {{ release_data['session-type'] | dump | default('null') | safe }}
+            },
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+            {% endfor %}
+        };
+
         // Default song to load
         {% set augustSong = songs['august'] %}
         {% set vowelSoundsVersion = augustSong.studio_versions[0]['Vowel Sounds'] %}
         window.songChartifactsData = {
             title: "{{ augustSong.title }}",
-            duration: {{ vowelSoundsVersion.chartifacts.duration }},
-            audioFile: "{{ vowelSoundsVersion.chartifacts.audioFile }}",
+            duration: {{ vowelSoundsVersion.rabbithole.duration }},
+            audioFile: "{{ vowelSoundsVersion.rabbithole.audioFile }}",
             ensemble: {{ vowelSoundsVersion.ensemble | dump | safe }},
-            timeline: {{ vowelSoundsVersion.chartifacts.timeline | dump | safe }},
-            standardSectionLength: {{ vowelSoundsVersion.chartifacts.standardSectionLength | dump | safe }},
-            colorScheme: {{ vowelSoundsVersion.chartifacts.colorScheme | dump | safe }}
+            timeline: {{ vowelSoundsVersion.rabbithole.timeline | dump | safe }},
+            standardSectionLength: {{ vowelSoundsVersion.rabbithole.standardSectionLength | dump | safe }},
+            colorScheme: {{ vowelSoundsVersion.rabbithole.colorScheme | dump | safe }}
         };
+
+        // Check for URL parameter to override default song
+        const urlParams = new URLSearchParams(window.location.search);
+        const songParam = urlParams.get('song');
+        if (songParam && window.rabbitholeeCatalog && window.rabbitholeeCatalog[songParam]) {
+            const songData = window.rabbitholeeCatalog[songParam];
+            window.songChartifactsData = {
+                title: songData.title,
+                duration: songData.duration,
+                audioFile: songData.audioFile,
+                ensemble: songData.ensemble,
+                timeline: songData.timeline,
+                standardSectionLength: songData.standardSectionLength,
+                colorScheme: songData.colorScheme,
+                engineer: songData.engineer,
+                studio: songData.studio,
+                recordDate: songData.recordDate,
+                sessionType: songData.sessionType
+            };
+            console.log('Loaded song from URL parameter:', songParam);
+        }
+
+        // IndexedDB audio caching for persistence across refreshes
+        const AUDIO_CACHE_DB = 'rabbithole-audio-cache';
+        const AUDIO_CACHE_STORE = 'audio-files';
+
+        function openAudioCache() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(AUDIO_CACHE_DB, 1);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(AUDIO_CACHE_STORE)) {
+                        db.createObjectStore(AUDIO_CACHE_STORE, { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+
+        async function cacheAudioFile(file) {
+            try {
+                const db = await openAudioCache();
+                const arrayBuffer = await file.arrayBuffer();
+                const tx = db.transaction(AUDIO_CACHE_STORE, 'readwrite');
+                const store = tx.objectStore(AUDIO_CACHE_STORE);
+                store.put({
+                    id: 'current-audio',
+                    data: arrayBuffer,
+                    name: file.name,
+                    type: file.type,
+                    timestamp: Date.now()
+                });
+                await tx.complete;
+                console.log(`Cached audio file: ${file.name} (${(arrayBuffer.byteLength / 1024 / 1024).toFixed(2)} MB)`);
+            } catch (err) {
+                console.warn('Failed to cache audio:', err);
+            }
+        }
+
+        async function loadCachedAudio() {
+            try {
+                const db = await openAudioCache();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(AUDIO_CACHE_STORE, 'readonly');
+                    const store = tx.objectStore(AUDIO_CACHE_STORE);
+                    const request = store.get('current-audio');
+                    request.onsuccess = () => {
+                        if (request.result) {
+                            const blob = new Blob([request.result.data], { type: request.result.type });
+                            const url = URL.createObjectURL(blob);
+                            console.log(`Loaded cached audio: ${request.result.name}`);
+                            resolve({ url, name: request.result.name });
+                        } else {
+                            resolve(null);
+                        }
+                    };
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (err) {
+                console.warn('Failed to load cached audio:', err);
+                return null;
+            }
+        }
+
+        async function clearAudioCache() {
+            try {
+                const db = await openAudioCache();
+                const tx = db.transaction(AUDIO_CACHE_STORE, 'readwrite');
+                tx.objectStore(AUDIO_CACHE_STORE).clear();
+                console.log('Audio cache cleared');
+            } catch (err) {
+                console.warn('Failed to clear audio cache:', err);
+            }
+        }
+
+        // Update source indicator
+        function setSourceIndicator(isLocal) {
+            const indicator = document.getElementById('source-indicator');
+            if (indicator) {
+                indicator.textContent = isLocal ? 'local' : 'stream';
+                indicator.className = 'value ' + (isLocal ? 'local' : 'stream');
+            }
+        }
+
+        // Check for cached audio on page load
+        (async function() {
+            const cached = await loadCachedAudio();
+            if (cached) {
+                window.songChartifactsData.audioFile = cached.url;
+                setSourceIndicator(true);
+                console.log(`Using cached audio file: ${cached.name}`);
+            } else {
+                setSourceIndicator(false);
+            }
+        })();
 
         // Musician connections functionality
         let oracleData = null;
@@ -565,8 +867,48 @@
         window.makeMusiciansClickable = function() {
             const musicianNames = document.querySelectorAll('.musician-name');
             musicianNames.forEach(nameEl => {
+                // Skip if we've already attached handlers to this element
+                if (nameEl.dataset.clickableAttached) return;
+                nameEl.dataset.clickableAttached = 'true';
+
                 nameEl.classList.add('clickable');
-                nameEl.addEventListener('click', () => window.showMusicianConnections(nameEl.textContent.trim(), true));
+
+                // Extract clean musician name (without instrument)
+                const getMusicianName = () => {
+                    let text = nameEl.textContent.trim();
+                    // Remove rabbit emoji if present
+                    text = text.replace(/\s*🐰\s*$/, '');
+                    // Remove instrument in parentheses
+                    return text.replace(/\s*\([^)]*\)$/, '').trim();
+                };
+
+                nameEl.addEventListener('click', (e) => {
+                    const musicianName = getMusicianName();
+
+                    // Shift+click moves rabbit to this musician
+                    if (e.shiftKey) {
+                        e.stopPropagation();
+                        window.setRabbitholeMusician(musicianName);
+                        console.log(`🐰 Moved rabbit to ${musicianName} (shift+click)`);
+                        return;
+                    }
+
+                    // Regular click shows connections panel
+                    window.showMusicianConnections(musicianName, true);
+                });
+            });
+
+            // Separately handle rabbit icons (they get re-created when cards update)
+            const rabbitIcons = document.querySelectorAll('.rabbithole-icon');
+            rabbitIcons.forEach(rabbitIcon => {
+                if (rabbitIcon.dataset.clickableAttached) return;
+                rabbitIcon.dataset.clickableAttached = 'true';
+
+                rabbitIcon.style.cursor = 'pointer';
+                rabbitIcon.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Don't trigger parent click
+                    window.showPlaylistPopup();
+                });
             });
         };
 
@@ -637,17 +979,38 @@
                 return;
             }
 
-            const connectionsHtml = connections.map(conn => `
-                <div class="connection-song">
-                    <div class="connection-song-title">${conn.song}</div>
-                    <div class="connection-context">${conn.context}</div>
-                </div>
-            `).join('');
+            const connectionsHtml = connections.map(conn => {
+                // Check if this song has rabbithole data
+                const songSlug = conn.song.toLowerCase().replace(/\s+/g, '-');
+                const hasRabbithole = window.rabbitholeeCatalog && window.rabbitholeeCatalog[songSlug];
+
+                const playButtons = hasRabbithole ? `
+                    <div class="connection-actions">
+                        <button onclick="event.stopPropagation(); window.playSongNow('${songSlug}')" title="Play now">
+                            ▶️ Play
+                        </button>
+                        <button onclick="event.stopPropagation(); window.addToRabbithole('${songSlug}')" title="Add to rabbithole">
+                            🐰 Queue
+                        </button>
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="connection-song ${hasRabbithole ? 'playable' : ''}">
+                        <div class="connection-song-title">${conn.song}</div>
+                        <div class="connection-context">${conn.context}</div>
+                        ${playButtons}
+                    </div>
+                `;
+            }).join('');
 
             content.innerHTML = `
                 <div style="margin-bottom: 15px; padding-bottom: 12px; border-bottom: 2px solid #e0e0e0;">
                     <a href="${pickipediaLink}" target="_blank" style="display: block; margin-bottom: 10px;">
                         📖 View ${cleanName} on PickiPedia →
+                    </a>
+                    <a href="#" onclick="event.preventDefault(); window.goDownRabbithole('${cleanName.replace(/'/g, "\\'")}');" style="display: block; margin-bottom: 10px; color: #8b5cf6;">
+                        🐰 Go down a ${cleanName} rabbithole
                     </a>
                     <div style="font-weight: 600; color: #333; font-size: 12px;">
                         Found ${connections.length} other appearance${connections.length === 1 ? '' : 's'}:
@@ -660,6 +1023,462 @@
         window.hideConnections = function() {
             document.getElementById('connections-panel').classList.remove('visible');
             userClosedPanel = true;
+        };
+
+        // Rabbithole state management
+        window.rabbitholeState = {
+            followingMusician: null,  // The musician the rabbit is on
+            playedSongs: new Set(),   // Songs already played this session
+            currentSongSlug: null,    // Current song being played
+            followMode: 'same'        // 'same' (stay on musician), 'random' (hop to bandmate), 'manual'
+        };
+
+        // Play history: array of {songSlug, songTitle, viaMusician}
+        window.rabbitholeHistory = [];
+
+        // Next song info: {songSlug, songTitle, viaMusician}
+        window.rabbitholeNextSong = null;
+
+        // Track which musicians are in "rabbithole mode" (legacy, will migrate)
+        window.rabbitholeMusicians = new Set();
+
+        // localStorage persistence
+        window.saveRabbitholeState = function() {
+            try {
+                const toSave = {
+                    followingMusician: window.rabbitholeState.followingMusician,
+                    playedSongs: Array.from(window.rabbitholeState.playedSongs),
+                    currentSongSlug: window.rabbitholeState.currentSongSlug,
+                    followMode: window.rabbitholeState.followMode
+                };
+                localStorage.setItem('rabbitholeState', JSON.stringify(toSave));
+                console.log('🐰 State saved to localStorage');
+            } catch (e) {
+                console.warn('🐰 Could not save state:', e);
+            }
+        };
+
+        window.loadRabbitholeState = function() {
+            try {
+                const saved = localStorage.getItem('rabbitholeState');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    window.rabbitholeState.playedSongs = new Set(parsed.playedSongs || []);
+                    window.rabbitholeState.followMode = parsed.followMode || 'same';
+                    // Don't restore followingMusician or currentSongSlug yet - do that when ensemble loads
+                    console.log('🐰 State loaded from localStorage:', parsed.playedSongs?.length || 0, 'played songs');
+                    return parsed;
+                }
+            } catch (e) {
+                console.warn('🐰 Could not load state:', e);
+            }
+            return null;
+        };
+
+        window.clearRabbitholeState = function() {
+            localStorage.removeItem('rabbitholeState');
+            window.rabbitholeState.playedSongs.clear();
+            window.rabbitholeState.followingMusician = null;
+            window.rabbitholeState.currentSongSlug = null;
+            console.log('🐰 State cleared');
+        };
+
+        // Load saved state on startup
+        const savedState = window.loadRabbitholeState();
+
+        // Select a random musician from current ensemble and place rabbit on them
+        window.selectRandomMusician = function() {
+            const musicianNames = document.querySelectorAll('.musician-name');
+            if (musicianNames.length === 0) return null;
+
+            // Get musician names (strip instrument)
+            const musicians = Array.from(musicianNames).map(el => {
+                const text = el.textContent.trim();
+                return text.replace(/\s*\([^)]*\)$/, '').trim();
+            }).filter(name => name && !name.includes('console')); // Exclude engineer
+
+            if (musicians.length === 0) return null;
+
+            const randomIndex = Math.floor(Math.random() * musicians.length);
+            const selectedMusician = musicians[randomIndex];
+
+            window.setRabbitholeMusician(selectedMusician);
+            return selectedMusician;
+        };
+
+        // Set the rabbit on a specific musician
+        window.setRabbitholeMusician = function(musicianName) {
+            // Remove rabbit from previous musician
+            if (window.rabbitholeState.followingMusician) {
+                const prevId = `musician-${window.rabbitholeState.followingMusician.replace(/\s+/g, '-').toLowerCase()}`;
+                const prevDiv = document.getElementById(prevId);
+                if (prevDiv) {
+                    const existingRabbit = prevDiv.querySelector('.rabbithole-icon');
+                    if (existingRabbit) existingRabbit.remove();
+                }
+            }
+
+            // Add rabbit to new musician's name element
+            const musicianId = `musician-${musicianName.replace(/\s+/g, '-').toLowerCase()}`;
+            const musicianDiv = document.getElementById(musicianId);
+
+            if (musicianDiv && !musicianDiv.querySelector('.rabbithole-icon')) {
+                const nameEl = musicianDiv.querySelector('.musician-name');
+                if (nameEl) {
+                    const rabbitIcon = document.createElement('span');
+                    rabbitIcon.className = 'rabbithole-icon';
+                    rabbitIcon.textContent = ' 🐰';
+                    rabbitIcon.title = `Following ${musicianName}'s rabbithole - click for options, Shift+click others to switch`;
+                    nameEl.appendChild(rabbitIcon);
+                }
+            }
+
+            window.rabbitholeState.followingMusician = musicianName;
+            console.log(`🐰 Rabbit now following: ${musicianName}`);
+
+            // Save state and queue next song
+            window.saveRabbitholeState();
+            window.queueNextSongByMusician(musicianName);
+        };
+
+        // Find and queue the next song featuring this musician
+        window.queueNextSongByMusician = async function(musicianName) {
+            const connectionsData = await window.loadMusicianConnections();
+            if (!connectionsData) return;
+
+            const connections = window.findMusicianConnections(musicianName, connectionsData);
+            if (!connections || connections.length === 0) return;
+
+            // Filter to songs with rabbithole data that we haven't played
+            const playableSongs = connections.filter(conn => {
+                const songSlug = conn.song.toLowerCase().replace(/\s+/g, '-');
+                const hasRabbithole = window.rabbitholeeCatalog && window.rabbitholeeCatalog[songSlug];
+                const notPlayed = !window.rabbitholeState.playedSongs.has(songSlug);
+                const notCurrent = songSlug !== window.rabbitholeState.currentSongSlug;
+                return hasRabbithole && notPlayed && notCurrent;
+            });
+
+            if (playableSongs.length === 0) {
+                console.log(`🐰 No unplayed songs available for ${musicianName} in catalog`);
+                // Don't auto-switch here - rabbit stays on this musician
+                // We'll switch to a bandmate when playNextInRabbithole is called
+                window.updateNextUpDisplay('No songs queued', `${musicianName} has no rabbithole songs yet`);
+                return;
+            }
+
+            // Pick a random song from available ones
+            const randomIndex = Math.floor(Math.random() * playableSongs.length);
+            const nextSong = playableSongs[randomIndex];
+            const nextSlug = nextSong.song.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+
+            // Get the actual title from catalog
+            const catalogEntry = window.rabbitholeeCatalog[nextSlug];
+            const songTitle = catalogEntry ? catalogEntry.title : nextSong.song;
+
+            // Clear queue and add this song
+            window.rabbitholeQueue = [nextSlug];
+            console.log(`🐰 Next up: "${songTitle}" via ${musicianName}`);
+
+            // Update the "next up" display
+            window.updateNextUpDisplay(songTitle, musicianName);
+        };
+
+        // Update the "next up" display at bottom of page
+        window.updateNextUpDisplay = function(songTitle, viaMusician) {
+            // Store next song info for playlist popup (don't convert title to slug here!)
+            const songSlug = songTitle.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+            window.rabbitholeNextSong = { songSlug, songTitle, viaMusician };
+
+            let nextUpEl = document.getElementById('rabbithole-next-up');
+            if (!nextUpEl) {
+                // Create it if it doesn't exist
+                nextUpEl = document.createElement('div');
+                nextUpEl.id = 'rabbithole-next-up';
+                nextUpEl.style.cssText = 'padding: 10px; margin-top: 10px; background: #f0f0f0; border-radius: 4px; font-size: 12px;';
+                const partsChart = document.querySelector('.parts-chart-row');
+                if (partsChart) {
+                    partsChart.after(nextUpEl);
+                }
+            }
+            nextUpEl.innerHTML = `<strong>🐰 Next up:</strong> ${songTitle} <span style="color: #666;">via ${viaMusician}</span>`;
+        };
+
+        // Show playlist popup when rabbit is clicked
+        window.showPlaylistPopup = function() {
+            // Remove existing popup if any
+            let popup = document.getElementById('rabbithole-playlist-popup');
+            if (popup) {
+                popup.remove();
+                return; // Toggle off
+            }
+
+            // Create popup
+            popup = document.createElement('div');
+            popup.id = 'rabbithole-playlist-popup';
+            popup.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #faf7f2;
+                border: 2px solid #1a365d;
+                border-radius: 8px;
+                padding: 16px;
+                min-width: 280px;
+                max-width: 400px;
+                z-index: 10000;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                font-family: Arial, sans-serif;
+            `;
+
+            let html = '<div style="font-weight: bold; margin-bottom: 12px; color: #1a365d;">🐰 Rabbithole</div>';
+
+            // Previous songs (history)
+            if (window.rabbitholeHistory.length > 0) {
+                const lastPlayed = window.rabbitholeHistory[window.rabbitholeHistory.length - 1];
+                html += `
+                    <div onclick="window.skipToPrevious(); document.getElementById('rabbithole-playlist-popup').remove();"
+                         style="padding: 8px; background: #e8e8e8; border-radius: 4px; opacity: 0.7; position: relative; cursor: pointer; transition: background 0.2s;"
+                         onmouseover="this.style.background='#d8d8d8'"
+                         onmouseout="this.style.background='#e8e8e8'">
+                        <div style="font-size: 12px; color: #666;">Previous</div>
+                        <div style="font-weight: bold;">${lastPlayed.songTitle}</div>
+                    </div>
+                    <div style="text-align: center; margin: -8px 0; position: relative; z-index: 1;">
+                        <span style="display: inline-block; padding: 2px 8px; background: #b8460e; color: white; border-radius: 10px; font-size: 10px;">
+                            ${lastPlayed.viaMusician}
+                        </span>
+                    </div>
+                `;
+            }
+
+            // Current song
+            const currentSongData = window.rabbitholeeCatalog[window.rabbitholeState.currentSongSlug];
+            if (currentSongData) {
+                html += `
+                    <div style="padding: 8px; background: #1a365d; color: white; border-radius: 4px; position: relative;">
+                        <div style="font-size: 12px; opacity: 0.8;">Now Playing</div>
+                        <div style="font-weight: bold;">${currentSongData.title}</div>
+                    </div>
+                `;
+            }
+
+            // Next song
+            if (window.rabbitholeNextSong && window.rabbitholeNextSong.songTitle !== 'No songs queued' && window.rabbitholeNextSong.songTitle !== 'End of rabbithole') {
+                html += `
+                    <div style="text-align: center; margin: -8px 0; position: relative; z-index: 1;">
+                        <span style="display: inline-block; padding: 2px 8px; background: #b8460e; color: white; border-radius: 10px; font-size: 10px;">
+                            ${window.rabbitholeNextSong.viaMusician}
+                        </span>
+                    </div>
+                    <div onclick="window.skipToNext(); document.getElementById('rabbithole-playlist-popup').remove();"
+                         style="padding: 8px; background: #f0f0f0; border-radius: 4px; opacity: 0.8; position: relative; cursor: pointer; transition: background 0.2s;"
+                         onmouseover="this.style.background='#e0e0e0'"
+                         onmouseout="this.style.background='#f0f0f0'">
+                        <div style="font-size: 12px; color: #666;">Up Next</div>
+                        <div style="font-weight: bold;">${window.rabbitholeNextSong.songTitle}</div>
+                    </div>
+                `;
+            }
+
+            // Close button
+            html += `
+                <div style="text-align: center; margin-top: 12px;">
+                    <button onclick="document.getElementById('rabbithole-playlist-popup').remove()"
+                            style="padding: 4px 12px; border: 1px solid #1a365d; background: white; border-radius: 4px; cursor: pointer;">
+                        Close
+                    </button>
+                </div>
+            `;
+
+            popup.innerHTML = html;
+            document.body.appendChild(popup);
+
+            // Close on click outside
+            setTimeout(() => {
+                document.addEventListener('click', function closePopup(e) {
+                    if (!popup.contains(e.target) && !e.target.closest('.rabbithole-icon')) {
+                        popup.remove();
+                        document.removeEventListener('click', closePopup);
+                    }
+                });
+            }, 100);
+        };
+
+        // Skip to next song in rabbithole
+        window.skipToNext = async function() {
+            if (window.rabbitholeNextSong && window.rabbitholeQueue.length > 0) {
+                console.log('🐰 Skipping to next song');
+                await window.playNextInRabbithole();
+            }
+        };
+
+        // Skip to previous song in rabbithole
+        window.skipToPrevious = async function() {
+            if (window.rabbitholeHistory.length > 0) {
+                const previousSong = window.rabbitholeHistory.pop();
+                console.log('🐰 Skipping to previous song:', previousSong.songTitle);
+
+                // Remove from played songs set
+                window.rabbitholeState.playedSongs.delete(previousSong.songSlug);
+
+                // Play the previous song
+                await window.playSongNow(previousSong.songSlug);
+                window.rabbitholeState.currentSongSlug = previousSong.songSlug;
+
+                // Re-queue the musician
+                if (window.rabbitholeState.followingMusician) {
+                    window.queueNextSongByMusician(window.rabbitholeState.followingMusician);
+                }
+            }
+        };
+
+        // Play the next song in the rabbithole queue
+        window.playNextInRabbithole = async function() {
+            if (window.rabbitholeQueue.length === 0) {
+                console.log('🐰 Rabbithole queue empty - finding a bandmate');
+
+                // Get all musicians from current ensemble (excluding the one we're following)
+                const musicianNames = document.querySelectorAll('.musician-name');
+                const currentMusician = window.rabbitholeState.followingMusician;
+                const bandmates = Array.from(musicianNames)
+                    .map(el => {
+                        let text = el.textContent.trim();
+                        text = text.replace(/\s*🐰\s*$/, '');  // Remove rabbit emoji
+                        return text.replace(/\s*\([^)]*\)$/, '').trim();  // Remove instrument
+                    })
+                    .filter(name => name && name !== currentMusician && !name.includes('console'));
+
+                if (bandmates.length === 0) {
+                    console.log('🐰 No bandmates to follow - end of rabbithole');
+                    window.updateNextUpDisplay('End of rabbithole', 'no more songs');
+                    return;
+                }
+
+                // Pick a random bandmate and try their queue
+                const randomBandmate = bandmates[Math.floor(Math.random() * bandmates.length)];
+                console.log(`🐰 Switching to bandmate: ${randomBandmate}`);
+                window.setRabbitholeMusician(randomBandmate);
+
+                // Try to play from new musician's queue
+                if (window.rabbitholeQueue.length > 0) {
+                    return window.playNextInRabbithole();
+                }
+                return;
+            }
+
+            const nextSlug = window.rabbitholeQueue.shift();
+
+            // Add current song to history before moving to next
+            if (window.rabbitholeState.currentSongSlug && window.rabbitholeNextSong) {
+                const currentSongData = window.rabbitholeeCatalog[window.rabbitholeState.currentSongSlug];
+                if (currentSongData) {
+                    // Find who connected this song to the next
+                    const viaMusician = window.rabbitholeNextSong.viaMusician;
+                    window.rabbitholeHistory.push({
+                        songSlug: window.rabbitholeState.currentSongSlug,
+                        songTitle: currentSongData.title,
+                        viaMusician: viaMusician
+                    });
+                }
+            }
+
+            window.rabbitholeState.playedSongs.add(window.rabbitholeState.currentSongSlug);
+
+            await window.playSongNow(nextSlug);
+            window.rabbitholeState.currentSongSlug = nextSlug;
+
+            // Save state after playing new song
+            window.saveRabbitholeState();
+
+            // Re-select musician in new song's ensemble
+            // Wait for ensemble to be created
+            setTimeout(() => {
+                if (window.rabbitholeState.followMode === 'same') {
+                    // Try to keep following the same musician
+                    const musicianId = `musician-${window.rabbitholeState.followingMusician.replace(/\s+/g, '-').toLowerCase()}`;
+                    if (document.getElementById(musicianId)) {
+                        window.setRabbitholeMusician(window.rabbitholeState.followingMusician);
+                    } else {
+                        // Musician not in this song - pick random
+                        window.selectRandomMusician();
+                    }
+                } else {
+                    window.selectRandomMusician();
+                }
+            }, 500);
+        };
+
+        window.goDownRabbithole = function(musicianName) {
+            // Use the new setRabbitholeMusician which handles moving the rabbit
+            window.setRabbitholeMusician(musicianName);
+
+            // Close the connections panel
+            window.hideConnections();
+        };
+
+        // Rabbithole queue
+        window.rabbitholeQueue = [];
+
+        // Play a song immediately
+        window.playSongNow = async function(songSlug) {
+            const songData = window.rabbitholeeCatalog[songSlug];
+            if (!songData) {
+                console.error('Song not found in catalog:', songSlug);
+                return;
+            }
+
+            console.log('Playing now:', songData.title);
+
+            // Update the global song data so file picker uses correct ensemble
+            window.songChartifactsData = {
+                title: songData.title,
+                duration: songData.duration,
+                audioFile: songData.audioFile,
+                ensemble: songData.ensemble,
+                timeline: songData.timeline,
+                standardSectionLength: songData.standardSectionLength,
+                colorScheme: songData.colorScheme
+            };
+
+            // Load the new song
+            if (window.chartifactsPlayer && typeof window.chartifactsPlayer.loadNewSong === 'function') {
+                await window.chartifactsPlayer.loadNewSong(window.songChartifactsData);
+            }
+
+            // Update the song title display in header
+            const titleEl = document.getElementById('current-song-title');
+            if (titleEl) {
+                titleEl.textContent = songData.title;
+                console.log('🐰 Updated header title to:', songData.title);
+            } else {
+                console.error('🐰 Could not find #current-song-title element');
+            }
+
+            // Update source indicator to stream
+            setSourceIndicator(false);
+
+            // Close the panel
+            window.hideConnections();
+        };
+
+        // Add a song to the rabbithole queue
+        window.addToRabbithole = function(songSlug) {
+            const songData = window.rabbitholeeCatalog[songSlug];
+            if (!songData) {
+                console.error('Song not found in catalog:', songSlug);
+                return;
+            }
+
+            // Add to queue
+            window.rabbitholeQueue.push(songSlug);
+            console.log(`Added ${songData.title} to rabbithole queue. Queue length: ${window.rabbitholeQueue.length}`);
+
+            // TODO: Show queue indicator somewhere in UI
+            alert(`Added "${songData.title}" to queue (${window.rabbitholeQueue.length} songs queued)`);
+
+            // Close the panel
+            window.hideConnections();
         };
 
         // Function to load audio from a local file
@@ -682,6 +1501,9 @@
             const file = e.target.files[0];
             if (file) {
                 loadAudioFromFile(file);
+                // Cache the file for persistence across refreshes
+                await cacheAudioFile(file);
+                setSourceIndicator(true);
                 console.log(`Loaded audio file: ${file.name}`);
             }
         });
@@ -808,16 +1630,31 @@
             }
         }
 
-        // Load the player script
-        const script = document.createElement('script');
-        script.src = '/rabbithole.js';
-        script.onload = function() {
-            // Initialize the player
+        // Wait for Webpack-injected rabbithole.js to load and define WebampChartifacts
+        function initPlayer() {
             if (typeof WebampChartifacts !== 'undefined') {
                 window.chartifactsPlayer = new WebampChartifacts('webamp-player', window.songChartifactsData, {
                     embedMode: false,
                     fixedPosition: false
                 });
+
+                // Populate song title and recording metadata
+                const songData = window.songChartifactsData;
+                document.getElementById('song-title-display').textContent = songData.title || 'Untitled';
+
+                const metadataEl = document.getElementById('recording-metadata');
+                let metadataText = '';
+                if (songData.recordDate) {
+                    metadataText = `Recorded ${songData.recordDate}`;
+                    if (songData.studio) metadataText += ` at ${songData.studio}`;
+                    if (songData.sessionType) metadataText += ` (session type: ${songData.sessionType})`;
+                }
+                metadataEl.textContent = metadataText;
+
+                // Set current song slug from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const songParam = urlParams.get('song');
+                window.rabbitholeState.currentSongSlug = songParam || 'august';
 
                 // Wait for ensemble to be created, then make musician names clickable
                 const waitForEnsemble = setInterval(() => {
@@ -826,11 +1663,25 @@
                         clearInterval(waitForEnsemble);
                         window.makeMusiciansClickable();
                         console.log('Made musician names clickable:', musicianNames.length, 'names found');
+
+                        // Auto-select a random musician to follow
+                        setTimeout(() => {
+                            window.selectRandomMusician();
+                        }, 500);
                     }
                 }, 100);
+            } else {
+                // Webpack script not loaded yet, wait and retry
+                setTimeout(initPlayer, 50);
             }
-        };
-        document.head.appendChild(script);
+        }
+
+        // Start initialization after DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPlayer);
+        } else {
+            initPlayer();
+        }
     </script>
 </body>
 </html>
