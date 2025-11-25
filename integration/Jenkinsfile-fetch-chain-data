@@ -19,11 +19,14 @@ pipeline {
                     cp ${SECRETS_DIR}/0/.env .env
                     chmod 600 .env
 
-                    export NVM_DIR="$NVM_DIR"
-                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --no-use > /dev/null
-                    nvm use ${NODE_VERSION} > /dev/null
-                    nvm use ${NODE_VERSION}
-                    npm install
+                    # Source NVM and activate Node version
+                    . "$NVM_DIR/nvm.sh" --silent
+                    nvm use ${NODE_VERSION} --silent
+
+                    # Always install pinned pnpm version for lockfile compatibility
+                    npm install -g pnpm@9.15.9
+
+                    pnpm install --no-frozen-lockfile --config.ignore-scripts=false
                 '''
             }
         }
@@ -31,9 +34,9 @@ pipeline {
         stage('Fetch Chain Data') {
             steps {
                 sh '''
-                    export NVM_DIR="$NVM_DIR"
-                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --no-use > /dev/null
-                    nvm use ${NODE_VERSION} > /dev/null
+                    # Source NVM and activate Node version
+                    . "$NVM_DIR/nvm.sh" --silent
+                    nvm use ${NODE_VERSION} --silent
                     CHAIN_DATA_OUTPUT_DIR=${CHAIN_DATA_DIR} npm run fetch-chain-data
 
                     # Copy the data to shared location
