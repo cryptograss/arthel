@@ -2,7 +2,7 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
-import fetch from 'node-fetch';
+// Native fetch available in Node 18+
 import { getProjectDirs, initProjectDirs } from './locations.js';
 import { blueRailroadContractAddress } from './constants.js';
 
