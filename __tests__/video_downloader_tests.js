@@ -7,17 +7,17 @@ const mockFs = {
 };
 
 const mockFetch = jest.fn(() => Promise.resolve({
-    buffer: () => Promise.resolve(Buffer.from('video data'))
+    ok: true,
+    arrayBuffer: () => Promise.resolve(new ArrayBuffer(10))
 }));
+
+// Mock global fetch (native fetch in Node 18+)
+globalThis.fetch = mockFetch;
 
 // Set up all mocks BEFORE any imports
 jest.unstable_mockModule('fs', () => ({
     default: mockFs,
     __esModule: true
-}));
-
-jest.unstable_mockModule('node-fetch', () => ({
-    default: mockFetch
 }));
 
 // Import the function we want to test

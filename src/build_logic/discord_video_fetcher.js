@@ -22,8 +22,8 @@ function parseDiscordUrl(url) {
 
 async function downloadVideo(videoUrl, outputPath) {
     const response = await fetch(videoUrl);
-    const buffer = await response.buffer();
-    fs.writeFileSync(outputPath, buffer);
+    const arrayBuffer = await response.arrayBuffer();
+    fs.writeFileSync(outputPath, Buffer.from(arrayBuffer));
 }
 
 export async function downloadVideos(metadataList, outputDir) {
