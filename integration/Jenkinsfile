@@ -215,7 +215,9 @@ pipeline {
                         }
 
                     } else {
-                        // Production build
+                        // Production build - copy to staging area and create deploy marker
+                        // Actual deployment to NFS is handled by root cron on maybelle host
+                        // This separation prevents Jenkins compromise from directly pushing to production
 
                         echo "Production build for ${COMMIT_SHA}"
                         sh "mkdir -p ${PR_BUILDS_DIR}/production"
@@ -223,15 +225,12 @@ pipeline {
                             rsync -av output/dist/* ${PR_BUILDS_DIR}/production
                         """
 
-                        // Deploy to production hosting (NearlyFreeSpeech)
-                        echo "Deploying to production hosting..."
+                        // Create deploy marker for root cron to pick up
+                        echo "Creating deploy marker for production..."
                         sh """
-                            rsync -vah --progress --delete \
-                                -e "ssh -i /var/jenkins_home/.ssh/id_ed25519_nfs -o StrictHostKeyChecking=no" \
-                                ${PR_BUILDS_DIR}/production/* \
-                                jmyles_justinholmescom@ssh.nyc1.nearlyfreespeech.net:
+                            echo "commit=${COMMIT_SHA} build=${BUILD_NUMBER} time=\$(date -Iseconds)" > ${PR_BUILDS_DIR}/production/.deploy-ready
                         """
-                        echo "Production deployment complete"
+                        echo "Production build staged - deploy marker created"
                     }
                 }
             }
