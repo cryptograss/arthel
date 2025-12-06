@@ -1,0 +1,33 @@
+title: "Pearl Bluegrass"
+venue: "Pearl Community Center"
+host: "Pearl Bluegrass"
+locality: "Pearl"
+region1: "Texas"
+timezone: "America/Chicago"
+ensemble:
+  "Justin Holmes": [ "guitar"]
+  "Jeff White": [ "bass" ]
+sets:
+  0:
+    songplays:
+      - Rueben's Train
+      - Salt Creek
+      - Shady Grove
+      - Vowel Sounds:
+        mode: segue
+      - Shady Grove:
+        mode: reprise
+      - Garfield's Blackberry Blossom
+      - Drowsy Maggie:
+        mode: segue
+      - Little Maggie:
+        mode: segue
+      - The Two Sisters:
+        ensemble-modifications:
+          featuring:
+            - Charles Whitmer (autoharp)
+      - Man of Constant Sorrow
+      - I Know You Rider:
+        mode: segue
+      - Man of Constant Sorrow:
+        mode: reprise
