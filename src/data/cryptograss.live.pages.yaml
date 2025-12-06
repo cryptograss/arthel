@@ -9,6 +9,12 @@ onchain-merch:
   context:
     page_title: "Onchain Merch"
 
+all-setstones:
+  template: all-setstones.njk
+  include_data_in_context: ["shows", "chainData"]
+  context:
+    page_title: "All Set Stones"
+
 oracle-of-bluegrass-bacon:
   template: tools/oracle-of-bluegrass-bacon.njk
   context:
