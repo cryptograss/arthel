@@ -1,0 +1,503 @@
+{% extends '../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div id="all-artifacts" class="col-md-10 text-post">
+        <div class="row">
+            <h1 class="text-center pixel-font">All Artifacts</h1>
+            <p class="text-center">Every NFT artifact minted on the cryptograss ecosystem</p>
+        </div>
+
+        <!-- Main Tabs Navigation -->
+        <ul class="nav nav-tabs justify-content-center mt-4" id="artifactTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="live-tab" data-bs-toggle="tab" data-bs-target="#live-pane" type="button" role="tab" aria-controls="live-pane" aria-selected="true">
+                    Live
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="studio-tab" data-bs-toggle="tab" data-bs-target="#studio-pane" type="button" role="tab" aria-controls="studio-pane" aria-selected="false">
+                    Studio
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="blue-railroads-tab" data-bs-toggle="tab" data-bs-target="#blue-railroads-pane" type="button" role="tab" aria-controls="blue-railroads-pane" aria-selected="false">
+                    Blue Railroads
+                </button>
+            </li>
+        </ul>
+
+        <!-- Main Tab Content -->
+        <div class="tab-content mt-4" id="artifactTabsContent">
+
+            <!-- ==================== LIVE TAB ==================== -->
+            <div class="tab-pane fade show active" id="live-pane" role="tabpanel" aria-labelledby="live-tab">
+
+                <!-- Live Sub-tabs -->
+                <ul class="nav nav-pills justify-content-center mb-4" id="liveSubTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="setstones-subtab" data-bs-toggle="pill" data-bs-target="#setstones-pane" type="button" role="tab" aria-controls="setstones-pane" aria-selected="true">
+                            Set Stones
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ticketstubs-subtab" data-bs-toggle="pill" data-bs-target="#ticketstubs-pane" type="button" role="tab" aria-controls="ticketstubs-pane" aria-selected="false">
+                            Ticket Stubs
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="liveSubTabsContent">
+
+                    <!-- Set Stones Sub-pane -->
+                    <div class="tab-pane fade show active" id="setstones-pane" role="tabpanel" aria-labelledby="setstones-subtab">
+                        <h3 class="pixel-font text-center mb-3">Set Stones</h3>
+                        <p class="text-center text-muted">Algorithmic art NFTs derived from live performance setlists</p>
+
+                        {% set allSetstones = [] %}
+                        {% for show_id, show in shows %}
+                            {% if show.sets %}
+                                {% for set_number, set in show.sets %}
+                                    {% if set.setstones and set.setstones.length > 0 %}
+                                        {% for setstone in set.setstones %}
+                                            {% set stoneWithContext = {
+                                                tokenId: setstone.tokenId,
+                                                owner: setstone.owner,
+                                                ownerEns: setstone.ownerEns,
+                                                showTitle: show.title,
+                                                showDate: show.date,
+                                                venue: show.venue,
+                                                locality: show.locality,
+                                                region1: show.region1,
+                                                setNumber: set_number
+                                            } %}
+                                            {% set allSetstones = (allSetstones.push(stoneWithContext), allSetstones) %}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+
+                        <p class="lead text-center"><strong>{{ allSetstones.length }}</strong> Set Stone{{ "s" if allSetstones.length != 1 else "" }} minted</p>
+
+                        {% if allSetstones.length > 0 %}
+                            <div class="artifacts-gallery">
+                                {% for stone in allSetstones | sort(true, false, 'tokenId') | reverse %}
+                                    <div class="artifact-card semi-transparent-bg">
+                                        <a href="/setstones/{{ stone.tokenId }}" class="artifact-image-link">
+                                            <img src="{{ defined_image_root }}/assets/images/setstones/{{ stone.tokenId }}.png"
+                                                 alt="Set Stone #{{ stone.tokenId }}"
+                                                 class="artifact-image">
+                                        </a>
+                                        <div class="artifact-info">
+                                            <h4 class="pixel-font">Set Stone #{{ stone.tokenId }}</h4>
+                                            <p class="artifact-title">{{ stone.showTitle }}</p>
+                                            <p class="artifact-details">
+                                                {{ stone.showDate }}<br>
+                                                {{ stone.venue }}<br>
+                                                {{ stone.locality }}, {{ stone.region1 }}
+                                            </p>
+                                            <p class="set-info">Set {{ stone.setNumber }}</p>
+                                            <div class="artifact-links">
+                                                <a href="https://arbiscan.io/token/0x39269b3FddFc9bf0626e5CFe4424aa51A77f7678?a={{ stone.tokenId }}"
+                                                   target="_blank"
+                                                   class="btn btn-sm btn-outline-secondary">Arbiscan</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-center text-muted">No Set Stones minted yet.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Ticket Stubs Sub-pane -->
+                    <div class="tab-pane fade" id="ticketstubs-pane" role="tabpanel" aria-labelledby="ticketstubs-subtab">
+                        <h3 class="pixel-font text-center mb-3">Ticket Stubs</h3>
+                        <p class="text-center text-muted">Physical paper memorabilia with optional on-chain claiming</p>
+
+                        {% set allTicketStubs = [] %}
+                        {% set ticketStubShows = [] %}
+                        {% for show_id, show in shows %}
+                            {% if show.ticketStubCount and show.ticketStubCount > 0 %}
+                                {% set showWithId = {
+                                    show_id: show_id,
+                                    title: show.title,
+                                    date: show.date,
+                                    local_date: show.local_date,
+                                    venue: show.venue,
+                                    locality: show.locality,
+                                    region1: show.region1,
+                                    ticketStubCount: show.ticketStubCount,
+                                    ticketStubs: show.ticketStubs,
+                                    poster: show.poster
+                                } %}
+                                {% set ticketStubShows = (ticketStubShows.push(showWithId), ticketStubShows) %}
+                                {% if show.ticketStubs %}
+                                    {% for stub in show.ticketStubs %}
+                                        {% set allTicketStubs = (allTicketStubs.push(stub), allTicketStubs) %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+
+                        <p class="lead text-center"><strong>{{ allTicketStubs.length }}</strong> Ticket Stub{{ "s" if allTicketStubs.length != 1 else "" }} claimed on-chain</p>
+
+                        {% if ticketStubShows.length > 0 %}
+                            <div class="artifacts-gallery">
+                                {% for show in ticketStubShows %}
+                                    <div class="artifact-card semi-transparent-bg">
+                                        {% if show.poster %}
+                                            <div class="artifact-image-link">
+                                                <img src="{{ get_image(show.poster, 'thumbnail') }}"
+                                                     alt="Show poster for {{ show.title }}"
+                                                     class="artifact-image">
+                                            </div>
+                                        {% else %}
+                                            <div class="no-image-placeholder">
+                                                <span class="pixel-font">{{ show.title | truncate(20) }}</span>
+                                            </div>
+                                        {% endif %}
+                                        <div class="artifact-info">
+                                            <h4 class="pixel-font">{{ show.title }}</h4>
+                                            <p class="artifact-details">
+                                                {{ show.local_date or show.date }}<br>
+                                                {{ show.venue }}<br>
+                                                {{ show.locality }}{% if show.region1 %}, {{ show.region1 }}{% endif %}
+                                            </p>
+                                            <p class="ticket-count">
+                                                <strong>{{ show.ticketStubCount }}</strong> stub{{ "s" if show.ticketStubCount != 1 else "" }} available
+                                            </p>
+                                            <div class="artifact-links">
+                                                <a href="/happenings/{{ show.show_id }}"
+                                                   class="btn btn-sm btn-outline-light">View Show</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-center text-muted">No ticket stub shows available yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STUDIO TAB ==================== -->
+            <div class="tab-pane fade" id="studio-pane" role="tabpanel" aria-labelledby="studio-tab">
+
+                <!-- Studio Sub-tabs -->
+                <ul class="nav nav-pills justify-content-center mb-4" id="studioSubTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="chartifacts-subtab" data-bs-toggle="pill" data-bs-target="#chartifacts-pane" type="button" role="tab" aria-controls="chartifacts-pane" aria-selected="true">
+                            Chartifacts
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="revealerfacts-subtab" data-bs-toggle="pill" data-bs-target="#revealerfacts-pane" type="button" role="tab" aria-controls="revealerfacts-pane" aria-selected="false">
+                            Revealerfacts
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="studioSubTabsContent">
+
+                    <!-- Chartifacts Sub-pane -->
+                    <div class="tab-pane fade show active" id="chartifacts-pane" role="tabpanel" aria-labelledby="chartifacts-subtab">
+                        <h3 class="pixel-font text-center mb-3">Chartifacts</h3>
+                        <p class="text-center text-muted">Studio recording charts as NFT artifacts - who plays what, when</p>
+
+                        <p class="lead text-center text-muted"><em>Coming soon - interactive studio recording charts</em></p>
+
+                        <div class="alert alert-info mt-4">
+                            <h5 class="pixel-font">What are Chartifacts?</h5>
+                            <p>Chartifacts are NFT representations of studio recording session charts. They show the musical arrangement - which musician plays which instrument at each moment of a recording.</p>
+                            <p class="mb-0">Listen along and watch the charts highlight who's taking solos, who's laying back, and how the arrangement unfolds.</p>
+                        </div>
+                    </div>
+
+                    <!-- Revealerfacts Sub-pane -->
+                    <div class="tab-pane fade" id="revealerfacts-pane" role="tabpanel" aria-labelledby="revealerfacts-subtab">
+                        <h3 class="pixel-font text-center mb-3">Revealerfacts</h3>
+                        <p class="text-center text-muted">Contribution artifacts from album releases</p>
+
+                        {% set studioCount = chainData.vowelSoundContributions | length if chainData.vowelSoundContributions else 0 %}
+                        <p class="lead text-center"><strong>{{ studioCount }}</strong> Vowel Sounds Artifact{{ "s" if studioCount != 1 else "" }} minted</p>
+
+                        {% if chainData.vowelSoundContributions and chainData.vowelSoundContributions.length > 0 %}
+                            <div class="artifacts-gallery">
+                                {% for artifact in chainData.vowelSoundContributions | sort(true, false, 'rank') %}
+                                    <div class="artifact-card semi-transparent-bg">
+                                        <div class="artifact-image-link">
+                                            <img src="/assets/images/vowelsound-artifacts/{{ artifact.rank }}.png"
+                                                 alt="Vowel Sound Artifact #{{ artifact.rank }}"
+                                                 class="artifact-image">
+                                        </div>
+                                        <div class="artifact-info">
+                                            <h4 class="pixel-font">Artifact #{{ artifact.rank }}</h4>
+                                            <p class="artifact-details">
+                                                Contribution: {{ artifact.amount }} ETH
+                                            </p>
+                                            <p class="owner-info">
+                                                Owner:
+                                                <span class="owner-address" title="{{ artifact.address }}">
+                                                    {{ artifact.address | truncate(16, true, '...') }}
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-center text-muted">No revealerfacts available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== BLUE RAILROADS TAB ==================== -->
+            <div class="tab-pane fade" id="blue-railroads-pane" role="tabpanel" aria-labelledby="blue-railroads-tab">
+                <h3 class="pixel-font text-center mb-3">Blue Railroad Trains</h3>
+                <p class="text-center text-muted">Squat challenge NFTs earned by exercising to Tony Rice</p>
+
+                {% set brCount = 0 %}
+                {% for tokenId, data in chainData.blueRailroads %}
+                    {% set brCount = brCount + 1 %}
+                {% endfor %}
+
+                <p class="lead text-center"><strong>{{ brCount }}</strong> Blue Railroad Train{{ "s" if brCount != 1 else "" }} minted</p>
+
+                {% if brCount > 0 %}
+                    <div class="artifacts-gallery artifacts-gallery-wide">
+                        {% for tokenId, data in chainData.blueRailroads %}
+                            <div class="artifact-card semi-transparent-bg">
+                                {% if data.video_url %}
+                                    <div class="video-container">
+                                        <video controls preload="metadata">
+                                            <source src="/assets/fetched/10-{{ chainData.blueRailroadContractAddress }}-{{ tokenId }}.mp4"
+                                                    type="{{ data.content_type }}">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                {% else %}
+                                    <div class="no-video-placeholder">
+                                        <span class="pixel-font">No video</span>
+                                    </div>
+                                {% endif %}
+                                <div class="artifact-info">
+                                    <h4 class="pixel-font">Blue Railroad Train #{{ tokenId }}</h4>
+                                    <p class="owner-info">
+                                        Owner:
+                                        {% if data.ownerEns %}
+                                            <span class="owner-address" title="{{ data.owner }}">
+                                                {{ data.ownerEns }}
+                                            </span>
+                                        {% else %}
+                                            <span class="owner-address" title="{{ data.owner }}">
+                                                {{ data.owner | truncate(16, true, '...') }}
+                                            </span>
+                                        {% endif %}
+                                    </p>
+                                    <div class="artifact-links">
+                                        <a href="https://optimistic.etherscan.io/token/{{ chainData.blueRailroadContractAddress }}?a={{ tokenId }}"
+                                           target="_blank"
+                                           class="btn btn-sm btn-outline-secondary">Optimism Etherscan</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted">No Blue Railroad Trains minted yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <div class="alert alert-secondary">
+                    <h5 class="pixel-font">About Cryptograss Artifacts</h5>
+                    <p>All artifacts are NFTs minted on Ethereum L2 chains, combining music and blockchain technology.</p>
+                    <ul class="list-unstyled">
+                        <li><strong>Set Stones</strong>: Arbitrum - algorithmic art from live performances</li>
+                        <li><strong>Ticket Stubs</strong>: Arbitrum - physical paper with optional on-chain claiming</li>
+                        <li><strong>Chartifacts</strong>: Studio recording session charts</li>
+                        <li><strong>Revealerfacts</strong>: Mainnet - album contribution artifacts</li>
+                        <li><strong>Blue Railroads</strong>: Optimism - exercise challenge rewards</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<style>
+/* Main tabs */
+.nav-tabs {
+    border-bottom: 2px solid #444;
+}
+
+.nav-tabs .nav-link {
+    color: #aaa;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.75rem 1.5rem;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #fff;
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: #fff;
+    background: transparent;
+    border-bottom: 3px solid #0d6efd;
+}
+
+/* Sub-tabs (pills) */
+.nav-pills {
+    gap: 0.5rem;
+}
+
+.nav-pills .nav-link {
+    color: #aaa;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #444;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 20px;
+}
+
+.nav-pills .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-pills .nav-link.active {
+    color: #fff;
+    background: rgba(13, 110, 253, 0.3);
+    border-color: #0d6efd;
+}
+
+/* Gallery */
+.artifacts-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.artifacts-gallery-wide {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.artifact-card {
+    border-radius: 12px;
+    border: 1px solid #444;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.artifact-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.artifact-image-link {
+    display: block;
+}
+
+.artifact-image {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-bottom: 1px solid #444;
+}
+
+.video-container {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+}
+
+.video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.no-video-placeholder,
+.no-image-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    text-align: center;
+    padding: 1rem;
+}
+
+.artifact-info {
+    padding: 1rem;
+}
+
+.artifact-info h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.artifact-info .artifact-title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.artifact-info .artifact-details {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 0.5rem;
+}
+
+.artifact-info .set-info,
+.artifact-info .ticket-count {
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+.artifact-info .owner-info {
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+}
+
+.owner-address {
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+}
+
+.artifact-links {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.artifact-links .btn {
+    font-size: 0.75rem;
+}
+
+.pixel-font {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+</style>
+
+{% endblock %}

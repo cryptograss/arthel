@@ -1,0 +1,124 @@
+{% extends '../../../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-md-10 text-post">
+        <h1 class="text-center pixel-font">Mint Blue Railroad Token</h1>
+        <p class="text-center text-muted">Admin page for issuing Manzanita exercise challenge tokens</p>
+
+        <div class="row mt-4">
+            <div class="col-md-8 offset-md-2">
+                <!-- Wallet Connection -->
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Wallet</h5>
+                        <div id="wallet-status">
+                            <p id="not-connected-msg">Not connected</p>
+                            <p id="connected-address" style="display: none;" class="font-monospace"></p>
+                        </div>
+                        <button id="connect-wallet-btn" class="btn btn-primary">Connect Wallet</button>
+                    </div>
+                </div>
+
+                <!-- Mint Form -->
+                <div class="card semi-transparent-bg">
+                    <div class="card-body">
+                        <h5 class="card-title">Issue Token</h5>
+                        <form id="mint-form">
+                            <div class="mb-3">
+                                <label for="recipient" class="form-label">Recipient Address</label>
+                                <input type="text" class="form-control" id="recipient"
+                                       placeholder="0x... or name.eth" required>
+                                <div class="form-text">Ethereum address or ENS name</div>
+                                <div id="resolved-address" class="form-text text-success font-monospace" style="display: none;"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="song-select" class="form-label">Exercise Challenge</label>
+                                <select class="form-select" id="song-select" required>
+                                    <option value="">Select a song...</option>
+                                    <option value="5">Blue Railroad Train - Squats</option>
+                                    <option value="6">Nine Pound Hammer - Pushups</option>
+                                    <option value="10">Ginseng Sullivan - Army Crawls</option>
+                                </select>
+                                <div class="form-text">Track number from Manzanita (1979)</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="date-input" class="form-label">Date Completed</label>
+                                <input type="date" class="form-control" id="date-input" required>
+                                <div class="form-text">When the exercise was performed</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="video-uri" class="form-label">Video URI</label>
+                                <input type="text" class="form-control" id="video-uri"
+                                       placeholder="https://discord.com/channels/..." required>
+                                <div class="form-text">Discord message URL or other video link</div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" id="mint-btn" class="btn btn-success btn-lg" disabled>
+                                    Mint Token
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Status messages -->
+                        <div id="status-area" class="mt-3" style="display: none;">
+                            <div id="pending-msg" class="alert alert-info" style="display: none;">
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                                Transaction pending...
+                            </div>
+                            <div id="success-msg" class="alert alert-success" style="display: none;">
+                                Token minted! <a id="tx-link" href="#" target="_blank">View on Etherscan</a>
+                            </div>
+                            <div id="error-msg" class="alert alert-danger" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reference Info -->
+                <div class="card semi-transparent-bg mt-4">
+                    <div class="card-body">
+                        <h6 class="card-title">Manzanita Tracklist Reference</h6>
+                        <ol class="small mb-0">
+                            <li>Old Train</li>
+                            <li>Manzanita</li>
+                            <li>Little Sadie</li>
+                            <li>Blackberry Blossom</li>
+                            <li><strong>Blue Railroad Train</strong> (Squats)</li>
+                            <li><strong>Nine Pound Hammer</strong> (Pushups)</li>
+                            <li>Red Haired Boy</li>
+                            <li>Streets of London</li>
+                            <li>Old Grey Coat</li>
+                            <li><strong>Ginseng Sullivan</strong> (Army Crawls)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<style>
+.pixel-font {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+/* Override Web3Modal's z-index CSS variable
+   Note: #main-container has z-index: 1000 in global styles,
+   Web3Modal uses --w3m-z-index (default 999), so we need higher */
+:root {
+    --w3m-z-index: 10000 !important;
+}
+
+w3m-modal {
+    z-index: 10000 !important;
+}
+</style>
+
+{% endblock %}

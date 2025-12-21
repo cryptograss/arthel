@@ -1,0 +1,518 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Cabin" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title> | cryptograss.live</title>
+
+        <meta name="description" content="Blockchains are Bluegrass">
+
+        <meta name="author" content="cryptograss">
+    </head>
+
+    <body>
+        <div id="base-container" class="container-fluid">
+            <div id="banner" class="container-fluid">
+    <div class="row">
+        <nav id="the-nav" class="col-12 navbar navbar-expand-md navbar-light">
+  <a class="navbar-brand grid-writing" href="#">cryptograss.live</a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav me-auto mb-lg-0">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="/happenings">Happenings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/onchain-merch">Onchain Merch</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">FAQs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Blue Railroads</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Dropdown
+          </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <li>
+            <a class="dropdown-item" href="#">Action</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">Another action</a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item" href="#">Something else here</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+    </div>
+</div>
+            <div id="main-container" class="container">
+                
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="pixel-font mb-4">Claim Ticket Stub #115</h1>
+            
+            <!-- Ticket Stub and Show Info -->
+            
+            <div class="row mb-4 align-items-center">
+                <div class="col-md-7">
+                    <div class="ticket-stub-container responsive-ticket-stub">
+                        
+                        <div class="ticket-stub-container row">
+    <div class="col-1"></div>
+    <div class="col-6 ticket-stub-front" id="ticket-stub-front-115">
+        <img src="false"/>
+
+        <div class="band-names">
+            Justin Holmes and The Immutable String Band
+        </div>
+
+        <div class="venue">
+            Context Test Venue
+            <br/>
+            <div class="locality">
+                Test City, Test State
+            </div>
+        </div>
+
+        <div class="ticket-stub-datetime">
+            <p class="small">Showtime blockheight:</p>
+            45448946
+        </div>
+
+        <div class="ticket-stub-number">
+            <div class="rabbit-hash">
+                <p class="small">Rabbit hash:</p>
+                0x0cd5177c34
+            </div>
+            115 / {100-149}
+        </div>
+    </div>
+
+    
+    <div class="col-2"></div>
+</div>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="show-info bg-white p-3 rounded shadow-sm">
+                        <h2 class="pixel-font text-primary mb-2">Test Show at Context Test Venue</h2>
+                        <div class="show-details">
+                            <p class="mb-1 fs-5"><strong>2025-01-15</strong></p>
+                            <p class="mb-2">Context Test Venue • Test City, Test State</p>
+                            <p class="mb-0 text-muted">Block Height: 45,448,946</p>
+                            
+                                <div class="mt-3">
+                                    <img src="false" 
+                                         alt="Show poster" 
+                                         class="img-fluid rounded shadow-sm"
+                                         style="max-height: 120px; object-fit: contain;">
+                                </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+
+            
+
+            
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Ready to Claim</h5>
+                        <p class="card-text">
+                            You're about to claim ticket stub #115 using the secret from your physical ticket.
+                        </p>
+                        
+                        
+
+                        <form id="claimForm">
+                            <div class="mb-3">
+                                <label for="walletAddress" class="form-label">Your Wallet Address or ENS Name</label>
+                                <input type="text" class="form-control" id="walletAddress" placeholder="0x... or yourname.eth" required>
+                                <div class="form-text">The address where you want to receive your ticket stub NFT. ENS names are supported.</div>
+                                <div id="ensResolution" class="text-muted small mt-1" style="display: none;"></div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="secretInput" class="form-label">Secret from Ticket</label>
+                                <input type="text" class="form-control" id="secretInput" placeholder="Enter the secret from your physical ticket" required>
+                                <div class="form-text">This should be the text or QR code content from your ticket stub</div>
+                                <div id="secretFromUrl" class="text-success small mt-1" style="display: none;"></div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                Connect Wallet & Claim Ticket Stub
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-white p-3 rounded shadow-sm">
+                    <h5>What happens when I claim?</h5>
+                    <ul>
+                        <li>We'll verify your secret against the ticket stub contract</li>
+                        <li>If valid, the NFT will be minted to your wallet address</li>
+                        <li>You'll own the digital representation of your physical ticket</li>
+                        <li>The secret can only be used once</li>
+                    </ul>
+                </div>
+
+                
+                <div class="mt-5">
+                    <div class="row">
+                        <div class="col-3"></div>
+                        <div id="donationModal" class="col-md-6 semi-transparent-bg p-4 rounded shadow">
+                            <span class="pixel-font" style="color: white;">
+                                <h2>🎵 Also Available: Strike Set Stone for This Show</h2>
+                            </span>
+                            <p class="text-white">Commemorate your experience with a unique set stone NFT. Select three colors from the original NES palette.</p>
+                            
+                            <div id="setStoneColorPicker" style="width: 100%; align-items: left; color: white;">
+                                <select id="colorDropdown1" class="form-select pixel-font"></select>
+                                <select id="colorDropdown2" class="form-select pixel-font"></select>
+                                <select id="colorDropdown3" class="form-select pixel-font"></select>
+                                <button id="randomizeColors" class="btn btn-primary mt-2 pixel-font"
+                                    onclick="randomizeColors()">
+                                Randomize
+                            </button>
+                            </div>
+
+                            <div id="stoneRenderArea"></div>
+
+                            <div id="crystalizationMessage">
+                                <h4 class="pixel-font" style="color: white;">Crystalization message:</h4>
+                                <input id="crystalizationMessageText" type="text" class="form-control"
+                                   placeholder="Enter personal message">
+                            </div>
+
+                            <select id="setPicker" class="form-select pixel-font mt-2">
+                                
+                            </select>
+
+                            <h4 data-tippy-content="Select a song from the setlist to make it your favorite song for this set stone."
+                            class="pixel-font mt-2" style="color: white;">Song of Note:</h4>
+                            <select id="favoriteSongPicker" class="form-select pixel-font mt-2"></select>
+
+                            <h4 class="pixel-font text-white">
+                                <span>Minimum price:</span>
+                                <span id="stonePrice"></span>
+                            </h4>
+                            <div class="input-group mt-2" style="width: 100%">
+                                <input id="amount" class="form-control">
+                                <span class="input-group-text">ETH</span>
+                            </div>
+
+                            <h3 class="pixel-font text-white">Rabbit</h3>
+                            <p class="text-white">You need a secret "rabbit", distributed at the show, to buy a set stone. Each rabbit is valid to purchase one stone.</p>
+                            <input id="rabbit" type="text" class="form-control"/>
+                            <button id="verifyRabbit" class="btn btn-primary mt-2">Verify</button>
+
+                            <div id="rabbitHashIconContainer" style="display: flex; flex-direction: row; align-items: center;">
+                                <div id="rabbitHashIcon"></div>
+                                <span id="rabbithash"></span>
+                            </div>
+
+                            <p id="verifyResult" class="text-light"></p>
+                            <p id="invalidRabbitErrorMessage" style="display: none; color: red;">Invalid secret rabbit</p>
+
+                            <div class="mt-5" style="display: flex; justify-content: space-between; width: 100%">
+                                <button id="mintStone" class="btn btn-primary pixel-font"
+                                        style="padding: 10px; background-color: hsl(345, 100%, 51%); border-color: hsl(345, 100%, 51%);"
+                                        onclick="mintStone()">Strike SetStone
+                                </button>
+                                <w3m-button></w3m-button>
+                            </div>
+
+                        </div>
+                        <div class="col-3"></div>
+                    </div>
+                </div>
+                
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    console.log("Script is loading...");
+    
+    // Simple secret population function
+    function populateSecretFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const secretParam = urlParams.get('secret');
+        console.log('Looking for secret in URL:', secretParam);
+        
+        if (secretParam) {
+            const secretInput = document.getElementById('secretInput');
+            if (secretInput) {
+                secretInput.value = secretParam;
+                console.log('Secret populated:', secretParam.substring(0, 8) + '...');
+                
+                const secretFromUrl = document.getElementById('secretFromUrl');
+                if (secretFromUrl) {
+                    secretFromUrl.style.display = 'block';
+                    secretFromUrl.textContent = `Secret detected from URL: ${secretParam.substring(0, 8)}...`;
+                }
+            }
+        }
+    }
+    
+    // Run when page loads
+    document.addEventListener('DOMContentLoaded', populateSecretFromUrl);
+    
+    // Also try immediately in case DOM is already ready
+    if (document.readyState !== 'loading') {
+        populateSecretFromUrl();
+    }
+</script>
+
+<!-- Placeholder for future blockchain functionality -->
+<script type="module">
+    import { createConfig, http, writeContract, waitForTransactionReceipt, getEnsAddress } from '@wagmi/core';
+    import { arbitrum, mainnet } from '@wagmi/core/chains';
+    import { keccak256, toBytes, isAddress } from 'viem';
+
+    // Contract configuration
+    const TICKET_STUB_CONTRACT_ADDRESS = '0x1234567890123456789012345678901234567890';
+    const TICKET_STUB_ABI = JSON.parse('[{"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"string","name":"_symbol","type":"string"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"secret","type":"bytes32"}],"name":"canClaim","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"secret","type":"bytes32"}],"name":"claimTicketStub","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"showId","type":"uint256"},{"internalType":"bytes32[]","name":"secretHashes","type":"bytes32[]"}],"name":"createTicketStubsForShow","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getTicketStub","outputs":[{"components":[{"internalType":"uint256","name":"showId","type":"uint256"},{"internalType":"bytes32","name":"secretHash","type":"bytes32"},{"internalType":"bool","name":"claimed","type":"bool"}],"internalType":"struct TicketStubClaimer.TicketStub","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"showTicketCounts","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"usedSecrets","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]');
+
+    const config = createConfig({
+        chains: [arbitrum, mainnet],
+        transports: {
+            [arbitrum.id]: http('https://arb-mainnet.g.alchemy.com/v2/'),
+            [mainnet.id]: http('https://eth-mainnet.g.alchemy.com/v2/'),
+        },
+    });
+
+    // Check for secret in URL parameters
+    function checkUrlParams() {
+        console.log('checkUrlParams called, current URL:', window.location.href);
+        const urlParams = new URLSearchParams(window.location.search);
+        const secretParam = urlParams.get('secret');
+        console.log('Secret parameter from URL:', secretParam);
+        
+        if (secretParam) {
+            const secretInput = document.getElementById('secretInput');
+            const secretFromUrl = document.getElementById('secretFromUrl');
+            
+            console.log('Found secret input element:', !!secretInput);
+            console.log('Found secretFromUrl element:', !!secretFromUrl);
+            
+            if (secretInput && secretFromUrl) {
+                secretInput.value = secretParam;
+                secretFromUrl.style.display = 'block';
+                secretFromUrl.textContent = `Secret detected from URL: ${secretParam.substring(0, 8)}...`;
+                console.log('Secret populated successfully:', secretParam.substring(0, 8) + '...');
+            } else {
+                console.log('Missing DOM elements for secret population');
+            }
+        } else {
+            console.log('No secret parameter found in URL');
+        }
+    }
+
+    // ENS resolution for address field
+    async function resolveENS(ensName) {
+        try {
+            if (ensName.endsWith('.eth')) {
+                const address = await getEnsAddress(config, {
+                    name: ensName,
+                    chainId: mainnet.id
+                });
+                return address;
+            }
+        } catch (error) {
+            console.error('ENS resolution error:', error);
+            return null;
+        }
+        return null;
+    }
+
+    // Address field validation and ENS resolution
+    document.getElementById('walletAddress').addEventListener('input', async function(e) {
+        const value = e.target.value.trim();
+        const ensDiv = document.getElementById('ensResolution');
+        
+        if (value.endsWith('.eth')) {
+            ensDiv.style.display = 'block';
+            ensDiv.textContent = 'Resolving ENS name...';
+            ensDiv.className = 'text-muted small mt-1';
+            
+            const resolvedAddress = await resolveENS(value);
+            if (resolvedAddress) {
+                ensDiv.textContent = `Resolves to: ${resolvedAddress}`;
+                ensDiv.className = 'text-success small mt-1';
+            } else {
+                ensDiv.textContent = 'ENS name not found';
+                ensDiv.className = 'text-danger small mt-1';
+            }
+        } else if (isAddress(value)) {
+            ensDiv.style.display = 'block';
+            ensDiv.textContent = 'Valid Ethereum address';
+            ensDiv.className = 'text-success small mt-1';
+        } else if (value.length > 0) {
+            ensDiv.style.display = 'block';
+            ensDiv.textContent = 'Invalid address format';
+            ensDiv.className = 'text-danger small mt-1';
+        } else {
+            ensDiv.style.display = 'none';
+        }
+    });
+
+    document.getElementById('claimForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        let walletAddress = document.getElementById('walletAddress').value.trim();
+        const secret = document.getElementById('secretInput').value;
+        
+        if (!walletAddress || !secret) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        // Resolve ENS if needed
+        if (walletAddress.endsWith('.eth')) {
+            const resolvedAddress = await resolveENS(walletAddress);
+            if (!resolvedAddress) {
+                alert('Could not resolve ENS name. Please use a valid Ethereum address.');
+                return;
+            }
+            walletAddress = resolvedAddress;
+        }
+
+        // Validate address
+        if (!isAddress(walletAddress)) {
+            alert('Please enter a valid Ethereum address or ENS name');
+            return;
+        }
+
+        try {
+            // Convert secret to bytes32
+            const secretBytes = keccak256(toBytes(secret));
+            
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Claiming...';
+            submitBtn.disabled = true;
+
+            // Call the contract
+            const hash = await writeContract(config, {
+                abi: TICKET_STUB_ABI,
+                address: TICKET_STUB_CONTRACT_ADDRESS,
+                functionName: 'claimTicketStub',
+                args: [secretBytes],
+                account: walletAddress,
+            });
+
+            // Wait for transaction confirmation
+            const receipt = await waitForTransactionReceipt(config, {
+                hash,
+            });
+
+            // Redirect to success page
+            window.location.href = `?success=true&hash=${hash}`;
+
+        } catch (error) {
+            console.error('Error claiming ticket stub:', error);
+            alert('Error claiming ticket stub: ' + error.message);
+            
+            // Reset button
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Initialize page when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUrlParams();
+            // Try again after a short delay in case elements aren't ready
+            setTimeout(checkUrlParams, 100);
+        });
+    } else {
+        checkUrlParams();
+        // Try again after a short delay in case elements aren't ready
+        setTimeout(checkUrlParams, 100);
+    }
+</script>
+
+<style>
+    .responsive-ticket-stub {
+        max-width: 100%;
+        overflow: hidden;
+    }
+    
+    .responsive-ticket-stub > div {
+        transform: scale(0.8);
+        transform-origin: top left;
+        width: 125%;
+    }
+    
+    /* Mobile phones */
+    @media (max-width: 576px) {
+        .responsive-ticket-stub > div {
+            transform: scale(0.6);
+            width: 167%;
+        }
+    }
+    
+    /* Small tablets */
+    @media (min-width: 577px) and (max-width: 768px) {
+        .responsive-ticket-stub > div {
+            transform: scale(0.7);
+            width: 143%;
+        }
+    }
+    
+    /* Medium tablets and up */
+    @media (min-width: 769px) and (max-width: 991px) {
+        .responsive-ticket-stub > div {
+            transform: scale(0.75);
+            width: 133%;
+        }
+    }
+    
+    /* Desktop */
+    @media (min-width: 992px) {
+        .responsive-ticket-stub > div {
+            transform: scale(0.8);
+            width: 125%;
+        }
+    }
+    .ticket-stub-number {
+        position:absolute;
+    }
+    
+    /* Set stone interface styling */
+    .semi-transparent-bg {
+        background: linear-gradient(90deg, rgba(64, 70, 84, 0.7) 0%, rgba(58, 58, 62, .84) 100%);
+        border-radius: 15px;
+    }
+    
+    .pixel-font {
+        font-family: 'll-pixel', monospace;
+    }
+</style>
+
+<!-- Include set stone functionality -->
+<script src="/js/bazaar/strike_set_stones.js"></script>
+
+        </div>
+    </body>
