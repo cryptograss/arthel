@@ -22,9 +22,15 @@ async function dev_config() {
             allowedHosts: 'all',
             historyApiFallback: {
                 rewrites: [
-                    { from: /\/$/, to: '/index.html' },
+                    { from: /^\/$/, to: '/index.html' },
                     {
-                        from: /\/(.+)$/, to: function (context) {
+                        from: /^\/(.+)\/$/, to: function (context) {
+                            // Rewrite URLs like '/artifacts/' to '/artifacts.html'
+                            return '/' + context.match[1] + '.html';
+                        }
+                    },
+                    {
+                        from: /^\/(.+)$/, to: function (context) {
                             // Rewrite URLs like '/things' to '/things.html'
                             return '/' + context.match[1] + '.html';
                         }

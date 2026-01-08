@@ -32,13 +32,14 @@ const htmlPluginInstances = templateFiles.map(templatePath => {
         filename: relativePath,
         inject: "body",
         chunks: chunks,
+        publicPath: '/',
     });
 });
 
 const frontendJSDir = path.resolve(siteDir, 'js');
 
 export default {
-    output: { path: outputDistDir },
+    output: { path: outputDistDir, publicPath: '/' },
     plugins: [
         new CopyPlugin({
             patterns: [
