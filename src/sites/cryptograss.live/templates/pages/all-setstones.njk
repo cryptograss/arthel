@@ -1,0 +1,188 @@
+{% extends '../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div id="all-setstones" class="col-md-10 text-post">
+        <div class="row">
+            <h1 class="text-center pixel-font">All Set Stones</h1>
+            <p class="text-center">Every Set Stone minted on the cryptograss ecosystem</p>
+        </div>
+
+        {% set allSetstones = [] %}
+        {% for show_id, show in shows %}
+            {% if show.sets %}
+                {% for set_number, set in show.sets %}
+                    {% if set.setstones and set.setstones.length > 0 %}
+                        {% for setstone in set.setstones %}
+                            {% set stoneWithContext = {
+                                tokenId: setstone.tokenId,
+                                owner: setstone.owner,
+                                color: setstone.color,
+                                shape: set.shape,
+                                show_id: show_id,
+                                show_title: show.title,
+                                show_date: show.local_date,
+                                show_venue: show.venue,
+                                show_locality: show.locality,
+                                show_region: show.region1,
+                                set_number: set_number,
+                                resource_url: setstone.resource_url
+                            } %}
+                            {% set allSetstones = (allSetstones.push(stoneWithContext), allSetstones) %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <p class="lead text-center">
+                    <strong>{{ allSetstones.length }}</strong> Set Stone{% if allSetstones.length != 1 %}s{% endif %} minted
+                </p>
+            </div>
+        </div>
+
+        {% if allSetstones.length > 0 %}
+            <div class="setstones-gallery">
+                {% for stone in allSetstones %}
+                    <div class="setstone-card semi-transparent-bg">
+                        <a href="{{getCryptograssUrl()}}{{ stone.resource_url }}" class="setstone-image-link">
+                            <img src="{{getCryptograssUrl()}}/assets/images/setstones/{{ stone.tokenId }}.png"
+                                 alt="Set Stone #{{ stone.tokenId }}"
+                                 class="setstone-image">
+                        </a>
+                        <div class="setstone-info">
+                            <h4 class="pixel-font">Set Stone #{{ stone.tokenId }}</h4>
+                            <p class="show-title">{{ stone.show_title }}</p>
+                            <p class="show-details">
+                                {{ stone.show_date }}<br>
+                                {{ stone.show_venue }}<br>
+                                {{ stone.show_locality }}{% if stone.show_region %}, {{ stone.show_region }}{% endif %}
+                            </p>
+                            <p class="set-info">Set {{ stone.set_number }}</p>
+                            <p class="owner-info">
+                                Owner:
+                                {% if stone.owner %}
+                                    <span class="owner-address" title="{{ stone.owner }}">
+                                        {{ stone.owner | truncate(13, true, '...') }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">Unknown</span>
+                                {% endif %}
+                            </p>
+                            <div class="stone-links">
+                                <a href="{{getCryptograssUrl()}}{{ stone.resource_url }}" class="btn btn-sm btn-outline-light">View Details</a>
+                                <a href="https://arbiscan.io/token/0x39269b3FddFc9bf0626e5CFe4424aa51A77f7678?a={{ stone.tokenId }}"
+                                   target="_blank"
+                                   class="btn btn-sm btn-outline-secondary">Arbiscan</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center mt-5">
+                <p>No Set Stones have been minted yet. Check back after upcoming shows!</p>
+            </div>
+        {% endif %}
+
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <div class="alert alert-secondary">
+                    <h5 class="pixel-font">About Set Stones</h5>
+                    <p>Set Stones are algorithmic art NFTs that transform live musical performances into unique visual artifacts. Each stone's colors are derived from the songs played in that set.</p>
+                    <p class="mb-0"><strong>Contract:</strong> <a href="https://arbiscan.io/address/0x39269b3FddFc9bf0626e5CFe4424aa51A77f7678" target="_blank">0x39269b3FddFc9bf0626e5CFe4424aa51A77f7678</a> on Arbitrum</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<style>
+.setstones-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.setstone-card {
+    border-radius: 12px;
+    border: 1px solid #444;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.setstone-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.setstone-image-link {
+    display: block;
+}
+
+.setstone-image {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-bottom: 1px solid #444;
+}
+
+.setstone-info {
+    padding: 1rem;
+}
+
+.setstone-info h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.setstone-info .show-title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.setstone-info .show-details {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 0.5rem;
+}
+
+.setstone-info .set-info {
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+.setstone-info .owner-info {
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+}
+
+.owner-address {
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+}
+
+.stone-links {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.stone-links .btn {
+    font-size: 0.75rem;
+}
+
+.pixel-font {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+</style>
+
+{% endblock %}

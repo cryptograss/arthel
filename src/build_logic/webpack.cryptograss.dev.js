@@ -17,12 +17,20 @@ async function dev_config() {
             devMiddleware: {
                 writeToDisk: true,
             },
-            port: 4050,
+            host: '0.0.0.0',
+            port: 4001,
+            allowedHosts: 'all',
             historyApiFallback: {
                 rewrites: [
-                    { from: /\/$/, to: '/index.html' },
+                    { from: /^\/$/, to: '/index.html' },
                     {
-                        from: /\/(.+)$/, to: function (context) {
+                        from: /^\/(.+)\/$/, to: function (context) {
+                            // Rewrite URLs like '/artifacts/' to '/artifacts.html'
+                            return '/' + context.match[1] + '.html';
+                        }
+                    },
+                    {
+                        from: /^\/(.+)$/, to: function (context) {
                             // Rewrite URLs like '/things' to '/things.html'
                             return '/' + context.match[1] + '.html';
                         }

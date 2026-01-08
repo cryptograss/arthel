@@ -1,0 +1,165 @@
+{% extends '../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div id="all-blue-railroads" class="col-md-10 text-post">
+        <div class="row">
+            <h1 class="text-center pixel-font">All Blue Railroad Trains</h1>
+            <p class="text-center">Every Blue Railroad Train minted on the cryptograss ecosystem</p>
+        </div>
+
+        {% set tokenCount = 0 %}
+        {% for tokenId, data in chainData.blueRailroads %}
+            {% set tokenCount = tokenCount + 1 %}
+        {% endfor %}
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <p class="lead text-center">
+                    <strong>{{ tokenCount }}</strong> Blue Railroad Train{{ "s" if tokenCount != 1 else "" }} minted
+                </p>
+            </div>
+        </div>
+
+        {% if tokenCount > 0 %}
+            <div class="blue-railroads-gallery">
+                {% for tokenId, data in chainData.blueRailroads %}
+                    <div class="blue-railroad-card semi-transparent-bg">
+                        {% if data.video_url %}
+                            <div class="video-container">
+                                <video controls preload="metadata">
+                                    <source src="/assets/fetched/10-{{ chainData.blueRailroadContractAddress }}-{{ tokenId }}.mp4"
+                                            type="{{ data.content_type }}">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        {% else %}
+                            <div class="no-video-placeholder">
+                                <span class="pixel-font">No video</span>
+                            </div>
+                        {% endif %}
+                        <div class="blue-railroad-info">
+                            <h4 class="pixel-font">Blue Railroad Train #{{ tokenId }}</h4>
+                            <p class="owner-info">
+                                Owner:
+                                {% if data.ownerEns %}
+                                    <span class="owner-address" title="{{ data.owner }}">
+                                        {{ data.ownerEns }}
+                                    </span>
+                                {% else %}
+                                    <span class="owner-address" title="{{ data.owner }}">
+                                        {{ data.owner | truncate(16, true, '...') }}
+                                    </span>
+                                {% endif %}
+                            </p>
+                            <div class="stone-links">
+                                <a href="https://optimistic.etherscan.io/token/{{ chainData.blueRailroadContractAddress }}?a={{ tokenId }}"
+                                   target="_blank"
+                                   class="btn btn-sm btn-outline-secondary">Optimism Etherscan</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <p class="text-muted">No Blue Railroad Trains have been minted yet.</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <div class="alert alert-secondary">
+                    <h5 class="pixel-font">About Blue Railroad Trains</h5>
+                    <p>Blue Railroad Trains are NFTs minted by completing a squat challenge while listening to Tony Rice's "Blue Railroad Train." Submit your video, do the work, earn the token.</p>
+                    <p class="mb-0"><strong>Contract:</strong> <a href="https://optimistic.etherscan.io/address/{{ chainData.blueRailroadContractAddress }}" target="_blank">{{ chainData.blueRailroadContractAddress }}</a> on Optimism</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<style>
+.blue-railroads-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.blue-railroad-card {
+    border-radius: 12px;
+    border: 1px solid #444;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blue-railroad-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.blue-railroad-card .video-container {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+}
+
+.blue-railroad-card video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.no-video-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+}
+
+.blue-railroad-info {
+    padding: 1rem;
+}
+
+.blue-railroad-info h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.blue-railroad-info .owner-info {
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+}
+
+.owner-address {
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+}
+
+.stone-links {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.stone-links .btn {
+    font-size: 0.75rem;
+}
+
+.pixel-font {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+</style>
+
+{% endblock %}

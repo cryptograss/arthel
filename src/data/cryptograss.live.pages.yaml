@@ -9,6 +9,24 @@ onchain-merch:
   context:
     page_title: "Onchain Merch"
 
+all-setstones:
+  template: all-setstones.njk
+  include_data_in_context: ["shows", "chainData"]
+  context:
+    page_title: "All Set Stones"
+
+all-blue-railroads:
+  template: all-blue-railroads.njk
+  include_data_in_context: ["chainData"]
+  context:
+    page_title: "All Blue Railroad Trains"
+
+artifacts:
+  template: artifacts.njk
+  include_data_in_context: ["shows", "chainData"]
+  context:
+    page_title: "All Artifacts"
+
 oracle-of-bluegrass-bacon:
   template: tools/oracle-of-bluegrass-bacon.njk
   context:
@@ -16,4 +34,9 @@ oracle-of-bluegrass-bacon:
     page_title: "Oracle of Bluegrass Bacon"
     description: "Connect any two musicians through shows and recordings - like Six Degrees of Kevin Bacon, but for bluegrass!"
     no_video_bg: true
-    
+
+blox-office/admin/mint-tony:
+  template: blox-office/admin/mint-tony.njk
+  context:
+    page_title: "Mint Tony Token"
+
