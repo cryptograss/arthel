@@ -13,42 +13,135 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0">Pending Submissions</h5>
-                            <button id="refresh-btn" class="btn btn-outline-primary btn-sm">
-                                <span id="refresh-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
-                                Refresh
-                            </button>
+                            <span class="badge bg-secondary">Updated at build time</span>
                         </div>
 
-                        <div id="loading-msg" class="text-center py-4">
-                            <span class="spinner-border" role="status"></span>
-                            <p class="mt-2">Loading submissions from PickiPedia...</p>
+                        {% if pendingSubmissions and pendingSubmissions.length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Exercise</th>
+                                        <th>Participants</th>
+                                        <th>Block Height</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for submission in pendingSubmissions %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ submission.url }}" target="_blank">{{ submission.id }}</a>
+                                        </td>
+                                        <td>{{ submission.exercise }}</td>
+                                        <td>
+                                            {% for participant in submission.participants %}
+                                            <span class="badge bg-secondary me-1" title="{{ participant.wallet }}">
+                                                {{ participant.name }}
+                                            </span>
+                                            {% endfor %}
+                                        </td>
+                                        <td>
+                                            {% if submission.blockHeight %}
+                                            <a href="https://etherscan.io/block/{{ submission.blockHeight }}" target="_blank" class="font-monospace">
+                                                {{ submission.blockHeight }}
+                                            </a>
+                                            {% else %}
+                                            <span class="text-muted">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="/blox-office/admin/mint-tony{% if submission.songId %}?song={{ submission.songId }}{% endif %}"
+                                               class="btn btn-primary btn-sm">
+                                                Mint
+                                            </a>
+                                            <a href="{{ submission.url }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                                View
+                                            </a>
+                                            {% if submission.videoUrl %}
+                                            <a href="{{ submission.videoUrl }}" target="_blank" class="btn btn-outline-info btn-sm">
+                                                Video
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
-
-                        <div id="error-msg" class="alert alert-danger d-none"></div>
-
-                        <div id="no-submissions" class="alert alert-success d-none">
-                            No pending submissions - all caught up!
+                        {% else %}
+                        <div class="alert alert-success mb-0">
+                            No pending submissions — all caught up!
                         </div>
+                        {% endif %}
+                    </div>
+                </div>
 
-                        <div id="submissions-table" class="d-none">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Submission</th>
-                                            <th>Exercise</th>
-                                            <th>Participants</th>
-                                            <th>Block Height</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="submissions-body">
-                                    </tbody>
-                                </table>
+                {% if pendingSubmissions and pendingSubmissions.length > 0 %}
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title">Submission Details</h6>
+                        <div class="accordion" id="submissionDetails">
+                            {% for submission in pendingSubmissions %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading{{ submission.id }}">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse{{ submission.id }}">
+                                        Submission #{{ submission.id }}: {{ submission.exercise }}
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ submission.id }}" class="accordion-collapse collapse"
+                                     data-bs-parent="#submissionDetails">
+                                    <div class="accordion-body">
+                                        <dl class="row mb-0">
+                                            <dt class="col-sm-3">Exercise</dt>
+                                            <dd class="col-sm-9">{{ submission.exercise }}</dd>
+
+                                            <dt class="col-sm-3">Song ID</dt>
+                                            <dd class="col-sm-9">{{ submission.songId or '—' }}</dd>
+
+                                            <dt class="col-sm-3">Block Height</dt>
+                                            <dd class="col-sm-9">
+                                                {% if submission.blockHeight %}
+                                                <a href="https://etherscan.io/block/{{ submission.blockHeight }}" target="_blank">
+                                                    {{ submission.blockHeight }}
+                                                </a>
+                                                {% else %}—{% endif %}
+                                            </dd>
+
+                                            <dt class="col-sm-3">Participants</dt>
+                                            <dd class="col-sm-9">
+                                                <ul class="list-unstyled mb-0">
+                                                    {% for participant in submission.participants %}
+                                                    <li>
+                                                        <strong>{{ participant.name }}</strong>:
+                                                        <code>{{ participant.wallet }}</code>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </dd>
+
+                                            {% if submission.video %}
+                                            <dt class="col-sm-3">Video</dt>
+                                            <dd class="col-sm-9">
+                                                <a href="{{ submission.videoUrl }}" target="_blank">{{ submission.video }}</a>
+                                            </dd>
+                                            {% endif %}
+
+                                            <dt class="col-sm-3">PickiPedia</dt>
+                                            <dd class="col-sm-9">
+                                                <a href="{{ submission.url }}" target="_blank">{{ submission.url }}</a>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
+                {% endif %}
 
                 <div class="card semi-transparent-bg">
                     <div class="card-body">
@@ -71,162 +164,6 @@
     font-family: 'Courier New', monospace;
     font-weight: bold;
 }
-.submission-row:hover {
-    cursor: pointer;
-}
-.participant-badge {
-    font-size: 0.85em;
-}
 </style>
-
-<script>
-document.addEventListener('DOMContentLoaded', async () => {
-    const PICKIPEDIA_API = 'https://pickipedia.xyz/rest.php/v1';
-    const PICKIPEDIA_WIKI = 'https://pickipedia.xyz/wiki';
-
-    const loadingMsg = document.getElementById('loading-msg');
-    const errorMsg = document.getElementById('error-msg');
-    const noSubmissions = document.getElementById('no-submissions');
-    const submissionsTable = document.getElementById('submissions-table');
-    const submissionsBody = document.getElementById('submissions-body');
-    const refreshBtn = document.getElementById('refresh-btn');
-    const refreshSpinner = document.getElementById('refresh-spinner');
-
-    async function fetchPendingSubmissions() {
-        loadingMsg.classList.remove('d-none');
-        errorMsg.classList.add('d-none');
-        noSubmissions.classList.add('d-none');
-        submissionsTable.classList.add('d-none');
-        refreshSpinner.classList.remove('d-none');
-
-        try {
-            // Fetch the category members for Blue Railroad Submissions
-            const categoryUrl = `${PICKIPEDIA_API}/page/Category:Blue_Railroad_Submissions`;
-            const categoryResponse = await fetch(categoryUrl);
-
-            if (!categoryResponse.ok) {
-                throw new Error('Failed to fetch submissions category');
-            }
-
-            const categoryData = await categoryResponse.text();
-
-            // Parse page links from the category HTML
-            // We need to fetch each submission page and check its status
-            const submissionLinks = [];
-            const linkRegex = /\/wiki\/Blue_Railroad_Submission\/(\d+)/g;
-            let match;
-            while ((match = linkRegex.exec(categoryData)) !== null) {
-                submissionLinks.push(match[1]);
-            }
-
-            // Also try the API endpoint for category members
-            const apiUrl = `${PICKIPEDIA_API}/categories/Blue_Railroad_Submissions/members`;
-
-            // For now, let's fetch the known submissions and check their status
-            // This is a simplified approach - ideally we'd use SMW API
-            const submissions = [];
-
-            // Fetch each potential submission page
-            for (let i = 1; i <= 10; i++) {
-                try {
-                    const pageUrl = `${PICKIPEDIA_API}/page/Blue_Railroad_Submission%2F${i}`;
-                    const response = await fetch(pageUrl);
-                    if (response.ok) {
-                        const pageData = await response.json();
-                        // Check if status is Pending (parse from source)
-                        const source = pageData.source || '';
-                        if (source.includes('status=Pending') || !source.includes('status=Minted')) {
-                            // Parse details from the page
-                            const exerciseMatch = source.match(/\|exercise=([^\n|]+)/);
-                            const participantsMatch = source.match(/\|participants=([^\n|]+)/);
-                            const blockMatch = source.match(/\|block[_ ]?height=(\d+)/i);
-                            const videoMatch = source.match(/\|video=([^\n|]+)/);
-
-                            submissions.push({
-                                id: i,
-                                exercise: exerciseMatch ? exerciseMatch[1].trim() : 'Unknown',
-                                participants: participantsMatch ? participantsMatch[1].trim() : 'Unknown',
-                                blockHeight: blockMatch ? blockMatch[1] : 'Unknown',
-                                video: videoMatch ? videoMatch[1].trim() : null,
-                                url: `${PICKIPEDIA_WIKI}/Blue_Railroad_Submission/${i}`
-                            });
-                        }
-                    }
-                } catch (e) {
-                    // Page doesn't exist, skip
-                }
-            }
-
-            loadingMsg.classList.add('d-none');
-            refreshSpinner.classList.add('d-none');
-
-            if (submissions.length === 0) {
-                noSubmissions.classList.remove('d-none');
-            } else {
-                renderSubmissions(submissions);
-                submissionsTable.classList.remove('d-none');
-            }
-
-        } catch (error) {
-            console.error('Error fetching submissions:', error);
-            loadingMsg.classList.add('d-none');
-            refreshSpinner.classList.add('d-none');
-            errorMsg.textContent = `Error: ${error.message}`;
-            errorMsg.classList.remove('d-none');
-        }
-    }
-
-    function renderSubmissions(submissions) {
-        submissionsBody.innerHTML = '';
-
-        submissions.forEach(sub => {
-            const row = document.createElement('tr');
-            row.className = 'submission-row';
-
-            // Parse participants into badges
-            const participantBadges = sub.participants
-                .split(',')
-                .map(p => p.trim())
-                .map(p => `<span class="badge bg-secondary participant-badge me-1">${p}</span>`)
-                .join('');
-
-            // Determine song ID from exercise name
-            let songId = '';
-            if (sub.exercise.toLowerCase().includes('blue railroad')) songId = '5';
-            else if (sub.exercise.toLowerCase().includes('nine pound')) songId = '6';
-            else if (sub.exercise.toLowerCase().includes('ginseng')) songId = '10';
-
-            row.innerHTML = `
-                <td>
-                    <a href="${sub.url}" target="_blank">#${sub.id}</a>
-                </td>
-                <td>${sub.exercise}</td>
-                <td>${participantBadges}</td>
-                <td>
-                    <a href="https://etherscan.io/block/${sub.blockHeight}" target="_blank" class="font-monospace">
-                        ${sub.blockHeight}
-                    </a>
-                </td>
-                <td>
-                    <a href="/blox-office/admin/mint-tony?submission=${sub.id}&song=${songId}"
-                       class="btn btn-primary btn-sm">
-                        Mint
-                    </a>
-                    <a href="${sub.url}" target="_blank" class="btn btn-outline-secondary btn-sm">
-                        View
-                    </a>
-                </td>
-            `;
-
-            submissionsBody.appendChild(row);
-        });
-    }
-
-    refreshBtn.addEventListener('click', fetchPendingSubmissions);
-
-    // Initial load
-    fetchPendingSubmissions();
-});
-</script>
 
 {% endblock %}

@@ -31,6 +31,7 @@ blox-office/admin/mint-tony:
 
 blox-office/admin/pending-submissions:
   template: blox-office/admin/pending-submissions.njk
+  include_data_in_context: ["pendingSubmissions"]
   context:
     page_title: "Pending Blue Railroad Submissions"
     no_video_bg: true
