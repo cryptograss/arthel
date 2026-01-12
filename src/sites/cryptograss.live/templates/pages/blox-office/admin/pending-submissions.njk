@@ -1,0 +1,232 @@
+{% extends '../../../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-md-10 text-post">
+        <h1 class="text-center pixel-font">Pending Blue Railroad Submissions</h1>
+        <p class="text-center text-muted">Submissions awaiting minting from PickiPedia</p>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Pending Submissions</h5>
+                            <button id="refresh-btn" class="btn btn-outline-primary btn-sm">
+                                <span id="refresh-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                Refresh
+                            </button>
+                        </div>
+
+                        <div id="loading-msg" class="text-center py-4">
+                            <span class="spinner-border" role="status"></span>
+                            <p class="mt-2">Loading submissions from PickiPedia...</p>
+                        </div>
+
+                        <div id="error-msg" class="alert alert-danger d-none"></div>
+
+                        <div id="no-submissions" class="alert alert-success d-none">
+                            No pending submissions - all caught up!
+                        </div>
+
+                        <div id="submissions-table" class="d-none">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Submission</th>
+                                            <th>Exercise</th>
+                                            <th>Participants</th>
+                                            <th>Block Height</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="submissions-body">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card semi-transparent-bg">
+                    <div class="card-body">
+                        <h6 class="card-title">Quick Links</h6>
+                        <ul class="mb-0">
+                            <li><a href="/blox-office/admin/mint-tony">Mint Token Page</a></li>
+                            <li><a href="https://pickipedia.xyz/wiki/Category:Blue_Railroad_Submissions" target="_blank">All Submissions on PickiPedia</a></li>
+                            <li><a href="https://pickipedia.xyz/wiki/Blue_Railroad/Pending_Submissions" target="_blank">PickiPedia Pending Queue (SMW)</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<style>
+.pixel-font {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+.submission-row:hover {
+    cursor: pointer;
+}
+.participant-badge {
+    font-size: 0.85em;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const PICKIPEDIA_API = 'https://pickipedia.xyz/rest.php/v1';
+    const PICKIPEDIA_WIKI = 'https://pickipedia.xyz/wiki';
+
+    const loadingMsg = document.getElementById('loading-msg');
+    const errorMsg = document.getElementById('error-msg');
+    const noSubmissions = document.getElementById('no-submissions');
+    const submissionsTable = document.getElementById('submissions-table');
+    const submissionsBody = document.getElementById('submissions-body');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const refreshSpinner = document.getElementById('refresh-spinner');
+
+    async function fetchPendingSubmissions() {
+        loadingMsg.classList.remove('d-none');
+        errorMsg.classList.add('d-none');
+        noSubmissions.classList.add('d-none');
+        submissionsTable.classList.add('d-none');
+        refreshSpinner.classList.remove('d-none');
+
+        try {
+            // Fetch the category members for Blue Railroad Submissions
+            const categoryUrl = `${PICKIPEDIA_API}/page/Category:Blue_Railroad_Submissions`;
+            const categoryResponse = await fetch(categoryUrl);
+
+            if (!categoryResponse.ok) {
+                throw new Error('Failed to fetch submissions category');
+            }
+
+            const categoryData = await categoryResponse.text();
+
+            // Parse page links from the category HTML
+            // We need to fetch each submission page and check its status
+            const submissionLinks = [];
+            const linkRegex = /\/wiki\/Blue_Railroad_Submission\/(\d+)/g;
+            let match;
+            while ((match = linkRegex.exec(categoryData)) !== null) {
+                submissionLinks.push(match[1]);
+            }
+
+            // Also try the API endpoint for category members
+            const apiUrl = `${PICKIPEDIA_API}/categories/Blue_Railroad_Submissions/members`;
+
+            // For now, let's fetch the known submissions and check their status
+            // This is a simplified approach - ideally we'd use SMW API
+            const submissions = [];
+
+            // Fetch each potential submission page
+            for (let i = 1; i <= 10; i++) {
+                try {
+                    const pageUrl = `${PICKIPEDIA_API}/page/Blue_Railroad_Submission%2F${i}`;
+                    const response = await fetch(pageUrl);
+                    if (response.ok) {
+                        const pageData = await response.json();
+                        // Check if status is Pending (parse from source)
+                        const source = pageData.source || '';
+                        if (source.includes('status=Pending') || !source.includes('status=Minted')) {
+                            // Parse details from the page
+                            const exerciseMatch = source.match(/\|exercise=([^\n|]+)/);
+                            const participantsMatch = source.match(/\|participants=([^\n|]+)/);
+                            const blockMatch = source.match(/\|block[_ ]?height=(\d+)/i);
+                            const videoMatch = source.match(/\|video=([^\n|]+)/);
+
+                            submissions.push({
+                                id: i,
+                                exercise: exerciseMatch ? exerciseMatch[1].trim() : 'Unknown',
+                                participants: participantsMatch ? participantsMatch[1].trim() : 'Unknown',
+                                blockHeight: blockMatch ? blockMatch[1] : 'Unknown',
+                                video: videoMatch ? videoMatch[1].trim() : null,
+                                url: `${PICKIPEDIA_WIKI}/Blue_Railroad_Submission/${i}`
+                            });
+                        }
+                    }
+                } catch (e) {
+                    // Page doesn't exist, skip
+                }
+            }
+
+            loadingMsg.classList.add('d-none');
+            refreshSpinner.classList.add('d-none');
+
+            if (submissions.length === 0) {
+                noSubmissions.classList.remove('d-none');
+            } else {
+                renderSubmissions(submissions);
+                submissionsTable.classList.remove('d-none');
+            }
+
+        } catch (error) {
+            console.error('Error fetching submissions:', error);
+            loadingMsg.classList.add('d-none');
+            refreshSpinner.classList.add('d-none');
+            errorMsg.textContent = `Error: ${error.message}`;
+            errorMsg.classList.remove('d-none');
+        }
+    }
+
+    function renderSubmissions(submissions) {
+        submissionsBody.innerHTML = '';
+
+        submissions.forEach(sub => {
+            const row = document.createElement('tr');
+            row.className = 'submission-row';
+
+            // Parse participants into badges
+            const participantBadges = sub.participants
+                .split(',')
+                .map(p => p.trim())
+                .map(p => `<span class="badge bg-secondary participant-badge me-1">${p}</span>`)
+                .join('');
+
+            // Determine song ID from exercise name
+            let songId = '';
+            if (sub.exercise.toLowerCase().includes('blue railroad')) songId = '5';
+            else if (sub.exercise.toLowerCase().includes('nine pound')) songId = '6';
+            else if (sub.exercise.toLowerCase().includes('ginseng')) songId = '10';
+
+            row.innerHTML = `
+                <td>
+                    <a href="${sub.url}" target="_blank">#${sub.id}</a>
+                </td>
+                <td>${sub.exercise}</td>
+                <td>${participantBadges}</td>
+                <td>
+                    <a href="https://etherscan.io/block/${sub.blockHeight}" target="_blank" class="font-monospace">
+                        ${sub.blockHeight}
+                    </a>
+                </td>
+                <td>
+                    <a href="/blox-office/admin/mint-tony?submission=${sub.id}&song=${songId}"
+                       class="btn btn-primary btn-sm">
+                        Mint
+                    </a>
+                    <a href="${sub.url}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                        View
+                    </a>
+                </td>
+            `;
+
+            submissionsBody.appendChild(row);
+        });
+    }
+
+    refreshBtn.addEventListener('click', fetchPendingSubmissions);
+
+    // Initial load
+    fetchPendingSubmissions();
+});
+</script>
+
+{% endblock %}

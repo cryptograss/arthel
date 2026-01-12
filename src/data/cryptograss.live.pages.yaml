@@ -28,4 +28,10 @@ blox-office/admin/mint-tony:
   context:
     page_title: "Mint Blue Railroad Tony"
     no_video_bg: true
+
+blox-office/admin/pending-submissions:
+  template: blox-office/admin/pending-submissions.njk
+  context:
+    page_title: "Pending Blue Railroad Submissions"
+    no_video_bg: true
     
