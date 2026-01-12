@@ -51,12 +51,79 @@
                                 <div class="form-text">When the exercise was performed</div>
                             </div>
 
+                            <!-- Video Upload Section -->
                             <div class="mb-3">
-                                <label for="video-uri" class="form-label">Video URI</label>
-                                <input type="text" class="form-control" id="video-uri"
-                                       placeholder="https://discord.com/channels/..." required>
-                                <div class="form-text">Discord message URL or other video link</div>
+                                <label class="form-label">Video Source</label>
+                                <ul class="nav nav-tabs" id="video-source-tabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="url-tab" data-bs-toggle="tab"
+                                                data-bs-target="#url-pane" type="button" role="tab">
+                                            From URL (Instagram, etc.)
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="upload-tab" data-bs-toggle="tab"
+                                                data-bs-target="#upload-pane" type="button" role="tab">
+                                            Upload File
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="manual-tab" data-bs-toggle="tab"
+                                                data-bs-target="#manual-pane" type="button" role="tab">
+                                            Manual URI
+                                        </button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content border border-top-0 p-3" id="video-source-content">
+                                    <!-- URL Download Tab -->
+                                    <div class="tab-pane fade show active" id="url-pane" role="tabpanel">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="video-url"
+                                                   placeholder="https://www.instagram.com/p/...">
+                                            <button type="button" class="btn btn-outline-primary" id="fetch-video-btn">
+                                                Fetch & Pin
+                                            </button>
+                                        </div>
+                                        <div class="form-text">Paste Instagram, YouTube, or other video URL</div>
+                                    </div>
+
+                                    <!-- File Upload Tab -->
+                                    <div class="tab-pane fade" id="upload-pane" role="tabpanel">
+                                        <div class="input-group">
+                                            <input type="file" class="form-control" id="video-file"
+                                                   accept="video/*">
+                                            <button type="button" class="btn btn-outline-primary" id="upload-video-btn">
+                                                Upload & Pin
+                                            </button>
+                                        </div>
+                                        <div class="form-text">Select a video file (max 500MB)</div>
+                                    </div>
+
+                                    <!-- Manual URI Tab -->
+                                    <div class="tab-pane fade" id="manual-pane" role="tabpanel">
+                                        <input type="text" class="form-control" id="manual-uri"
+                                               placeholder="ipfs://Qm... or https://...">
+                                        <div class="form-text">If you already have the IPFS CID or direct URL</div>
+                                    </div>
+                                </div>
+
+                                <!-- Pin Status -->
+                                <div id="pin-status" class="mt-2" style="display: none;">
+                                    <div id="pin-pending" class="alert alert-info py-2" style="display: none;">
+                                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                                        <span id="pin-status-text">Downloading video...</span>
+                                    </div>
+                                    <div id="pin-success" class="alert alert-success py-2" style="display: none;">
+                                        <strong>Pinned!</strong>
+                                        <span id="pin-cid" class="font-monospace"></span>
+                                        <a id="pin-gateway-link" href="#" target="_blank" class="ms-2">View on IPFS</a>
+                                    </div>
+                                    <div id="pin-error" class="alert alert-danger py-2" style="display: none;"></div>
+                                </div>
                             </div>
+
+                            <!-- Hidden field for final URI -->
+                            <input type="hidden" id="video-uri" required>
 
                             <div class="d-grid gap-2">
                                 <button type="submit" id="mint-btn" class="btn btn-success btn-lg" disabled>

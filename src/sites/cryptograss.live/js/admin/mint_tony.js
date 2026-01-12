@@ -8,6 +8,11 @@ import { brABI } from '../../../../abi/blueRailroadABI.js';
 
 const projectId = '3e6e7e58a5918c44fa42816d90b735a6';
 
+// Pinning service configuration
+// In production, this should point to pinning.maybelle.cryptograss.live
+// For local development, you can run the pinning service locally
+const PINNING_SERVICE_URL = 'https://pinning.maybelle.cryptograss.live';
+
 const config = createConfig({
     chains: [optimism, mainnet],
     transports: {
@@ -122,6 +127,176 @@ function updateResolvedAddress(address, ensName) {
     }
 }
 
+// ============================================
+// Pinning Service Integration
+// ============================================
+
+/**
+ * Create the authorization message for signing
+ * Must match the format expected by the pinning service
+ */
+function createAuthMessage(timestamp) {
+    return `Authorize Blue Railroad pinning\nTimestamp: ${timestamp}`;
+}
+
+/**
+ * Sign an authorization message with the connected wallet
+ * Returns { signature, timestamp } or null if signing fails/cancelled
+ */
+async function signPinningAuth() {
+    const account = getAccount(config);
+    if (!account?.address) {
+        showPinStatus('error', 'Please connect your wallet first');
+        return null;
+    }
+
+    const timestamp = Date.now();
+    const message = createAuthMessage(timestamp);
+
+    try {
+        // Import signMessage from wagmi/core
+        const { signMessage } = await import('@wagmi/core');
+        const signature = await signMessage(config, { message });
+        return { signature, timestamp };
+    } catch (error) {
+        console.error('Signing error:', error);
+        if (error.message?.includes('rejected')) {
+            showPinStatus('error', 'Signature rejected');
+        } else {
+            showPinStatus('error', `Signing failed: ${error.message}`);
+        }
+        return null;
+    }
+}
+
+function showPinStatus(type, message) {
+    const statusArea = document.getElementById('pin-status');
+    const pendingMsg = document.getElementById('pin-pending');
+    const successMsg = document.getElementById('pin-success');
+    const errorMsg = document.getElementById('pin-error');
+    const statusText = document.getElementById('pin-status-text');
+    const cidSpan = document.getElementById('pin-cid');
+    const gatewayLink = document.getElementById('pin-gateway-link');
+
+    statusArea.style.display = 'block';
+    pendingMsg.style.display = 'none';
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    switch (type) {
+        case 'pending':
+            pendingMsg.style.display = 'block';
+            statusText.textContent = message || 'Processing...';
+            break;
+        case 'success':
+            successMsg.style.display = 'block';
+            cidSpan.textContent = message.cid;
+            gatewayLink.href = message.gatewayUrl;
+            // Set the hidden video-uri field
+            document.getElementById('video-uri').value = message.ipfsUri;
+            break;
+        case 'error':
+            errorMsg.style.display = 'block';
+            errorMsg.textContent = message;
+            break;
+    }
+}
+
+async function pinFromUrl(url) {
+    // Sign authorization first
+    showPinStatus('pending', 'Requesting wallet signature...');
+    const auth = await signPinningAuth();
+    if (!auth) {
+        return null; // Error already shown by signPinningAuth
+    }
+
+    showPinStatus('pending', 'Downloading video from URL...');
+
+    try {
+        const response = await fetch(`${PINNING_SERVICE_URL}/pin-from-url`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Signature': auth.signature,
+                'X-Timestamp': auth.timestamp.toString(),
+            },
+            body: JSON.stringify({ url }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.details || error.error || 'Failed to pin video');
+        }
+
+        const result = await response.json();
+        showPinStatus('success', result);
+        return result;
+
+    } catch (error) {
+        console.error('Pin from URL error:', error);
+        showPinStatus('error', error.message);
+        return null;
+    }
+}
+
+async function pinFile(file) {
+    // Sign authorization first
+    showPinStatus('pending', 'Requesting wallet signature...');
+    const auth = await signPinningAuth();
+    if (!auth) {
+        return null; // Error already shown by signPinningAuth
+    }
+
+    showPinStatus('pending', `Uploading ${file.name}...`);
+
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch(`${PINNING_SERVICE_URL}/pin-file`, {
+            method: 'POST',
+            headers: {
+                'X-Signature': auth.signature,
+                'X-Timestamp': auth.timestamp.toString(),
+            },
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.details || error.error || 'Failed to upload video');
+        }
+
+        const result = await response.json();
+        showPinStatus('success', result);
+        return result;
+
+    } catch (error) {
+        console.error('Pin file error:', error);
+        showPinStatus('error', error.message);
+        return null;
+    }
+}
+
+function handleManualUri() {
+    const manualUri = document.getElementById('manual-uri').value.trim();
+    if (manualUri) {
+        document.getElementById('video-uri').value = manualUri;
+        // Show a simple confirmation
+        const statusArea = document.getElementById('pin-status');
+        statusArea.style.display = 'block';
+        document.getElementById('pin-pending').style.display = 'none';
+        document.getElementById('pin-error').style.display = 'none';
+        document.getElementById('pin-success').style.display = 'block';
+        document.getElementById('pin-cid').textContent = manualUri.startsWith('ipfs://')
+            ? manualUri.replace('ipfs://', '')
+            : 'Manual URI';
+        document.getElementById('pin-gateway-link').href = manualUri.startsWith('ipfs://')
+            ? `https://gateway.pinata.cloud/ipfs/${manualUri.replace('ipfs://', '')}`
+            : manualUri;
+    }
+}
+
 async function handleMint(e) {
     e.preventDefault();
 
@@ -216,4 +391,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Form submission
     document.getElementById('mint-form').addEventListener('submit', handleMint);
+
+    // ============================================
+    // Pinning Service Event Handlers
+    // ============================================
+
+    // Fetch from URL button
+    document.getElementById('fetch-video-btn').addEventListener('click', async () => {
+        const url = document.getElementById('video-url').value.trim();
+        if (!url) {
+            showPinStatus('error', 'Please enter a video URL');
+            return;
+        }
+        await pinFromUrl(url);
+    });
+
+    // Upload file button
+    document.getElementById('upload-video-btn').addEventListener('click', async () => {
+        const fileInput = document.getElementById('video-file');
+        if (!fileInput.files || fileInput.files.length === 0) {
+            showPinStatus('error', 'Please select a video file');
+            return;
+        }
+        await pinFile(fileInput.files[0]);
+    });
+
+    // Manual URI - update on blur or when tab changes
+    document.getElementById('manual-uri').addEventListener('blur', handleManualUri);
+    document.getElementById('manual-tab').addEventListener('shown.bs.tab', () => {
+        // When switching to manual tab, check if there's already a value
+        handleManualUri();
+    });
+
+    // Clear pin status when switching tabs
+    document.querySelectorAll('#video-source-tabs button').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', () => {
+            document.getElementById('pin-status').style.display = 'none';
+            // Don't clear video-uri when switching tabs - user might switch back
+        });
+    });
 });
