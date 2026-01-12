@@ -25,13 +25,14 @@ oracle-of-bluegrass-bacon:
 
 blox-office/admin/mint-tony:
   template: blox-office/admin/mint-tony.njk
+  include_data_in_context: ["chainData", "latest_git_commit"]
   context:
     page_title: "Mint Blue Railroad Tony"
     no_video_bg: true
 
 blox-office/admin/pending-submissions:
   template: blox-office/admin/pending-submissions.njk
-  include_data_in_context: ["pendingSubmissions"]
+  include_data_in_context: ["pendingSubmissions", "chainData", "latest_git_commit"]
   context:
     page_title: "Pending Blue Railroad Submissions"
     no_video_bg: true
