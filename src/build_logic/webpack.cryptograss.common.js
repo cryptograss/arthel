@@ -21,6 +21,8 @@ const htmlPluginInstances = templateFiles.map(templatePath => {
 
     if (relativePath.startsWith('tools/oracle-of-bluegrass-bacon')) {
         var chunks = ['main', 'oracle_client'];
+    } else if (relativePath.startsWith('blox-office/admin/mint-tony')) {
+        var chunks = ['main', 'mint_tony'];
     } else {
         var chunks = ['main'];
     }
@@ -30,13 +32,14 @@ const htmlPluginInstances = templateFiles.map(templatePath => {
         filename: relativePath,
         inject: "body",
         chunks: chunks,
+        publicPath: '/',
     });
 });
 
 const frontendJSDir = path.resolve(siteDir, 'js');
 
 export default {
-    output: { path: outputDistDir },
+    output: { path: outputDistDir, publicPath: '/' },
     plugins: [
         new CopyPlugin({
             patterns: [
@@ -94,6 +97,7 @@ export default {
         shapes: `${frontendJSDir}/shapes.js`,
         blue_railroad: `${frontendJSDir}/bazaar/blue_railroad.js`,
         oracle_client: `${frontendJSDir}/oracle_client.js`,
+        mint_tony: `${frontendJSDir}/admin/mint_tony.js`,
     },
     module: {
         rules: [

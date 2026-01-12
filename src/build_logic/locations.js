@@ -13,6 +13,18 @@ const projectDirs = new Proxy({}, {
 projectDirs.initialized = false;
 projectDirs.site = null;
 
+// Reset function for testing - allows reinitialization with different settings
+export function resetProjectDirs() {
+    projectDirs.initialized = false;
+    projectDirs.site = null;
+    // Clear all properties except initialized and site
+    for (const key of Object.keys(projectDirs)) {
+        if (key !== 'initialized' && key !== 'site') {
+            delete projectDirs[key];
+        }
+    }
+}
+
 export function initProjectDirs(site_name) {
     // Prevent multiple initializations
     if (projectDirs.initialized) {
@@ -42,7 +54,10 @@ export function initProjectDirs(site_name) {
     projectDirs.outputDistDir = path.resolve(projectDirs.outputBaseDir,
         'dist', site_name);
 
-    projectDirs.outputPrimaryRootDir = path.resolve(projectDirs.outputBaseDir, '_prebuild_output');
+    // Allow override for testing via environment variable
+    projectDirs.outputPrimaryRootDir = process.env.OUTPUT_PRIMARY_ROOT_DIR
+        ? path.resolve(process.env.OUTPUT_PRIMARY_ROOT_DIR)
+        : path.resolve(projectDirs.outputBaseDir, '_prebuild_output');
 
     projectDirs.outputPrimarySiteDir = path.resolve(projectDirs.outputPrimaryRootDir, site_name);
 

@@ -1,0 +1,54 @@
+..''............',;'........'''''''''''..   .'''',,,,,,,,,,,;;;;;;;;;;
+...''............''''''..''''''''''''''''''''',,,,,,,,,,,;;;;;;;;;;;;;
+....'.............''',,.......'''''''''',,,,,,,,,,,,,,;;;;;;;;;;;;;;,,
+.......      .......   .':ccclc:cc::;,'....,,,,,,,;;;;;,''..',;;;;;,,,
+.....'.     .......  .;ooxkdxxdokOxodol;'. .,,;;;;;;,..  ...  ..;;;,,,
+.....'.     .....'':lxkkkkxxkkxoxxooodddo;..;;;;;;,.   .';;,.   ';;;;;
+.....'. ...','.''c:dxxodxkkkkkkkxxddddooddl;:;;;;'    .,;;;;.   ';;;;;
+.....'.  ..;,''',ccclcldkkxxxxxxkOOkkxxkOkxdc:;;.    .,::;;;,...;;;;::
+....     ..;'',;lll:coddooddxxxkkkOOkkOOkOkdol;.     ,:::::::::::::::c
+...      .','':oxdlcllccloooodxkkkkOkooddxddlc,     .::::::::::::::ccc
+.. .     .''':::oollcoddollodddxxdxxolcclooolc'    .;::::::::::::cclll
+  ..     .';,co:clclloolcllloddddoddool:;llcc;'    .:::::::::::ccllllo
+..'.     ....,:lll;:lodloxdddxxddddxddolcccc,,;.   .::::::cc:;,clooooo
+.''.       ..''',;';loolddxxdolllooolcoodocc..:.   .;::cccc;..;loooooo
+.''..   ...'''.....,ldolc;,;c;,'','';ldool::,;:'    .,;:;,..,coddooc,.
+'''''''''''''','''.'c;;;'. :do:,',coxxdol:c;;;::,.      ..;lool:d:....
+''',,''''''',,,,,,,':lllc::dkkxdloolllc::::;::ccccc:;::cloooo:;;:.....
+'''''''''',,,,,,,,,,,;:cc:coxkxxl.',,,;;:::cccclllllooooooddd:'.....,;
+''''''''',,,,,,,,,;;;;,;,.,;:;;'.';..,::::;;ccllloooooodddddddo:,,cooo
+''''''',,,,,,,,,,;;;;;;::'c;. ..';:,;:c::c'. .,cooooddddddddoooooooooo
+'''''',,,,,,,,,;;;;;;;,,ccc''....:odlc::cc...   .':odddddooooooooooooo
+'''',,,,,,,,,;;:lldkxxc'c,loc;;,,:lodo:;c, .'  .    .:oxxdddoooooooodd
+',,,,,,,,;clox00OOooxOOxOl:oolllodool:;;c' ..  ...   .,oxdodkdoodddddd
+,,,,,,;clxkxkkkkOOx'cdO0Kkc.;;,,''.'''';c. .';.   .....,c:,x000Okkxxxx
+,,,:;lxkxo:xkdc,;c0k:.o0K0o.'  ......  .' ..cx:''......;,c''OK00Okxkkx
+;lddoddkxddkdoo;lO000xo0K0l;;    ...      ...l,;c:....':..''cK00o;oc:c
+000xo:dOkox:oooxO00000d:Ok,         ..  ... ..':dd'....',;kkolOOk;oxxx
+dl;ckclo:ll,;;lkkkkkkkk,'...:xkl. .  ...;colcc,clo;    ..,:d;;kO0lox:d
+xOkO0d:oc:l:'.;,:xOOOOOo..''ckkkkc,....'.,c:..' .''..   .l'''':kOxoodd
+dxxd0oldkodolxdo:',dO0Ox..c;',dxo..xOc.'c,,'..od::dxdxkkkkxddc'oO0kxlo
+ddloxkO00KKKK000K0Oo:Okd,;co,.odxo,lll:;clxdcoxkOOOOOOOOOOOOOkxck0d'l0
+OkkkkOO000KKKKKKKK0:kXKKK00OxdOOOOOkxxxkOOO0000000OOOOOOOOOOOOOkxkkccO
+kkkkOO000Okkxdddol:kXXXXKKKKK0000000000000000000OOOOOOOOOOOOOOOOOx,:ck
+kkkkxlcllodxkkOOO0KKKKKKKK000000000000000000000OOOOOOOOOOOOOOOOOOkd.;k
+OOOOOkO0KKXXXXXXKKKKKKKKK00000000OOO000000000OOOOOOOOOOOOOOOOOOkkkkl.c
+kkkkkOOkkkkkOOOOO0000000K00000000OOO00000000OOkkOOOOOOOOOOOkkkkkkkkx:,
+xxxxxxkkkkkkkkkkkkkkkkkkkkkkkkxkkkkxkOOOkxddooodooodkOOOOOOOkkkxdooc:c
+llloloooodxxxxxxxddxxxxxxdxkxxxxxxddddxxdxo:'    .;lldddlo:l;c;,c,c;,c
+ccc::::::c:clloddoolllolooodddxdodooloddddxOo. .....,d;c:cc::,c,c;,c,;
+;;:::cc::;;,,,,,:coolc:c:ccclodooooc:;:lodlc, ..     'l;l,c'c,:,':.:'.
+........'''',,''....'';::::clccclllddl;',:codl.       o;:,:';;':':'',.
+          ........  ...';:::::ccc,'';loc,'..,co'      dc,:,:;cclol,.  
+'.................  .   .',;::;'',::;,';coo:..,,     loldxkOOOOOx:    
+OOOOOOkkkkkkkxxdddc.,'.:....'''....';c:,..';lc,. ..,oc;kOOOOOOOOx'  . 
+OOOOOOOOOOOOOOO0000'.;''::;......,;.....''....,;':o:'.,dOOOOOOOOx:.;o 
+OOOOOOOOOOOOOOOOOOOd.',.,:0k;     ....   ..,;c...''.'.,kOOOOOkkkkd;.::
+OkOOOOOOOOOOOOOOOOOOo.   .O0:'..             ..',....ckOOOOOkkkkkx:.;o
+kOOOOOOOOOOOOOOOOOOOOk;...oOc...........  ....''..'cxOOOkkkkkkkkkkdxd:
+kkkkkOOkkOOkOOOOOOOOOOO;',:Ox,....,,;';;'...''..,lxkkkkkkkkxoc:;,,',,,
+kkkkkOOOkkOkkkOOOOOOOOOo;:lOOo..'';:;,''''...:lxkkkkkkxo:,..........''
+kkkkOOkOOOOOOOOOOOOOOOOOOOOOOOxc,'','.'';codkkkxxdoc;..   ..........''
+kkkkOOOOOOOOOOOOOOOOOOOOOOOOOOOOOkxxxkkOOOkdc;''..      ..............
+kOkkOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOko'  ...  .   ...    ...    ..
+Doc Watson: arthel (archive keeper)

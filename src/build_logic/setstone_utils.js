@@ -54,13 +54,14 @@ export function generateSetStonePages(shows, outputDir) {
                     });
                 }
             } else {
-                console.log(`No ticket stubs for show ${showId} (count: ${show.ticketStubCount || 0})`);
-                // Create empty array for consistency
+                // No ticket stubs for this show - that's fine, just skip ticket stub generation
+                // but continue to setstone generation below
                 show.ticketStubs = [];
-                continue;
             }
         }
 
+        // Only generate ticket stub pages if there are ticket stubs
+        if (show.ticketStubs && show.ticketStubs.length > 0) {
         // Page to print all ticket stubs
         // TODO: We need to use a secret here, and hash it.
         // The hash can... live in the codebase and also onchain?
@@ -162,7 +163,7 @@ export function generateSetStonePages(shows, outputDir) {
                 site: "cryptograss.live"
             });
         });
-
+        } // End of ticket stub generation block
 
 
         // Generate set stones for shows that have actual setstone data

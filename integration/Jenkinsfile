@@ -196,7 +196,7 @@ pipeline {
                                 NODE_PATH=\$(npm root -g)
                                 export NODE_PATH
 
-                                node deployment/scripts/modify_build_htmls.js
+                                node integration/scripts/modify_build_htmls.js
 
                                 rsync -av output/dist/* ${PR_BUILDS_DIR}/${COMMIT_SHA}
                             """
