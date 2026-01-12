@@ -52,7 +52,15 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <a href="/blox-office/admin/mint-tony{% if submission.songId %}?song={{ submission.songId }}{% endif %}"
+                                            {% set mintParams = [] %}
+                                            {% if submission.songId %}{% set mintParams = mintParams.concat(['song=' + submission.songId]) %}{% endif %}
+                                            {% if submission.participants.length > 0 %}
+                                                {% set wallets = [] %}
+                                                {% for p in submission.participants %}{% set wallets = wallets.concat([p.wallet]) %}{% endfor %}
+                                                {% set mintParams = mintParams.concat(['recipients=' + wallets.join(',')]) %}
+                                            {% endif %}
+                                            {% if submission.videoUrl %}{% set mintParams = mintParams.concat(['uri=' + (submission.videoUrl | urlencode)]) %}{% endif %}
+                                            <a href="/blox-office/admin/mint-tony{% if mintParams.length > 0 %}?{{ mintParams.join('&') }}{% endif %}"
                                                class="btn btn-primary btn-sm">
                                                 Mint
                                             </a>
