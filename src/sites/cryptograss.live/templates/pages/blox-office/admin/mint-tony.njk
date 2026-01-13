@@ -177,7 +177,7 @@
                 </div>
             </div>
         </div>
-        {% include '../../partials/build-metadata.njk' %}
+        {% include 'partials/build-metadata.njk' %}
     </div>
     <div class="col-1"></div>
 </div>
@@ -213,6 +213,8 @@ w3m-modal {
     import { optimism } from 'https://cdn.jsdelivr.net/npm/@reown/appkit@1.6.8/networks/+esm';
     import { WagmiAdapter } from 'https://cdn.jsdelivr.net/npm/@reown/appkit-adapter-wagmi@1.6.8/+esm';
     import { reconnect, getAccount, writeContract, waitForTransactionReceipt } from 'https://cdn.jsdelivr.net/npm/@wagmi/core@2.16.4/+esm';
+
+    console.log('[mint-tony] Imports loaded successfully');
 
     // Blue Railroad contract config
     const BR_CONTRACT = '0xCe09A2d0d0BDE635722D8EF31901b430E651dB52';
@@ -276,12 +278,17 @@ w3m-modal {
 
     // Parse query parameters on load
     function initFromQueryParams() {
+        console.log('[mint-tony] initFromQueryParams called');
+        console.log('[mint-tony] search:', window.location.search);
         const params = new URLSearchParams(window.location.search);
 
         // Pre-select song if provided
         const songParam = params.get('song');
+        console.log('[mint-tony] songParam:', songParam);
         if (songParam) {
+            console.log('[mint-tony] Setting song to:', songParam);
             songSelect.value = songParam;
+            console.log('[mint-tony] songSelect.value is now:', songSelect.value);
         }
 
         // Pre-fill recipients if provided (comma-separated)

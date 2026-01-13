@@ -1,4 +1,4 @@
-import common from './webpack.cryptograss.common.js';
+import { buildConfig } from './webpack.cryptograss.common.js';
 import webpack from 'webpack';
 import { merge } from 'webpack-merge';
 import path from 'path';
@@ -11,13 +11,18 @@ const { outputDistDir, outputPrimaryRootDir, srcDir } = getProjectDirs();
 async function dev_config() {
     await runPrimaryBuild();
 
+    // Build config AFTER prebuild so glob finds dynamically generated pages
+    const common = buildConfig();
+
     return merge(common, {
 
         devServer: {
             devMiddleware: {
                 writeToDisk: true,
             },
-            port: 4050,
+            host: '0.0.0.0',
+            port: 4001,
+            allowedHosts: 'all',
             historyApiFallback: {
                 rewrites: [
                     { from: /\/$/, to: '/index.html' },

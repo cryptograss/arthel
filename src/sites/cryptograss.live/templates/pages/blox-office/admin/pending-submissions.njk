@@ -52,15 +52,7 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {% set mintParams = [] %}
-                                            {% if submission.songId %}{% set mintParams = mintParams.concat(['song=' + submission.songId]) %}{% endif %}
-                                            {% if submission.participants.length > 0 %}
-                                                {% set wallets = [] %}
-                                                {% for p in submission.participants %}{% set wallets = wallets.concat([p.wallet]) %}{% endfor %}
-                                                {% set mintParams = mintParams.concat(['recipients=' + wallets.join(',')]) %}
-                                            {% endif %}
-                                            {% if submission.videoUrl %}{% set mintParams = mintParams.concat(['uri=' + (submission.videoUrl | urlencode)]) %}{% endif %}
-                                            <a href="/blox-office/admin/mint-tony{% if mintParams.length > 0 %}?{{ mintParams.join('&') }}{% endif %}"
+                                            <a href="/blox-office/admin/mint/{{ submission.id }}"
                                                class="btn btn-primary btn-sm">
                                                 Mint
                                             </a>
@@ -162,7 +154,7 @@
                     </div>
                 </div>
 
-                {% include '../../partials/build-metadata.njk' %}
+                {% include 'partials/build-metadata.njk' %}
             </div>
         </div>
     </div>

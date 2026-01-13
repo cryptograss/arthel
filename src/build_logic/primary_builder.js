@@ -635,6 +635,35 @@ export const runPrimaryBuild = async () => {
         }
     }
 
+    ///////////////////////////
+    // Chapter 5.5: Blue Railroad Submission Mint Pages
+    ///////////////////////////
+
+    if (site === "cryptograss.live" && pendingSubmissions.length > 0) {
+        // Ensure the mint directory exists
+        const mintDir = path.join(outputPrimarySiteDir, 'blox-office/admin/mint');
+        fs.mkdirSync(mintDir, { recursive: true, mode: 0o777 });
+
+        for (const submission of pendingSubmissions) {
+            const context = {
+                page_name: `mint_submission_${submission.id}`,
+                page_title: `Mint Submission #${submission.id}`,
+                submission: submission,
+                chainData: chainData,
+                latest_git_commit: dataAvailableAsContext.latest_git_commit,
+                no_video_bg: true,
+            };
+
+            renderPage({
+                template_path: 'pages/blox-office/admin/mint-submission.njk',
+                output_path: `blox-office/admin/mint/${submission.id}.html`,
+                context: context,
+                site: site,
+            });
+
+            console.log(`Generated mint page for submission #${submission.id}`);
+        }
+    }
 
     ///////////////////////////
     // Chapter 6: Cleanup

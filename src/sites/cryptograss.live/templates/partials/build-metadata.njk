@@ -1,7 +1,7 @@
 <div id="page-build-metadata" class="text-muted small mt-5 pt-3 border-top">
     <div class="row">
         <div class="col text-center">
-            Built on ref <code>{{ latest_git_commit[:8] if latest_git_commit else '—' }}</code>
+            Built on ref <code>{% if latest_git_commit %}{{ latest_git_commit | truncate(8, true, '') }}{% else %}—{% endif %}</code>
             {% if chainData and chainData.mainnetBlockNumber %}
             at mainnet block <code>{{ chainData.mainnetBlockNumber }}</code>
             {% endif %}
