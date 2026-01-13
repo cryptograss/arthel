@@ -23,6 +23,8 @@ function buildHtmlPluginInstances() {
 
         if (relativePath.startsWith('tools/oracle-of-bluegrass-bacon')) {
             var chunks = ['main', 'oracle_client'];
+        } else if (relativePath.startsWith('blox-office/admin/mint/')) {
+            var chunks = ['main', 'mint_submission'];
         } else {
             var chunks = ['main'];
         }
@@ -100,6 +102,7 @@ export function buildConfig() {
         shapes: `${frontendJSDir}/shapes.js`,
         blue_railroad: `${frontendJSDir}/bazaar/blue_railroad.js`,
         oracle_client: `${frontendJSDir}/oracle_client.js`,
+        mint_submission: `${frontendJSDir}/mint-submission.js`,
     },
     module: {
         rules: [
@@ -108,6 +111,15 @@ export function buildConfig() {
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
             },
         ]
+    },
+    resolve: {
+        fallback: {
+            // Optional wagmi connector dependencies - not needed for basic wallet connection
+            '@base-org/account': false,
+            '@gemini-wallet/core': false,
+            'porto': false,
+            'porto/internal': false,
+        }
     },
     };
 }
