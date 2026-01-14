@@ -341,12 +341,40 @@ export async function getBlueRailroads(config) {
             args: [tokenId],
         });
 
+        // Fetch songId for this token
+        let songId = await readContract(config, {
+            abi,
+            address: blueRailroadContractAddress,
+            functionName: 'tokenIdToSongId',
+            chainId: optimism.id,
+            args: [tokenId],
+        });
+
+        // Fetch date for this token (YYYYMMDD format)
+        let date = await readContract(config, {
+            abi,
+            address: blueRailroadContractAddress,
+            functionName: 'tokenIdToDate',
+            chainId: optimism.id,
+            args: [tokenId],
+        });
+
+        // Resolve ENS name for owner (falls back to address if no ENS)
+        let ownerDisplay = await fetchEnsName(config, { address: ownerOfThisToken, chainId: 1 });
+        if (ownerDisplay === undefined || ownerDisplay === null) {
+            ownerDisplay = ownerOfThisToken;
+        }
+
         blueRailroads[tokenId] = {
+            id: tokenId,
             owner: ownerOfThisToken,
+            ownerDisplay: ownerDisplay,
             uri: uriOfVideo,
-            id: tokenId
+            songId: songId,
+            date: date
         };
 
+        console.log(`Blue Railroad #${tokenId}: song ${songId}, date ${date}, owner ${ownerDisplay}`);
     }
     console.timeEnd("Blue Railroads (listen to that old smokestack)");
     return blueRailroads;
