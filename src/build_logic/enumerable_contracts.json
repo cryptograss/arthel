@@ -1,0 +1,24 @@
+{
+  "description": "Contracts that should be enumerated during chain data fetch. Each is assumed to be ERC721Enumerable.",
+  "contracts": [
+    {
+      "name": "BlueRailroad",
+      "chainId": 10,
+      "address": "0xCe09A2d0d0BDE635722D8EF31901b430E651dB52",
+      "description": "Blue Railroad Train exercise tokens on Optimism"
+    },
+    {
+      "name": "SetStone",
+      "chainId": 42161,
+      "address": "0x39269b3FddFc9bf0626e5CFe4424aa51A77f7678",
+      "description": "Set Stone NFTs on Arbitrum"
+    },
+    {
+      "name": "TicketStubClaimer",
+      "chainId": 42161,
+      "address": "0x1234567890123456789012345678901234567890",
+      "description": "Ticket stub NFTs on Arbitrum (placeholder address)",
+      "disabled": true
+    }
+  ]
+}
