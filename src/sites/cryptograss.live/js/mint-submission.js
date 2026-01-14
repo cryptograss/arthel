@@ -6,7 +6,8 @@
 import { createAppKit } from '@reown/appkit';
 import { optimism } from '@reown/appkit/networks';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { reconnect, getAccount, writeContract, waitForTransactionReceipt, signMessage } from '@wagmi/core';
+import { reconnect, getAccount, writeContract, waitForTransactionReceipt, signMessage, getEnsAddress } from '@wagmi/core';
+import { mainnet } from '@reown/appkit/networks';
 
 // Blue Railroad contract config
 const BR_CONTRACT = '0xCe09A2d0d0BDE635722D8EF31901b430E651dB52';
@@ -34,7 +35,7 @@ const metadata = {
 
 const wagmiAdapter = new WagmiAdapter({
     projectId,
-    networks: [optimism]
+    networks: [optimism, mainnet]  // mainnet needed for ENS resolution
 });
 
 const modal = createAppKit({
@@ -46,6 +47,23 @@ const modal = createAppKit({
 });
 
 const wagmiConfig = wagmiAdapter.wagmiConfig;
+
+// Resolve ENS name to address (returns original if already an address)
+async function resolveRecipient(recipient) {
+    // If it's already a hex address, return as-is
+    if (recipient.startsWith('0x') && recipient.length === 42) {
+        return recipient;
+    }
+    // Otherwise try to resolve as ENS name
+    const resolved = await getEnsAddress(wagmiConfig, {
+        name: recipient,
+        chainId: 1  // ENS is on mainnet
+    });
+    if (!resolved) {
+        throw new Error(`Could not resolve ENS name: ${recipient}`);
+    }
+    return resolved;
+}
 
 // Initialize on page load
 export function initMintPage(submissionData) {
@@ -210,8 +228,12 @@ export function initMintPage(submissionData) {
 
         try {
             for (let i = 0; i < recipients.length; i++) {
-                const recipient = recipients[i];
-                pendingText.textContent = `Minting token ${i + 1} of ${recipients.length} for ${recipient.slice(0, 10)}...`;
+                const recipientInput = recipients[i];
+                pendingText.textContent = `Resolving ${recipientInput}...`;
+
+                // Resolve ENS name if needed
+                const recipient = await resolveRecipient(recipientInput);
+                pendingText.textContent = `Minting token ${i + 1} of ${recipients.length} for ${recipientInput}...`;
 
                 const hash = await writeContract(wagmiConfig, {
                     address: BR_CONTRACT,
@@ -228,7 +250,7 @@ export function initMintPage(submissionData) {
                     chainId: 10
                 });
 
-                txResults.push({ recipient, hash, success: true });
+                txResults.push({ recipient: recipientInput, resolvedAddress: recipient, hash, success: true });
             }
 
             pendingMsg.style.display = 'none';
