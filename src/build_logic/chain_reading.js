@@ -7,7 +7,7 @@ import { setStoneContractAddress, blueRailroadContractAddress, AVERAGE_BLOCK_TIM
 import {ticketStubClaimerABI} from "../abi/ticketStubClaimerABI.js";
 import {getVowelsoundContributions} from "./revealer_utils.js";
 import Web3 from 'web3';
-import enumerableContracts from './enumerable_contracts.json' assert { type: 'json' };
+import enumerableContracts from './enumerable_contracts.json' with { type: 'json' };
 
 const web3 = new Web3();
 import { config as dotenvConfig } from 'dotenv';
