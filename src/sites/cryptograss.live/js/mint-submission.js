@@ -147,12 +147,12 @@ export function initMintPage(submissionData) {
                     message: authMessage
                 });
 
-                pinProgressText.textContent = 'Downloading video from source...';
+                pinProgressText.textContent = 'Downloading video and checking IPFS...';
 
                 // Show progress updates while waiting
                 let progressTimer = setTimeout(() => {
                     pinProgressText.textContent = 'Uploading to IPFS (this may take a minute for large videos)...';
-                }, 5000);
+                }, 10000); // Give 10s for download + check before showing upload message
 
                 const response = await fetch(pinningService, {
                     method: 'POST',
@@ -176,8 +176,14 @@ export function initMintPage(submissionData) {
                     currentVideoUri = 'ipfs://' + data.cid;
                     pinInProgress.style.display = 'none';
                     pinComplete.style.display = 'block';
-                    ipfsCid.textContent = data.cid;
-                    console.log('Video pinned to IPFS:', data.cid);
+
+                    if (data.alreadyPinned) {
+                        ipfsCid.innerHTML = `<span class="text-success">Already pinned:</span> ${data.cid}`;
+                        console.log('Video already pinned to IPFS:', data.cid);
+                    } else {
+                        ipfsCid.textContent = data.cid;
+                        console.log('Video pinned to IPFS:', data.cid);
+                    }
                 } else {
                     throw new Error('No CID returned from pinning service');
                 }
