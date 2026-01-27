@@ -2,8 +2,9 @@
 import {createConfig, http, readContract, fetchBlockNumber, fetchEnsName, getBlock} from '@wagmi/core';
 import {mainnet, optimism, optimismSepolia, arbitrum} from '@wagmi/core/chains';
 import {brABI as abi} from "../abi/blueRailroadABI.js";
+import {blueRailroadV2ABI} from "../abi/blueRailroadV2ABI.js";
 import {setStoneABI} from "../abi/setStoneABI.js";
-import { setStoneContractAddress, blueRailroadContractAddress, AVERAGE_BLOCK_TIME, ticketStubClaimerContractAddress } from "./constants.js";
+import { setStoneContractAddress, blueRailroadContractAddress, blueRailroadV2ContractAddress, AVERAGE_BLOCK_TIME, ticketStubClaimerContractAddress } from "./constants.js";
 import {ticketStubClaimerABI} from "../abi/ticketStubClaimerABI.js";
 import {getVowelsoundContributions} from "./revealer_utils.js";
 import Web3 from 'web3';
@@ -390,6 +391,76 @@ export async function getBlueRailroads(config) {
     }
     console.timeEnd("Blue Railroads (listen to that old smokestack)");
     return blueRailroads;
+}
+
+/**
+ * Fetch Blue Railroad V2 tokens with onchain metadata
+ * V2 stores songId, blockheight, and IPFS video hash onchain
+ */
+export async function getBlueRailroadV2s(config) {
+    console.time("Blue Railroad V2s");
+
+    const totalSupply = await readContract(config, {
+        abi: blueRailroadV2ABI,
+        address: blueRailroadV2ContractAddress,
+        functionName: 'totalSupply',
+        chainId: optimism.id,
+    });
+
+    let blueRailroadV2s = {};
+
+    for (let i = 0; i < totalSupply; i++) {
+        const tokenId = await readContract(config, {
+            abi: blueRailroadV2ABI,
+            address: blueRailroadV2ContractAddress,
+            functionName: 'tokenByIndex',
+            chainId: optimism.id,
+            args: [i],
+        });
+
+        const owner = await readContract(config, {
+            abi: blueRailroadV2ABI,
+            address: blueRailroadV2ContractAddress,
+            functionName: 'ownerOf',
+            chainId: optimism.id,
+            args: [tokenId],
+        });
+
+        const songId = await readContract(config, {
+            abi: blueRailroadV2ABI,
+            address: blueRailroadV2ContractAddress,
+            functionName: 'tokenIdToSongId',
+            chainId: optimism.id,
+            args: [tokenId],
+        });
+
+        const blockheight = await readContract(config, {
+            abi: blueRailroadV2ABI,
+            address: blueRailroadV2ContractAddress,
+            functionName: 'tokenIdToBlockheight',
+            chainId: optimism.id,
+            args: [tokenId],
+        });
+
+        const videoHash = await readContract(config, {
+            abi: blueRailroadV2ABI,
+            address: blueRailroadV2ContractAddress,
+            functionName: 'tokenIdToVideoHash',
+            chainId: optimism.id,
+            args: [tokenId],
+        });
+
+        blueRailroadV2s[tokenId.toString()] = {
+            id: tokenId,
+            owner: owner,
+            songId: Number(songId),
+            blockheight: Number(blockheight),
+            videoHash: videoHash, // bytes32 as hex string
+        };
+    }
+
+    console.timeEnd("Blue Railroad V2s");
+    return blueRailroadV2s;
 }
 
 export function appendChainDataToShows(shows, chainData) {
