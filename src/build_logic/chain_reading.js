@@ -561,8 +561,13 @@ export async function fetch_chaindata(shows) {
     };
 
     if (isContractEnabled('BlueRailroad')) {
-        console.log('Fetching Blue Railroad tokens...');
+        console.log('Fetching Blue Railroad V1 tokens...');
         chainData.blueRailroads = await getBlueRailroads(config);
+    }
+
+    if (isContractEnabled('BlueRailroadV2')) {
+        console.log('Fetching Blue Railroad V2 tokens...');
+        chainData.blueRailroadV2s = await getBlueRailroadV2s(config);
     }
 
     if (isContractEnabled('SetStone')) {

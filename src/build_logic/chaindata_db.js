@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { stringify } from "./utils.js"
 import { getProjectDirs } from "./locations.js";
-import { setStoneContractAddress, blueRailroadContractAddress, revealerContractAddress } from './constants.js';
+import { setStoneContractAddress, blueRailroadContractAddress, blueRailroadV2ContractAddress, revealerContractAddress } from './constants.js';
 
 
 export function serializeChainData(chainData) {
@@ -33,6 +33,7 @@ export function deserializeChainData() {
     const parsedChainData = JSON.parse(chainDataJson);
     parsedChainData.setStoneContractAddress = setStoneContractAddress;
     parsedChainData.blueRailroadContractAddress = blueRailroadContractAddress;
+    parsedChainData.blueRailroadV2ContractAddress = blueRailroadV2ContractAddress;
     parsedChainData.revealerContractAddress = revealerContractAddress;
     return parsedChainData;
 }

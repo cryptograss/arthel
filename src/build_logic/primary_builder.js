@@ -22,7 +22,7 @@ import { appendChainDataToShows } from './chain_reading.js';
 
 // Feature-specific modules
 import { generateSetStonePages, renderSetStoneImages } from './setstone_utils.js';
-import { verifyBlueRailroadVideos } from './blue_railroad.js';
+import { verifyBlueRailroadVideos, generateBlueRailroadV2Metadata } from './blue_railroad.js';
 import { fetchPendingSubmissions } from './pickipedia_submissions.js';
 import { DateTime } from 'luxon';
 
@@ -80,9 +80,14 @@ export const runPrimaryBuild = async () => {
         }
     }
 
-    // Verify videos early
+    // Verify videos early (V1)
     const blueRailroadMetadata = await verifyBlueRailroadVideos();
     chainData.blueRailroads = blueRailroadMetadata;
+
+    // Generate V2 metadata JSON files (cryptograss.live serves these at /meta/bluerailroad/{tokenId})
+    if (site === 'cryptograss.live' && chainData.blueRailroadV2s) {
+        generateBlueRailroadV2Metadata(chainData.blueRailroadV2s, outputPrimarySiteDir);
+    }
 
     console.timeEnd("chain-data");
 
