@@ -102,12 +102,16 @@ function parseSubmissionContent(content) {
 
 /**
  * Determine song ID from exercise name
+ * V2 uses Manzanita track numbers:
+ *   Track 5 = Nine Pound Hammer (Pushups)
+ *   Track 7 = Blue Railroad Train (Squats)
+ *   Track 8 = Ginseng Sullivan (Army Crawls)
  */
 function getSongIdFromExercise(exercise) {
     const lower = exercise.toLowerCase();
-    if (lower.includes('blue railroad')) return 5;
-    if (lower.includes('nine pound')) return 6;
-    if (lower.includes('ginseng')) return 10;
+    if (lower.includes('blue railroad') || lower.includes('squat')) return 7;
+    if (lower.includes('nine pound') || lower.includes('pushup')) return 5;
+    if (lower.includes('ginseng') || lower.includes('army crawl')) return 8;
     return null;
 }
 

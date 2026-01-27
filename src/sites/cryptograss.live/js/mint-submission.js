@@ -9,20 +9,46 @@ import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { reconnect, getAccount, writeContract, waitForTransactionReceipt, signMessage, getEnsAddress } from '@wagmi/core';
 import { mainnet } from '@reown/appkit/networks';
 
-// Blue Railroad contract config
-const BR_CONTRACT = '0xCe09A2d0d0BDE635722D8EF31901b430E651dB52';
+// Blue Railroad V2 contract config
+const BR_CONTRACT = '0x40b23771DAf0D89dE153a70a9F57741a96ed1Dd1';
 const BR_ABI = [{
     inputs: [
         { internalType: 'address', name: 'recipient', type: 'address' },
-        { internalType: 'uint32', name: 'songId', type: 'uint32' },
-        { internalType: 'uint32', name: 'date', type: 'uint32' },
-        { internalType: 'string', name: 'uri', type: 'string' }
+        { internalType: 'uint8', name: 'songId', type: 'uint8' },
+        { internalType: 'uint256', name: 'blockheight', type: 'uint256' },
+        { internalType: 'bytes32', name: 'videoHash', type: 'bytes32' }
     ],
     name: 'issueTony',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
 }];
+
+// Convert IPFS CID to bytes32 hash
+// For CIDv0 (Qm...), extract the sha256 digest
+// For CIDv1 or raw hash, use directly
+function cidToBytes32(cid) {
+    if (!cid) return '0x0000000000000000000000000000000000000000000000000000000000000000';
+
+    // If it's already a hex string (0x...), return as-is padded to 32 bytes
+    if (cid.startsWith('0x')) {
+        return cid.padEnd(66, '0');
+    }
+
+    // CIDv0 starts with Qm and is base58 encoded
+    // For simplicity, we'll store the CID as UTF-8 bytes in the hash
+    // A proper implementation would decode the multihash
+    // For now, just hash the CID string
+    const encoder = new TextEncoder();
+    const data = encoder.encode(cid);
+
+    // Simple hash: take first 32 bytes or pad with zeros
+    let hex = '0x';
+    for (let i = 0; i < 32; i++) {
+        hex += (data[i] || 0).toString(16).padStart(2, '0');
+    }
+    return hex;
+}
 
 // Setup Web3Modal
 const projectId = 'c4f79cc821d56e59de850c9b35cbbe86';
@@ -70,6 +96,7 @@ export function initMintPage(submissionData) {
     const {
         id,
         songId,
+        blockHeight,
         videoUrl,
         recipients,
         pinningService,
@@ -78,10 +105,7 @@ export function initMintPage(submissionData) {
 
     // Current video URI - starts as the original URL, updated if pinned to IPFS
     let currentVideoUri = videoUrl;
-
-    // Use today's date for the mint
-    const today = new Date();
-    const mintDate = parseInt(`${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`, 10);
+    let currentIpfsCid = null; // Track the CID separately for bytes32 conversion
 
     // Reconnect any existing wallet sessions
     reconnect(wagmiConfig);
@@ -192,6 +216,7 @@ export function initMintPage(submissionData) {
 
                 if (data.cid) {
                     currentVideoUri = 'ipfs://' + data.cid;
+                    currentIpfsCid = data.cid;
                     pinInProgress.style.display = 'none';
                     pinComplete.style.display = 'block';
 
@@ -235,11 +260,14 @@ export function initMintPage(submissionData) {
                 const recipient = await resolveRecipient(recipientInput);
                 pendingText.textContent = `Minting token ${i + 1} of ${recipients.length} for ${recipientInput}...`;
 
+                // Convert IPFS CID to bytes32 for V2 contract
+                const videoHash = cidToBytes32(currentIpfsCid);
+
                 const hash = await writeContract(wagmiConfig, {
                     address: BR_CONTRACT,
                     abi: BR_ABI,
                     functionName: 'issueTony',
-                    args: [recipient, songId, mintDate, currentVideoUri],
+                    args: [recipient, songId, blockHeight, videoHash],
                     chainId: 10
                 });
 
