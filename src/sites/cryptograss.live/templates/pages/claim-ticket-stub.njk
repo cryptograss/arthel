@@ -221,11 +221,13 @@
     const TICKET_STUB_CONTRACT_ADDRESS = '{{ contractAddress }}';
     const TICKET_STUB_ABI = JSON.parse('{{ contractABI | safe }}');
 
+    // Public RPCs - no API key needed for read operations
+    // ENS resolution uses mainnet, contract writes go through user's wallet
     const config = createConfig({
         chains: [arbitrum, mainnet],
         transports: {
-            [arbitrum.id]: http('https://arb-mainnet.g.alchemy.com/v2/{{ alchemyApiKey }}'),
-            [mainnet.id]: http('https://eth-mainnet.g.alchemy.com/v2/{{ alchemyApiKey }}'),
+            [arbitrum.id]: http('https://arb1.arbitrum.io/rpc'),
+            [mainnet.id]: http('https://cloudflare-eth.com'),
         },
     });
 

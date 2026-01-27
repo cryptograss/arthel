@@ -152,7 +152,6 @@ export function generateSetStonePages(shows, outputDir) {
                 tokenId: ticketStub.tokenId,
                 contractAddress: ticketStubClaimerContractAddress,
                 contractABI: JSON.stringify(ticketStubClaimerABI),
-                alchemyApiKey: process.env.ALCHEMY_API_KEY,
                 show: show,
                 ticketStub: ticketStub,
             };
