@@ -81,12 +81,22 @@ function parseSubmissionContent(content) {
     const statusMatch = content.match(/\|status=([^\n|}]+)/);
 
     // Extract participants from Blue Railroad Participant templates
+    // Supports both old format (name + wallet) and new format (wallet only)
     const participants = [];
-    const participantRegex = /\{\{Blue Railroad Participant\s*\|name=([^\n|}]+)\s*\|wallet=([^\n|}]+)\s*\}\}/g;
+
+    // New format: wallet only
+    const walletOnlyRegex = /\{\{Blue Railroad Participant\s*\|wallet=([^\n|}]+)\s*\}\}/g;
     let match;
-    while ((match = participantRegex.exec(content)) !== null) {
+    while ((match = walletOnlyRegex.exec(content)) !== null) {
         participants.push({
-            name: match[1].trim(),
+            wallet: match[1].trim()
+        });
+    }
+
+    // Old format: name + wallet (for backward compatibility)
+    const nameWalletRegex = /\{\{Blue Railroad Participant\s*\|name=([^\n|}]+)\s*\|wallet=([^\n|}]+)\s*\}\}/g;
+    while ((match = nameWalletRegex.exec(content)) !== null) {
+        participants.push({
             wallet: match[2].trim()
         });
     }
