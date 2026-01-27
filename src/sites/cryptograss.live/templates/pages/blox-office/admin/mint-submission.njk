@@ -77,9 +77,10 @@
                             <div id="pin-error" class="alert alert-danger mt-2" style="display: none;"></div>
                         </div>
 
-                        <button id="pin-btn" class="btn btn-outline-primary">
+                        <button id="pin-btn" class="btn btn-outline-primary" disabled>
                             Pin to IPFS
                         </button>
+                        <small class="text-muted d-block mt-1">Requires wallet connection</small>
                     </div>
                 </div>
                 {% endif %}
@@ -153,253 +154,26 @@ w3m-modal {
 }
 </style>
 
-<script type="module">
-    import { createAppKit } from 'https://cdn.jsdelivr.net/npm/@reown/appkit@1.6.8/+esm';
-    import { optimism } from 'https://cdn.jsdelivr.net/npm/@reown/appkit@1.6.8/networks/+esm';
-    import { WagmiAdapter } from 'https://cdn.jsdelivr.net/npm/@reown/appkit-adapter-wagmi@1.6.8/+esm';
-    import { reconnect, getAccount, writeContract, waitForTransactionReceipt, signMessage } from 'https://cdn.jsdelivr.net/npm/@wagmi/core@2.16.4/+esm';
-
-    // Pinning service config
-    const PINNING_SERVICE = 'https://pinning.maybelle.cryptograss.live/pin-from-url';
-    const VIDEO_URL = '{{ submission.videoUrl | default("", true) }}';
-    let currentVideoUri = VIDEO_URL;
-
-    // Submission data baked in at build time
-    const SUBMISSION = {
-        id: {{ submission.id }},
-        songId: {{ submission.songId }},
-        videoUri: '{{ submission.videoUrl | default("", true) }}',
-        recipients: [
-            {% for participant in submission.participants %}
-            '{{ participant.wallet }}'{% if not loop.last %},{% endif %}
-            {% endfor %}
-        ]
-    };
-
-    // Use today's date for the mint
-    const today = new Date();
-    const MINT_DATE = parseInt(`${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`, 10);
-
-    // Blue Railroad contract config
-    const BR_CONTRACT = '0xCe09A2d0d0BDE635722D8EF31901b430E651dB52';
-    const BR_ABI = [{
-        inputs: [
-            { internalType: 'address', name: 'recipient', type: 'address' },
-            { internalType: 'uint32', name: 'songId', type: 'uint32' },
-            { internalType: 'uint32', name: 'date', type: 'uint32' },
-            { internalType: 'string', name: 'uri', type: 'string' }
-        ],
-        name: 'issueTony',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function'
-    }];
-
-    // Setup Web3Modal
-    const projectId = 'c4f79cc821d56e59de850c9b35cbbe86';
-    const metadata = {
-        name: 'Blue Railroad Admin',
-        description: 'Mint Blue Railroad exercise tokens',
-        url: 'https://cryptograss.live',
-        icons: ['https://cryptograss.live/favicon.ico']
-    };
-
-    const wagmiAdapter = new WagmiAdapter({
-        projectId,
-        networks: [optimism]
-    });
-
-    const modal = createAppKit({
-        adapters: [wagmiAdapter],
-        networks: [optimism],
-        metadata,
-        projectId,
-        features: { analytics: false }
-    });
-
-    const wagmiConfig = wagmiAdapter.wagmiConfig;
-    reconnect(wagmiConfig);
-
-    // DOM elements - wallet
-    const connectBtn = document.getElementById('connect-wallet-btn');
-    const notConnectedMsg = document.getElementById('not-connected-msg');
-    const connectedAddress = document.getElementById('connected-address');
-
-    // DOM elements - pinning
-    const pinBtn = document.getElementById('pin-btn');
-    const pinNotStarted = document.getElementById('pin-not-started');
-    const pinInProgress = document.getElementById('pin-in-progress');
-    const pinProgressText = document.getElementById('pin-progress-text');
-    const pinComplete = document.getElementById('pin-complete');
-    const ipfsCid = document.getElementById('ipfs-cid');
-    const pinError = document.getElementById('pin-error');
-
-    // DOM elements - minting
-    const mintBtn = document.getElementById('mint-btn');
-    const statusArea = document.getElementById('status-area');
-    const pendingMsg = document.getElementById('pending-msg');
-    const pendingText = document.getElementById('pending-text');
-    const successMsg = document.getElementById('success-msg');
-    const successText = document.getElementById('success-text');
-    const txLinks = document.getElementById('tx-links');
-    const errorMsg = document.getElementById('error-msg');
-
-    // Wallet connection
-    function updateWalletUI() {
-        const account = getAccount(wagmiConfig);
-        if (account.address) {
-            notConnectedMsg.style.display = 'none';
-            connectedAddress.style.display = 'block';
-            connectedAddress.textContent = account.address;
-            connectBtn.textContent = 'Connected';
-            mintBtn.disabled = false;
-            if (pinBtn) pinBtn.disabled = false;
+<script>
+    // Initialize mint page with submission data when bundled script loads
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.initMintPage) {
+            window.initMintPage({
+                id: {{ submission.id }},
+                songId: {{ submission.songId }},
+                videoUrl: '{{ submission.videoUrl | default("", true) }}',
+                recipients: [
+                    {% for participant in submission.participants %}
+                    '{{ participant.wallet }}'{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                pinningService: 'https://pinning.maybelle.cryptograss.live/pin-from-url',
+                pickipediaUrl: '{{ submission.url }}'
+            });
         } else {
-            notConnectedMsg.style.display = 'block';
-            connectedAddress.style.display = 'none';
-            connectBtn.textContent = 'Connect Wallet';
-            mintBtn.disabled = true;
-            if (pinBtn) pinBtn.disabled = true;
-        }
-    }
-
-    connectBtn.addEventListener('click', () => {
-        modal.open();
-    });
-
-    wagmiAdapter.wagmiConfig.subscribe(
-        (state) => state.current,
-        () => updateWalletUI()
-    );
-
-    // Pin to IPFS handler (requires wallet auth)
-    if (pinBtn) {
-        // Disable until wallet connected
-        pinBtn.disabled = true;
-
-        pinBtn.addEventListener('click', async () => {
-            const account = getAccount(wagmiConfig);
-            if (!account.address) {
-                pinError.textContent = 'Please connect your wallet first';
-                pinError.style.display = 'block';
-                return;
-            }
-
-            pinBtn.disabled = true;
-            pinNotStarted.style.display = 'none';
-            pinInProgress.style.display = 'block';
-            pinError.style.display = 'none';
-            pinProgressText.textContent = 'Signing authorization...';
-
-            try {
-                // Create auth message and sign it
-                const timestamp = Date.now();
-                const authMessage = `Authorize Blue Railroad pinning\nTimestamp: ${timestamp}`;
-
-                const signature = await signMessage(wagmiConfig, {
-                    message: authMessage
-                });
-
-                pinProgressText.textContent = 'Downloading and pinning to IPFS...';
-
-                const response = await fetch(PINNING_SERVICE, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Signature': signature,
-                        'X-Timestamp': timestamp.toString()
-                    },
-                    body: JSON.stringify({ url: VIDEO_URL })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error || 'HTTP ' + response.status);
-                }
-
-                const data = await response.json();
-
-                if (data.cid) {
-                    currentVideoUri = 'ipfs://' + data.cid;
-                    pinInProgress.style.display = 'none';
-                    pinComplete.style.display = 'block';
-                    ipfsCid.textContent = data.cid;
-                    console.log('Video pinned to IPFS:', data.cid);
-                } else {
-                    throw new Error('No CID returned from pinning service');
-                }
-            } catch (err) {
-                console.error('Pinning error:', err);
-                pinInProgress.style.display = 'none';
-                pinNotStarted.style.display = 'block';
-                pinError.textContent = 'Pinning failed: ' + err.message;
-                pinError.style.display = 'block';
-                pinBtn.disabled = false;
-            }
-        });
-    }
-
-    // Mint handler
-    mintBtn.addEventListener('click', async () => {
-        statusArea.style.display = 'block';
-        pendingMsg.style.display = 'block';
-        successMsg.style.display = 'none';
-        errorMsg.style.display = 'none';
-        mintBtn.disabled = true;
-
-        const txResults = [];
-
-        try {
-            for (let i = 0; i < SUBMISSION.recipients.length; i++) {
-                const recipient = SUBMISSION.recipients[i];
-                pendingText.textContent = `Minting token ${i + 1} of ${SUBMISSION.recipients.length} for ${recipient.slice(0, 10)}...`;
-
-                const hash = await writeContract(wagmiConfig, {
-                    address: BR_CONTRACT,
-                    abi: BR_ABI,
-                    functionName: 'issueTony',
-                    args: [recipient, SUBMISSION.songId, MINT_DATE, currentVideoUri],
-                    chainId: 10
-                });
-
-                pendingText.textContent = `Waiting for confirmation (${i + 1}/${SUBMISSION.recipients.length})...`;
-
-                await waitForTransactionReceipt(wagmiConfig, {
-                    hash,
-                    chainId: 10
-                });
-
-                txResults.push({ recipient, hash, success: true });
-            }
-
-            pendingMsg.style.display = 'none';
-            successMsg.style.display = 'block';
-            successText.textContent = `Successfully minted ${txResults.length} token${txResults.length > 1 ? 's' : ''}!`;
-
-            txLinks.innerHTML = txResults.map(r =>
-                `<div><a href="https://optimistic.etherscan.io/tx/${r.hash}" target="_blank">${r.recipient.slice(0, 10)}... → View TX</a></div>`
-            ).join('');
-
-        } catch (err) {
-            console.error('Mint error:', err);
-            pendingMsg.style.display = 'none';
-
-            if (txResults.length > 0) {
-                successMsg.style.display = 'block';
-                successText.textContent = `Minted ${txResults.length} token${txResults.length > 1 ? 's' : ''} before error:`;
-                txLinks.innerHTML = txResults.map(r =>
-                    `<div><a href="https://optimistic.etherscan.io/tx/${r.hash}" target="_blank">${r.recipient.slice(0, 10)}... → View TX</a></div>`
-                ).join('');
-            }
-
-            errorMsg.textContent = err.message || 'Transaction failed';
-            errorMsg.style.display = 'block';
-        } finally {
-            mintBtn.disabled = false;
+            console.error('mint-submission.js not loaded - initMintPage not found');
         }
     });
-
-    updateWalletUI();
 </script>
 
 {% endblock %}

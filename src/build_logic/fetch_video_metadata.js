@@ -14,11 +14,8 @@ dotenv.config();
 async function getBlueRailroadMetadata() {
 
     let apiKey = process.env.ALCHEMY_API_KEY;
-    let apiUri;
     // Bail if the API key is not set.
-    if (apiKey && apiKey !== "") {
-        apiUri = `https://opt-mainnet.g.alchemy.com/v2/${apiKey}`;
-    } else {
+    if (!apiKey || apiKey === "") {
         throw new Error('The API key is not set in the environment variables.');
     }
 
@@ -26,10 +23,12 @@ async function getBlueRailroadMetadata() {
     const spinner = ora('Reading Blue Railroad contract data').start();
 
     try {
+        // Need both optimism (for Blue Railroad contract) and mainnet (for ENS resolution)
         const config = createConfig({
-            chains: [optimism],
+            chains: [mainnet, optimism],
             transports: {
-                [optimism.id]: http(apiUri)
+                [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${apiKey}`),
+                [optimism.id]: http(`https://opt-mainnet.g.alchemy.com/v2/${apiKey}`)
             }
         });
 

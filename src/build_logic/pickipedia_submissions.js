@@ -7,6 +7,37 @@ const PICKIPEDIA_API = 'https://pickipedia.xyz/api.php';
 const PICKIPEDIA_WIKI = 'https://pickipedia.xyz/wiki';
 
 /**
+ * Get the actual URL for a file from MediaWiki API
+ * MediaWiki stores files in hash-based subdirectories, so we need to query the API
+ */
+async function getFileUrl(filename) {
+    if (!filename) return null;
+
+    // MediaWiki file titles need "File:" prefix
+    const fileTitle = filename.startsWith('File:') ? filename : `File:${filename}`;
+
+    const url = `${PICKIPEDIA_API}?action=query&titles=${encodeURIComponent(fileTitle)}&prop=imageinfo&iiprop=url&format=json`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        const pages = data.query?.pages;
+        if (!pages) return null;
+
+        const pageId = Object.keys(pages)[0];
+        if (pageId === '-1') return null;
+
+        const imageInfo = pages[pageId].imageinfo?.[0];
+        return imageInfo?.url || null;
+    } catch (e) {
+        console.warn(`Failed to get file URL for ${filename}:`, e.message);
+        return null;
+    }
+}
+
+/**
  * Fetch a single submission page from PickiPedia
  */
 async function fetchSubmissionPage(submissionId) {
@@ -102,12 +133,15 @@ export async function fetchPendingSubmissions() {
             continue;
         }
 
+        // Get the actual file URL from MediaWiki API (handles hash-based subdirectories)
+        const videoUrl = await getFileUrl(parsed.video);
+
         const submission = {
             id: i,
             url: `${PICKIPEDIA_WIKI}/Blue_Railroad_Submission/${i}`,
             exercise: parsed.exercise,
             video: parsed.video,
-            videoUrl: parsed.video ? `https://pickipedia.xyz/images/${parsed.video}` : null,
+            videoUrl: videoUrl,
             blockHeight: parsed.blockHeight,
             status: parsed.status,
             participants: parsed.participants,
