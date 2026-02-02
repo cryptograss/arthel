@@ -1,7 +1,20 @@
 import { getProjectDirs } from "./locations.js";
 import fs from 'fs';
 import path from 'path';
-import { blueRailroadContractAddress } from './constants.js';
+import { blueRailroadContractAddress, blueRailroadV2ContractAddress } from './constants.js';
+
+// Song mapping for Blue Railroad Train challenge
+// Maps songId to track information from the album
+const BLUE_RAILROAD_SONGS = {
+    0: { title: "Blue Railroad Train", artist: "Tony Rice" },
+    1: { title: "Church Street Blues", artist: "Tony Rice" },
+    2: { title: "Me and My Guitar", artist: "Tony Rice" },
+    3: { title: "Shadows of the Past", artist: "Tony Rice" },
+    4: { title: "Streets of London", artist: "Tony Rice" },
+    5: { title: "Song for Life", artist: "Tony Rice" },
+    6: { title: "Old Train", artist: "Tony Rice" },
+    7: { title: "Fare Thee Well", artist: "Tony Rice" },
+};
 
 /**
  * Verifies that all Blue Railroad video files exist and returns sorted metadata
@@ -46,4 +59,102 @@ export async function verifyBlueRailroadVideos() {
 
     // Sort by latest first.
     return Object.entries(metadata).reverse()
+}
+
+/**
+ * Generate ERC721 metadata JSON files for Blue Railroad V2 tokens
+ * Writes files to {outputDir}/meta/bluerailroad/{tokenId}
+ * @param {Object} blueRailroadV2s - V2 token data from chain_reading.getBlueRailroadV2s()
+ * @param {string} outputDir - Site output directory
+ */
+export function generateBlueRailroadV2Metadata(blueRailroadV2s, outputDir) {
+    if (!blueRailroadV2s || Object.keys(blueRailroadV2s).length === 0) {
+        console.log('No Blue Railroad V2 tokens to generate metadata for');
+        return;
+    }
+
+    console.time('Blue Railroad V2 Metadata');
+
+    // Create output directory
+    const metadataDir = path.join(outputDir, 'meta', 'bluerailroad');
+    if (!fs.existsSync(metadataDir)) {
+        fs.mkdirSync(metadataDir, { recursive: true, mode: 0o777 });
+    }
+
+    for (const [tokenId, token] of Object.entries(blueRailroadV2s)) {
+        const songInfo = BLUE_RAILROAD_SONGS[token.songId] || {
+            title: `Track ${token.songId}`,
+            artist: "Tony Rice"
+        };
+
+        // Convert bytes32 videoHash to IPFS CID
+        // The videoHash is stored as hex, convert to base32 CIDv1 format
+        // For now, use the hex hash directly - IPFS gateway will handle it
+        const videoHashHex = token.videoHash;
+
+        // Generate IPFS URL from videoHash (stored as sha256 hash)
+        // The hash format: 0x followed by 64 hex chars
+        // We'll use the dweb.link gateway which handles both CIDv0 and raw hashes
+        let imageUrl = '';
+        let animationUrl = '';
+
+        if (videoHashHex && videoHashHex !== '0x0000000000000000000000000000000000000000000000000000000000000000') {
+            // Remove 0x prefix if present
+            const cleanHash = videoHashHex.startsWith('0x') ? videoHashHex.slice(2) : videoHashHex;
+            // Use IPFS with sha256 hash (CIDv1 raw format)
+            // Format: bafkrei... for sha256 hashes
+            animationUrl = `ipfs://${cleanHash}`;
+            // For image, we might want a thumbnail - for now use the video
+            imageUrl = `ipfs://${cleanHash}`;
+        }
+
+        const metadata = {
+            name: `Blue Railroad Train #${tokenId}`,
+            description: `Exercise completed to "${songInfo.title}" by ${songInfo.artist}. ` +
+                `This Blue Railroad Train token represents a verified exercise session ` +
+                `completed at Ethereum block ${token.blockheight.toLocaleString()}.`,
+            image: imageUrl,
+            animation_url: animationUrl,
+            external_url: `https://cryptograss.live/blox-office/blue-railroad`,
+            attributes: [
+                {
+                    trait_type: "Song",
+                    value: songInfo.title
+                },
+                {
+                    trait_type: "Artist",
+                    value: songInfo.artist
+                },
+                {
+                    trait_type: "Song ID",
+                    value: token.songId,
+                    display_type: "number"
+                },
+                {
+                    trait_type: "Block Height",
+                    value: token.blockheight,
+                    display_type: "number"
+                },
+                {
+                    trait_type: "Contract Version",
+                    value: "V2"
+                }
+            ],
+            properties: {
+                songId: token.songId,
+                blockheight: token.blockheight,
+                videoHash: token.videoHash,
+                contract: blueRailroadV2ContractAddress
+            }
+        };
+
+        // Write metadata file (no .json extension - tokenURI expects bare path)
+        const metadataPath = path.join(metadataDir, tokenId.toString());
+        fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+
+        console.log(`Generated metadata for Blue Railroad V2 #${tokenId}`);
+    }
+
+    console.timeEnd('Blue Railroad V2 Metadata');
+    console.log(`Generated ${Object.keys(blueRailroadV2s).length} Blue Railroad V2 metadata files`);
 }
