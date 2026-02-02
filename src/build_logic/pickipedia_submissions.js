@@ -81,12 +81,22 @@ function parseSubmissionContent(content) {
     const statusMatch = content.match(/\|status=([^\n|}]+)/);
 
     // Extract participants from Blue Railroad Participant templates
+    // Supports both old format (name + wallet) and new format (wallet only)
     const participants = [];
-    const participantRegex = /\{\{Blue Railroad Participant\s*\|name=([^\n|}]+)\s*\|wallet=([^\n|}]+)\s*\}\}/g;
+
+    // New format: wallet only
+    const walletOnlyRegex = /\{\{Blue Railroad Participant\s*\|wallet=([^\n|}]+)\s*\}\}/g;
     let match;
-    while ((match = participantRegex.exec(content)) !== null) {
+    while ((match = walletOnlyRegex.exec(content)) !== null) {
         participants.push({
-            name: match[1].trim(),
+            wallet: match[1].trim()
+        });
+    }
+
+    // Old format: name + wallet (for backward compatibility)
+    const nameWalletRegex = /\{\{Blue Railroad Participant\s*\|name=([^\n|}]+)\s*\|wallet=([^\n|}]+)\s*\}\}/g;
+    while ((match = nameWalletRegex.exec(content)) !== null) {
+        participants.push({
             wallet: match[2].trim()
         });
     }
@@ -102,12 +112,16 @@ function parseSubmissionContent(content) {
 
 /**
  * Determine song ID from exercise name
+ * V2 uses Manzanita track numbers:
+ *   Track 5 = Nine Pound Hammer (Pushups)
+ *   Track 7 = Blue Railroad Train (Squats)
+ *   Track 8 = Ginseng Sullivan (Army Crawls)
  */
 function getSongIdFromExercise(exercise) {
     const lower = exercise.toLowerCase();
-    if (lower.includes('blue railroad')) return 5;
-    if (lower.includes('nine pound')) return 6;
-    if (lower.includes('ginseng')) return 10;
+    if (lower.includes('blue railroad') || lower.includes('squat')) return 7;
+    if (lower.includes('nine pound') || lower.includes('pushup')) return 5;
+    if (lower.includes('ginseng') || lower.includes('army crawl')) return 8;
     return null;
 }
 

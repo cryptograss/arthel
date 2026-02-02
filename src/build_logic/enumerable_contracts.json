@@ -5,7 +5,13 @@
       "name": "BlueRailroad",
       "chainId": 10,
       "address": "0xCe09A2d0d0BDE635722D8EF31901b430E651dB52",
-      "description": "Blue Railroad Train exercise tokens on Optimism"
+      "description": "Blue Railroad Train V1 exercise tokens on Optimism"
+    },
+    {
+      "name": "BlueRailroadV2",
+      "chainId": 10,
+      "address": "0x40b23771DAf0D89dE153a70a9F57741a96ed1Dd1",
+      "description": "Blue Railroad Train V2 with onchain metadata (songId, blockheight, videoHash)"
     },
     {
       "name": "SetStone",

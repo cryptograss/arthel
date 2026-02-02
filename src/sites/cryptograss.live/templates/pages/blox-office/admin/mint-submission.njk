@@ -33,8 +33,7 @@
                             <dd class="col-sm-8">
                                 {% for participant in submission.participants %}
                                 <div class="mb-1">
-                                    <strong>{{ participant.name }}</strong><br>
-                                    <code class="small">{{ participant.wallet }}</code>
+                                    <code>{{ participant.wallet }}</code>
                                 </div>
                                 {% endfor %}
                             </dd>
@@ -105,8 +104,7 @@
                         <ul class="list-unstyled mb-3">
                             {% for participant in submission.participants %}
                             <li class="mb-2">
-                                <span class="badge bg-secondary">{{ participant.name }}</span>
-                                <code class="small ms-2">{{ participant.wallet }}</code>
+                                <code>{{ participant.wallet }}</code>
                             </li>
                             {% endfor %}
                         </ul>
@@ -161,6 +159,7 @@ w3m-modal {
             window.initMintPage({
                 id: {{ submission.id }},
                 songId: {{ submission.songId }},
+                blockHeight: {{ submission.blockHeight | default(0) }},
                 videoUrl: '{{ submission.videoUrl | default("", true) }}',
                 recipients: [
                     {% for participant in submission.participants %}
