@@ -271,12 +271,7 @@ export async function appendSetStoneDataToShows(showsChainData, config) {
                     args: [setStoneId],
                 });
 
-                let ensName = await fetchEnsName(config, {address: ownerOfThisToken, chainId: 1});
-                if (ensName == undefined) {
-                    ensName = ownerOfThisToken;
-                }
-
-                setstone["owner"] = ensName;
+                setstone["owner"] = ownerOfThisToken;
 
                 let tokenURI = await readContract(config, {
                     abi: setStoneABI,
@@ -372,22 +367,15 @@ export async function getBlueRailroads(config) {
             args: [tokenId],
         });
 
-        // Resolve ENS name for owner (falls back to address if no ENS)
-        let ownerDisplay = await fetchEnsName(config, { address: ownerOfThisToken, chainId: 1 });
-        if (ownerDisplay === undefined || ownerDisplay === null) {
-            ownerDisplay = ownerOfThisToken;
-        }
-
         blueRailroads[tokenId] = {
             id: tokenId,
             owner: ownerOfThisToken,
-            ownerDisplay: ownerDisplay,
             uri: uriOfVideo,
             songId: songId,
             date: date
         };
 
-        console.log(`Blue Railroad #${tokenId}: song ${songId}, date ${date}, owner ${ownerDisplay}`);
+        console.log(`Blue Railroad #${tokenId}: song ${songId}, date ${date}, owner ${ownerOfThisToken}`);
     }
     console.timeEnd("Blue Railroads (listen to that old smokestack)");
     return blueRailroads;
@@ -575,7 +563,106 @@ export async function fetch_chaindata(shows) {
     const vowelSoundContributions = await getVowelsoundContributions(config);
     chainData.vowelSoundContributions = vowelSoundContributions;
 
+    // Batch-resolve ENS names for all owner addresses, deduplicated
+    await resolveAndApplyEnsNames(config, chainData);
+
     return chainData;
+}
+
+/**
+ * Collect all unique owner addresses from chain data, resolve each ENS name
+ * exactly once, then populate ownerDisplay fields throughout.
+ */
+async function resolveAndApplyEnsNames(config, chainData) {
+    console.time("ENS Resolution (batch)");
+
+    // Collect unique addresses
+    const addresses = new Set();
+
+    if (chainData.blueRailroads) {
+        for (const token of Object.values(chainData.blueRailroads)) {
+            if (token.owner) addresses.add(token.owner);
+        }
+    }
+    if (chainData.blueRailroadV2s) {
+        for (const token of Object.values(chainData.blueRailroadV2s)) {
+            if (token.owner) addresses.add(token.owner);
+        }
+    }
+    if (chainData.showsWithChainData) {
+        for (const show of Object.values(chainData.showsWithChainData)) {
+            if (show.ticketStubs) {
+                for (const stub of Object.values(show.ticketStubs)) {
+                    if (stub.owner) addresses.add(stub.owner);
+                }
+            }
+            if (show.sets) {
+                for (const set of Object.values(show.sets)) {
+                    if (set.setstones) {
+                        for (const stone of Object.values(set.setstones)) {
+                            if (stone.owner) addresses.add(stone.owner);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    console.log(`Resolving ENS for ${addresses.size} unique addresses...`);
+
+    // Resolve each address exactly once
+    const ensMap = new Map();
+    for (const address of addresses) {
+        try {
+            const ensName = await fetchEnsName(config, { address, chainId: 1 });
+            ensMap.set(address, ensName || address);
+        } catch (e) {
+            console.log(`ENS lookup failed for ${address}: ${e.message}`);
+            ensMap.set(address, address);
+        }
+    }
+
+    // Apply to Blue Railroad V1
+    if (chainData.blueRailroads) {
+        for (const token of Object.values(chainData.blueRailroads)) {
+            token.ownerDisplay = ensMap.get(token.owner) || token.owner;
+        }
+    }
+
+    // Apply to Blue Railroad V2
+    if (chainData.blueRailroadV2s) {
+        for (const token of Object.values(chainData.blueRailroadV2s)) {
+            token.ownerDisplay = ensMap.get(token.owner) || token.owner;
+        }
+    }
+
+    // Apply to SetStones and Ticket Stubs
+    if (chainData.showsWithChainData) {
+        for (const show of Object.values(chainData.showsWithChainData)) {
+            if (show.ticketStubs) {
+                for (const stub of Object.values(show.ticketStubs)) {
+                    if (stub.owner) {
+                        stub.ownerDisplay = ensMap.get(stub.owner) || stub.owner;
+                    }
+                }
+            }
+            if (show.sets) {
+                for (const set of Object.values(show.sets)) {
+                    if (set.setstones) {
+                        for (const stone of Object.values(set.setstones)) {
+                            if (stone.owner) {
+                                stone.ownerDisplay = ensMap.get(stone.owner) || stone.owner;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    const resolvedCount = [...ensMap.values()].filter(v => !v.startsWith('0x')).length;
+    console.log(`Resolved ${resolvedCount}/${addresses.size} addresses to ENS names`);
+    console.timeEnd("ENS Resolution (batch)");
 }
 
 export async function get_times_for_shows() {

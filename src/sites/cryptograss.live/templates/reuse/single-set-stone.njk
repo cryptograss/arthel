@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-2"></div>
         <h3 class="pixel-font center">Set Stone {{show.show_id}}-{{set.set_number}}-{{setstone.tokenId}}</h3>
-        <h3 class="pixel-font center">Owner: {{setstone.owner}}</h3>
+        <h3 class="pixel-font center">Owner: {{setstone.ownerDisplay or setstone.owner}}</h3>
         {# TODO: This line assumes all setstones are on arbitrum. #}
         <h5 class="pixel-font center">(<a href="https://arbiscan.io/token/0x39269b3FddFc9bf0626e5CFe4424aa51A77f7678?a={{setstone.tokenId}}">on arbitrum etherscan</a>)</h5>
     </div>
@@ -17,7 +17,7 @@
             <p>Show: {{show.title}}</p>
             <p>{{show.local_date`}}</p>
             <p>Set #: {{set.set_number}}</p>
-            <p>Owner: {{setstone.owner}}</p>
+            <p>Owner: {{setstone.ownerDisplay or setstone.owner}}</p>
             <p>Colors: {{colors}}</p>
         </div>
     </div>

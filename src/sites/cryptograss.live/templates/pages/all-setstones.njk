@@ -18,6 +18,7 @@
                             {% set stoneWithContext = {
                                 tokenId: setstone.tokenId,
                                 owner: setstone.owner,
+                                ownerDisplay: setstone.ownerDisplay,
                                 color: setstone.color,
                                 shape: set.shape,
                                 show_id: show_id,
@@ -66,7 +67,7 @@
                                 Owner:
                                 {% if stone.owner %}
                                     <span class="owner-address" title="{{ stone.owner }}">
-                                        {{ stone.owner | truncate(13, true, '...') }}
+                                        {{ (stone.ownerDisplay or stone.owner) | truncate(13, true, '...') }}
                                     </span>
                                 {% else %}
                                     <span class="text-muted">Unknown</span>
