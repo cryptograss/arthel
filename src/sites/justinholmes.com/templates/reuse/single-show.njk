@@ -91,10 +91,10 @@
                                 <tbody>
                                     {% for stone in set.setstones %}
                                         <tr class="border-bottom border-black">
-                                            <td class="px-3" data-tippy-content="{{stone.owner}}">
+                                            <td class="px-3" data-tippy-content="{{stone.ownerDisplay or stone.owner}}">
                                                 <a
                                             href="https://etherscan.io/address/{{stone.owner}}"
-                                            target="_blank">{{stone.owner | truncate(12)}}</a>
+                                            target="_blank">{{(stone.ownerDisplay or stone.owner) | truncate(12)}}</a>
                                             </td>
                                             <td class="px-3">{{stone.paidAmountEth}}</td>
                                             <td class="px-3">

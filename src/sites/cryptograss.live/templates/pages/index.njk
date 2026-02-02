@@ -28,7 +28,7 @@
                 <div class="card-header">
                     <div class="owner-section">
                         <div class="owner-address" data-address="{{ data.owner }}">
-                            {{ data.owner }}
+                            {{ data.ownerDisplay or data.owner }}
                         </div>
                         <small class="text-muted">Token #{{ tokenId }}</small>
                     </div>
