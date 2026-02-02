@@ -14,6 +14,12 @@
       "description": "Blue Railroad Train V2 with onchain metadata (songId, blockheight, videoHash)"
     },
     {
+      "name": "BlueRailroadV2",
+      "chainId": 10,
+      "address": "0x40b23771DAf0D89dE153a70a9F57741a96ed1Dd1",
+      "description": "Blue Railroad V2 tokens on Optimism"
+    },
+    {
       "name": "SetStone",
       "chainId": 42161,
       "address": "0x39269b3FddFc9bf0626e5CFe4424aa51A77f7678",
