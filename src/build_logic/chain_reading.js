@@ -1,5 +1,5 @@
 // @ts-check
-import {createConfig, http, readContract, fetchBlockNumber, fetchEnsName, getBlock} from '@wagmi/core';
+import {createConfig, http, readContract, fetchBlockNumber, fetchEnsName, fetchEnsAddress, getBlock} from '@wagmi/core';
 import {mainnet, optimism, optimismSepolia, arbitrum} from '@wagmi/core/chains';
 import {brABI as abi} from "../abi/blueRailroadABI.js";
 import {blueRailroadV2ABI} from "../abi/blueRailroadV2ABI.js";
@@ -573,10 +573,77 @@ export async function fetch_chaindata(shows) {
  * Collect all unique owner addresses from chain data, resolve each ENS name
  * exactly once, then populate ownerDisplay fields throughout.
  */
+/**
+ * Fetch the address-to-display-name mapping from PickiPedia's semantic data.
+ * Pages with [[Primary ENS name::...]] are resolved to their current Ethereum
+ * addresses, building a map of address → wiki page title.
+ *
+ * Falls back to a cached version if PickiPedia is unreachable.
+ */
+async function fetchWikiAddressMap(config) {
+    const { chainDataDir } = getProjectDirs();
+    const cacheFile = path.resolve(chainDataDir, 'wiki-ens-cache.json');
+
+    let wikiEntries = [];
+    try {
+        const apiUrl = 'https://pickipedia.xyz/api.php?action=ask' +
+            '&query=%5B%5BPrimary%20ENS%20name%3A%3A%2B%5D%5D' +
+            '%7C%3FPrimary%20ENS%20name%7C%3FHas%20display%20name' +
+            '&format=json';
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        const results = data?.query?.results || {};
+
+        for (const [pageTitle, pageData] of Object.entries(results)) {
+            const ensNames = pageData?.printouts?.['Primary ENS name'] || [];
+            const displayNames = pageData?.printouts?.['Has display name'] || [];
+            const displayName = displayNames[0] || pageTitle;
+            for (const ensName of ensNames) {
+                if (ensName) {
+                    wikiEntries.push({ ensName, displayName });
+                }
+            }
+        }
+
+        // Cache for next time
+        if (wikiEntries.length > 0) {
+            fs.writeFileSync(cacheFile, JSON.stringify(wikiEntries, null, 2));
+            console.log(`Cached ${wikiEntries.length} wiki ENS entries to ${cacheFile}`);
+        }
+    } catch (e) {
+        console.log(`PickiPedia unreachable: ${e.message}`);
+        // Fall back to cache
+        if (fs.existsSync(cacheFile)) {
+            wikiEntries = JSON.parse(fs.readFileSync(cacheFile, 'utf-8'));
+            console.log(`Using cached wiki ENS data (${wikiEntries.length} entries)`);
+        }
+    }
+
+    // Forward-resolve each ENS name to its current address
+    const addressToDisplayName = new Map();
+    for (const { ensName, displayName } of wikiEntries) {
+        try {
+            const address = await fetchEnsAddress(config, { name: ensName, chainId: 1 });
+            if (address) {
+                addressToDisplayName.set(address, displayName);
+                console.log(`  ${ensName} → ${address} → ${displayName}`);
+            }
+        } catch (e) {
+            console.log(`  ENS forward lookup failed for ${ensName}: ${e.message}`);
+        }
+    }
+
+    return addressToDisplayName;
+}
+
 async function resolveAndApplyEnsNames(config, chainData) {
     console.time("ENS Resolution (batch)");
 
-    // Collect unique addresses
+    // Step 1: Get wiki-curated address → display name map
+    const wikiMap = await fetchWikiAddressMap(config);
+    console.log(`Wiki address map: ${wikiMap.size} entries`);
+
+    // Step 2: Collect unique addresses from chain data
     const addresses = new Set();
 
     if (chainData.blueRailroads) {
@@ -608,41 +675,38 @@ async function resolveAndApplyEnsNames(config, chainData) {
         }
     }
 
-    console.log(`Resolving ENS for ${addresses.size} unique addresses...`);
+    // Step 3: For addresses not in the wiki map, try ENS reverse lookup
+    const displayMap = new Map(wikiMap);
+    const addressesNeedingEns = [...addresses].filter(a => !displayMap.has(a));
+    console.log(`${addresses.size} unique addresses, ${addresses.size - addressesNeedingEns.length} matched wiki, ${addressesNeedingEns.length} need ENS lookup`);
 
-    // Resolve each address exactly once
-    const ensMap = new Map();
-    for (const address of addresses) {
+    for (const address of addressesNeedingEns) {
         try {
             const ensName = await fetchEnsName(config, { address, chainId: 1 });
-            ensMap.set(address, ensName || address);
+            displayMap.set(address, ensName || address);
         } catch (e) {
             console.log(`ENS lookup failed for ${address}: ${e.message}`);
-            ensMap.set(address, address);
+            displayMap.set(address, address);
         }
     }
 
-    // Apply to Blue Railroad V1
+    // Step 4: Apply display names to all chain data
     if (chainData.blueRailroads) {
         for (const token of Object.values(chainData.blueRailroads)) {
-            token.ownerDisplay = ensMap.get(token.owner) || token.owner;
+            token.ownerDisplay = displayMap.get(token.owner) || token.owner;
         }
     }
-
-    // Apply to Blue Railroad V2
     if (chainData.blueRailroadV2s) {
         for (const token of Object.values(chainData.blueRailroadV2s)) {
-            token.ownerDisplay = ensMap.get(token.owner) || token.owner;
+            token.ownerDisplay = displayMap.get(token.owner) || token.owner;
         }
     }
-
-    // Apply to SetStones and Ticket Stubs
     if (chainData.showsWithChainData) {
         for (const show of Object.values(chainData.showsWithChainData)) {
             if (show.ticketStubs) {
                 for (const stub of Object.values(show.ticketStubs)) {
                     if (stub.owner) {
-                        stub.ownerDisplay = ensMap.get(stub.owner) || stub.owner;
+                        stub.ownerDisplay = displayMap.get(stub.owner) || stub.owner;
                     }
                 }
             }
@@ -651,7 +715,7 @@ async function resolveAndApplyEnsNames(config, chainData) {
                     if (set.setstones) {
                         for (const stone of Object.values(set.setstones)) {
                             if (stone.owner) {
-                                stone.ownerDisplay = ensMap.get(stone.owner) || stone.owner;
+                                stone.ownerDisplay = displayMap.get(stone.owner) || stone.owner;
                             }
                         }
                     }
@@ -660,8 +724,9 @@ async function resolveAndApplyEnsNames(config, chainData) {
         }
     }
 
-    const resolvedCount = [...ensMap.values()].filter(v => !v.startsWith('0x')).length;
-    console.log(`Resolved ${resolvedCount}/${addresses.size} addresses to ENS names`);
+    const wikiResolvedCount = [...addresses].filter(a => wikiMap.has(a)).length;
+    const ensResolvedCount = [...displayMap.values()].filter(v => !v.startsWith('0x')).length - wikiResolvedCount;
+    console.log(`Resolved: ${wikiResolvedCount} from wiki, ${ensResolvedCount} from ENS, ${addresses.size - wikiResolvedCount - ensResolvedCount} unresolved`);
     console.timeEnd("ENS Resolution (batch)");
 }
 
