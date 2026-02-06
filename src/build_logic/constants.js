@@ -1,6 +1,6 @@
 export const setStoneContractAddress = "0x39269b3FddFc9bf0626e5CFe4424aa51A77f7678";
 export const blueRailroadContractAddress = "0xCe09A2d0d0BDE635722D8EF31901b430E651dB52";
-export const blueRailroadV2ContractAddress = "0x40b23771DAf0D89dE153a70a9F57741a96ed1Dd1";
+export const blueRailroadV2ContractAddress = "0x7C3aEBcD477C591EbCde3bC247B3A9531814B4B7";
 export const revealerContractAddress = '0xa812137EFf2B368d0B2880A39B609fB60c426850';
 export const ticketStubClaimerContractAddress = "0x1234567890123456789012345678901234567890"; // TODO: Deploy and update with actual address
 

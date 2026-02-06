@@ -395,6 +395,8 @@ export async function getBlueRailroadV2s(config) {
         chainId: optimism.id,
     });
 
+    console.log(`Blue Railroad V2 totalSupply: ${totalSupply}`);
+
     let blueRailroadV2s = {};
 
     for (let i = 0; i < totalSupply; i++) {
@@ -445,6 +447,8 @@ export async function getBlueRailroadV2s(config) {
             blockheight: Number(blockheight),
             videoHash: videoHash, // bytes32 as hex string
         };
+
+        console.log(`Blue Railroad V2 #${tokenId}: song ${songId}, blockheight ${blockheight}, owner ${owner}`);
     }
 
     console.timeEnd("Blue Railroad V2s");

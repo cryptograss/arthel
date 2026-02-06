@@ -1,4 +1,4 @@
-// BlueRailroadTrainV2 ABI - deployed on Optimism at 0x40b23771DAf0D89dE153a70a9F57741a96ed1Dd1
+// BlueRailroadTrainV2 ABI - deployed on Optimism at 0x7C3aEBcD477C591EbCde3bC247B3A9531814B4B7
 export const blueRailroadV2ABI = [
   // V2-specific view functions
   {
