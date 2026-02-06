@@ -1,53 +1,218 @@
 /**
- * Blue Railroad Mint Submission Page
- * Handles wallet connection, IPFS pinning, and token minting
+ * Blue Railroad Mint/Upgrade Page
+ * Handles wallet connection, IPFS pinning, and token minting or V1→V2 migration
  */
 
 import { createAppKit } from '@reown/appkit';
 import { optimism } from '@reown/appkit/networks';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { reconnect, getAccount, writeContract, waitForTransactionReceipt, signMessage, getEnsAddress } from '@wagmi/core';
+import { reconnect, getAccount, writeContract, readContract, waitForTransactionReceipt, signMessage, getEnsAddress } from '@wagmi/core';
 import { mainnet } from '@reown/appkit/networks';
 
+// Blue Railroad V1 contract config
+const BR_V1_CONTRACT = '0xCe09A2d0d0BDE635722D8EF31901b430E651dB52';
+const BR_V1_ABI = [
+    {
+        inputs: [{ internalType: 'uint256', name: 'tokenId', type: 'uint256' }],
+        name: 'ownerOf',
+        outputs: [{ internalType: 'address', name: '', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [{ internalType: 'uint256', name: 'tokenId', type: 'uint256' }],
+        name: 'getApproved',
+        outputs: [{ internalType: 'address', name: '', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [
+            { internalType: 'address', name: 'to', type: 'address' },
+            { internalType: 'uint256', name: 'tokenId', type: 'uint256' }
+        ],
+        name: 'approve',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function'
+    }
+];
+
 // Blue Railroad V2 contract config
-const BR_CONTRACT = '0x40b23771DAf0D89dE153a70a9F57741a96ed1Dd1';
-const BR_ABI = [{
-    inputs: [
-        { internalType: 'address', name: 'recipient', type: 'address' },
-        { internalType: 'uint8', name: 'songId', type: 'uint8' },
-        { internalType: 'uint256', name: 'blockheight', type: 'uint256' },
-        { internalType: 'bytes32', name: 'videoHash', type: 'bytes32' }
-    ],
-    name: 'issueTony',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-}];
+const BR_V2_CONTRACT = '0x7C3aEBcD477C591EbCde3bC247B3A9531814B4B7';
+const BR_V2_ABI = [
+    {
+        inputs: [
+            { internalType: 'address', name: 'recipient', type: 'address' },
+            { internalType: 'uint8', name: 'songId', type: 'uint8' },
+            { internalType: 'uint256', name: 'blockheight', type: 'uint256' },
+            { internalType: 'bytes32', name: 'videoHash', type: 'bytes32' }
+        ],
+        name: 'issueTony',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function'
+    },
+    {
+        inputs: [
+            { internalType: 'uint32', name: 'v1TokenId', type: 'uint32' },
+            { internalType: 'uint8', name: 'songId', type: 'uint8' },
+            { internalType: 'uint256', name: 'blockheight', type: 'uint256' },
+            { internalType: 'bytes32', name: 'videoHash', type: 'bytes32' }
+        ],
+        name: 'migrateFromV1',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function'
+    }
+];
+
+// Base58 alphabet for CIDv0 decoding
+const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
+// Base32 alphabet for CIDv1 decoding (RFC 4648, lowercase)
+const BASE32_ALPHABET = 'abcdefghijklmnopqrstuvwxyz234567';
+
+function base58Decode(str) {
+    const bytes = [];
+    for (let i = 0; i < str.length; i++) {
+        const char = str[i];
+        const index = BASE58_ALPHABET.indexOf(char);
+        if (index === -1) throw new Error(`Invalid base58 character: ${char}`);
+
+        let carry = index;
+        for (let j = 0; j < bytes.length; j++) {
+            carry += bytes[j] * 58;
+            bytes[j] = carry & 0xff;
+            carry >>= 8;
+        }
+        while (carry > 0) {
+            bytes.push(carry & 0xff);
+            carry >>= 8;
+        }
+    }
+
+    // Handle leading zeros
+    for (let i = 0; i < str.length && str[i] === '1'; i++) {
+        bytes.push(0);
+    }
+
+    return new Uint8Array(bytes.reverse());
+}
+
+function base32Decode(str) {
+    // Remove padding if present
+    str = str.replace(/=+$/, '').toLowerCase();
+
+    let bits = 0;
+    let value = 0;
+    const output = [];
+
+    for (let i = 0; i < str.length; i++) {
+        const char = str[i];
+        const index = BASE32_ALPHABET.indexOf(char);
+        if (index === -1) throw new Error(`Invalid base32 character: ${char}`);
+
+        value = (value << 5) | index;
+        bits += 5;
+
+        if (bits >= 8) {
+            output.push((value >>> (bits - 8)) & 0xff);
+            bits -= 8;
+        }
+    }
+
+    return new Uint8Array(output);
+}
+
+// Read a varint from bytes at given offset, return [value, bytesRead]
+function readVarint(bytes, offset) {
+    let value = 0;
+    let shift = 0;
+    let bytesRead = 0;
+
+    while (offset + bytesRead < bytes.length) {
+        const byte = bytes[offset + bytesRead];
+        value |= (byte & 0x7f) << shift;
+        bytesRead++;
+        if ((byte & 0x80) === 0) break;
+        shift += 7;
+    }
+
+    return [value, bytesRead];
+}
 
 // Convert IPFS CID to bytes32 hash
-// For CIDv0 (Qm...), extract the sha256 digest
-// For CIDv1 or raw hash, use directly
+// Supports both CIDv0 (Qm...) and CIDv1 (bafy...)
 function cidToBytes32(cid) {
     if (!cid) return '0x0000000000000000000000000000000000000000000000000000000000000000';
 
-    // If it's already a hex string (0x...), return as-is padded to 32 bytes
+    // If it's already a hex string (0x...), validate and return
     if (cid.startsWith('0x')) {
-        return cid.padEnd(66, '0');
+        if (cid.length === 66) return cid;
+        throw new Error('Invalid bytes32 hex string');
     }
 
-    // CIDv0 starts with Qm and is base58 encoded
-    // For simplicity, we'll store the CID as UTF-8 bytes in the hash
-    // A proper implementation would decode the multihash
-    // For now, just hash the CID string
-    const encoder = new TextEncoder();
-    const data = encoder.encode(cid);
+    let hashBytes;
 
-    // Simple hash: take first 32 bytes or pad with zeros
-    let hex = '0x';
-    for (let i = 0; i < 32; i++) {
-        hex += (data[i] || 0).toString(16).padStart(2, '0');
+    // CIDv0 starts with Qm (base58btc encoded)
+    if (cid.startsWith('Qm')) {
+        const decoded = base58Decode(cid);
+
+        // CIDv0 structure: 0x12 (sha256) + 0x20 (32 bytes) + 32 bytes hash
+        if (decoded.length !== 34) {
+            throw new Error(`Invalid CIDv0 length: expected 34 bytes, got ${decoded.length}`);
+        }
+        if (decoded[0] !== 0x12 || decoded[1] !== 0x20) {
+            throw new Error('Invalid CIDv0 prefix: expected sha256 multihash');
+        }
+
+        hashBytes = decoded.slice(2);
     }
-    return hex;
+    // CIDv1 starts with 'b' (base32lower) - common format is bafy... or bafybei...
+    else if (cid.startsWith('b')) {
+        // Remove the 'b' multibase prefix and decode base32
+        const decoded = base32Decode(cid.slice(1));
+
+        let offset = 0;
+
+        // Read CID version (should be 1)
+        const [version, versionBytes] = readVarint(decoded, offset);
+        offset += versionBytes;
+        if (version !== 1) {
+            throw new Error(`Unexpected CID version: ${version}`);
+        }
+
+        // Read codec (0x70 = dag-pb, 0x55 = raw, 0x71 = dag-cbor)
+        const [codec, codecBytes] = readVarint(decoded, offset);
+        offset += codecBytes;
+        // We don't need the codec value, just skip it
+
+        // Read multihash: hash function code
+        const [hashFn, hashFnBytes] = readVarint(decoded, offset);
+        offset += hashFnBytes;
+        if (hashFn !== 0x12) {
+            throw new Error(`Unsupported hash function: 0x${hashFn.toString(16)} (expected sha256 0x12)`);
+        }
+
+        // Read multihash: digest length
+        const [digestLen, digestLenBytes] = readVarint(decoded, offset);
+        offset += digestLenBytes;
+        if (digestLen !== 32) {
+            throw new Error(`Unexpected digest length: ${digestLen} (expected 32)`);
+        }
+
+        // Extract the 32-byte hash
+        hashBytes = decoded.slice(offset, offset + 32);
+        if (hashBytes.length !== 32) {
+            throw new Error(`Could not extract 32-byte hash from CIDv1`);
+        }
+    }
+    else {
+        throw new Error('Unsupported CID format. Expected CIDv0 (Qm...) or CIDv1 (b...)');
+    }
+
+    return '0x' + Array.from(hashBytes).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 // Setup Web3Modal
@@ -100,11 +265,19 @@ export function initMintPage(submissionData) {
         videoUrl,
         recipients,
         pinningService,
-        pickipediaUrl
+        pickipediaUrl,
+        // Upgrade-specific fields
+        isUpgrade = false,
+        v1TokenId = null
     } = submissionData;
 
+    // Convert relative video URLs to absolute (needed for external pinning service)
+    const absoluteVideoUrl = videoUrl && videoUrl.startsWith('/')
+        ? new URL(videoUrl, window.location.origin).href
+        : videoUrl;
+
     // Current video URI - starts as the original URL, updated if pinned to IPFS
-    let currentVideoUri = videoUrl;
+    let currentVideoUri = absoluteVideoUrl;
     let currentIpfsCid = null; // Track the CID separately for bytes32 conversion
 
     // Reconnect any existing wallet sessions
@@ -124,7 +297,15 @@ export function initMintPage(submissionData) {
     const ipfsCid = document.getElementById('ipfs-cid');
     const pinError = document.getElementById('pin-error');
 
-    // DOM elements - minting
+    // DOM elements - approval (upgrade only)
+    const approvalSection = document.getElementById('approval-section');
+    const approveBtn = document.getElementById('approve-btn');
+    const approvalNotStarted = document.getElementById('approval-not-started');
+    const approvalInProgress = document.getElementById('approval-in-progress');
+    const approvalComplete = document.getElementById('approval-complete');
+    const approvalError = document.getElementById('approval-error');
+
+    // DOM elements - minting/migration
     const mintBtn = document.getElementById('mint-btn');
     const statusArea = document.getElementById('status-area');
     const pendingMsg = document.getElementById('pending-msg');
@@ -133,6 +314,9 @@ export function initMintPage(submissionData) {
     const successText = document.getElementById('success-text');
     const txLinks = document.getElementById('tx-links');
     const errorMsg = document.getElementById('error-msg');
+
+    // Track approval state for upgrades
+    let isApproved = false;
 
     // Wallet connection UI update
     function updateWalletUI() {
@@ -143,13 +327,13 @@ export function initMintPage(submissionData) {
             connectedAddress.textContent = account.address;
             connectBtn.textContent = 'Connected';
             mintBtn.disabled = false;
-            if (pinBtn) pinBtn.disabled = false;
+            // Clear any previous "connect wallet" error when wallet connects
+            if (pinError) pinError.style.display = 'none';
         } else {
             notConnectedMsg.style.display = 'block';
             connectedAddress.style.display = 'none';
             connectBtn.textContent = 'Connect Wallet';
             mintBtn.disabled = true;
-            if (pinBtn) pinBtn.disabled = true;
         }
     }
 
@@ -169,8 +353,10 @@ export function initMintPage(submissionData) {
         pinBtn.addEventListener('click', async () => {
             const account = getAccount(wagmiConfig);
             if (!account.address) {
-                pinError.textContent = 'Please connect your wallet first';
+                pinError.innerHTML = '<strong>Wallet not connected.</strong> Please connect your wallet first (Step 1 above).';
                 pinError.style.display = 'block';
+                // Scroll to make sure error is visible
+                pinError.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
 
@@ -203,7 +389,7 @@ export function initMintPage(submissionData) {
                         'X-Signature': signature,
                         'X-Timestamp': timestamp.toString()
                     },
-                    body: JSON.stringify({ url: videoUrl })
+                    body: JSON.stringify({ url: absoluteVideoUrl })
                 });
 
                 if (!response.ok) {
@@ -241,7 +427,84 @@ export function initMintPage(submissionData) {
         });
     }
 
-    // Mint handler
+    // Approval handler (upgrades only)
+    if (isUpgrade && approveBtn) {
+        approveBtn.addEventListener('click', async () => {
+            const account = getAccount(wagmiConfig);
+            if (!account.address) {
+                approvalError.innerHTML = '<strong>Wallet not connected.</strong> Please connect your wallet first.';
+                approvalError.style.display = 'block';
+                return;
+            }
+
+            approveBtn.disabled = true;
+            approvalNotStarted.style.display = 'none';
+            approvalInProgress.style.display = 'block';
+            approvalError.style.display = 'none';
+
+            try {
+                // Check if user owns the V1 token
+                const owner = await readContract(wagmiConfig, {
+                    address: BR_V1_CONTRACT,
+                    abi: BR_V1_ABI,
+                    functionName: 'ownerOf',
+                    args: [v1TokenId],
+                    chainId: 10
+                });
+
+                if (owner.toLowerCase() !== account.address.toLowerCase()) {
+                    throw new Error(`You don't own V1 Token #${v1TokenId}. Current owner: ${owner.slice(0, 10)}...`);
+                }
+
+                // Check if already approved
+                const approvedFor = await readContract(wagmiConfig, {
+                    address: BR_V1_CONTRACT,
+                    abi: BR_V1_ABI,
+                    functionName: 'getApproved',
+                    args: [v1TokenId],
+                    chainId: 10
+                });
+
+                if (approvedFor.toLowerCase() === BR_V2_CONTRACT.toLowerCase()) {
+                    // Already approved
+                    isApproved = true;
+                    approvalInProgress.style.display = 'none';
+                    approvalComplete.style.display = 'block';
+                    approvalComplete.innerHTML = '<span class="badge bg-success">Already Approved</span>';
+                    mintBtn.disabled = false;
+                    return;
+                }
+
+                // Send approval transaction
+                const hash = await writeContract(wagmiConfig, {
+                    address: BR_V1_CONTRACT,
+                    abi: BR_V1_ABI,
+                    functionName: 'approve',
+                    args: [BR_V2_CONTRACT, v1TokenId],
+                    chainId: 10
+                });
+
+                await waitForTransactionReceipt(wagmiConfig, {
+                    hash,
+                    chainId: 10
+                });
+
+                isApproved = true;
+                approvalInProgress.style.display = 'none';
+                approvalComplete.style.display = 'block';
+                mintBtn.disabled = false;
+            } catch (err) {
+                console.error('Approval error:', err);
+                approvalInProgress.style.display = 'none';
+                approvalNotStarted.style.display = 'block';
+                approvalError.textContent = 'Approval failed: ' + err.message;
+                approvalError.style.display = 'block';
+                approveBtn.disabled = false;
+            }
+        });
+    }
+
+    // Mint/Migrate handler
     mintBtn.addEventListener('click', async () => {
         statusArea.style.display = 'block';
         pendingMsg.style.display = 'block';
@@ -252,48 +515,83 @@ export function initMintPage(submissionData) {
         const txResults = [];
 
         try {
-            for (let i = 0; i < recipients.length; i++) {
-                const recipientInput = recipients[i];
-                pendingText.textContent = `Resolving ${recipientInput}...`;
+            // Convert IPFS CID to bytes32 for V2 contract
+            const videoHash = cidToBytes32(currentIpfsCid);
 
-                // Resolve ENS name if needed
-                const recipient = await resolveRecipient(recipientInput);
-                pendingText.textContent = `Minting token ${i + 1} of ${recipients.length} for ${recipientInput}...`;
-
-                // Convert IPFS CID to bytes32 for V2 contract
-                const videoHash = cidToBytes32(currentIpfsCid);
+            if (isUpgrade) {
+                // V1→V2 migration flow
+                pendingText.textContent = `Migrating V1 Token #${v1TokenId} to V2...`;
 
                 const hash = await writeContract(wagmiConfig, {
-                    address: BR_CONTRACT,
-                    abi: BR_ABI,
-                    functionName: 'issueTony',
-                    args: [recipient, songId, blockHeight, videoHash],
+                    address: BR_V2_CONTRACT,
+                    abi: BR_V2_ABI,
+                    functionName: 'migrateFromV1',
+                    args: [v1TokenId, songId, blockHeight, videoHash],
                     chainId: 10
                 });
 
-                pendingText.textContent = `Waiting for confirmation (${i + 1}/${recipients.length})...`;
+                pendingText.textContent = 'Waiting for confirmation...';
 
                 await waitForTransactionReceipt(wagmiConfig, {
                     hash,
                     chainId: 10
                 });
 
-                txResults.push({ recipient: recipientInput, resolvedAddress: recipient, hash, success: true });
+                txResults.push({ tokenId: v1TokenId, hash, success: true });
+
+                pendingMsg.style.display = 'none';
+                successMsg.style.display = 'block';
+                successText.textContent = `Successfully migrated Token #${v1TokenId} to V2!`;
+            } else {
+                // Standard minting flow
+                for (let i = 0; i < recipients.length; i++) {
+                    const recipientInput = recipients[i];
+                    pendingText.textContent = `Resolving ${recipientInput}...`;
+
+                    // Resolve ENS name if needed
+                    const recipient = await resolveRecipient(recipientInput);
+                    pendingText.textContent = `Minting token ${i + 1} of ${recipients.length} for ${recipientInput}...`;
+
+                    const hash = await writeContract(wagmiConfig, {
+                        address: BR_V2_CONTRACT,
+                        abi: BR_V2_ABI,
+                        functionName: 'issueTony',
+                        args: [recipient, songId, blockHeight, videoHash],
+                        chainId: 10
+                    });
+
+                    pendingText.textContent = `Waiting for confirmation (${i + 1}/${recipients.length})...`;
+
+                    await waitForTransactionReceipt(wagmiConfig, {
+                        hash,
+                        chainId: 10
+                    });
+
+                    txResults.push({ recipient: recipientInput, resolvedAddress: recipient, hash, success: true });
+                }
+
+                pendingMsg.style.display = 'none';
+                successMsg.style.display = 'block';
+                successText.textContent = `Successfully minted ${txResults.length} token${txResults.length > 1 ? 's' : ''}!`;
             }
 
-            pendingMsg.style.display = 'none';
-            successMsg.style.display = 'block';
-            successText.textContent = `Successfully minted ${txResults.length} token${txResults.length > 1 ? 's' : ''}!`;
-
             // Build transaction links
-            let linksHtml = txResults.map(r =>
-                `<div><a href="https://optimistic.etherscan.io/tx/${r.hash}" target="_blank">${r.recipient.slice(0, 10)}... → View TX</a></div>`
-            ).join('');
+            let linksHtml;
+            if (isUpgrade) {
+                linksHtml = txResults.map(r =>
+                    `<div><a href="https://optimistic.etherscan.io/tx/${r.hash}" target="_blank">Token #${r.tokenId} → View TX</a></div>`
+                ).join('');
+            } else {
+                linksHtml = txResults.map(r =>
+                    `<div><a href="https://optimistic.etherscan.io/tx/${r.hash}" target="_blank">${r.recipient.slice(0, 10)}... → View TX</a></div>`
+                ).join('');
+            }
 
             // Add reminder to update wiki status
             if (pickipediaUrl) {
+                const actionText = isUpgrade ? 'Upgraded' : 'Minted';
                 linksHtml += `<div class="mt-3 p-2 border rounded bg-light">
-                    <strong>Next step:</strong> Update the submission status to "Minted" on PickiPedia<br>
+                    <strong>Next step:</strong> Update the submission status to "${actionText}" on PickiPedia<br>
                     <a href="${pickipediaUrl}?action=edit" target="_blank" class="btn btn-sm btn-outline-primary mt-1">Edit Submission Page</a>
                 </div>`;
             }

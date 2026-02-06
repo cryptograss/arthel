@@ -57,8 +57,8 @@ export async function verifyBlueRailroadVideos() {
         );
     }
 
-    // Sort by latest first.
-    return Object.entries(metadata).reverse()
+    // Return the metadata object (keeping original structure)
+    return metadata;
 }
 
 /**

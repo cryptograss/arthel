@@ -23,7 +23,7 @@ function buildHtmlPluginInstances() {
 
         if (relativePath.startsWith('tools/oracle-of-bluegrass-bacon')) {
             var chunks = ['main', 'oracle_client'];
-        } else if (relativePath.startsWith('blox-office/admin/mint/')) {
+        } else if (relativePath.startsWith('blox-office/admin/mint/') || relativePath.startsWith('blox-office/admin/upgrade/')) {
             var chunks = ['main', 'mint_submission'];
         } else {
             var chunks = ['main'];

@@ -80,9 +80,14 @@ export const runPrimaryBuild = async () => {
         }
     }
 
-    // Verify videos early (V1)
-    const blueRailroadMetadata = await verifyBlueRailroadVideos();
-    chainData.blueRailroads = blueRailroadMetadata;
+    // Verify videos early (V1) and merge with chain data
+    const blueRailroadVideoMetadata = await verifyBlueRailroadVideos();
+    // Merge video metadata into existing chain data (chain data has songId, date, ownerDisplay)
+    for (const [tokenId, videoData] of Object.entries(blueRailroadVideoMetadata)) {
+        if (chainData.blueRailroads[tokenId]) {
+            Object.assign(chainData.blueRailroads[tokenId], videoData);
+        }
+    }
 
     // Generate V2 metadata JSON files (cryptograss.live serves these at /meta/bluerailroad/{tokenId})
     if (site === 'cryptograss.live' && chainData.blueRailroadV2s) {
@@ -646,7 +651,7 @@ export const runPrimaryBuild = async () => {
 
     if (site === "cryptograss.live" && pendingSubmissions.length > 0) {
         // Ensure the mint directory exists
-        const mintDir = path.join(outputPrimarySiteDir, 'blox-office/admin/mint');
+        const mintDir = path.join(outputPrimarySiteDir, 'blox-office/admin/mint/bluerailroad/from-pickipedia');
         fs.mkdirSync(mintDir, { recursive: true, mode: 0o777 });
 
         for (const submission of pendingSubmissions) {
@@ -661,12 +666,76 @@ export const runPrimaryBuild = async () => {
 
             renderPage({
                 template_path: 'pages/blox-office/admin/mint-submission.njk',
-                output_path: `blox-office/admin/mint/${submission.id}.html`,
+                output_path: `blox-office/admin/mint/bluerailroad/from-pickipedia/${submission.id}.html`,
                 context: context,
                 site: site,
             });
 
             console.log(`Generated mint page for submission #${submission.id}`);
+        }
+    }
+
+    ///////////////////////////
+    // Chapter 5.6: Blue Railroad V1→V2 Upgrade Pages
+    ///////////////////////////
+
+    // Generate upgrade pages for V1 tokens not yet migrated to V2
+    if (site === "cryptograss.live" && chainData.blueRailroads) {
+        const upgradeDir = path.join(outputPrimarySiteDir, 'blox-office/admin/upgrade/bluerailroad');
+        fs.mkdirSync(upgradeDir, { recursive: true, mode: 0o777 });
+
+        // Find V1 tokens without corresponding V2 tokens
+        const v2TokenIds = new Set(
+            chainData.blueRailroadV2s ? Object.keys(chainData.blueRailroadV2s) : []
+        );
+
+        const v1TokensNeedingUpgrade = Object.entries(chainData.blueRailroads)
+            .filter(([tokenId]) => !v2TokenIds.has(tokenId));
+
+        // Exercise name mapping (same as EXERCISE_MAP in leaderboard.py)
+        const EXERCISE_MAP = {
+            '5': 'Squats (Blue Railroad Train)',
+            '6': 'Pushups (Nine Pound Hammer)',
+            '7': 'Squats (Blue Railroad Train) (legacy)',
+            '10': 'Army Crawls (Ginseng Sullivan)',
+        };
+
+        for (const [tokenId, token] of v1TokensNeedingUpgrade) {
+            const exerciseName = EXERCISE_MAP[String(token.songId)] || `Exercise ID ${token.songId}`;
+
+            const context = {
+                page_name: `upgrade_token_${tokenId}`,
+                page_title: `Upgrade Token #${tokenId} to V2`,
+                submission: {
+                    isUpgrade: true,
+                    v1TokenId: parseInt(tokenId),
+                    v1ContractAddress: '0xCe09A2d0d0BDE635722D8EF31901b430E651dB52',
+                    songId: parseInt(token.songId) || 5,
+                    blockHeight: token.date || 0,  // V1 used 'date' for blockheight
+                    exercise: exerciseName,
+                    // Use locally-served video (Discord CDN URLs expire)
+                    videoUrl: `/assets/fetched/10-0xCe09A2d0d0BDE635722D8EF31901b430E651dB52-${tokenId}.mp4`,
+                    owner: token.owner,
+                    ownerDisplay: token.ownerDisplay,
+                    participants: [],  // Not used for upgrades
+                },
+                chainData: chainData,
+                latest_git_commit: dataAvailableAsContext.latest_git_commit,
+                no_video_bg: true,
+            };
+
+            renderPage({
+                template_path: 'pages/blox-office/admin/mint-submission.njk',
+                output_path: `blox-office/admin/upgrade/bluerailroad/${tokenId}.html`,
+                context: context,
+                site: site,
+            });
+
+            console.log(`Generated upgrade page for V1 Token #${tokenId} (owner: ${token.ownerDisplay || token.owner})`);
+        }
+
+        if (v1TokensNeedingUpgrade.length > 0) {
+            console.log(`Generated ${v1TokensNeedingUpgrade.length} upgrade pages for V1 tokens`);
         }
     }
 

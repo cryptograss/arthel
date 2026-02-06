@@ -4,7 +4,7 @@
 <div class="row">
     <div class="col-1"></div>
     <div class="col-md-10 text-post">
-        <h1 class="text-center pixel-font">Mint Blue Railroad Token</h1>
+        <h1 class="text-center pixel-font">Mint Blue Railroad Token (V2)</h1>
         <p class="text-center text-muted">Admin page for issuing Manzanita exercise challenge tokens</p>
 
         <div class="row mt-4">
@@ -48,92 +48,69 @@
                                 <label for="song-select" class="form-label">Exercise Challenge</label>
                                 <select class="form-select" id="song-select" required>
                                     <option value="">Select a song...</option>
-                                    <option value="5">Blue Railroad Train - Squats</option>
-                                    <option value="6">Nine Pound Hammer - Pushups</option>
-                                    <option value="10">Ginseng Sullivan - Army Crawls</option>
+                                    <option value="7">Blue Railroad Train - Squats (Track 7)</option>
+                                    <option value="5">Nine Pound Hammer - Pushups (Track 5)</option>
+                                    <option value="8">Ginseng Sullivan - Army Crawls (Track 8)</option>
                                 </select>
                                 <div class="form-text">Track number from Manzanita (1979)</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="date-input" class="form-label">Date Completed</label>
-                                <input type="date" class="form-control" id="date-input" required>
-                                <div class="form-text">When the exercise was performed</div>
+                                <label for="blockheight-input" class="form-label">Ethereum Block Height</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="blockheight-input"
+                                           placeholder="e.g. 24207967" required>
+                                    <button type="button" class="btn btn-outline-secondary" id="fetch-block-btn">
+                                        Current Block
+                                    </button>
+                                </div>
+                                <div class="form-text">Mainnet block height when the exercise was performed</div>
+                                <div id="block-info" class="form-text text-info mt-1" style="display: none;"></div>
                             </div>
 
-                            <!-- Video Upload Section -->
+                            <!-- Video Hash Section -->
                             <div class="mb-3">
-                                <label class="form-label">Video Source</label>
+                                <label class="form-label">Video IPFS Hash</label>
                                 <ul class="nav nav-tabs" id="video-source-tabs" role="tablist">
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" id="url-tab" data-bs-toggle="tab"
-                                                data-bs-target="#url-pane" type="button" role="tab">
-                                            From URL (Instagram, etc.)
+                                        <button class="nav-link active" id="cid-tab" data-bs-toggle="tab"
+                                                data-bs-target="#cid-pane" type="button" role="tab">
+                                            IPFS CID (Qm...)
                                         </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="upload-tab" data-bs-toggle="tab"
-                                                data-bs-target="#upload-pane" type="button" role="tab">
-                                            Upload File
-                                        </button>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="manual-tab" data-bs-toggle="tab"
-                                                data-bs-target="#manual-pane" type="button" role="tab">
-                                            Manual URI
+                                        <button class="nav-link" id="bytes32-tab" data-bs-toggle="tab"
+                                                data-bs-target="#bytes32-pane" type="button" role="tab">
+                                            Raw bytes32
                                         </button>
                                     </li>
                                 </ul>
                                 <div class="tab-content border border-top-0 p-3" id="video-source-content">
-                                    <!-- URL Download Tab -->
-                                    <div class="tab-pane fade show active" id="url-pane" role="tabpanel">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" id="video-url"
-                                                   placeholder="https://www.instagram.com/p/...">
-                                            <button type="button" class="btn btn-outline-primary" id="fetch-video-btn">
-                                                Fetch & Pin
-                                            </button>
+                                    <!-- IPFS CID Tab -->
+                                    <div class="tab-pane fade show active" id="cid-pane" role="tabpanel">
+                                        <input type="text" class="form-control" id="ipfs-cid"
+                                               placeholder="QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG">
+                                        <div class="form-text">CIDv0 format (starts with Qm)</div>
+                                        <div id="cid-convert-status" class="mt-2" style="display: none;">
+                                            <div id="cid-success" class="alert alert-success py-2" style="display: none;">
+                                                <strong>Converted:</strong>
+                                                <code id="converted-hash" class="d-block mt-1" style="word-break: break-all;"></code>
+                                            </div>
+                                            <div id="cid-error" class="alert alert-danger py-2" style="display: none;"></div>
                                         </div>
-                                        <div class="form-text">Paste Instagram, YouTube, or other video URL</div>
                                     </div>
 
-                                    <!-- File Upload Tab -->
-                                    <div class="tab-pane fade" id="upload-pane" role="tabpanel">
-                                        <div class="input-group">
-                                            <input type="file" class="form-control" id="video-file"
-                                                   accept="video/*">
-                                            <button type="button" class="btn btn-outline-primary" id="upload-video-btn">
-                                                Upload & Pin
-                                            </button>
-                                        </div>
-                                        <div class="form-text">Select a video file (max 500MB)</div>
+                                    <!-- Raw bytes32 Tab -->
+                                    <div class="tab-pane fade" id="bytes32-pane" role="tabpanel">
+                                        <input type="text" class="form-control" id="raw-bytes32"
+                                               placeholder="0x...">
+                                        <div class="form-text">32-byte hex string (64 hex chars + 0x prefix)</div>
                                     </div>
-
-                                    <!-- Manual URI Tab -->
-                                    <div class="tab-pane fade" id="manual-pane" role="tabpanel">
-                                        <input type="text" class="form-control" id="manual-uri"
-                                               placeholder="ipfs://Qm... or https://...">
-                                        <div class="form-text">If you already have the IPFS CID or direct URL</div>
-                                    </div>
-                                </div>
-
-                                <!-- Pin Status -->
-                                <div id="pin-status" class="mt-2" style="display: none;">
-                                    <div id="pin-pending" class="alert alert-info py-2" style="display: none;">
-                                        <span class="spinner-border spinner-border-sm" role="status"></span>
-                                        <span id="pin-status-text">Downloading video...</span>
-                                    </div>
-                                    <div id="pin-success" class="alert alert-success py-2" style="display: none;">
-                                        <strong>Pinned!</strong>
-                                        <span id="pin-cid" class="font-monospace"></span>
-                                        <a id="pin-gateway-link" href="#" target="_blank" class="ms-2">View on IPFS</a>
-                                    </div>
-                                    <div id="pin-error" class="alert alert-danger py-2" style="display: none;"></div>
                                 </div>
                             </div>
 
-                            <!-- Hidden field for final URI -->
-                            <input type="hidden" id="video-uri" required>
+                            <!-- Hidden field for final bytes32 -->
+                            <input type="hidden" id="video-hash" required>
 
                             <div class="d-grid gap-2">
                                 <button type="submit" id="mint-btn" class="btn btn-success btn-lg" disabled>
@@ -160,18 +137,32 @@
                 <!-- Reference Info -->
                 <div class="card semi-transparent-bg mt-4">
                     <div class="card-body">
-                        <h6 class="card-title">Manzanita Tracklist Reference</h6>
+                        <h6 class="card-title">V2 Contract Info</h6>
+                        <dl class="row mb-2">
+                            <dt class="col-sm-3">Contract</dt>
+                            <dd class="col-sm-9">
+                                <a href="https://optimistic.etherscan.io/address/0x7C3aEBcD477C591EbCde3bC247B3A9531814B4B7"
+                                   target="_blank" class="font-monospace small">
+                                    0x7C3a...14B7
+                                </a>
+                            </dd>
+                            <dt class="col-sm-3">Network</dt>
+                            <dd class="col-sm-9">Optimism</dd>
+                            <dt class="col-sm-3">Token IDs</dt>
+                            <dd class="col-sm-9">New mints start at #5 (0-4 reserved for V1 migrations)</dd>
+                        </dl>
+                        <h6 class="card-title mt-3">Manzanita Tracklist Reference</h6>
                         <ol class="small mb-0">
-                            <li>Old Train</li>
+                            <li>Church Street Blues</li>
                             <li>Manzanita</li>
                             <li>Little Sadie</li>
                             <li>Blackberry Blossom</li>
-                            <li><strong>Blue Railroad Train</strong> (Squats)</li>
                             <li><strong>Nine Pound Hammer</strong> (Pushups)</li>
-                            <li>Red Haired Boy</li>
-                            <li>Streets of London</li>
-                            <li>Old Grey Coat</li>
+                            <li>Home from the Forest</li>
+                            <li><strong>Blue Railroad Train</strong> (Squats)</li>
                             <li><strong>Ginseng Sullivan</strong> (Army Crawls)</li>
+                            <li>Red Haired Boy</li>
+                            <li>Old Grey Coat</li>
                         </ol>
                     </div>
                 </div>
@@ -188,9 +179,7 @@
     font-weight: bold;
 }
 
-/* Override Web3Modal's z-index CSS variable
-   Note: #main-container has z-index: 1000 in global styles,
-   Web3Modal uses --w3m-z-index (default 999), so we need higher */
+/* Override Web3Modal's z-index CSS variable */
 :root {
     --w3m-z-index: 10000 !important;
 }
@@ -214,22 +203,139 @@ w3m-modal {
     import { WagmiAdapter } from 'https://cdn.jsdelivr.net/npm/@reown/appkit-adapter-wagmi@1.6.8/+esm';
     import { reconnect, getAccount, writeContract, waitForTransactionReceipt } from 'https://cdn.jsdelivr.net/npm/@wagmi/core@2.16.4/+esm';
 
-    console.log('[mint-tony] Imports loaded successfully');
+    console.log('[mint-tony-v2] Imports loaded successfully');
 
-    // Blue Railroad contract config
-    const BR_CONTRACT = '0xCe09A2d0d0BDE635722D8EF31901b430E651dB52';
+    // Blue Railroad V2 contract config
+    const BR_CONTRACT = '0x7C3aEBcD477C591EbCde3bC247B3A9531814B4B7';
     const BR_ABI = [{
         inputs: [
             { internalType: 'address', name: 'recipient', type: 'address' },
-            { internalType: 'uint32', name: 'songId', type: 'uint32' },
-            { internalType: 'uint32', name: 'date', type: 'uint32' },
-            { internalType: 'string', name: 'uri', type: 'string' }
+            { internalType: 'uint8', name: 'songId', type: 'uint8' },
+            { internalType: 'uint256', name: 'blockheight', type: 'uint256' },
+            { internalType: 'bytes32', name: 'videoHash', type: 'bytes32' }
         ],
         name: 'issueTony',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function'
     }];
+
+    // Base58 alphabet for CIDv0 decoding
+    const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
+    // Base32 alphabet for CIDv1 decoding (RFC 4648, lowercase)
+    const BASE32_ALPHABET = 'abcdefghijklmnopqrstuvwxyz234567';
+
+    function base58Decode(str) {
+        const bytes = [];
+        for (let i = 0; i < str.length; i++) {
+            const char = str[i];
+            const index = BASE58_ALPHABET.indexOf(char);
+            if (index === -1) throw new Error(`Invalid base58 character: ${char}`);
+
+            let carry = index;
+            for (let j = 0; j < bytes.length; j++) {
+                carry += bytes[j] * 58;
+                bytes[j] = carry & 0xff;
+                carry >>= 8;
+            }
+            while (carry > 0) {
+                bytes.push(carry & 0xff);
+                carry >>= 8;
+            }
+        }
+
+        for (let i = 0; i < str.length && str[i] === '1'; i++) {
+            bytes.push(0);
+        }
+
+        return new Uint8Array(bytes.reverse());
+    }
+
+    function base32Decode(str) {
+        str = str.replace(/=+$/, '').toLowerCase();
+
+        let bits = 0;
+        let value = 0;
+        const output = [];
+
+        for (let i = 0; i < str.length; i++) {
+            const char = str[i];
+            const index = BASE32_ALPHABET.indexOf(char);
+            if (index === -1) throw new Error(`Invalid base32 character: ${char}`);
+
+            value = (value << 5) | index;
+            bits += 5;
+
+            if (bits >= 8) {
+                output.push((value >>> (bits - 8)) & 0xff);
+                bits -= 8;
+            }
+        }
+
+        return new Uint8Array(output);
+    }
+
+    function readVarint(bytes, offset) {
+        let value = 0;
+        let shift = 0;
+        let bytesRead = 0;
+
+        while (offset + bytesRead < bytes.length) {
+            const byte = bytes[offset + bytesRead];
+            value |= (byte & 0x7f) << shift;
+            bytesRead++;
+            if ((byte & 0x80) === 0) break;
+            shift += 7;
+        }
+
+        return [value, bytesRead];
+    }
+
+    function cidToBytes32(cid) {
+        if (!cid) throw new Error('No CID provided');
+
+        if (cid.startsWith('0x')) {
+            if (cid.length === 66) return cid;
+            throw new Error('Invalid bytes32 hex string');
+        }
+
+        let hashBytes;
+
+        if (cid.startsWith('Qm')) {
+            const decoded = base58Decode(cid);
+            if (decoded.length !== 34) throw new Error(`Invalid CIDv0 length: ${decoded.length}`);
+            if (decoded[0] !== 0x12 || decoded[1] !== 0x20) throw new Error('Invalid CIDv0 multihash prefix');
+            hashBytes = decoded.slice(2);
+        }
+        else if (cid.startsWith('b')) {
+            const decoded = base32Decode(cid.slice(1));
+            let offset = 0;
+
+            const [version, vBytes] = readVarint(decoded, offset);
+            offset += vBytes;
+            if (version !== 1) throw new Error(`Unexpected CID version: ${version}`);
+
+            const [codec, cBytes] = readVarint(decoded, offset);
+            offset += cBytes;
+
+            const [hashFn, hBytes] = readVarint(decoded, offset);
+            offset += hBytes;
+            if (hashFn !== 0x12) throw new Error(`Unsupported hash function: 0x${hashFn.toString(16)}`);
+
+            const [digestLen, dBytes] = readVarint(decoded, offset);
+            offset += dBytes;
+            if (digestLen !== 32) throw new Error(`Unexpected digest length: ${digestLen}`);
+
+            hashBytes = decoded.slice(offset, offset + 32);
+            if (hashBytes.length !== 32) throw new Error('Could not extract hash from CIDv1');
+        }
+        else {
+            throw new Error('Unsupported CID format. Expected Qm... or b...');
+        }
+
+        return '0x' + Array.from(hashBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
     // Setup Web3Modal
     const projectId = 'c4f79cc821d56e59de850c9b35cbbe86';
@@ -263,9 +369,16 @@ w3m-modal {
     const mintBtn = document.getElementById('mint-btn');
     const mintForm = document.getElementById('mint-form');
     const songSelect = document.getElementById('song-select');
-    const dateInput = document.getElementById('date-input');
-    const videoUri = document.getElementById('video-uri');
-    const manualUri = document.getElementById('manual-uri');
+    const blockheightInput = document.getElementById('blockheight-input');
+    const fetchBlockBtn = document.getElementById('fetch-block-btn');
+    const blockInfo = document.getElementById('block-info');
+    const ipfsCid = document.getElementById('ipfs-cid');
+    const rawBytes32 = document.getElementById('raw-bytes32');
+    const videoHash = document.getElementById('video-hash');
+    const cidConvertStatus = document.getElementById('cid-convert-status');
+    const cidSuccess = document.getElementById('cid-success');
+    const cidError = document.getElementById('cid-error');
+    const convertedHash = document.getElementById('converted-hash');
     const recipientsContainer = document.getElementById('recipients-container');
     const addRecipientBtn = document.getElementById('add-recipient-btn');
     const statusArea = document.getElementById('status-area');
@@ -278,50 +391,105 @@ w3m-modal {
 
     // Parse query parameters on load
     function initFromQueryParams() {
-        console.log('[mint-tony] initFromQueryParams called');
-        console.log('[mint-tony] search:', window.location.search);
         const params = new URLSearchParams(window.location.search);
 
-        // Pre-select song if provided
         const songParam = params.get('song');
-        console.log('[mint-tony] songParam:', songParam);
         if (songParam) {
-            console.log('[mint-tony] Setting song to:', songParam);
             songSelect.value = songParam;
-            console.log('[mint-tony] songSelect.value is now:', songSelect.value);
         }
 
-        // Pre-fill recipients if provided (comma-separated)
         const recipientsParam = params.get('recipients');
         if (recipientsParam) {
             const recipients = recipientsParam.split(',').map(r => r.trim()).filter(r => r);
             if (recipients.length > 0) {
-                // Fill first recipient
                 const firstInput = recipientsContainer.querySelector('.recipient-input');
                 firstInput.value = recipients[0];
-
-                // Add additional recipients
                 for (let i = 1; i < recipients.length; i++) {
                     addRecipientRow(recipients[i]);
                 }
             }
         }
 
-        // Pre-fill date if provided
-        const dateParam = params.get('date');
-        if (dateParam) {
-            dateInput.value = dateParam;
+        const blockParam = params.get('block') || params.get('blockheight');
+        if (blockParam) {
+            blockheightInput.value = blockParam;
         }
 
-        // Pre-fill video URI if provided
-        const uriParam = params.get('uri');
-        if (uriParam) {
-            manualUri.value = uriParam;
-            videoUri.value = uriParam;
-            // Switch to manual tab
-            document.getElementById('manual-tab').click();
+        const cidParam = params.get('cid') || params.get('ipfs');
+        if (cidParam) {
+            ipfsCid.value = cidParam;
+            convertCidToBytes32();
+        }
+
+        const hashParam = params.get('hash') || params.get('videoHash');
+        if (hashParam) {
+            rawBytes32.value = hashParam;
+            videoHash.value = hashParam;
+            document.getElementById('bytes32-tab').click();
         }
     }
+
+    // Fetch current Ethereum block
+    async function fetchCurrentBlock() {
+        fetchBlockBtn.disabled = true;
+        fetchBlockBtn.textContent = 'Fetching...';
+
+        try {
+            const response = await fetch('https://eth.blockscout.com/api/v2/blocks?type=block');
+            const data = await response.json();
+            const currentBlock = data.items[0].height;
+            blockheightInput.value = currentBlock;
+            blockInfo.textContent = `Current mainnet block: ${currentBlock}`;
+            blockInfo.style.display = 'block';
+        } catch (err) {
+            console.error('Failed to fetch block:', err);
+            blockInfo.textContent = 'Failed to fetch current block';
+            blockInfo.className = 'form-text text-danger mt-1';
+            blockInfo.style.display = 'block';
+        } finally {
+            fetchBlockBtn.disabled = false;
+            fetchBlockBtn.textContent = 'Current Block';
+        }
+    }
+
+    fetchBlockBtn.addEventListener('click', fetchCurrentBlock);
+
+    // Convert CID to bytes32
+    function convertCidToBytes32() {
+        const cid = ipfsCid.value.trim();
+        if (!cid) {
+            cidConvertStatus.style.display = 'none';
+            videoHash.value = '';
+            return;
+        }
+
+        cidConvertStatus.style.display = 'block';
+
+        try {
+            const hash = cidToBytes32(cid);
+            videoHash.value = hash;
+            convertedHash.textContent = hash;
+            cidSuccess.style.display = 'block';
+            cidError.style.display = 'none';
+        } catch (err) {
+            videoHash.value = '';
+            cidError.textContent = err.message;
+            cidError.style.display = 'block';
+            cidSuccess.style.display = 'none';
+        }
+    }
+
+    ipfsCid.addEventListener('input', convertCidToBytes32);
+
+    // Raw bytes32 input
+    rawBytes32.addEventListener('input', () => {
+        const value = rawBytes32.value.trim();
+        if (value.match(/^0x[a-fA-F0-9]{64}$/)) {
+            videoHash.value = value;
+        } else {
+            videoHash.value = '';
+        }
+    });
 
     // Multi-recipient management
     function addRecipientRow(value = '') {
@@ -339,9 +507,8 @@ w3m-modal {
 
     function updateRemoveButtons() {
         const rows = recipientsContainer.querySelectorAll('.recipient-row');
-        rows.forEach((row, index) => {
+        rows.forEach((row) => {
             const removeBtn = row.querySelector('.remove-recipient');
-            // Show remove button only if there's more than one recipient
             removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
         });
     }
@@ -381,25 +548,10 @@ w3m-modal {
         modal.open();
     });
 
-    // Watch for account changes
     wagmiAdapter.wagmiConfig.subscribe(
         (state) => state.current,
         () => updateWalletUI()
     );
-
-    // Manual URI updates video-uri hidden field
-    manualUri.addEventListener('input', () => {
-        videoUri.value = manualUri.value;
-    });
-
-    // Convert date string to uint32 (YYYYMMDD format)
-    function dateToUint32(dateStr) {
-        const date = new Date(dateStr);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return parseInt(`${year}${month}${day}`, 10);
-    }
 
     // Mint form submission
     mintForm.addEventListener('submit', async (e) => {
@@ -407,8 +559,8 @@ w3m-modal {
 
         const recipients = getRecipients();
         const songId = parseInt(songSelect.value, 10);
-        const date = dateToUint32(dateInput.value);
-        const uri = videoUri.value || manualUri.value;
+        const blockheight = BigInt(blockheightInput.value);
+        const hash = videoHash.value;
 
         if (recipients.length === 0) {
             showError('Please enter at least one recipient');
@@ -420,8 +572,13 @@ w3m-modal {
             return;
         }
 
-        if (!uri) {
-            showError('Please provide a video URI');
+        if (!blockheight) {
+            showError('Please enter a block height');
+            return;
+        }
+
+        if (!hash || !hash.match(/^0x[a-fA-F0-9]{64}$/)) {
+            showError('Please provide a valid video hash (bytes32)');
             return;
         }
 
@@ -438,22 +595,22 @@ w3m-modal {
                 const recipient = recipients[i];
                 pendingText.textContent = `Minting token ${i + 1} of ${recipients.length} for ${recipient}...`;
 
-                const hash = await writeContract(wagmiConfig, {
+                const txHash = await writeContract(wagmiConfig, {
                     address: BR_CONTRACT,
                     abi: BR_ABI,
                     functionName: 'issueTony',
-                    args: [recipient, songId, date, uri],
+                    args: [recipient, songId, blockheight, hash],
                     chainId: 10 // Optimism
                 });
 
                 pendingText.textContent = `Waiting for confirmation (${i + 1}/${recipients.length})...`;
 
-                const receipt = await waitForTransactionReceipt(wagmiConfig, {
-                    hash,
+                await waitForTransactionReceipt(wagmiConfig, {
+                    hash: txHash,
                     chainId: 10
                 });
 
-                txResults.push({ recipient, hash, success: true });
+                txResults.push({ recipient, hash: txHash, success: true });
             }
 
             // All successful
@@ -470,7 +627,6 @@ w3m-modal {
             pendingMsg.style.display = 'none';
 
             if (txResults.length > 0) {
-                // Partial success
                 successMsg.style.display = 'block';
                 successText.textContent = `Minted ${txResults.length} token${txResults.length > 1 ? 's' : ''} before error:`;
                 txLinks.innerHTML = txResults.map(r =>
