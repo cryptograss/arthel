@@ -25,6 +25,8 @@ function buildHtmlPluginInstances() {
             var chunks = ['main', 'oracle_client'];
         } else if (relativePath.startsWith('blox-office/admin/mint/') || relativePath.startsWith('blox-office/admin/upgrade/')) {
             var chunks = ['main', 'mint_submission'];
+        } else if (relativePath.startsWith('blox-office/admin/burn-token')) {
+            var chunks = ['main', 'burn_token'];
         } else {
             var chunks = ['main'];
         }
@@ -103,6 +105,7 @@ export function buildConfig() {
         blue_railroad: `${frontendJSDir}/bazaar/blue_railroad.js`,
         oracle_client: `${frontendJSDir}/oracle_client.js`,
         mint_submission: `${frontendJSDir}/mint-submission.js`,
+        burn_token: `${frontendJSDir}/burn-token.js`,
     },
     module: {
         rules: [
