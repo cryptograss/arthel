@@ -1,0 +1,113 @@
+{% extends '../../../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-md-10 text-post">
+        <h1 class="text-center pixel-font">Burn Blue Railroad Token</h1>
+        <p class="text-center text-muted">Send a token to the burn address (0x...dEaD)</p>
+
+        <div class="row mt-4">
+            <div class="col-md-6 offset-md-3">
+                <!-- Token ID Input -->
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Token Details</h5>
+                        <div class="mb-3">
+                            <label for="token-id" class="form-label">Token ID to Burn</label>
+                            <input type="number" class="form-control" id="token-id" placeholder="e.g., 7" min="0">
+                        </div>
+                        <div id="token-info" style="display: none;">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Owner</dt>
+                                <dd class="col-sm-8"><code id="token-owner"></code></dd>
+                                <dt class="col-sm-4">Contract</dt>
+                                <dd class="col-sm-8">
+                                    <select id="contract-select" class="form-select form-select-sm">
+                                        <option value="v2" selected>V2 (0x7C3a...B4B7)</option>
+                                        <option value="v1">V1 (0xCe09...dB52)</option>
+                                    </select>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div id="token-error" class="alert alert-danger mt-2" style="display: none;"></div>
+                        <button id="check-token-btn" class="btn btn-outline-primary mt-2">Check Token</button>
+                    </div>
+                </div>
+
+                <!-- Wallet Connection -->
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">1. Connect Wallet</h5>
+                        <div id="wallet-status">
+                            <p id="not-connected-msg">Not connected</p>
+                            <p id="connected-address" style="display: none;" class="font-monospace"></p>
+                        </div>
+                        <button id="connect-wallet-btn" class="btn btn-primary">Connect Wallet</button>
+                    </div>
+                </div>
+
+                <!-- Burn Action -->
+                <div class="card semi-transparent-bg">
+                    <div class="card-body">
+                        <h5 class="card-title">2. Burn Token</h5>
+                        <p class="text-muted small">
+                            This will transfer the token to the burn address:<br>
+                            <code>0x000000000000000000000000000000000000dEaD</code>
+                        </p>
+                        <p class="text-warning small">
+                            <strong>Warning:</strong> This action is irreversible!
+                        </p>
+
+                        <div class="d-grid gap-2">
+                            <button id="burn-btn" class="btn btn-danger btn-lg" disabled>
+                                Burn Token
+                            </button>
+                        </div>
+
+                        <!-- Status messages -->
+                        <div id="status-area" class="mt-3" style="display: none;">
+                            <div id="pending-msg" class="alert alert-info" style="display: none;">
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                                <span id="pending-text">Transaction pending...</span>
+                            </div>
+                            <div id="success-msg" class="alert alert-success" style="display: none;">
+                                <div id="success-text">Token burned!</div>
+                                <div id="tx-link" class="mt-2"></div>
+                            </div>
+                            <div id="error-msg" class="alert alert-danger" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {% include 'partials/build-metadata.njk' %}
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<style>
+.pixel-font {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+:root {
+    --w3m-z-index: 10000 !important;
+}
+w3m-modal {
+    z-index: 10000 !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.initBurnPage) {
+        window.initBurnPage();
+    } else {
+        console.error('burn-token.js not loaded - initBurnPage not found');
+    }
+});
+</script>
+
+{% endblock %}

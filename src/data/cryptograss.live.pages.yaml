@@ -36,4 +36,11 @@ blox-office/admin/pending-submissions:
   context:
     page_title: "Pending Blue Railroad Submissions"
     no_video_bg: true
-    
+
+blox-office/admin/burn-token:
+  template: blox-office/admin/burn-token.njk
+  include_data_in_context: ["chainData", "latest_git_commit"]
+  context:
+    page_title: "Burn Blue Railroad Token"
+    no_video_bg: true
+
