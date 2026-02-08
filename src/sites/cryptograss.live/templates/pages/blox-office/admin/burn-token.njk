@@ -14,20 +14,20 @@
                     <div class="card-body">
                         <h5 class="card-title">Token Details</h5>
                         <div class="mb-3">
+                            <label for="contract-select" class="form-label">Contract Version</label>
+                            <select id="contract-select" class="form-select">
+                                <option value="v1">V1 (0xCe09...dB52)</option>
+                                <option value="v2">V2 (0x7C3a...B4B7)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="token-id" class="form-label">Token ID to Burn</label>
-                            <input type="number" class="form-control" id="token-id" placeholder="e.g., 7" min="0">
+                            <input type="number" class="form-control" id="token-id" placeholder="e.g., 4" min="0">
                         </div>
                         <div id="token-info" style="display: none;">
                             <dl class="row mb-0">
                                 <dt class="col-sm-4">Owner</dt>
                                 <dd class="col-sm-8"><code id="token-owner"></code></dd>
-                                <dt class="col-sm-4">Contract</dt>
-                                <dd class="col-sm-8">
-                                    <select id="contract-select" class="form-select form-select-sm">
-                                        <option value="v2" selected>V2 (0x7C3a...B4B7)</option>
-                                        <option value="v1">V1 (0xCe09...dB52)</option>
-                                    </select>
-                                </dd>
                             </dl>
                         </div>
                         <div id="token-error" class="alert alert-danger mt-2" style="display: none;"></div>
