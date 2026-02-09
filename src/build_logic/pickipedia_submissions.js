@@ -6,6 +6,29 @@
 const PICKIPEDIA_API = 'https://pickipedia.xyz/api.php';
 const PICKIPEDIA_WIKI = 'https://pickipedia.xyz/wiki';
 
+// Timeout for PickiPedia API requests (5 seconds)
+const FETCH_TIMEOUT_MS = 5000;
+
+/**
+ * Fetch with timeout - prevents build hanging when PickiPedia is down
+ */
+async function fetchWithTimeout(url, timeoutMs = FETCH_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        return response;
+    } catch (e) {
+        clearTimeout(timeoutId);
+        if (e.name === 'AbortError') {
+            throw new Error(`Request timed out after ${timeoutMs}ms`);
+        }
+        throw e;
+    }
+}
+
 /**
  * Get the actual URL for a file from MediaWiki API
  * MediaWiki stores files in hash-based subdirectories, so we need to query the API
@@ -19,7 +42,7 @@ async function getFileUrl(filename) {
     const url = `${PICKIPEDIA_API}?action=query&titles=${encodeURIComponent(fileTitle)}&prop=imageinfo&iiprop=url&format=json`;
 
     try {
-        const response = await fetch(url);
+        const response = await fetchWithTimeout(url);
         if (!response.ok) return null;
 
         const data = await response.json();
@@ -44,7 +67,7 @@ async function fetchSubmissionPage(submissionId) {
     const url = `${PICKIPEDIA_API}?action=query&titles=Blue_Railroad_Submission/${submissionId}&prop=revisions&rvprop=content&format=json`;
 
     try {
-        const response = await fetch(url);
+        const response = await fetchWithTimeout(url);
         if (!response.ok) return null;
 
         const data = await response.json();
@@ -134,6 +157,18 @@ export async function fetchPendingSubmissions() {
     const MAX_SUBMISSION_ID = 20;
 
     console.log('Fetching Blue Railroad submissions from PickiPedia...');
+
+    // Quick connectivity check - if PickiPedia is down, fail fast
+    try {
+        const healthCheck = await fetchWithTimeout(`${PICKIPEDIA_API}?action=query&meta=siteinfo&format=json`, 3000);
+        if (!healthCheck.ok) {
+            console.warn('PickiPedia returned non-OK status, skipping submission fetch');
+            return [];
+        }
+    } catch (e) {
+        console.warn(`PickiPedia unavailable (${e.message}), skipping submission fetch`);
+        return [];
+    }
 
     for (let i = 1; i <= MAX_SUBMISSION_ID; i++) {
         const page = await fetchSubmissionPage(i);
