@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        disableConcurrentBuilds()
+    }
+
     environment {
         NODE_VERSION = '23.6.1'
         NVM_DIR = '/var/jenkins_home/.nvm'

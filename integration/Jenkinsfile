@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     options {
+        disableConcurrentBuilds()
         buildDiscarder(logRotator(numToKeepStr: '50'))
         parallelsAlwaysFailFast();
     }
