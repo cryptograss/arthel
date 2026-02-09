@@ -199,7 +199,7 @@ pipeline {
 
                                 node deployment/scripts/modify_build_htmls.js
 
-                                rsync -av output/dist/* ${PR_BUILDS_DIR}/${COMMIT_SHA}
+                                rsync -av --delete output/dist/* ${PR_BUILDS_DIR}/${COMMIT_SHA}
                             """
                         }
 
@@ -223,7 +223,7 @@ pipeline {
                         echo "Production build for ${COMMIT_SHA}"
                         sh "mkdir -p ${PR_BUILDS_DIR}/production"
                         sh """
-                            rsync -av output/dist/* ${PR_BUILDS_DIR}/production
+                            rsync -av --delete output/dist/* ${PR_BUILDS_DIR}/production
                         """
 
                         // Create deploy marker for root cron to pick up
