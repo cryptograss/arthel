@@ -292,7 +292,7 @@ function handleManualUri() {
             ? manualUri.replace('ipfs://', '')
             : 'Manual URI';
         document.getElementById('pin-gateway-link').href = manualUri.startsWith('ipfs://')
-            ? `https://gateway.pinata.cloud/ipfs/${manualUri.replace('ipfs://', '')}`
+            ? `https://ipfs.maybelle.cryptograss.live/ipfs/${manualUri.replace('ipfs://', '')}`
             : manualUri;
     }
 }
