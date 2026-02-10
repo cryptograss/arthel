@@ -156,19 +156,31 @@ export async function fetchPendingSubmissions() {
     const submissions = [];
     const MAX_SUBMISSION_ID = 20;
 
-    console.log('Fetching Blue Railroad submissions from PickiPedia...');
+    console.log('=== PickiPedia Submission Fetch ===');
+    console.log(`  API endpoint: ${PICKIPEDIA_API}`);
+    console.log(`  Timeout: ${FETCH_TIMEOUT_MS}ms (health check: 5000ms)`);
+    console.log(`  Max submission ID to check: ${MAX_SUBMISSION_ID}`);
 
     // Quick connectivity check - if PickiPedia is down, fail fast
+    const healthCheckStart = Date.now();
     try {
-        const healthCheck = await fetchWithTimeout(`${PICKIPEDIA_API}?action=query&meta=siteinfo&format=json`, 3000);
+        console.log('  Performing health check...');
+        const healthCheck = await fetchWithTimeout(`${PICKIPEDIA_API}?action=query&meta=siteinfo&format=json`, 5000);
+        const healthCheckDuration = Date.now() - healthCheckStart;
+        console.log(`  Health check completed in ${healthCheckDuration}ms (status: ${healthCheck.status})`);
         if (!healthCheck.ok) {
-            console.warn('PickiPedia returned non-OK status, skipping submission fetch');
+            console.warn(`  PickiPedia returned non-OK status (${healthCheck.status}), skipping submission fetch`);
             return [];
         }
     } catch (e) {
-        console.warn(`PickiPedia unavailable (${e.message}), skipping submission fetch`);
+        const healthCheckDuration = Date.now() - healthCheckStart;
+        console.warn(`  PickiPedia health check FAILED after ${healthCheckDuration}ms`);
+        console.warn(`  Error: ${e.message}`);
+        console.warn(`  Skipping submission fetch`);
         return [];
     }
+
+    console.log('  Health check passed, fetching submissions...');
 
     for (let i = 1; i <= MAX_SUBMISSION_ID; i++) {
         const page = await fetchSubmissionPage(i);
