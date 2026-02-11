@@ -8,6 +8,7 @@ import { optimism } from '@reown/appkit/networks';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { reconnect, getAccount, writeContract, readContract, waitForTransactionReceipt, signMessage, getEnsAddress } from '@wagmi/core';
 import { mainnet } from '@reown/appkit/networks';
+import { cidToBytes32, validateCidForMinting, ZERO_HASH } from './cid-utils.js';
 
 // Blue Railroad V1 contract config
 const BR_V1_CONTRACT = '0xCe09A2d0d0BDE635722D8EF31901b430E651dB52';
@@ -66,154 +67,6 @@ const BR_V2_ABI = [
         type: 'function'
     }
 ];
-
-// Base58 alphabet for CIDv0 decoding
-const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-
-// Base32 alphabet for CIDv1 decoding (RFC 4648, lowercase)
-const BASE32_ALPHABET = 'abcdefghijklmnopqrstuvwxyz234567';
-
-function base58Decode(str) {
-    const bytes = [];
-    for (let i = 0; i < str.length; i++) {
-        const char = str[i];
-        const index = BASE58_ALPHABET.indexOf(char);
-        if (index === -1) throw new Error(`Invalid base58 character: ${char}`);
-
-        let carry = index;
-        for (let j = 0; j < bytes.length; j++) {
-            carry += bytes[j] * 58;
-            bytes[j] = carry & 0xff;
-            carry >>= 8;
-        }
-        while (carry > 0) {
-            bytes.push(carry & 0xff);
-            carry >>= 8;
-        }
-    }
-
-    // Handle leading zeros
-    for (let i = 0; i < str.length && str[i] === '1'; i++) {
-        bytes.push(0);
-    }
-
-    return new Uint8Array(bytes.reverse());
-}
-
-function base32Decode(str) {
-    // Remove padding if present
-    str = str.replace(/=+$/, '').toLowerCase();
-
-    let bits = 0;
-    let value = 0;
-    const output = [];
-
-    for (let i = 0; i < str.length; i++) {
-        const char = str[i];
-        const index = BASE32_ALPHABET.indexOf(char);
-        if (index === -1) throw new Error(`Invalid base32 character: ${char}`);
-
-        value = (value << 5) | index;
-        bits += 5;
-
-        if (bits >= 8) {
-            output.push((value >>> (bits - 8)) & 0xff);
-            bits -= 8;
-        }
-    }
-
-    return new Uint8Array(output);
-}
-
-// Read a varint from bytes at given offset, return [value, bytesRead]
-function readVarint(bytes, offset) {
-    let value = 0;
-    let shift = 0;
-    let bytesRead = 0;
-
-    while (offset + bytesRead < bytes.length) {
-        const byte = bytes[offset + bytesRead];
-        value |= (byte & 0x7f) << shift;
-        bytesRead++;
-        if ((byte & 0x80) === 0) break;
-        shift += 7;
-    }
-
-    return [value, bytesRead];
-}
-
-// Convert IPFS CID to bytes32 hash
-// Supports both CIDv0 (Qm...) and CIDv1 (bafy...)
-function cidToBytes32(cid) {
-    if (!cid) return '0x0000000000000000000000000000000000000000000000000000000000000000';
-
-    // If it's already a hex string (0x...), validate and return
-    if (cid.startsWith('0x')) {
-        if (cid.length === 66) return cid;
-        throw new Error('Invalid bytes32 hex string');
-    }
-
-    let hashBytes;
-
-    // CIDv0 starts with Qm (base58btc encoded)
-    if (cid.startsWith('Qm')) {
-        const decoded = base58Decode(cid);
-
-        // CIDv0 structure: 0x12 (sha256) + 0x20 (32 bytes) + 32 bytes hash
-        if (decoded.length !== 34) {
-            throw new Error(`Invalid CIDv0 length: expected 34 bytes, got ${decoded.length}`);
-        }
-        if (decoded[0] !== 0x12 || decoded[1] !== 0x20) {
-            throw new Error('Invalid CIDv0 prefix: expected sha256 multihash');
-        }
-
-        hashBytes = decoded.slice(2);
-    }
-    // CIDv1 starts with 'b' (base32lower) - common format is bafy... or bafybei...
-    else if (cid.startsWith('b')) {
-        // Remove the 'b' multibase prefix and decode base32
-        const decoded = base32Decode(cid.slice(1));
-
-        let offset = 0;
-
-        // Read CID version (should be 1)
-        const [version, versionBytes] = readVarint(decoded, offset);
-        offset += versionBytes;
-        if (version !== 1) {
-            throw new Error(`Unexpected CID version: ${version}`);
-        }
-
-        // Read codec (0x70 = dag-pb, 0x55 = raw, 0x71 = dag-cbor)
-        const [codec, codecBytes] = readVarint(decoded, offset);
-        offset += codecBytes;
-        // We don't need the codec value, just skip it
-
-        // Read multihash: hash function code
-        const [hashFn, hashFnBytes] = readVarint(decoded, offset);
-        offset += hashFnBytes;
-        if (hashFn !== 0x12) {
-            throw new Error(`Unsupported hash function: 0x${hashFn.toString(16)} (expected sha256 0x12)`);
-        }
-
-        // Read multihash: digest length
-        const [digestLen, digestLenBytes] = readVarint(decoded, offset);
-        offset += digestLenBytes;
-        if (digestLen !== 32) {
-            throw new Error(`Unexpected digest length: ${digestLen} (expected 32)`);
-        }
-
-        // Extract the 32-byte hash
-        hashBytes = decoded.slice(offset, offset + 32);
-        if (hashBytes.length !== 32) {
-            throw new Error(`Could not extract 32-byte hash from CIDv1`);
-        }
-    }
-    else {
-        throw new Error('Unsupported CID format. Expected CIDv0 (Qm...) or CIDv1 (b...)');
-    }
-
-    return '0x' + Array.from(hashBytes).map(b => b.toString(16).padStart(2, '0')).join('');
-}
 
 // Setup Web3Modal
 const projectId = 'c4f79cc821d56e59de850c9b35cbbe86';
@@ -293,6 +146,7 @@ export function initMintPage(submissionData) {
     const pinNotStarted = document.getElementById('pin-not-started');
     const pinInProgress = document.getElementById('pin-in-progress');
     const pinProgressText = document.getElementById('pin-progress-text');
+    const pinProgressBar = document.getElementById('pin-progress-bar');
     const pinComplete = document.getElementById('pin-complete');
     const ipfsCid = document.getElementById('ipfs-cid');
     const pinError = document.getElementById('pin-error');
@@ -348,7 +202,7 @@ export function initMintPage(submissionData) {
         () => updateWalletUI()
     );
 
-    // Pin to IPFS handler (requires wallet auth)
+    // Pin to IPFS handler (requires wallet auth) - uses SSE streaming for progress
     if (pinBtn && videoUrl) {
         pinBtn.addEventListener('click', async () => {
             const account = getAccount(wagmiConfig);
@@ -365,6 +219,7 @@ export function initMintPage(submissionData) {
             pinInProgress.style.display = 'block';
             pinError.style.display = 'none';
             pinProgressText.textContent = 'Signing authorization...';
+            if (pinProgressBar) pinProgressBar.style.width = '0%';
 
             try {
                 // Create auth message and sign it
@@ -375,14 +230,11 @@ export function initMintPage(submissionData) {
                     message: authMessage
                 });
 
-                pinProgressText.textContent = 'Downloading video and checking IPFS...';
+                pinProgressText.textContent = 'Starting upload process...';
 
-                // Show progress updates while waiting
-                let progressTimer = setTimeout(() => {
-                    pinProgressText.textContent = 'Uploading to IPFS (this may take a minute for large videos)...';
-                }, 10000); // Give 10s for download + check before showing upload message
-
-                const response = await fetch(pinningService, {
+                // Use streaming endpoint for real-time progress
+                const streamEndpoint = pinningService.replace('/pin-from-url', '/pin-from-url-stream');
+                const response = await fetch(streamEndpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -393,26 +245,75 @@ export function initMintPage(submissionData) {
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error || 'HTTP ' + response.status);
+                    throw new Error('HTTP ' + response.status);
                 }
 
-                clearTimeout(progressTimer);
-                const data = await response.json();
+                // Process SSE stream
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let finalResult = null;
 
-                if (data.cid) {
-                    currentVideoUri = 'ipfs://' + data.cid;
-                    currentIpfsCid = data.cid;
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+
+                    // Process complete SSE events (data: {...}\n\n)
+                    const events = buffer.split('\n\n');
+                    buffer = events.pop(); // Keep incomplete event in buffer
+
+                    for (const eventStr of events) {
+                        if (!eventStr.startsWith('data: ')) continue;
+
+                        let event;
+                        try {
+                            event = JSON.parse(eventStr.slice(6));
+                        } catch (jsonErr) {
+                            console.warn('SSE JSON parse warning:', jsonErr, eventStr);
+                            continue;
+                        }
+
+                        console.log('Pin progress:', event);
+
+                        // Update UI based on event
+                        if (event.stage === 'error') {
+                            throw new Error(event.message);
+                        } else if (event.stage === 'complete') {
+                            finalResult = event;
+                            if (pinProgressBar) pinProgressBar.style.width = '100%';
+                        } else {
+                            if (event.message) {
+                                pinProgressText.textContent = event.message;
+                            }
+                            if (event.progress && pinProgressBar) {
+                                pinProgressBar.style.width = event.progress + '%';
+                            }
+                        }
+                    }
+                }
+
+                if (finalResult && finalResult.cid) {
+                    currentVideoUri = 'ipfs://' + finalResult.cid;
+                    currentIpfsCid = finalResult.cid;
                     pinInProgress.style.display = 'none';
                     pinComplete.style.display = 'block';
 
-                    if (data.alreadyPinned) {
-                        ipfsCid.innerHTML = `<span class="text-success">Already pinned:</span> ${data.cid}`;
-                        console.log('Video already pinned to IPFS:', data.cid);
-                    } else {
-                        ipfsCid.textContent = data.cid;
-                        console.log('Video pinned to IPFS:', data.cid);
+                    // Build status message
+                    let statusHtml = '';
+                    if (finalResult.alreadyPinned) {
+                        statusHtml = `<span class="text-success">Already pinned:</span> `;
                     }
+                    if (finalResult.transcoded) {
+                        const origMB = (finalResult.originalSize / 1024 / 1024).toFixed(1);
+                        const newMB = (finalResult.transcodedSize / 1024 / 1024).toFixed(1);
+                        statusHtml += `<span class="text-info" title="Transcoded from ${origMB}MB to ${newMB}MB">📹</span> `;
+                    }
+                    statusHtml += finalResult.cid;
+                    ipfsCid.innerHTML = statusHtml;
+
+                    console.log('Video pinned to IPFS:', finalResult);
                 } else {
                     throw new Error('No CID returned from pinning service');
                 }
@@ -515,8 +416,28 @@ export function initMintPage(submissionData) {
         const txResults = [];
 
         try {
-            // Convert IPFS CID to bytes32 for V2 contract
-            const videoHash = cidToBytes32(currentIpfsCid);
+            // Validate CID before minting
+            const validation = validateCidForMinting(currentIpfsCid);
+            if (!validation.valid) {
+                throw new Error(validation.error);
+            }
+            const videoHash = validation.hash;
+
+            // Verify CID is accessible on gateway (optional but recommended)
+            try {
+                const verifyResponse = await fetch(`https://ipfs.maybelle.cryptograss.live/ipfs/${currentIpfsCid}`, {
+                    method: 'HEAD'
+                });
+                if (!verifyResponse.ok) {
+                    throw new Error('Video not yet available on IPFS gateway - please wait and retry');
+                }
+            } catch (verifyErr) {
+                // CORS errors are expected for HEAD requests to gateway, continue anyway
+                if (verifyErr.message.includes('gateway')) {
+                    throw verifyErr;
+                }
+                console.warn('Could not verify CID on gateway (CORS expected):', verifyErr.message);
+            }
 
             if (isUpgrade) {
                 // V1→V2 migration flow

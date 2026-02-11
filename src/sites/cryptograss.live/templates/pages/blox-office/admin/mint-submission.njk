@@ -114,11 +114,16 @@
                         <div id="pin-status" class="mb-3">
                             <div id="pin-not-started">
                                 <span class="badge bg-warning text-dark">Not Pinned</span>
-                                <span class="small ms-2">Using temporary URL</span>
+                                <span class="small ms-2">Video must be pinned before minting</span>
                             </div>
                             <div id="pin-in-progress" style="display: none;">
-                                <span class="spinner-border spinner-border-sm" role="status"></span>
-                                <span class="ms-2" id="pin-progress-text">Pinning to IPFS...</span>
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                                    <span class="ms-2" id="pin-progress-text">Pinning to IPFS...</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div id="pin-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                </div>
                             </div>
                             <div id="pin-complete" style="display: none;">
                                 <span class="badge bg-success">Pinned to IPFS</span>
