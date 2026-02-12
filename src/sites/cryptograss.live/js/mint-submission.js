@@ -241,7 +241,7 @@ export function initMintPage(submissionData) {
                         'X-Signature': signature,
                         'X-Timestamp': timestamp.toString()
                     },
-                    body: JSON.stringify({ url: absoluteVideoUrl })
+                    body: JSON.stringify({ url: absoluteVideoUrl, submissionId: id })
                 });
 
                 if (!response.ok) {
@@ -283,6 +283,12 @@ export function initMintPage(submissionData) {
                         } else if (event.stage === 'complete') {
                             finalResult = event;
                             if (pinProgressBar) pinProgressBar.style.width = '100%';
+                        } else if (event.stage === 'wiki-update') {
+                            // Show wiki update progress
+                            pinProgressText.textContent = event.message || 'Saving CID to PickiPedia...';
+                            if (event.progress && pinProgressBar) {
+                                pinProgressBar.style.width = event.progress + '%';
+                            }
                         } else {
                             if (event.message) {
                                 pinProgressText.textContent = event.message;
@@ -309,6 +315,14 @@ export function initMintPage(submissionData) {
                         const origMB = (finalResult.originalSize / 1024 / 1024).toFixed(1);
                         const newMB = (finalResult.transcodedSize / 1024 / 1024).toFixed(1);
                         statusHtml += `<span class="text-info" title="Transcoded from ${origMB}MB to ${newMB}MB">📹</span> `;
+                    }
+                    // Show wiki update status (if CID was saved to PickiPedia)
+                    if (finalResult.wikiUpdate) {
+                        if (finalResult.wikiUpdate.action === 'updated') {
+                            statusHtml += `<span class="text-success" title="CID saved to PickiPedia">💾</span> `;
+                        } else if (finalResult.wikiUpdate.action === 'error') {
+                            console.warn('Wiki update failed:', finalResult.wikiUpdate.message);
+                        }
                     }
                     statusHtml += finalResult.cid;
                     ipfsCid.innerHTML = statusHtml;
