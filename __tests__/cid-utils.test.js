@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { cidToBytes32, validateCidForMinting, ZERO_HASH, base58Decode, base32Decode } from '../src/sites/cryptograss.live/js/cid-utils.js';
+import { cidToBytes32, bytes32ToCid, validateCidForMinting, ZERO_HASH, base58Decode, base32Decode } from '../src/sites/cryptograss.live/js/cid-utils.js';
 
 describe('CID Utilities', () => {
     // Known test vectors - these CIDs and their expected hashes are verified
@@ -191,6 +191,58 @@ describe('CID Utilities', () => {
             const result = cidToBytes32(cid);
             expect(result).toMatch(/^0x[0-9a-f]{64}$/);
             expect(result).not.toBe(ZERO_HASH);
+        });
+    });
+
+    describe('bytes32ToCid', () => {
+        test('returns null for null input', () => {
+            expect(bytes32ToCid(null)).toBe(null);
+        });
+
+        test('returns null for zero hash', () => {
+            expect(bytes32ToCid(ZERO_HASH)).toBe(null);
+        });
+
+        test('returns null for invalid length', () => {
+            expect(bytes32ToCid('0x1234')).toBe(null);
+        });
+
+        test('converts valid bytes32 to CIDv1 dag-pb format', () => {
+            const bytes32 = '0xa4985f43c96d2754fcd823bc3fcfac9b4e033fd6b637d6b1844738bd2f01c565';
+            const result = bytes32ToCid(bytes32);
+
+            // Should produce a valid CIDv1 starting with 'b' (base32)
+            expect(result).toMatch(/^b[a-z2-7]+$/);
+            // Should start with bafybei (CIDv1 + dag-pb)
+            expect(result.startsWith('bafybei')).toBe(true);
+        });
+
+        test('round-trip: CIDv1 dag-pb -> bytes32 -> CIDv1', () => {
+            // Start with a known CIDv1 dag-pb CID
+            const originalCid = 'bafybeifetbpuhslne5kpzwbdxq747le3jybt7vvwg7lldbchhc6s6aofmu';
+
+            // Convert to bytes32
+            const bytes32 = cidToBytes32(originalCid);
+            expect(bytes32).toMatch(/^0x[0-9a-f]{64}$/);
+
+            // Convert back to CID
+            const reconstructedCid = bytes32ToCid(bytes32);
+
+            // The reconstructed CID should be the same
+            expect(reconstructedCid).toBe(originalCid);
+        });
+
+        test('different CIDs produce different reconstructions', () => {
+            const cid1 = 'bafybeibml5uieyxa5tufngvg7fgwbkwvlsuntwbxgtskoqynbt7wlchmfm';
+            const cid2 = 'bafybeifetbpuhslne5kpzwbdxq747le3jybt7vvwg7lldbchhc6s6aofmu';
+
+            const bytes32_1 = cidToBytes32(cid1);
+            const bytes32_2 = cidToBytes32(cid2);
+
+            const reconstructed1 = bytes32ToCid(bytes32_1);
+            const reconstructed2 = bytes32ToCid(bytes32_2);
+
+            expect(reconstructed1).not.toBe(reconstructed2);
         });
     });
 });

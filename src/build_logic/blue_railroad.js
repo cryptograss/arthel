@@ -2,6 +2,7 @@ import { getProjectDirs } from "./locations.js";
 import fs from 'fs';
 import path from 'path';
 import { blueRailroadContractAddress, blueRailroadV2ContractAddress } from './constants.js';
+import { bytes32ToCid } from './cid_utils.js';
 
 // Song mapping for Blue Railroad Train challenge
 // Maps songId to track information from the album
@@ -87,25 +88,18 @@ export function generateBlueRailroadV2Metadata(blueRailroadV2s, outputDir) {
             artist: "Tony Rice"
         };
 
-        // Convert bytes32 videoHash to IPFS CID
-        // The videoHash is stored as hex, convert to base32 CIDv1 format
-        // For now, use the hex hash directly - IPFS gateway will handle it
+        // Convert bytes32 videoHash back to IPFS CID
         const videoHashHex = token.videoHash;
+        const videoCid = bytes32ToCid(videoHashHex);
 
-        // Generate IPFS URL from videoHash (stored as sha256 hash)
-        // The hash format: 0x followed by 64 hex chars
-        // We'll use the dweb.link gateway which handles both CIDv0 and raw hashes
         let imageUrl = '';
         let animationUrl = '';
 
-        if (videoHashHex && videoHashHex !== '0x0000000000000000000000000000000000000000000000000000000000000000') {
-            // Remove 0x prefix if present
-            const cleanHash = videoHashHex.startsWith('0x') ? videoHashHex.slice(2) : videoHashHex;
-            // Use IPFS with sha256 hash (CIDv1 raw format)
-            // Format: bafkrei... for sha256 hashes
-            animationUrl = `ipfs://${cleanHash}`;
+        if (videoCid) {
+            // Use proper IPFS CID URL format
+            animationUrl = `ipfs://${videoCid}`;
             // For image, we might want a thumbnail - for now use the video
-            imageUrl = `ipfs://${cleanHash}`;
+            imageUrl = `ipfs://${videoCid}`;
         }
 
         const metadata = {
