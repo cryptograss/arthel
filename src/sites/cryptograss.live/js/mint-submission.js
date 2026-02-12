@@ -119,6 +119,7 @@ export function initMintPage(submissionData) {
         recipients,
         pinningService,
         pickipediaUrl,
+        ipfsCid: preloadedIpfsCid = null,
         // Upgrade-specific fields
         isUpgrade = false,
         v1TokenId = null
@@ -130,8 +131,8 @@ export function initMintPage(submissionData) {
         : videoUrl;
 
     // Current video URI - starts as the original URL, updated if pinned to IPFS
-    let currentVideoUri = absoluteVideoUrl;
-    let currentIpfsCid = null; // Track the CID separately for bytes32 conversion
+    let currentVideoUri = preloadedIpfsCid ? `ipfs://${preloadedIpfsCid}` : absoluteVideoUrl;
+    let currentIpfsCid = preloadedIpfsCid; // Track the CID separately for bytes32 conversion
 
     // Reconnect any existing wallet sessions
     reconnect(wagmiConfig);
@@ -150,6 +151,15 @@ export function initMintPage(submissionData) {
     const pinComplete = document.getElementById('pin-complete');
     const ipfsCid = document.getElementById('ipfs-cid');
     const pinError = document.getElementById('pin-error');
+
+    // If CID is preloaded from PickiPedia, show the already-pinned state
+    if (preloadedIpfsCid && pinNotStarted && pinComplete && ipfsCid) {
+        pinNotStarted.style.display = 'none';
+        pinComplete.style.display = 'block';
+        ipfsCid.innerHTML = `<span class="text-success" title="CID loaded from PickiPedia">💾</span> ${preloadedIpfsCid}`;
+        if (pinBtn) pinBtn.style.display = 'none';
+        console.log('Preloaded IPFS CID from PickiPedia:', preloadedIpfsCid);
+    }
 
     // DOM elements - approval (upgrade only)
     const approvalSection = document.getElementById('approval-section');

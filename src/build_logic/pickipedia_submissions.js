@@ -102,6 +102,7 @@ function parseSubmissionContent(content) {
     const videoMatch = content.match(/\|video=([^\n|}]+)/);
     const blockHeightMatch = content.match(/\|block_height=(\d+)/);
     const statusMatch = content.match(/\|status=([^\n|}]+)/);
+    const ipfsCidMatch = content.match(/\|ipfs_cid=([^\n|}]+)/);
 
     // Extract participants from Blue Railroad Participant templates
     // Supports both old format (name + wallet) and new format (wallet only)
@@ -129,6 +130,7 @@ function parseSubmissionContent(content) {
         video: videoMatch ? videoMatch[1].trim() : null,
         blockHeight: blockHeightMatch ? blockHeightMatch[1] : null,
         status: statusMatch ? statusMatch[1].trim() : 'Pending',
+        ipfsCid: ipfsCidMatch ? ipfsCidMatch[1].trim() : null,
         participants: participants
     };
 }
@@ -205,6 +207,7 @@ export async function fetchPendingSubmissions() {
             videoUrl: videoUrl,
             blockHeight: parsed.blockHeight,
             status: parsed.status,
+            ipfsCid: parsed.ipfsCid,
             participants: parsed.participants,
             songId: getSongIdFromExercise(parsed.exercise)
         };

@@ -258,6 +258,7 @@ w3m-modal {
                 ],
                 pinningService: 'https://pinning.maybelle.cryptograss.live/pin-from-url',
                 pickipediaUrl: '{{ submission.url | default("", true) }}',
+                ipfsCid: {{ ("'" + submission.ipfsCid + "'") if submission.ipfsCid else 'null' }},
                 // Upgrade-specific fields
                 isUpgrade: {{ 'true' if submission.isUpgrade else 'false' }},
                 v1TokenId: {{ submission.v1TokenId | default('null') }}
