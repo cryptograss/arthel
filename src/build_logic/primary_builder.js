@@ -23,7 +23,7 @@ import { appendChainDataToShows } from './chain_reading.js';
 // Feature-specific modules
 import { generateSetStonePages, renderSetStoneImages } from './setstone_utils.js';
 import { verifyBlueRailroadVideos, generateBlueRailroadV2Metadata } from './blue_railroad.js';
-import { fetchPendingSubmissions } from './pickipedia_submissions.js';
+import { fetchPendingSubmissions, fetchAllSubmissions } from './pickipedia_submissions.js';
 import { DateTime } from 'luxon';
 
 export const runPrimaryBuild = async () => {
@@ -249,13 +249,17 @@ export const runPrimaryBuild = async () => {
     // A lot going on here - this is where we actually append things like set stones, ticket stubs, etc., to the shows.  Any further chain data that is required to render shows to templates needs to be added here.
     appendChainDataToShows(shows, chainData); // Mutates shows, obviously.
 
-    // Fetch pending Blue Railroad submissions from PickiPedia (cryptograss.live only)
+    // Fetch Blue Railroad submissions from PickiPedia (cryptograss.live only)
     let pendingSubmissions = [];
+    let allSubmissions = [];
     if (site === 'cryptograss.live') {
         try {
-            pendingSubmissions = await fetchPendingSubmissions();
+            // Fetch all submissions first (includes both pending and minted)
+            allSubmissions = await fetchAllSubmissions();
+            // Filter to just pending for the pending-submissions page
+            pendingSubmissions = allSubmissions.filter(s => s.status.toLowerCase() !== 'minted');
         } catch (e) {
-            console.warn('Failed to fetch pending submissions from PickiPedia:', e.message);
+            console.warn('Failed to fetch submissions from PickiPedia:', e.message);
         }
     }
 
@@ -267,6 +271,7 @@ export const runPrimaryBuild = async () => {
         'chainData': chainData,
         'pickers_by_instance_count': pickers_by_instance_count,
         'pendingSubmissions': pendingSubmissions,
+        'allSubmissions': allSubmissions,
     };
 
     if (site === "justinholmes.com") { // TODO: Make this more general
@@ -737,6 +742,27 @@ export const runPrimaryBuild = async () => {
         if (v1TokensNeedingUpgrade.length > 0) {
             console.log(`Generated ${v1TokensNeedingUpgrade.length} upgrade pages for V1 tokens`);
         }
+    }
+
+    ///////////////////////////
+    // Chapter 5.7: IPFS Pinning Status Dashboard
+    ///////////////////////////
+
+    if (site === "cryptograss.live") {
+        renderPage({
+            template_path: 'pages/blox-office/admin/ipfs-status.njk',
+            output_path: 'blox-office/admin/ipfs-status.html',
+            context: {
+                page_name: 'ipfs_status',
+                page_title: 'IPFS Pinning Status',
+                allSubmissions: allSubmissions,
+                chainData: chainData,
+                latest_git_commit: dataAvailableAsContext.latest_git_commit,
+                no_video_bg: true,
+            },
+            site: site,
+        });
+        console.log('Generated IPFS pinning status dashboard');
     }
 
     ///////////////////////////

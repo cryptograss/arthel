@@ -220,6 +220,53 @@ export async function fetchPendingSubmissions() {
     return submissions;
 }
 
+/**
+ * Fetch ALL submissions from PickiPedia (regardless of status)
+ * For IPFS pinning status dashboard
+ */
+export async function fetchAllSubmissions() {
+    const submissions = [];
+    const MAX_SUBMISSION_ID = 20;
+
+    console.log('=== PickiPedia All Submissions Fetch ===');
+
+    // Quick connectivity check
+    try {
+        const healthCheck = await fetchWithTimeout(`${PICKIPEDIA_API}?action=query&meta=siteinfo&format=json`, 5000);
+        if (!healthCheck.ok) {
+            console.warn(`  PickiPedia returned non-OK status, skipping`);
+            return [];
+        }
+    } catch (e) {
+        console.warn(`  PickiPedia health check failed: ${e.message}`);
+        return [];
+    }
+
+    for (let i = 1; i <= MAX_SUBMISSION_ID; i++) {
+        const page = await fetchSubmissionPage(i);
+        if (!page) continue;
+
+        const parsed = parseSubmissionContent(page.content);
+        const videoUrl = await getFileUrl(parsed.video);
+
+        submissions.push({
+            id: i,
+            url: `${PICKIPEDIA_WIKI}/Blue_Railroad_Submission/${i}`,
+            exercise: parsed.exercise,
+            video: parsed.video,
+            videoUrl: videoUrl,
+            blockHeight: parsed.blockHeight,
+            status: parsed.status,
+            ipfsCid: parsed.ipfsCid,
+            participants: parsed.participants,
+            songId: getSongIdFromExercise(parsed.exercise)
+        });
+    }
+
+    console.log(`Found ${submissions.length} total submission(s)`);
+    return submissions;
+}
+
 // Allow running standalone for testing
 if (import.meta.url === `file://${process.argv[1]}`) {
     fetchPendingSubmissions().then(submissions => {

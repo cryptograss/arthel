@@ -1,0 +1,243 @@
+{% extends '../../../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-md-10 text-post">
+        <h1 class="text-center pixel-font">IPFS Pinning Status</h1>
+        <p class="text-center text-muted">Track Blue Railroad videos across pinning services</p>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">All Submissions</h5>
+                            <div>
+                                <button id="check-all-btn" class="btn btn-outline-primary btn-sm">
+                                    Check All Status
+                                </button>
+                                <span class="badge bg-secondary ms-2">CIDs from PickiPedia</span>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="ipfs-status-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Exercise</th>
+                                        <th>CID</th>
+                                        <th class="text-center" title="Pinata Cloud">
+                                            <img src="https://docs.pinata.cloud/~gitbook/image?url=https%3A%2F%2F1627037926-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F-MUswiVNcdGBij6w0UBB%252Ficon%252FJdLyxBqcvLRnTrESj0rV%252F2023-09-26%252017.19.36.jpg%3Falt%3Dmedia%26token%3D4d7a37d8-40f5-48e6-9780-0bd44b58ee1a&width=32&dpr=2&quality=100&sign=c18b0b9d&sv=2" alt="Pinata" style="height: 20px; vertical-align: middle;"> Pinata
+                                        </th>
+                                        <th class="text-center" title="Maybelle IPFS Node">
+                                            🎻 Maybelle
+                                        </th>
+                                        <th class="text-center" title="Home IPFS Node">
+                                            🏠 Home
+                                        </th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for submission in allSubmissions %}
+                                    <tr data-submission-id="{{ submission.id }}" data-cid="{{ submission.ipfsCid or '' }}">
+                                        <td>
+                                            <a href="{{ submission.url }}" target="_blank">{{ submission.id }}</a>
+                                        </td>
+                                        <td>{{ submission.exercise }}</td>
+                                        <td class="font-monospace small">
+                                            {% if submission.ipfsCid %}
+                                            <a href="https://gateway.pinata.cloud/ipfs/{{ submission.ipfsCid }}" target="_blank" title="{{ submission.ipfsCid }}">
+                                                {{ submission.ipfsCid | truncate(20) }}
+                                            </a>
+                                            {% else %}
+                                            <span class="text-muted">Not pinned</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center pinata-status">
+                                            {% if submission.ipfsCid %}
+                                            <span class="badge bg-secondary">—</span>
+                                            {% else %}
+                                            <span class="text-muted">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center maybelle-status">
+                                            {% if submission.ipfsCid %}
+                                            <span class="badge bg-secondary">—</span>
+                                            {% else %}
+                                            <span class="text-muted">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center home-status">
+                                            {% if submission.ipfsCid %}
+                                            <span class="badge bg-secondary">—</span>
+                                            {% else %}
+                                            <span class="text-muted">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if submission.ipfsCid %}
+                                            <button class="btn btn-outline-primary btn-sm check-status-btn" data-cid="{{ submission.ipfsCid }}">
+                                                Check
+                                            </button>
+                                            {% else %}
+                                            <a href="/blox-office/admin/mint/bluerailroad/from-pickipedia/{{ submission.id }}" class="btn btn-primary btn-sm">
+                                                Pin & Mint
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-3">
+                            <h6>Legend</h6>
+                            <span class="badge bg-success me-2">✓ Pinned</span>
+                            <span class="badge bg-danger me-2">✗ Not Found</span>
+                            <span class="badge bg-warning text-dark me-2">? Unknown</span>
+                            <span class="badge bg-secondary me-2">— Not Checked</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">IPFS Node Configuration</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card bg-dark">
+                                    <div class="card-body">
+                                        <h6>Pinata (Cloud)</h6>
+                                        <small class="text-muted">Primary pinning service</small>
+                                        <div class="mt-2">
+                                            <span class="badge bg-success">Configured</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-dark">
+                                    <div class="card-body">
+                                        <h6>Maybelle IPFS</h6>
+                                        <small class="text-muted">maybelle.cryptograss.live</small>
+                                        <div class="mt-2">
+                                            <span class="badge bg-success">Configured</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-dark">
+                                    <div class="card-body">
+                                        <h6>Home IPFS</h6>
+                                        <small class="text-muted">Local node</small>
+                                        <div class="mt-2">
+                                            <span class="badge bg-warning text-dark">Not Configured</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<script type="module">
+    // IPFS status checking
+    const PINATA_GATEWAY = 'https://gateway.pinata.cloud/ipfs/';
+    const MAYBELLE_GATEWAY = 'https://maybelle.cryptograss.live/ipfs/';
+
+    async function checkPinataStatus(cid) {
+        try {
+            // HEAD request to check if file exists on Pinata
+            const response = await fetch(PINATA_GATEWAY + cid, { method: 'HEAD' });
+            return response.ok;
+        } catch (e) {
+            console.error('Pinata check failed:', e);
+            return null; // Unknown
+        }
+    }
+
+    async function checkMaybelleStatus(cid) {
+        try {
+            // Check maybelle IPFS gateway
+            const response = await fetch(MAYBELLE_GATEWAY + cid, {
+                method: 'HEAD',
+                // Short timeout since local node should respond quickly
+                signal: AbortSignal.timeout(5000)
+            });
+            return response.ok;
+        } catch (e) {
+            console.error('Maybelle check failed:', e);
+            return null; // Unknown or not reachable
+        }
+    }
+
+    function updateStatusCell(cell, status) {
+        if (status === true) {
+            cell.innerHTML = '<span class="badge bg-success">✓</span>';
+        } else if (status === false) {
+            cell.innerHTML = '<span class="badge bg-danger">✗</span>';
+        } else {
+            cell.innerHTML = '<span class="badge bg-warning text-dark">?</span>';
+        }
+    }
+
+    async function checkRowStatus(row) {
+        const cid = row.dataset.cid;
+        if (!cid) return;
+
+        const pinataCell = row.querySelector('.pinata-status');
+        const maybelleCell = row.querySelector('.maybelle-status');
+
+        // Show loading
+        pinataCell.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        maybelleCell.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+        // Check both in parallel
+        const [pinataStatus, maybelleStatus] = await Promise.all([
+            checkPinataStatus(cid),
+            checkMaybelleStatus(cid)
+        ]);
+
+        updateStatusCell(pinataCell, pinataStatus);
+        updateStatusCell(maybelleCell, maybelleStatus);
+    }
+
+    // Individual check buttons
+    document.querySelectorAll('.check-status-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const row = btn.closest('tr');
+            btn.disabled = true;
+            await checkRowStatus(row);
+            btn.disabled = false;
+        });
+    });
+
+    // Check all button
+    document.getElementById('check-all-btn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('check-all-btn');
+        btn.disabled = true;
+        btn.textContent = 'Checking...';
+
+        const rows = document.querySelectorAll('#ipfs-status-table tbody tr[data-cid]');
+        for (const row of rows) {
+            if (row.dataset.cid) {
+                await checkRowStatus(row);
+            }
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Check All Status';
+    });
+</script>
+
+{% endblock %}
