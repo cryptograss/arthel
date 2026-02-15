@@ -630,11 +630,13 @@ async function fetchWikiAddressMap(config) {
 
     // Forward-resolve each ENS name to its current address
     const addressToDisplayName = new Map();
+    const ensToAddress = {};  // Also track ENS→address for external tools
     for (const { ensName, displayName } of wikiEntries) {
         try {
             const address = await fetchEnsAddress(config, { name: ensName, chainId: 1 });
             if (address) {
                 addressToDisplayName.set(address, displayName);
+                ensToAddress[ensName.toLowerCase()] = address;  // Lowercase for consistent lookups
                 console.log(`  ${ensName} → ${address} → ${displayName}`);
             }
         } catch (e) {
@@ -642,15 +644,18 @@ async function fetchWikiAddressMap(config) {
         }
     }
 
-    return addressToDisplayName;
+    return { addressToDisplayName, ensToAddress };
 }
 
 async function resolveAndApplyEnsNames(config, chainData) {
     console.time("ENS Resolution (batch)");
 
-    // Step 1: Get wiki-curated address → display name map
-    const wikiMap = await fetchWikiAddressMap(config);
+    // Step 1: Get wiki-curated address → display name map (and ENS→address for external tools)
+    const { addressToDisplayName: wikiMap, ensToAddress } = await fetchWikiAddressMap(config);
     console.log(`Wiki address map: ${wikiMap.size} entries`);
+
+    // Add ENS→address mapping to chain data for external tools (like blue-railroad-import)
+    chainData.ensToAddress = ensToAddress;
 
     // Step 2: Collect unique addresses from chain data
     const addresses = new Set();
