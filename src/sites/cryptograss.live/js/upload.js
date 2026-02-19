@@ -192,8 +192,19 @@ export function initUploadPage(options) {
         uploadProgressBar.style.width = '0%';
 
         try {
+            // Get server time to avoid clock drift issues
+            let timestamp;
+            try {
+                const baseUrl = pinningService.replace(/\/pin$/, '');
+                const timeResp = await fetch(`${baseUrl}/time`);
+                const timeData = await timeResp.json();
+                timestamp = timeData.timestamp;
+            } catch (e) {
+                console.warn('Could not fetch server time, using local:', e);
+                timestamp = Date.now();
+            }
+
             // Create auth message and sign it
-            const timestamp = Date.now();
             const authMessage = `Authorize Blue Railroad pinning\nTimestamp: ${timestamp}`;
 
             const signature = await signMessage(wagmiConfig, {

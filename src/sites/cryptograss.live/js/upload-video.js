@@ -216,8 +216,18 @@ export function initVideoUploadPage(options) {
         progressDetails.textContent = '';
 
         try {
+            // Get server time to avoid clock drift issues
+            let timestamp;
+            try {
+                const timeResp = await fetch(`${pinningService}/time`);
+                const timeData = await timeResp.json();
+                timestamp = timeData.timestamp;
+            } catch (e) {
+                console.warn('Could not fetch server time, using local:', e);
+                timestamp = Date.now();
+            }
+
             // Sign auth message
-            const timestamp = Date.now();
             const authMessage = `Authorize Blue Railroad pinning\nTimestamp: ${timestamp}`;
             const signature = await signMessage(wagmiConfig, { message: authMessage });
 
