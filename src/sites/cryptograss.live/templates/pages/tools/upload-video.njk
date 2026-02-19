@@ -1,0 +1,239 @@
+{% extends '../../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-md-10 text-post">
+        <h1 class="text-center pixel-font">Video Upload</h1>
+        <p class="text-center text-muted">Transcode and pin video to IPFS with HLS adaptive streaming</p>
+
+        <div class="row mt-4">
+            <div class="col-md-8 offset-md-2">
+                <!-- Wallet Connection -->
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">1. Connect Wallet</h5>
+                        <p class="small text-muted mb-2">
+                            Connect your wallet to authorize uploads. Only wallets on the allowlist can upload.
+                        </p>
+                        <div id="wallet-status">
+                            <p id="not-connected-msg">Not connected</p>
+                            <p id="connected-address" style="display: none;" class="font-monospace"></p>
+                        </div>
+                        <button id="connect-wallet-btn" class="btn btn-primary">Connect Wallet</button>
+                    </div>
+                </div>
+
+                <!-- Video File Selection -->
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">2. Select Video</h5>
+                        <p class="small text-muted mb-2">
+                            Choose a video file to transcode. Supports MP4, MOV, WebM, MKV, AVI.
+                        </p>
+
+                        <div id="video-dropzone" class="upload-dropzone mb-3">
+                            <input type="file" id="video-input" accept="video/*" style="display: none;">
+                            <div id="dropzone-content">
+                                <div class="dropzone-icon">🎬</div>
+                                <p class="mb-0">Drop a video here or <a href="#" id="browse-link">browse</a></p>
+                                <p class="small text-muted mb-0" id="selected-file"></p>
+                            </div>
+                        </div>
+
+                        <div id="video-preview" style="display: none;" class="mb-3">
+                            <video id="preview-player" controls style="max-width: 100%; max-height: 200px;"></video>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transcoding Options -->
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">3. Transcoding Options</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label">Quality Tiers</label>
+                            <p class="small text-muted mb-2">Select which quality levels to generate. More tiers = larger output but better adaptive streaming.</p>
+                            <div class="quality-options">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="quality-1080" value="1080">
+                                    <label class="form-check-label" for="quality-1080">
+                                        1080p <span class="text-muted small">(Full HD - largest file)</span>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="quality-720" value="720" checked>
+                                    <label class="form-check-label" for="quality-720">
+                                        720p <span class="text-muted small">(HD - recommended)</span>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="quality-480" value="480" checked>
+                                    <label class="form-check-label" for="quality-480">
+                                        480p <span class="text-muted small">(SD - for slow connections)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="keep-original">
+                                <label class="form-check-label" for="keep-original">
+                                    Also pin original file <span class="text-muted small">(archival - uses more storage)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="mb-3">
+                            <label class="form-label">Subtitles (optional)</label>
+                            <p class="small text-muted mb-2">Upload a WebVTT (.vtt) subtitle file to include with the video.</p>
+                            <input type="file" id="subtitle-input" accept=".vtt,text/vtt" class="form-control form-control-sm">
+                            <div id="subtitle-selected" class="small text-success mt-1" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Button -->
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">4. Process Video</h5>
+                        <p class="small text-muted mb-2">
+                            This will upload, transcode to HLS, and pin to IPFS. Large videos may take 20-40+ minutes.
+                        </p>
+
+                        <div id="upload-progress" style="display: none;" class="mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                                <span class="ms-2" id="progress-text">Starting...</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div id="progress-details" class="small text-muted mt-2"></div>
+                        </div>
+
+                        <div id="upload-error" class="alert alert-danger" style="display: none;"></div>
+
+                        <button id="process-btn" class="btn btn-success btn-lg" disabled>
+                            Process & Pin Video
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Result -->
+                <div id="result-section" class="card semi-transparent-bg" style="display: none;">
+                    <div class="card-body">
+                        <h5 class="card-title text-success">Video Ready!</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">HLS Directory CID</label>
+                            <div class="input-group">
+                                <input type="text" id="result-cid" class="form-control font-monospace" readonly>
+                                <button class="btn btn-outline-secondary" type="button" id="copy-cid-btn" title="Copy to clipboard">
+                                    📋
+                                </button>
+                            </div>
+                            <p class="small text-muted mt-1">Use this CID to embed the video on PickiPedia</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Master Playlist URL</label>
+                            <a id="master-playlist-link" href="#" target="_blank" class="d-block font-monospace small"></a>
+                        </div>
+
+                        <div id="original-cid-section" style="display: none;" class="mb-3">
+                            <label class="form-label small text-muted">Original File CID</label>
+                            <code id="original-cid" class="d-block"></code>
+                        </div>
+
+                        <div id="result-details" class="small text-muted mb-3"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Test Player</label>
+                            <video id="result-player" controls style="width: 100%; max-height: 300px;"></video>
+                        </div>
+
+                        <hr>
+                        <button id="upload-another-btn" class="btn btn-outline-primary btn-sm">
+                            Upload Another Video
+                        </button>
+                    </div>
+                </div>
+
+                {% include 'partials/build-metadata.njk' %}
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<style>
+.pixel-font {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+:root {
+    --w3m-z-index: 10000 !important;
+}
+
+w3m-modal {
+    z-index: 10000 !important;
+}
+
+.upload-dropzone {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.dragover {
+    border-color: #4a7c59;
+    background: rgba(74, 124, 89, 0.1);
+}
+
+.upload-dropzone .dropzone-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.upload-dropzone a {
+    color: #4a7c59;
+    text-decoration: underline;
+}
+
+.quality-options .form-check {
+    padding: 8px 12px 8px 36px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.quality-options .form-check:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.initVideoUploadPage) {
+            window.initVideoUploadPage({
+                pinningService: 'https://pinning.maybelle.cryptograss.live',
+                gateway: 'https://ipfs.maybelle.cryptograss.live/ipfs'
+            });
+        } else {
+            console.error('upload-video.js not loaded');
+        }
+    });
+</script>
+
+{% endblock %}

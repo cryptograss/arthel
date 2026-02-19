@@ -18,6 +18,7 @@
     "fetch-video-metadata": "node src/build_logic/fetch_video_metadata.js",
     "verify-dice": "node src/build_logic/verify_dice_roll.js",
     "fetch-chain-data": "node src/build_logic/fetch_chain_data.js",
+    "fetch:pinata": "node src/build_logic/fetch_pinata_pins.js",
     "blockheight": "node src/build_logic/get_current_blockheight.js",
     "build-oracle": "node src/build_logic/build_oracle_data.js"
   },
@@ -58,6 +59,7 @@
     "ethers": "^6.13.4",
     "fernet": "^0.3.2",
     "glob": "^10.3.10",
+    "hls.js": "^1.6.15",
     "howler": "^2.2.3",
     "jazzicon": "^1.0.2",
     "jest": "^29.7.0",

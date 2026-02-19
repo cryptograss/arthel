@@ -27,6 +27,10 @@ function buildHtmlPluginInstances() {
             var chunks = ['main', 'mint_submission'];
         } else if (relativePath.startsWith('blox-office/admin/burn-token')) {
             var chunks = ['main', 'burn_token'];
+        } else if (relativePath.startsWith('tools/upload-video')) {
+            var chunks = ['main', 'upload_video'];
+        } else if (relativePath.startsWith('tools/upload')) {
+            var chunks = ['main', 'upload'];
         } else {
             var chunks = ['main'];
         }
@@ -106,6 +110,8 @@ export function buildConfig() {
         oracle_client: `${frontendJSDir}/oracle_client.js`,
         mint_submission: `${frontendJSDir}/mint-submission.js`,
         burn_token: `${frontendJSDir}/burn-token.js`,
+        upload: `${frontendJSDir}/upload.js`,
+        upload_video: `${frontendJSDir}/upload-video.js`,
     },
     module: {
         rules: [

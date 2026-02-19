@@ -23,6 +23,20 @@ oracle-of-bluegrass-bacon:
     description: "Connect any two musicians through shows and recordings - like Six Degrees of Kevin Bacon, but for bluegrass!"
     no_video_bg: true
 
+tools/upload:
+  template: tools/upload.njk
+  include_data_in_context: ["latest_git_commit"]
+  context:
+    page_title: "IPFS Upload"
+    no_video_bg: true
+
+tools/upload-video:
+  template: tools/upload-video.njk
+  include_data_in_context: ["latest_git_commit"]
+  context:
+    page_title: "Video Upload"
+    no_video_bg: true
+
 blox-office/admin/mint-tony:
   template: blox-office/admin/mint-tony.njk
   include_data_in_context: ["chainData", "latest_git_commit"]

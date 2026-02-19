@@ -1,0 +1,158 @@
+{% extends '../../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-md-10 text-post">
+        <h1 class="text-center pixel-font">IPFS Upload</h1>
+        <p class="text-center text-muted">Pin files to IPFS via the Cryptograss pinning service</p>
+
+        <div class="row mt-4">
+            <div class="col-md-8 offset-md-2">
+                <!-- Wallet Connection -->
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">1. Connect Wallet</h5>
+                        <p class="small text-muted mb-2">
+                            Connect your wallet to authorize uploads. Only wallets on the allowlist can pin files.
+                        </p>
+                        <div id="wallet-status">
+                            <p id="not-connected-msg">Not connected</p>
+                            <p id="connected-address" style="display: none;" class="font-monospace"></p>
+                            <p id="authorization-status" style="display: none;" class="small mt-2"></p>
+                        </div>
+                        <button id="connect-wallet-btn" class="btn btn-primary">Connect Wallet</button>
+                    </div>
+                </div>
+
+                <!-- File Upload -->
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">2. Upload File</h5>
+                        <p class="small text-muted mb-2">
+                            Select a file to pin to IPFS. Any file type is accepted.
+                        </p>
+
+                        <div id="upload-area" class="upload-dropzone mb-3">
+                            <input type="file" id="file-input" style="display: none;">
+                            <div id="dropzone-content">
+                                <div class="dropzone-icon">📁</div>
+                                <p class="mb-0">Drop a file here or <a href="#" id="browse-link">browse</a></p>
+                                <p class="small text-muted mb-0" id="selected-file"></p>
+                            </div>
+                        </div>
+
+                        <div id="upload-progress" style="display: none;" class="mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                                <span class="ms-2" id="upload-progress-text">Uploading...</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div id="upload-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div id="upload-error" class="alert alert-danger" style="display: none;"></div>
+
+                        <button id="upload-btn" class="btn btn-success" disabled>
+                            Upload to IPFS
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Result -->
+                <div id="result-section" class="card semi-transparent-bg" style="display: none;">
+                    <div class="card-body">
+                        <h5 class="card-title">Upload Complete</h5>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">IPFS CID</label>
+                            <div class="input-group">
+                                <input type="text" id="result-cid" class="form-control font-monospace" readonly>
+                                <button class="btn btn-outline-secondary" type="button" id="copy-cid-btn" title="Copy to clipboard">
+                                    📋
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Gateway URL</label>
+                            <a id="gateway-link" href="#" target="_blank" class="d-block font-monospace small"></a>
+                        </div>
+                        <div id="upload-details" class="small text-muted"></div>
+
+                        <hr>
+                        <button id="upload-another-btn" class="btn btn-outline-primary btn-sm">
+                            Upload Another File
+                        </button>
+                    </div>
+                </div>
+
+                {% include 'partials/build-metadata.njk' %}
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<style>
+.pixel-font {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+:root {
+    --w3m-z-index: 10000 !important;
+}
+
+w3m-modal {
+    z-index: 10000 !important;
+}
+
+.upload-dropzone {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.dragover {
+    border-color: #4a7c59;
+    background: rgba(74, 124, 89, 0.1);
+}
+
+.upload-dropzone .dropzone-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.upload-dropzone a {
+    color: #4a7c59;
+    text-decoration: underline;
+}
+
+#authorization-status.authorized {
+    color: #198754;
+}
+
+#authorization-status.not-authorized {
+    color: #dc3545;
+}
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.initUploadPage) {
+            window.initUploadPage({
+                pinningService: 'https://pinning.maybelle.cryptograss.live/pin-file',
+                gateway: 'https://ipfs.maybelle.cryptograss.live/ipfs'
+            });
+        } else {
+            console.error('upload.js not loaded - initUploadPage not found');
+        }
+    });
+</script>
+
+{% endblock %}
