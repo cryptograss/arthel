@@ -1,6 +1,6 @@
 /**
  * Video Upload Page
- * Handles wallet connection, video upload, HLS transcoding, and IPFS pinning
+ * Handles wallet connection, video upload to Coconut.co for AV1 HLS transcoding
  */
 
 import { createAppKit } from '@reown/appkit';
@@ -40,7 +40,8 @@ export function initVideoUploadPage(options) {
 
     // State
     let selectedVideo = null;
-    let selectedSubtitle = null;
+    let currentJobId = null;
+    let pollInterval = null;
 
     // DOM elements - wallet
     const connectBtn = document.getElementById('connect-wallet-btn');
@@ -60,8 +61,6 @@ export function initVideoUploadPage(options) {
     const quality720 = document.getElementById('quality-720');
     const quality480 = document.getElementById('quality-480');
     const keepOriginal = document.getElementById('keep-original');
-    const subtitleInput = document.getElementById('subtitle-input');
-    const subtitleSelected = document.getElementById('subtitle-selected');
 
     // DOM elements - progress
     const processBtn = document.getElementById('process-btn');
@@ -167,18 +166,6 @@ export function initVideoUploadPage(options) {
         updateProcessButton();
     }
 
-    // Subtitle selection
-    subtitleInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            selectedSubtitle = e.target.files[0];
-            subtitleSelected.textContent = `Selected: ${selectedSubtitle.name}`;
-            subtitleSelected.style.display = 'block';
-        } else {
-            selectedSubtitle = null;
-            subtitleSelected.style.display = 'none';
-        }
-    });
-
     // Quality checkboxes
     [quality1080, quality720, quality480].forEach(cb => {
         cb.addEventListener('change', updateProcessButton);
@@ -189,6 +176,75 @@ export function initVideoUploadPage(options) {
         if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
         if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(1) + ' MB';
         return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+    }
+
+    // Poll for job status
+    async function pollJobStatus(jobId) {
+        try {
+            const response = await fetch(`${pinningService}/job/${jobId}`);
+            if (!response.ok) {
+                throw new Error(`Failed to check job status: ${response.status}`);
+            }
+
+            const job = await response.json();
+            console.log('Job status:', job);
+
+            if (job.status === 'complete') {
+                // Success!
+                clearInterval(pollInterval);
+                pollInterval = null;
+
+                progressBar.style.width = '100%';
+                progressText.textContent = 'Complete!';
+
+                setTimeout(() => {
+                    uploadProgress.style.display = 'none';
+                    resultSection.style.display = 'block';
+
+                    resultCid.value = job.hlsCid;
+                    const playlistUrl = `${gateway}/ipfs/${job.hlsCid}/master.m3u8`;
+                    masterPlaylistLink.href = playlistUrl;
+                    masterPlaylistLink.textContent = playlistUrl;
+
+                    if (job.sourceCid && keepOriginal.checked) {
+                        originalCidSection.style.display = 'block';
+                        originalCid.textContent = job.sourceCid;
+                    }
+
+                    // Build details
+                    const details = [];
+                    if (job.qualities) {
+                        details.push(`Qualities: ${job.qualities.join(', ')}p (AV1)`);
+                    }
+                    resultDetails.textContent = details.join(' | ');
+
+                    // Setup HLS player
+                    setupHlsPlayer(playlistUrl);
+                }, 500);
+
+            } else if (job.status === 'failed') {
+                clearInterval(pollInterval);
+                pollInterval = null;
+                throw new Error(job.error || 'Transcoding failed');
+
+            } else {
+                // Still processing - update UI
+                progressText.textContent = `Transcoding in progress... (${job.status})`;
+                // Animate progress bar between 20-80% while waiting
+                const currentWidth = parseInt(progressBar.style.width) || 20;
+                const newWidth = Math.min(80, currentWidth + 2);
+                progressBar.style.width = newWidth + '%';
+            }
+
+        } catch (error) {
+            clearInterval(pollInterval);
+            pollInterval = null;
+            console.error('Poll error:', error);
+            uploadProgress.style.display = 'none';
+            uploadError.textContent = error.message || 'Failed to check job status';
+            uploadError.style.display = 'block';
+            processBtn.disabled = false;
+        }
     }
 
     // Process button
@@ -239,12 +295,9 @@ export function initVideoUploadPage(options) {
             formData.append('video', selectedVideo);
             formData.append('qualities', JSON.stringify(qualities));
             formData.append('keepOriginal', keepOriginal.checked ? 'true' : 'false');
-            if (selectedSubtitle) {
-                formData.append('subtitle', selectedSubtitle);
-            }
 
-            // Upload with SSE progress
-            const response = await fetch(`${pinningService}/transcode-video`, {
+            // Submit to Coconut endpoint
+            const response = await fetch(`${pinningService}/transcode-coconut`, {
                 method: 'POST',
                 headers: {
                     'X-Signature': signature,
@@ -258,84 +311,19 @@ export function initVideoUploadPage(options) {
                 throw new Error(errData.error || `HTTP ${response.status}`);
             }
 
-            // Process SSE stream
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let buffer = '';
-            let finalResult = null;
+            const result = await response.json();
+            console.log('Job submitted:', result);
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
+            currentJobId = result.jobId;
+            progressText.textContent = 'Video uploaded, transcoding with Coconut (AV1)...';
+            progressBar.style.width = '20%';
+            progressDetails.textContent = `Job ID: ${result.jobId}`;
 
-                buffer += decoder.decode(value, { stream: true });
+            // Start polling for job status
+            pollInterval = setInterval(() => pollJobStatus(currentJobId), 5000);
 
-                // Process complete SSE events
-                const events = buffer.split('\n\n');
-                buffer = events.pop();
-
-                for (const eventStr of events) {
-                    if (!eventStr.startsWith('data: ')) continue;
-
-                    let event;
-                    try {
-                        event = JSON.parse(eventStr.slice(6));
-                    } catch (e) {
-                        continue;
-                    }
-
-                    console.log('Progress:', event);
-
-                    if (event.stage === 'error') {
-                        throw new Error(event.message);
-                    } else if (event.stage === 'complete') {
-                        finalResult = event;
-                        progressBar.style.width = '100%';
-                        progressText.textContent = 'Complete!';
-                    } else {
-                        if (event.message) progressText.textContent = event.message;
-                        if (event.progress) progressBar.style.width = event.progress + '%';
-                        if (event.details) progressDetails.textContent = event.details;
-                    }
-                }
-            }
-
-            if (!finalResult || !finalResult.cid) {
-                throw new Error('No result returned from server');
-            }
-
-            // Show result
-            setTimeout(() => {
-                uploadProgress.style.display = 'none';
-                resultSection.style.display = 'block';
-
-                resultCid.value = finalResult.cid;
-                const playlistUrl = `${gateway}/${finalResult.cid}/master.m3u8`;
-                masterPlaylistLink.href = playlistUrl;
-                masterPlaylistLink.textContent = playlistUrl;
-
-                if (finalResult.originalCid) {
-                    originalCidSection.style.display = 'block';
-                    originalCid.textContent = finalResult.originalCid;
-                }
-
-                // Build details
-                const details = [];
-                if (finalResult.qualities) {
-                    details.push(`Qualities: ${finalResult.qualities.join(', ')}p`);
-                }
-                if (finalResult.totalSize) {
-                    details.push(`Total size: ${formatFileSize(finalResult.totalSize)}`);
-                }
-                if (finalResult.hasSubtitles) {
-                    details.push('Includes subtitles');
-                }
-                resultDetails.textContent = details.join(' | ');
-
-                // Setup HLS player
-                setupHlsPlayer(playlistUrl);
-
-            }, 500);
+            // Also poll immediately
+            setTimeout(() => pollJobStatus(currentJobId), 1000);
 
         } catch (err) {
             console.error('Upload error:', err);
@@ -379,13 +367,17 @@ export function initVideoUploadPage(options) {
 
     // Upload another
     uploadAnotherBtn.addEventListener('click', () => {
+        // Clean up any running poll
+        if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = null;
+        }
+        currentJobId = null;
+
         resultSection.style.display = 'none';
         selectedVideo = null;
-        selectedSubtitle = null;
         selectedFileText.textContent = '';
         videoInput.value = '';
-        subtitleInput.value = '';
-        subtitleSelected.style.display = 'none';
         videoPreview.style.display = 'none';
         previewPlayer.src = '';
         originalCidSection.style.display = 'none';
