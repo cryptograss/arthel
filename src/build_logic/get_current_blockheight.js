@@ -38,6 +38,15 @@ function estimateTimeFromBlock(targetBlock, currentBlock, currentTimestamp) {
     };
 }
 
+/**
+ * Fetch the current Ethereum mainnet block height.
+ * Returns just the block number for use by other scripts.
+ */
+export async function fetchCurrentBlockHeight() {
+    const blockHeight = await fetchBlockNumber(config, { chainId: mainnet.id });
+    return Number(blockHeight);
+}
+
 async function getCurrentBlockHeight() {
     try {
         const blockHeight = await fetchBlockNumber(config, { chainId: mainnet.id });

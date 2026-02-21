@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { getProjectDirs, initProjectDirs } from './locations.js';
 import { serializePinataPins } from './pinata_db.js';
+import { fetchCurrentBlockHeight } from './get_current_blockheight.js';
 
 dotenv.config();
 
@@ -110,8 +111,18 @@ async function fetchPinataPins() {
         summary.byKeyvalueSource[source] = (summary.byKeyvalueSource[source] || 0) + 1;
     }
 
+    // Fetch current Ethereum blockheight for temporal reference
+    let fetchedAtBlock = null;
+    try {
+        fetchedAtBlock = await fetchCurrentBlockHeight();
+        console.log(`  Ethereum block at fetch time: ${fetchedAtBlock}`);
+    } catch (e) {
+        console.warn('  Warning: Could not fetch Ethereum blockheight:', e.message);
+    }
+
     const pinataPinsData = {
         fetchedAt: new Date().toISOString(),
+        fetchedAtBlock,
         summary,
         pins,
     };

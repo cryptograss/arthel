@@ -18,13 +18,225 @@ import { registerHelpers } from './utils/template_helpers.js';
 import { getShowAndSetData } from "./show_and_set_data.js";
 import { gatherAssets, unusedImages, imageMapping } from './asset_builder.js';
 import { deserializeChainData } from './chaindata_db.js';
+import { deserializePinataPins } from './pinata_db.js';
 import { appendChainDataToShows } from './chain_reading.js';
 
 // Feature-specific modules
 import { generateSetStonePages, renderSetStoneImages } from './setstone_utils.js';
 import { verifyBlueRailroadVideos, generateBlueRailroadV2Metadata } from './blue_railroad.js';
-import { fetchPendingSubmissions, fetchAllSubmissions } from './pickipedia_submissions.js';
+import { fetchPendingSubmissions, fetchAllSubmissions, fetchRecordings } from './pickipedia_submissions.js';
+import { cidToBytes32 } from './cid_utils.js';
 import { DateTime } from 'luxon';
+import { fetchCurrentBlockHeight } from './get_current_blockheight.js';
+
+// IPFS Gateway URLs for build-time checks
+const IPFS_GATEWAYS = {
+    pinata: 'https://gateway.pinata.cloud/ipfs/',
+    maybelle: 'https://ipfs.maybelle.cryptograss.live/ipfs/',
+    // grasshouse: 'http://localhost:8080/ipfs/',  // Add when configured
+};
+
+/**
+ * Check if a CID is available on a gateway
+ * @param {string} gateway - Gateway base URL
+ * @param {string} cid - IPFS CID to check
+ * @param {number} timeout - Timeout in ms
+ * @returns {Promise<boolean>} Whether the CID is available
+ */
+async function checkGateway(gateway, cid, timeout = 5000) {
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        const response = await fetch(gateway + cid, {
+            method: 'HEAD',
+            signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        return response.ok;
+    } catch (e) {
+        return false;
+    }
+}
+
+/**
+ * Check pinning status across all configured gateways for a list of CIDs
+ * @param {Array<string>} cids - List of CIDs to check
+ * @returns {Promise<Object>} Map of CID -> { pinata: bool, maybelle: bool, ... }
+ */
+async function checkAllGateways(cids) {
+    const results = {};
+    const gateways = Object.entries(IPFS_GATEWAYS);
+
+    console.log(`Checking ${cids.length} CIDs across ${gateways.length} gateways...`);
+
+    for (const cid of cids) {
+        results[cid] = {};
+        for (const [name, url] of gateways) {
+            results[cid][name] = await checkGateway(url, cid);
+        }
+    }
+
+    return results;
+}
+
+/**
+ * Categorize Pinata pins against known CIDs from submissions, V2 tokens, and recordings
+ * @param {Object} pinataPinsData - Raw Pinata data with pins array
+ * @param {Array} submissions - All submissions with ipfsCid
+ * @param {Object} blueRailroadV2s - V2 tokens keyed by tokenId
+ * @param {Array} recordings - Recording pages from PickiPedia with CIDs
+ * @param {Object} gatewayStatus - Pre-checked gateway status per CID
+ * @returns {Object} Categorized pins with summary
+ */
+function categorizePinataPins(pinataPinsData, submissions, blueRailroadV2s, recordings = [], gatewayStatus = {}) {
+    if (!pinataPinsData || !pinataPinsData.pins) {
+        return null;
+    }
+
+    // Build lookup maps
+    const submissionCidMap = {};  // CID -> submission
+    for (const submission of submissions) {
+        if (submission.ipfsCid) {
+            submissionCidMap[submission.ipfsCid] = submission;
+        }
+    }
+
+    // Build CID -> recording map (a recording can have multiple CIDs)
+    const recordingCidMap = {};  // CID -> { recording, format }
+    for (const recording of recordings) {
+        for (const { cid, format } of recording.cids) {
+            recordingCidMap[cid] = { recording, format };
+        }
+    }
+    if (recordings.length > 0) {
+        console.log(`Built recordingCidMap with ${Object.keys(recordingCidMap).length} CIDs from ${recordings.length} recordings`);
+    }
+
+    // Build videoHash -> tokenId map (videoHash is bytes32 hex format)
+    const tokenVideoHashMap = {};
+    if (blueRailroadV2s) {
+        for (const [tokenId, token] of Object.entries(blueRailroadV2s)) {
+            if (token.videoHash && token.videoHash !== '0x0000000000000000000000000000000000000000000000000000000000000000') {
+                tokenVideoHashMap[token.videoHash] = tokenId;
+            }
+        }
+        console.log(`Built tokenVideoHashMap with ${Object.keys(tokenVideoHashMap).length} entries from ${Object.keys(blueRailroadV2s).length} tokens`);
+    } else {
+        console.log('WARNING: blueRailroadV2s is null/undefined');
+    }
+
+    const categorizedPins = [];
+    const summary = {
+        total: 0,
+        totalSize: 0,
+        byCategory: {
+            'minted-token': 0,
+            'submission': 0,
+            'recording': 0,
+            'blue-railroad': 0,
+            'unknown': 0,
+        }
+    };
+
+    for (const pin of pinataPinsData.pins) {
+        const cid = pin.cid;
+        let category = 'unknown';
+        let linkedSubmissionId = null;
+        let linkedTokenId = null;
+        let linkedRecording = null;
+
+        // Convert pin CID to bytes32 to compare with token videoHash
+        let pinHashBytes32 = null;
+        try {
+            pinHashBytes32 = cidToBytes32(cid);
+        } catch (e) {
+            // CID conversion failed, might not be a valid v1 CID
+        }
+
+        // Priority 1: Check if CID matches a V2 token videoHash
+        if (pinHashBytes32 && tokenVideoHashMap[pinHashBytes32]) {
+            category = 'minted-token';
+            linkedTokenId = tokenVideoHashMap[pinHashBytes32];
+        }
+        // Priority 2: Check if CID matches a submission
+        else if (submissionCidMap[cid]) {
+            category = 'submission';
+            linkedSubmissionId = submissionCidMap[cid].id;
+        }
+        // Priority 3: Check if CID matches a recording
+        else if (recordingCidMap[cid]) {
+            category = 'recording';
+            linkedRecording = {
+                title: recordingCidMap[cid].recording.title,
+                artists: recordingCidMap[cid].recording.artists,
+                format: recordingCidMap[cid].format,
+                url: recordingCidMap[cid].recording.url,
+            };
+        }
+        // Priority 4: Check keyvalues.source for blue-railroad
+        else if (pin.keyvalues?.source === 'blue-railroad') {
+            category = 'blue-railroad';
+        }
+
+        categorizedPins.push({
+            ...pin,
+            category,
+            linkedSubmissionId,
+            linkedTokenId,
+            linkedRecording,
+            gatewayStatus: gatewayStatus[cid] || {},
+        });
+
+        summary.total++;
+        summary.totalSize += pin.size || 0;
+        summary.byCategory[category]++;
+    }
+
+    return {
+        allPins: categorizedPins,
+        summary,
+        fetchedAt: pinataPinsData.fetchedAt,
+    };
+}
+
+/**
+ * Match submissions to V2 tokens by comparing video hashes
+ * @param {Array} submissions - Submissions with ipfsCid
+ * @param {Object} blueRailroadV2s - V2 tokens keyed by tokenId
+ * @returns {Array} Submissions with matchedTokens array added
+ */
+function matchSubmissionsToTokens(submissions, blueRailroadV2s) {
+    if (!blueRailroadV2s) return submissions;
+
+    // Build a map of videoHash -> token IDs
+    const hashToTokens = {};
+    for (const [tokenId, token] of Object.entries(blueRailroadV2s)) {
+        const hash = token.videoHash;
+        if (!hash) continue;
+        if (!hashToTokens[hash]) hashToTokens[hash] = [];
+        hashToTokens[hash].push({
+            tokenId: tokenId,
+            owner: token.owner,
+            ownerDisplay: token.ownerDisplay || token.owner
+        });
+    }
+
+    // Match each submission's CID to tokens
+    return submissions.map(submission => {
+        if (!submission.ipfsCid) {
+            return { ...submission, matchedTokens: [] };
+        }
+
+        try {
+            const hash = cidToBytes32(submission.ipfsCid);
+            const tokens = hashToTokens[hash] || [];
+            return { ...submission, matchedTokens: tokens };
+        } catch (e) {
+            console.warn(`Failed to convert CID for submission ${submission.id}:`, e.message);
+            return { ...submission, matchedTokens: [] };
+        }
+    });
+}
 
 export const runPrimaryBuild = async () => {
     const oldUmask = process.umask(0o000); // Ensure that proper permissions are applied
@@ -82,10 +294,13 @@ export const runPrimaryBuild = async () => {
 
     // Verify videos early (V1) and merge with chain data
     const blueRailroadVideoMetadata = await verifyBlueRailroadVideos();
-    // Merge video metadata into existing chain data (chain data has songId, date, ownerDisplay)
+    // Merge video metadata into existing chain data
+    // Chain data (owner, ownerDisplay) takes precedence over stale video metadata
     for (const [tokenId, videoData] of Object.entries(blueRailroadVideoMetadata)) {
         if (chainData.blueRailroads[tokenId]) {
-            Object.assign(chainData.blueRailroads[tokenId], videoData);
+            const currentChainData = { ...chainData.blueRailroads[tokenId] };
+            // Merge video data first, then restore chain data on top
+            Object.assign(chainData.blueRailroads[tokenId], videoData, currentChainData);
         }
     }
 
@@ -249,17 +464,27 @@ export const runPrimaryBuild = async () => {
     // A lot going on here - this is where we actually append things like set stones, ticket stubs, etc., to the shows.  Any further chain data that is required to render shows to templates needs to be added here.
     appendChainDataToShows(shows, chainData); // Mutates shows, obviously.
 
-    // Fetch Blue Railroad submissions from PickiPedia (cryptograss.live only)
+    // Fetch Blue Railroad submissions and recordings from PickiPedia (cryptograss.live only)
     let pendingSubmissions = [];
     let allSubmissions = [];
+    let allRecordings = [];
     if (site === 'cryptograss.live') {
         try {
             // Fetch all submissions first (includes both pending and minted)
             allSubmissions = await fetchAllSubmissions();
+            // Match submissions to V2 tokens by video hash
+            allSubmissions = matchSubmissionsToTokens(allSubmissions, chainData.blueRailroadV2s);
             // Filter to just pending for the pending-submissions page
             pendingSubmissions = allSubmissions.filter(s => s.status.toLowerCase() !== 'minted');
         } catch (e) {
             console.warn('Failed to fetch submissions from PickiPedia:', e.message);
+        }
+
+        try {
+            // Fetch recording pages with CIDs
+            allRecordings = await fetchRecordings();
+        } catch (e) {
+            console.warn('Failed to fetch recordings from PickiPedia:', e.message);
         }
     }
 
@@ -749,6 +974,82 @@ export const runPrimaryBuild = async () => {
     ///////////////////////////
 
     if (site === "cryptograss.live") {
+        // Load and categorize Pinata pins if available
+        let categorizedPinataPins = null;
+        try {
+            const rawPinataPins = deserializePinataPins();
+            if (rawPinataPins) {
+                // Collect CIDs from Pinata (already known to be on Pinata)
+                const pinataCids = new Set();
+                for (const pin of rawPinataPins.pins) {
+                    pinataCids.add(pin.cid);
+                }
+
+                // Collect other CIDs that need checking (e.g., from submissions not in Pinata)
+                const otherCids = new Set();
+                for (const submission of allSubmissions) {
+                    if (submission.ipfsCid && !pinataCids.has(submission.ipfsCid)) {
+                        otherCids.add(submission.ipfsCid);
+                    }
+                }
+
+                // Check gateways - Pinata CIDs only need Maybelle check, others need both
+                console.time('gateway-checks');
+                const gatewayStatus = {};
+
+                // For Pinata CIDs, mark as on Pinata, only check Maybelle
+                console.log(`Checking ${pinataCids.size} Pinata CIDs on Maybelle...`);
+                for (const cid of pinataCids) {
+                    gatewayStatus[cid] = {
+                        pinata: true,  // Known from API
+                        maybelle: await checkGateway(IPFS_GATEWAYS.maybelle, cid, 10000),
+                    };
+                }
+
+                // For other CIDs, check all gateways
+                if (otherCids.size > 0) {
+                    console.log(`Checking ${otherCids.size} other CIDs on all gateways...`);
+                    for (const cid of otherCids) {
+                        gatewayStatus[cid] = {};
+                        for (const [name, url] of Object.entries(IPFS_GATEWAYS)) {
+                            gatewayStatus[cid][name] = await checkGateway(url, cid, 10000);
+                        }
+                    }
+                }
+                console.timeEnd('gateway-checks');
+
+                categorizedPinataPins = categorizePinataPins(
+                    rawPinataPins,
+                    allSubmissions,
+                    chainData.blueRailroadV2s,
+                    allRecordings,
+                    gatewayStatus
+                );
+
+                // Count gateway availability
+                const gatewayCounts = {
+                    pinata: Object.values(gatewayStatus).filter(s => s.pinata).length,
+                    maybelle: Object.values(gatewayStatus).filter(s => s.maybelle).length,
+                    grasshouse: Object.values(gatewayStatus).filter(s => s.grasshouse).length,
+                };
+                categorizedPinataPins.gatewayCounts = gatewayCounts;
+
+                console.log(`Loaded ${categorizedPinataPins.summary.total} Pinata pins (${categorizedPinataPins.summary.byCategory['minted-token']} minted, ${categorizedPinataPins.summary.byCategory['submission']} submissions, ${categorizedPinataPins.summary.byCategory['recording']} recordings, ${categorizedPinataPins.summary.byCategory['blue-railroad']} blue-railroad, ${categorizedPinataPins.summary.byCategory['unknown']} unknown)`);
+                console.log(`Gateway availability: ${gatewayCounts.pinata} on Pinata, ${gatewayCounts.maybelle} on Maybelle`);
+            }
+        } catch (e) {
+            console.warn('Failed to load Pinata pins:', e.message);
+        }
+
+        // Fetch current blockheight for build timestamp
+        let buildBlockheight = null;
+        try {
+            buildBlockheight = await fetchCurrentBlockHeight();
+            console.log(`Build blockheight: ${buildBlockheight}`);
+        } catch (e) {
+            console.warn('Failed to fetch build blockheight:', e.message);
+        }
+
         renderPage({
             template_path: 'pages/blox-office/admin/ipfs-status.njk',
             output_path: 'blox-office/admin/ipfs-status.html',
@@ -756,6 +1057,8 @@ export const runPrimaryBuild = async () => {
                 page_name: 'ipfs_status',
                 page_title: 'IPFS Pinning Status',
                 allSubmissions: allSubmissions,
+                pinataPins: categorizedPinataPins,
+                buildBlockheight: buildBlockheight,
                 chainData: chainData,
                 latest_git_commit: dataAvailableAsContext.latest_git_commit,
                 no_video_bg: true,
@@ -763,6 +1066,59 @@ export const runPrimaryBuild = async () => {
             site: site,
         });
         console.log('Generated IPFS pinning status dashboard');
+    }
+
+    ///////////////////////////
+    // Chapter 5.8: Blue Railroad V1 Tokens Dashboard
+    ///////////////////////////
+
+    if (site === "cryptograss.live" && chainData.blueRailroads) {
+        const EXERCISE_MAP = {
+            '5': 'Squats (Blue Railroad Train)',
+            '6': 'Pushups (Nine Pound Hammer)',
+            '7': 'Squats (Blue Railroad Train) (legacy)',
+            '10': 'Army Crawls (Ginseng Sullivan)',
+        };
+
+        const DEAD_ADDRESS = '0x000000000000000000000000000000000000dEaD';
+        const V1_CONTRACT = '0xCe09A2d0d0BDE635722D8EF31901b430E651dB52';
+
+        // Enrich V1 tokens with video URLs and exercise names
+        const v1Tokens = {};
+        let burnedCount = 0;
+
+        for (const [tokenId, token] of Object.entries(chainData.blueRailroads)) {
+            const isBurned = token.owner === DEAD_ADDRESS;
+            if (isBurned) burnedCount++;
+
+            v1Tokens[tokenId] = {
+                ...token,
+                videoUrl: `/assets/fetched/10-${V1_CONTRACT}-${tokenId}.mp4`,
+                exerciseName: EXERCISE_MAP[String(token.songId)] || `Exercise ID ${token.songId}`,
+            };
+        }
+
+        const totalCount = Object.keys(v1Tokens).length;
+
+        renderPage({
+            template_path: 'pages/blox-office/admin/v1-tokens.njk',
+            output_path: 'blox-office/admin/v1-tokens.html',
+            context: {
+                page_name: 'v1_tokens',
+                page_title: 'Blue Railroad V1 Tokens',
+                v1Tokens: v1Tokens,
+                stats: {
+                    total: totalCount,
+                    burned: burnedCount,
+                    active: totalCount - burnedCount,
+                },
+                chainData: chainData,
+                latest_git_commit: dataAvailableAsContext.latest_git_commit,
+                no_video_bg: true,
+            },
+            site: site,
+        });
+        console.log(`Generated V1 tokens dashboard (${totalCount} tokens, ${burnedCount} burned)`);
     }
 
     ///////////////////////////
