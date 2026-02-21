@@ -1,0 +1,129 @@
+{% extends '../../../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-md-10 text-post">
+        <h1 class="text-center pixel-font">Blue Railroad V1 Tokens</h1>
+        <p class="text-center text-muted">Legacy tokens on V1 contract (0xCe09A2d0...)</p>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">All V1 Tokens</h5>
+                            <div>
+                                <span class="badge bg-success me-2">{{ stats.active }} Active</span>
+                                <span class="badge bg-danger me-2">{{ stats.burned }} Burned</span>
+                                <span class="badge bg-secondary">{{ stats.total }} Total</span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            {% for tokenId, token in v1Tokens %}
+                            {% set isBurned = token.owner == '0x000000000000000000000000000000000000dEaD' %}
+                            {% set hasVideo = token.videoUrl %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card bg-dark text-light h-100 {% if isBurned %}border-danger{% else %}border-success{% endif %}">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold">Token #{{ tokenId }}</span>
+                                        {% if isBurned %}
+                                        <span class="badge bg-danger">Burned</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if hasVideo %}
+                                    <div class="ratio ratio-16x9">
+                                        <video controls class="{% if isBurned %}opacity-50{% endif %}">
+                                            <source src="{{ token.videoUrl }}" type="video/mp4">
+                                            Video not supported
+                                        </video>
+                                    </div>
+                                    {% else %}
+                                    <div class="ratio ratio-16x9 bg-secondary d-flex align-items-center justify-content-center">
+                                        <span class="text-muted">No video fetched</span>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="card-body">
+                                        <p class="card-text mb-1">
+                                            <small class="text-muted">Token:</small>
+                                            <strong>#{{ tokenId }}</strong>
+                                        </p>
+                                        <p class="card-text mb-2">
+                                            <small class="text-muted">Owner:</small><br>
+                                            {% if isBurned %}
+                                            <span class="text-danger font-monospace small">BURNED (dead address)</span>
+                                            {% else %}
+                                            {% if token.ownerDisplay and token.ownerDisplay != token.owner %}
+                                            <span class="fw-bold">{{ token.ownerDisplay }}</span><br>
+                                            {% endif %}
+                                            <span class="font-monospace small text-break">{{ token.owner }}</span>
+                                            {% endif %}
+                                        </p>
+
+                                        <p class="card-text mb-2">
+                                            <small class="text-muted">Exercise:</small><br>
+                                            {{ token.exerciseName or 'Unknown' }}
+                                        </p>
+
+                                        {% if token.uri and token.uri.includes('discord') %}
+                                        <p class="card-text mb-2">
+                                            <small class="text-muted">Source:</small><br>
+                                            <a href="{{ token.uri }}" target="_blank" class="small">
+                                                Discord Message
+                                            </a>
+                                        </p>
+                                        {% elif token.uri and token.uri.includes('ipfs') %}
+                                        <p class="card-text mb-2">
+                                            <small class="text-muted">Source:</small><br>
+                                            <a href="https://gateway.pinata.cloud/ipfs/{{ token.uri | replace('ipfs://', '') }}" target="_blank" class="small">
+                                                IPFS
+                                            </a>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="card-footer">
+                                        {% if isBurned %}
+                                        <span class="text-muted small">Token has been burned (upgraded to V2)</span>
+                                        {% else %}
+                                        <a href="/blox-office/admin/upgrade/bluerailroad/{{ tokenId }}" class="btn btn-outline-primary btn-sm w-100">
+                                            Upgrade to V2
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card semi-transparent-bg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Contract Info</h5>
+                        <p class="mb-2">
+                            <strong>V1 Contract:</strong>
+                            <a href="https://optimistic.etherscan.io/address/0xCe09A2d0d0BDE635722D8EF31901b430E651dB52" target="_blank" class="font-monospace small">
+                                0xCe09A2d0d0BDE635722D8EF31901b430E651dB52
+                            </a>
+                        </p>
+                        <p class="mb-0">
+                            <strong>V2 Contract:</strong>
+                            <a href="https://optimistic.etherscan.io/address/0x93a6A00817cdA4D115Ba71b87B84925fD0C8C0e4" target="_blank" class="font-monospace small">
+                                0x93a6A00817cdA4D115Ba71b87B84925fD0C8C0e4
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+{% endblock %}
