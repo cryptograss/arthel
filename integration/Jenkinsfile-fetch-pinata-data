@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+
+    options {
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        timeout(time: 5, unit: 'MINUTES')
+    }
+
+    environment {
+        NODE_VERSION = '23.6.1'
+        NVM_DIR = '/var/jenkins_home/.nvm'
+        SECRETS_DIR = '/var/jenkins_home/secrets'
+        SHARED_DATA_DIR = '/var/jenkins_home/shared'
+        PINATA_DATA_DIR = "${SHARED_DATA_DIR}/pinata_data"
+    }
+
+    stages {
+        stage('Setup') {
+            steps {
+                sh '''
+                    mkdir -p ${PINATA_DATA_DIR}
+
+                    # Copy .env file from secrets (contains PINATA_JWT)
+                    cp ${SECRETS_DIR}/0/.env .env
+                    chmod 600 .env
+
+                    # Source NVM and activate Node version
+                    . "$NVM_DIR/nvm.sh" --silent
+                    nvm use ${NODE_VERSION} --silent
+
+                    # Always install pinned pnpm version for lockfile compatibility
+                    npm install -g pnpm@9.15.9
+
+                    pnpm install --no-frozen-lockfile --config.ignore-scripts=false
+                '''
+            }
+        }
+
+        stage('Fetch Pinata Pins') {
+            steps {
+                sh '''
+                    # Source NVM and activate Node version
+                    . "$NVM_DIR/nvm.sh" --silent
+                    nvm use ${NODE_VERSION} --silent
+                    npm run fetch:pinata
+
+                    # Copy the data to shared location
+                    cp -r output/_prebuild_pinata_data/* ${PINATA_DATA_DIR}/
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            // Touch a file to indicate successful completion
+            sh "touch ${PINATA_DATA_DIR}/.last_fetch_success"
+            echo "Pinata pins data refreshed successfully"
+        }
+        failure {
+            echo "Pinata fetch failed - check logs above"
+        }
+    }
+}
