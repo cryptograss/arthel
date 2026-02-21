@@ -267,6 +267,159 @@ export async function fetchAllSubmissions() {
     return submissions;
 }
 
+/**
+ * Fetch pages in a specific category from PickiPedia
+ */
+async function fetchCategoryMembers(category) {
+    const url = `${PICKIPEDIA_API}?action=query&list=categorymembers&cmtitle=Category:${encodeURIComponent(category)}&cmlimit=100&format=json`;
+
+    try {
+        const response = await fetchWithTimeout(url);
+        if (!response.ok) return [];
+
+        const data = await response.json();
+        return data.query?.categorymembers || [];
+    } catch (e) {
+        console.warn(`Failed to fetch category ${category}:`, e.message);
+        return [];
+    }
+}
+
+/**
+ * Fetch a Recording page by title
+ */
+async function fetchRecordingPage(title) {
+    const url = `${PICKIPEDIA_API}?action=query&titles=${encodeURIComponent(title)}&prop=revisions&rvprop=content&format=json`;
+
+    try {
+        const response = await fetchWithTimeout(url);
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        const pages = data.query?.pages;
+        if (!pages) return null;
+
+        const pageId = Object.keys(pages)[0];
+        if (pageId === '-1') return null;
+
+        const page = pages[pageId];
+        const content = page.revisions?.[0]?.['*'];
+        if (!content) return null;
+
+        return {
+            title: page.title,
+            content: content
+        };
+    } catch (e) {
+        console.warn(`Failed to fetch recording ${title}:`, e.message);
+        return null;
+    }
+}
+
+/**
+ * Parse Recording template content to extract CIDs and metadata
+ */
+function parseRecordingContent(content) {
+    const titleMatch = content.match(/\|title=([^\n|}]+)/);
+    const artistsMatch = content.match(/\|artists=([^\n|}]+)/);
+    const dateMatch = content.match(/\|date=([^\n|}]+)/);
+    const videoCidMatch = content.match(/\|video_cid=([^\n|}]+)/);
+    const audioCidMatch = content.match(/\|audio_cid=([^\n|}]+)/);
+    const mixCidMatch = content.match(/\|mix_cid=([^\n|}]+)/);
+    const studioMatch = content.match(/\|studio=([^\n|}]+)/);
+    const engineerMatch = content.match(/\|engineer=([^\n|}]+)/);
+
+    // Clean up wiki link syntax from artists field
+    const cleanArtists = artistsMatch
+        ? artistsMatch[1].replace(/\[\[([^\]|]+)(\|[^\]]+)?\]\]/g, '$1').trim()
+        : null;
+
+    return {
+        title: titleMatch ? titleMatch[1].trim() : null,
+        artists: cleanArtists,
+        date: dateMatch ? dateMatch[1].trim() : null,
+        videoCid: videoCidMatch ? videoCidMatch[1].trim() : null,
+        audioCid: audioCidMatch ? audioCidMatch[1].trim() : null,
+        mixCid: mixCidMatch ? mixCidMatch[1].trim() : null,
+        studio: studioMatch ? studioMatch[1].trim() : null,
+        engineer: engineerMatch ? engineerMatch[1].trim() : null
+    };
+}
+
+/**
+ * Search for pages matching a query
+ */
+async function searchPages(query) {
+    const url = `${PICKIPEDIA_API}?action=query&list=search&srsearch=${encodeURIComponent(query)}&srlimit=100&format=json`;
+
+    try {
+        const response = await fetchWithTimeout(url);
+        if (!response.ok) return [];
+
+        const data = await response.json();
+        return data.query?.search || [];
+    } catch (e) {
+        console.warn(`Failed to search pages for ${query}:`, e.message);
+        return [];
+    }
+}
+
+/**
+ * Fetch all Recording pages from PickiPedia
+ * Returns array of recordings with their CIDs for pin categorization
+ */
+export async function fetchRecordings() {
+    const recordings = [];
+
+    console.log('=== PickiPedia Recordings Fetch ===');
+
+    // Quick connectivity check
+    try {
+        const healthCheck = await fetchWithTimeout(`${PICKIPEDIA_API}?action=query&meta=siteinfo&format=json`, 5000);
+        if (!healthCheck.ok) {
+            console.warn(`  PickiPedia returned non-OK status, skipping recordings fetch`);
+            return [];
+        }
+    } catch (e) {
+        console.warn(`  PickiPedia health check failed: ${e.message}`);
+        return [];
+    }
+
+    // Search for pages with "Recording:" in their title
+    const searchResults = await searchPages('Recording');
+    // Filter to only pages that actually start with "Recording:"
+    const recordingPages = searchResults.filter(p => p.title.startsWith('Recording:'));
+    console.log(`  Found ${recordingPages.length} Recording page(s)`);
+
+    for (const pageInfo of recordingPages) {
+        const page = await fetchRecordingPage(pageInfo.title);
+        if (!page) continue;
+
+        const parsed = parseRecordingContent(page.content);
+
+        // Collect all CIDs from this recording
+        const cids = [];
+        if (parsed.videoCid) cids.push({ cid: parsed.videoCid, format: 'video' });
+        if (parsed.audioCid) cids.push({ cid: parsed.audioCid, format: 'audio' });
+        if (parsed.mixCid) cids.push({ cid: parsed.mixCid, format: 'mix' });
+
+        if (cids.length === 0) continue;
+
+        const recording = {
+            pageTitle: pageInfo.title,
+            url: `${PICKIPEDIA_WIKI}/${encodeURIComponent(pageInfo.title)}`,
+            ...parsed,
+            cids: cids
+        };
+
+        recordings.push(recording);
+        console.log(`  Recording: ${parsed.title} by ${parsed.artists} (${cids.length} CIDs)`);
+    }
+
+    console.log(`Found ${recordings.length} recording(s) with CIDs`);
+    return recordings;
+}
+
 // Allow running standalone for testing
 if (import.meta.url === `file://${process.argv[1]}`) {
     fetchPendingSubmissions().then(submissions => {
