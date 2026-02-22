@@ -196,6 +196,7 @@ function categorizePinataPins(pinataPinsData, submissions, blueRailroadV2s, reco
         allPins: categorizedPins,
         summary,
         fetchedAt: pinataPinsData.fetchedAt,
+        fetchedAtBlock: pinataPinsData.fetchedAtBlock,
     };
 }
 
