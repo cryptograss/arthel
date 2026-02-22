@@ -980,21 +980,27 @@ export const runPrimaryBuild = async () => {
         try {
             const rawPinataPins = deserializePinataPins();
             if (rawPinataPins) {
-                // Collect CIDs from Pinata (already known to be on Pinata)
+                // Separate Pinata pins from maybelle-only pins
                 const pinataCids = new Set();
+                const maybelleOnlyCids = new Set();
                 for (const pin of rawPinataPins.pins) {
-                    pinataCids.add(pin.cid);
+                    if (pin.source === 'maybelle-only') {
+                        maybelleOnlyCids.add(pin.cid);
+                    } else {
+                        pinataCids.add(pin.cid);
+                    }
                 }
 
-                // Collect other CIDs that need checking (e.g., from submissions not in Pinata)
+                // Collect other CIDs that need checking (e.g., from submissions not in any known pin set)
+                const allKnownCids = new Set([...pinataCids, ...maybelleOnlyCids]);
                 const otherCids = new Set();
                 for (const submission of allSubmissions) {
-                    if (submission.ipfsCid && !pinataCids.has(submission.ipfsCid)) {
+                    if (submission.ipfsCid && !allKnownCids.has(submission.ipfsCid)) {
                         otherCids.add(submission.ipfsCid);
                     }
                 }
 
-                // Check gateways - Pinata CIDs only need Maybelle check, others need both
+                // Check gateways
                 console.time('gateway-checks');
                 const gatewayStatus = {};
 
@@ -1004,6 +1010,15 @@ export const runPrimaryBuild = async () => {
                     gatewayStatus[cid] = {
                         pinata: true,  // Known from API
                         maybelle: await checkGateway(IPFS_GATEWAYS.maybelle, cid, 10000),
+                    };
+                }
+
+                // For maybelle-only CIDs, mark as on Maybelle, check Pinata just in case
+                console.log(`Checking ${maybelleOnlyCids.size} Maybelle-only CIDs on Pinata...`);
+                for (const cid of maybelleOnlyCids) {
+                    gatewayStatus[cid] = {
+                        pinata: await checkGateway(IPFS_GATEWAYS.pinata, cid, 10000),
+                        maybelle: true,  // Known from local pins API
                     };
                 }
 

@@ -10,6 +10,36 @@ import { fetchCurrentBlockHeight } from './get_current_blockheight.js';
 dotenv.config();
 
 const PINATA_API_URL = 'https://api.pinata.cloud/v3/files/public';
+const MAYBELLE_PINNING_URL = process.env.MAYBELLE_PINNING_URL || 'https://pinning.maybelle.cryptograss.live';
+
+/**
+ * Fetch all pins from maybelle's local IPFS node
+ * @returns {Promise<Object>} Object with pins array and metadata
+ */
+async function fetchMaybellePins() {
+    const spinner = ora('Fetching pins from Maybelle IPFS node...').start();
+
+    try {
+        const response = await fetch(`${MAYBELLE_PINNING_URL}/local-pins`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Maybelle API error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        spinner.succeed(`Fetched ${data.count} pins from Maybelle IPFS node`);
+        return data;
+    } catch (error) {
+        spinner.fail(`Failed to fetch Maybelle pins: ${error.message}`);
+        return { node: 'maybelle', pins: [], count: 0, error: error.message };
+    }
+}
 
 /**
  * Fetch all pins from Pinata v3 API with pagination
@@ -78,10 +108,10 @@ async function fetchAllPins() {
 }
 
 /**
- * Main function to fetch and save Pinata pins
+ * Main function to fetch and save pins from all sources
  */
 async function fetchPinataPins() {
-    console.log('Starting Pinata pin discovery...');
+    console.log('Starting IPFS pin discovery...');
 
     const { outputBaseDir } = getProjectDirs();
     const outputDir = path.resolve(outputBaseDir, '_prebuild_pinata_data');
@@ -91,17 +121,43 @@ async function fetchPinataPins() {
         fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    const pins = await fetchAllPins();
+    // Fetch from both sources in parallel
+    const [pinataPins, maybellePins] = await Promise.all([
+        fetchAllPins(),
+        fetchMaybellePins()
+    ]);
+
+    // Build a set of Pinata CIDs for quick lookup
+    const pinataCidSet = new Set(pinataPins.map(p => p.cid));
+
+    // Find maybelle-only pins (not on Pinata)
+    const maybelleOnlyPins = (maybellePins.pins || [])
+        .filter(p => !pinataCidSet.has(p.cid))
+        .map(p => ({
+            cid: p.cid,
+            name: null,
+            size: null,
+            date_pinned: null,
+            source: 'maybelle-only',
+            keyvalues: {},
+        }));
+
+    console.log(`  Found ${maybelleOnlyPins.length} maybelle-only pins (not on Pinata)`);
+
+    // Combine all pins
+    const allPins = [...pinataPins, ...maybelleOnlyPins];
 
     // Calculate summary statistics
     const summary = {
-        total: pins.length,
-        totalSize: pins.reduce((sum, pin) => sum + (pin.size || 0), 0),
+        total: allPins.length,
+        pinataCount: pinataPins.length,
+        maybelleOnlyCount: maybelleOnlyPins.length,
+        totalSize: pinataPins.reduce((sum, pin) => sum + (pin.size || 0), 0),
         byMimeType: {},
         byKeyvalueSource: {},
     };
 
-    for (const pin of pins) {
+    for (const pin of pinataPins) {
         // Count by mime type
         const mimeType = pin.mime_type || 'unknown';
         summary.byMimeType[mimeType] = (summary.byMimeType[mimeType] || 0) + 1;
@@ -124,15 +180,16 @@ async function fetchPinataPins() {
         fetchedAt: new Date().toISOString(),
         fetchedAtBlock,
         summary,
-        pins,
+        pins: allPins,
+        maybellePins: maybellePins,  // Include raw maybelle data for reference
     };
 
     // Serialize to disk
     serializePinataPins(pinataPinsData);
 
     console.log('\nSummary:');
-    console.log(`  Total pins: ${summary.total}`);
-    console.log(`  Total size: ${(summary.totalSize / 1024 / 1024).toFixed(2)} MB`);
+    console.log(`  Total pins: ${summary.total} (${summary.pinataCount} on Pinata, ${summary.maybelleOnlyCount} maybelle-only)`);
+    console.log(`  Total size (Pinata): ${(summary.totalSize / 1024 / 1024).toFixed(2)} MB`);
     console.log('  By source:');
     for (const [source, count] of Object.entries(summary.byKeyvalueSource)) {
         console.log(`    ${source}: ${count}`);
