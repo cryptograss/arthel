@@ -156,9 +156,9 @@
                                         <span class="badge bg-warning text-dark">Unknown</span>
                                     {% endif %}
                                 </td>
-                                <td class="small text-muted">
+                                <td class="small text-muted" style="font-size: 0.75em;">
                                     {% if pin.date_pinned %}
-                                        {{ pin.date_pinned | truncate(10, true, '') }}
+                                        {{ pin.date_pinned | truncate(16, true, '') | replace("T", " ") }}
                                     {% else %}
                                         —
                                     {% endif %}
