@@ -131,15 +131,16 @@ async function fetchPinataPins() {
     const pinataCidSet = new Set(pinataPins.map(p => p.cid));
 
     // Find maybelle-only pins (not on Pinata)
+    // Uses pinnedAt from manifest if available (IPFS doesn't track pin timestamps natively)
     const maybelleOnlyPins = (maybellePins.pins || [])
         .filter(p => !pinataCidSet.has(p.cid))
         .map(p => ({
             cid: p.cid,
-            name: null,
+            name: p.metadata?.name || null,
             size: null,
-            date_pinned: null,
+            date_pinned: p.pinnedAt || null,
             source: 'maybelle-only',
-            keyvalues: {},
+            keyvalues: p.metadata || {},
         }));
 
     console.log(`  Found ${maybelleOnlyPins.length} maybelle-only pins (not on Pinata)`);
