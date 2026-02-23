@@ -103,6 +103,7 @@
                                 <th>Source</th>
                                 <th>Pinned</th>
                                 <th>Linked To</th>
+                                <th>Wiki Pages</th>
                                 <th class="text-center" title="Pinata Cloud">
                                     <img src="https://docs.pinata.cloud/~gitbook/image?url=https%3A%2F%2F1627037926-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F-MUswiVNcdGBij6w0UBB%252Ficon%252FJdLyxBqcvLRnTrESj0rV%252F2023-09-26%252017.19.36.jpg%3Falt%3Dmedia%26token%3D4d7a37d8-40f5-48e6-9780-0bd44b58ee1a&width=32&dpr=2&quality=100&sign=c18b0b9d&sv=2" alt="Pinata" style="height: 18px; vertical-align: middle;">
                                 </th>
@@ -185,6 +186,34 @@
                                         <span class="text-muted">—</span>
                                     {% endif %}
                                 </td>
+                                <td class="small">
+                                    {% set pages = pinataPins.cidPages[pin.cid] if pinataPins.cidPages else [] %}
+                                    {% if pages and pages | length > 0 %}
+                                        {% for page in pages %}
+                                            {% if loop.index <= 3 %}
+                                            <a href="{{ page.url }}" target="_blank" class="d-block text-truncate" style="max-width: 150px;" title="{{ page.title }}">
+                                                {{ page.title | replace("Blue_Railroad_", "") | replace("_", " ") }}
+                                            </a>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if pages | length > 3 %}
+                                            <a href="#" class="text-muted small wiki-pages-expand" data-cid="{{ pin.cid }}">
+                                                +{{ pages | length - 3 }} more...
+                                            </a>
+                                            <div class="wiki-pages-hidden d-none" data-cid="{{ pin.cid }}">
+                                                {% for page in pages %}
+                                                    {% if loop.index > 3 %}
+                                                    <a href="{{ page.url }}" target="_blank" class="d-block text-truncate" style="max-width: 150px;" title="{{ page.title }}">
+                                                        {{ page.title | replace("Blue_Railroad_", "") | replace("_", " ") }}
+                                                    </a>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
                                 <td class="text-center pinata-status">
                                     {% if pin.gatewayStatus.pinata %}
                                     <span class="badge bg-success">✓</span>
@@ -244,6 +273,34 @@
                                     <a href="https://pickipedia.xyz/wiki/Blue_Railroad_Submission/{{ submission.id }}" target="_blank" class="text-info">
                                         Sub #{{ submission.id }}
                                     </a>
+                                </td>
+                                <td class="small">
+                                    {% set pages = pinataPins.cidPages[submission.ipfsCid] if pinataPins.cidPages else [] %}
+                                    {% if pages and pages | length > 0 %}
+                                        {% for page in pages %}
+                                            {% if loop.index <= 3 %}
+                                            <a href="{{ page.url }}" target="_blank" class="d-block text-truncate" style="max-width: 150px;" title="{{ page.title }}">
+                                                {{ page.title | replace("Blue_Railroad_", "") | replace("_", " ") }}
+                                            </a>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if pages | length > 3 %}
+                                            <a href="#" class="text-muted small wiki-pages-expand" data-cid="{{ submission.ipfsCid }}">
+                                                +{{ pages | length - 3 }} more...
+                                            </a>
+                                            <div class="wiki-pages-hidden d-none" data-cid="{{ submission.ipfsCid }}">
+                                                {% for page in pages %}
+                                                    {% if loop.index > 3 %}
+                                                    <a href="{{ page.url }}" target="_blank" class="d-block text-truncate" style="max-width: 150px;" title="{{ page.title }}">
+                                                        {{ page.title | replace("Blue_Railroad_", "") | replace("_", " ") }}
+                                                    </a>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
                                 </td>
                                 <td class="text-center pinata-status">
                                     <span class="badge bg-secondary">—</span>
@@ -361,6 +418,21 @@
     // Initial count
     document.addEventListener('DOMContentLoaded', () => {
         applyFilters();
+
+        // Wiki pages expand/collapse
+        document.querySelectorAll('.wiki-pages-expand').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const cid = link.dataset.cid;
+                const hiddenDiv = document.querySelector(`.wiki-pages-hidden[data-cid="${cid}"]`);
+                if (hiddenDiv) {
+                    hiddenDiv.classList.toggle('d-none');
+                    link.textContent = hiddenDiv.classList.contains('d-none')
+                        ? link.textContent.replace('hide', 'more...')
+                        : link.textContent.replace('more...', 'hide');
+                }
+            });
+        });
     });
 </script>
 

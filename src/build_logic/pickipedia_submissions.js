@@ -420,6 +420,60 @@ export async function fetchRecordings() {
     return recordings;
 }
 
+/**
+ * Find PickiPedia pages that embed/reference a specific CID
+ * @param {string} cid - The IPFS CID to search for
+ * @returns {Promise<Array>} Array of {title, url} objects
+ */
+export async function fetchPagesWithCid(cid) {
+    if (!cid) return [];
+
+    const results = await searchPages(cid);
+
+    return results.map(r => ({
+        title: r.title,
+        url: `${PICKIPEDIA_WIKI}/${encodeURIComponent(r.title)}`
+    }));
+}
+
+/**
+ * Find PickiPedia pages for multiple CIDs (batched for efficiency)
+ * @param {Array<string>} cids - Array of IPFS CIDs
+ * @returns {Promise<Object>} Map of cid -> [{title, url}, ...]
+ */
+export async function fetchPagesForCids(cids) {
+    console.log(`=== PickiPedia CID Pages Lookup ===`);
+
+    // Quick connectivity check
+    try {
+        const healthCheck = await fetchWithTimeout(`${PICKIPEDIA_API}?action=query&meta=siteinfo&format=json`, 5000);
+        if (!healthCheck.ok) {
+            console.warn(`  PickiPedia returned non-OK status, skipping CID lookup`);
+            return {};
+        }
+    } catch (e) {
+        console.warn(`  PickiPedia health check failed: ${e.message}`);
+        return {};
+    }
+
+    const result = {};
+    const uniqueCids = [...new Set(cids.filter(Boolean))];
+
+    console.log(`  Looking up ${uniqueCids.length} CIDs...`);
+
+    for (const cid of uniqueCids) {
+        const pages = await fetchPagesWithCid(cid);
+        if (pages.length > 0) {
+            result[cid] = pages;
+        }
+    }
+
+    const foundCount = Object.keys(result).length;
+    console.log(`  Found wiki pages for ${foundCount} CIDs`);
+
+    return result;
+}
+
 // Allow running standalone for testing
 if (import.meta.url === `file://${process.argv[1]}`) {
     fetchPendingSubmissions().then(submissions => {

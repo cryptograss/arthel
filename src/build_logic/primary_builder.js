@@ -24,7 +24,7 @@ import { appendChainDataToShows } from './chain_reading.js';
 // Feature-specific modules
 import { generateSetStonePages, renderSetStoneImages } from './setstone_utils.js';
 import { verifyBlueRailroadVideos, generateBlueRailroadV2Metadata } from './blue_railroad.js';
-import { fetchPendingSubmissions, fetchAllSubmissions, fetchRecordings } from './pickipedia_submissions.js';
+import { fetchPendingSubmissions, fetchAllSubmissions, fetchRecordings, fetchPagesForCids } from './pickipedia_submissions.js';
 import { cidToBytes32 } from './cid_utils.js';
 import { DateTime } from 'luxon';
 import { fetchCurrentBlockHeight } from './get_current_blockheight.js';
@@ -1052,6 +1052,11 @@ export const runPrimaryBuild = async () => {
 
                 console.log(`Loaded ${categorizedPinataPins.summary.total} Pinata pins (${categorizedPinataPins.summary.byCategory['minted-token']} minted, ${categorizedPinataPins.summary.byCategory['submission']} submissions, ${categorizedPinataPins.summary.byCategory['recording']} recordings, ${categorizedPinataPins.summary.byCategory['blue-railroad']} blue-railroad, ${categorizedPinataPins.summary.byCategory['unknown']} unknown)`);
                 console.log(`Gateway availability: ${gatewayCounts.pinata} on Pinata, ${gatewayCounts.maybelle} on Maybelle`);
+
+                // Fetch PickiPedia pages that reference each CID
+                const allCids = categorizedPinataPins.allPins.map(p => p.cid);
+                const cidPages = await fetchPagesForCids(allCids);
+                categorizedPinataPins.cidPages = cidPages;
             }
         } catch (e) {
             console.warn('Failed to load Pinata pins:', e.message);
