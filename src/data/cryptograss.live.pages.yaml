@@ -37,6 +37,13 @@ tools/upload-video:
     page_title: "Video Upload"
     no_video_bg: true
 
+tools/upload-album:
+  template: tools/upload-album.njk
+  include_data_in_context: ["latest_git_commit"]
+  context:
+    page_title: "Album Upload"
+    no_video_bg: true
+
 blox-office/admin/mint-tony:
   template: blox-office/admin/mint-tony.njk
   include_data_in_context: ["chainData", "latest_git_commit"]
