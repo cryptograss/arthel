@@ -28,8 +28,8 @@
             <div class="col-md-3">
                 <div class="card semi-transparent-bg text-center">
                     <div class="card-body">
-                        <h3 class="mb-0 text-info">{{ pinataPins.gatewayCounts.maybelle if pinataPins else 0 }}</h3>
-                        <small class="text-muted">On Maybelle</small>
+                        <h3 class="mb-0 text-info">{{ pinataPins.gatewayCounts.deliveryKid if pinataPins else 0 }}</h3>
+                        <small class="text-muted">On Delivery Kid</small>
                     </div>
                 </div>
             </div>
@@ -107,8 +107,8 @@
                                 <th class="text-center" title="Pinata Cloud">
                                     <img src="https://docs.pinata.cloud/~gitbook/image?url=https%3A%2F%2F1627037926-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F-MUswiVNcdGBij6w0UBB%252Ficon%252FJdLyxBqcvLRnTrESj0rV%252F2023-09-26%252017.19.36.jpg%3Falt%3Dmedia%26token%3D4d7a37d8-40f5-48e6-9780-0bd44b58ee1a&width=32&dpr=2&quality=100&sign=c18b0b9d&sv=2" alt="Pinata" style="height: 18px; vertical-align: middle;">
                                 </th>
-                                <th class="text-center" title="Maybelle IPFS Node">
-                                    🎻
+                                <th class="text-center" title="Delivery Kid IPFS Node">
+                                    📦
                                 </th>
                                 <th class="text-center" title="GrassHouse IPFS Node">
                                     🏠
@@ -221,8 +221,8 @@
                                     <span class="badge bg-danger">✗</span>
                                     {% endif %}
                                 </td>
-                                <td class="text-center maybelle-status">
-                                    {% if pin.gatewayStatus.maybelle %}
+                                <td class="text-center deliverykid-status">
+                                    {% if pin.gatewayStatus.deliveryKid %}
                                     <span class="badge bg-success">✓</span>
                                     {% else %}
                                     <span class="badge bg-danger">✗</span>
@@ -305,7 +305,7 @@
                                 <td class="text-center pinata-status">
                                     <span class="badge bg-secondary">—</span>
                                 </td>
-                                <td class="text-center maybelle-status">
+                                <td class="text-center deliverykid-status">
                                     <span class="badge bg-secondary">—</span>
                                 </td>
                                 <td class="text-center grasshouse-status">
@@ -353,8 +353,8 @@
                     <div class="col-md-4">
                         <div class="card bg-dark">
                             <div class="card-body">
-                                <h6>🎻 Maybelle</h6>
-                                <small class="text-muted">maybelle.cryptograss.live</small>
+                                <h6>📦 Delivery Kid</h6>
+                                <small class="text-muted">delivery-kid.cryptograss.live</small>
                                 <div class="mt-2">
                                     <span class="badge bg-success">Configured</span>
                                 </div>
