@@ -1,0 +1,2577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justin Holmes | Electronic Press Kit</title>
+    <meta name="description" content="Bluegrass musician, software engineer, and blockchain innovator. Book Justin Holmes and The Immutable String Band for your event.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2d5016;
+            --primary-light: #4a7c59;
+            --accent: #d4a574;
+            --dark: #1a1a1a;
+            --light: #f5f5f0;
+            --text: #333;
+            --text-light: #666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            background: var(--light);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 15px 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+            color: var(--light);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+        }
+
+        nav .logo img {
+            height: 36px;
+            width: auto;
+            filter: invert(1) brightness(0.9);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--dark) 0%, #2a2a2a 100%);
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/images/thumb/e/ec/Justin-st-pete-thompson.jpg/280px-Justin-st-pete-thompson.jpg') center/cover;
+            opacity: 0.15;
+        }
+
+        .hero .container {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            color: var(--light);
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+
+        .hero-content .tagline {
+            font-size: 2.2rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .hero-content .instrument-icons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .pixel-instrument {
+            color: var(--accent);
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .hero-content p {
+            color: #ccc;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .hero-image {
+            position: relative;
+        }
+
+        .hero-image img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            margin-left: 15px;
+        }
+
+        .btn-outline:hover {
+            background: var(--accent);
+            color: var(--dark);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 3rem;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+
+        /* About Section */
+        .about {
+            background: white;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-image img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .about-content h3 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .about-content p {
+            margin-bottom: 20px;
+            color: var(--text-light);
+        }
+
+        .stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Music Section */
+        .music {
+            background: var(--light);
+        }
+
+        .music-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .album-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .album-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .album-card img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
+
+        .album-info {
+            padding: 20px;
+        }
+
+        .album-info h4 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .album-info p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .track-dropdown {
+            margin-top: 15px;
+        }
+
+        .track-toggle {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .track-toggle:hover {
+            background: var(--primary-light);
+        }
+
+        .track-list {
+            display: none;
+            text-align: left;
+            margin-top: 15px;
+            padding-left: 25px;
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+
+        .track-list.active {
+            display: block;
+        }
+
+        .track-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .track-list li:last-child {
+            border-bottom: none;
+        }
+
+        .artist-list {
+            padding-left: 0 !important;
+        }
+
+        .artist-entry {
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .artist-entry:last-child {
+            border-bottom: none;
+        }
+
+        .artist-header {
+            font-size: 1rem;
+            color: var(--dark);
+        }
+
+        .artist-stats {
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-top: 3px;
+        }
+
+        .artist-bio {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .artist-songs {
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-top: 4px;
+        }
+
+        .track-row {
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .track-row:hover {
+            color: var(--primary);
+        }
+
+        .track-row:hover .play-btn {
+            background: var(--primary);
+        }
+
+        .track-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .track-item .bandcamp-embed {
+            display: none;
+            margin-top: 10px;
+            margin-left: 40px;
+        }
+
+        .track-item.playing .bandcamp-embed {
+            display: block;
+        }
+
+        .track-item.playing .play-btn {
+            background: var(--primary);
+        }
+
+        .play-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #333;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .play-btn:hover {
+            background: #555;
+            transform: scale(1.1);
+        }
+
+
+        /* Video Section */
+        .videos {
+            background: var(--dark);
+            color: white;
+        }
+
+        .videos .section-title h2 {
+            color: white;
+        }
+
+        .videos .section-title p {
+            color: #999;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .video-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+
+        .video-card iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-card .placeholder {
+            width: 100%;
+            height: 100%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        /* Offerings Section */
+        .offerings {
+            background: white;
+        }
+
+        .offering-image {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .offering-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .offering-image img.placeholder {
+            display: none;
+        }
+
+        .offering-image:has(img.placeholder) {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .offering-image:has(img.placeholder)::after {
+            content: "Image coming soon";
+        }
+
+        .offerings-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .offering-card {
+            background: var(--light);
+            padding: 40px 30px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .offering-card:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .offering-card:hover h4,
+        .offering-card:hover p {
+            color: white;
+        }
+
+        .offering-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .offering-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .offering-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .offering-card[data-video] {
+            cursor: pointer;
+        }
+
+        .offering-image {
+            position: relative;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .offering-card:hover .play-overlay {
+            opacity: 1;
+        }
+
+        /* Video Modal */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-modal.active {
+            display: flex;
+        }
+
+        .video-modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            aspect-ratio: 16/9;
+        }
+
+        .video-modal-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .video-modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 5px 15px;
+        }
+
+        .video-modal-close:hover {
+            color: var(--accent);
+        }
+
+        /* Booking Section */
+        .booking {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .booking .section-title h2 {
+            color: white;
+        }
+
+        .booking .section-title p {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .booking-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .booking-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .booking-info p {
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .booking-info ul {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .booking-info li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .booking-form {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            color: var(--text);
+        }
+
+        .booking-form h3 {
+            color: var(--dark);
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Gallery */
+        .gallery {
+            background: var(--light);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .footer-brand p {
+            color: #999;
+        }
+
+        .footer-brand .social-links {
+            margin-top: 25px;
+        }
+
+        .footer-brand .social-links a {
+            width: 45px;
+            height: 45px;
+            background: #444;
+            border: 1px solid #666;
+        }
+
+        .footer-brand .social-links a:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .footer-brand .social-links a svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .footer-links h4 {
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: #999;
+            text-decoration: none;
+            display: block;
+            padding: 5px 0;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+        }
+
+        .hero-social {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+        }
+
+        .hero-social a {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .hero-social a:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .hero-social a svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #333;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Booking Images */
+        .booking-images {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .booking-image {
+            width: 50%;
+            border-radius: 10px;
+            transition: transform 0.3s, filter 0.3s;
+            cursor: pointer;
+        }
+
+        .booking-image:hover {
+            transform: translateY(-10px) scale(1.05);
+            filter: brightness(1.15);
+            z-index: 10;
+        }
+
+        .booking-image-notch {
+            width: 20%;
+            border-radius: 10px;
+            margin-left: -30px;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.3s, filter 0.3s;
+            cursor: pointer;
+        }
+
+        .booking-image-notch:hover {
+            transform: translateY(-10px) scale(1.1);
+            filter: brightness(1.15);
+            z-index: 10;
+        }
+
+        .booking-image-friend {
+            width: 40%;
+            border-radius: 10px;
+            margin-left: -40px;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.3s, filter 0.3s;
+            cursor: pointer;
+        }
+
+        .booking-image-friend:hover {
+            transform: translateY(-10px) scale(1.05);
+            filter: brightness(1.15);
+            z-index: 10;
+        }
+
+        .booking-image-friend4 {
+            width: 35%;
+            border-radius: 10px;
+            margin-left: -80px;
+            position: relative;
+            top: -100px;
+            z-index: 1;
+            transition: transform 0.3s, filter 0.3s;
+            cursor: pointer;
+        }
+
+        .booking-image-friend4:hover {
+            transform: translateY(-10px) scale(1.05);
+            filter: brightness(1.15);
+            z-index: 10;
+        }
+
+        .booking-image-friend5 {
+            width: 24%;
+            border-radius: 10px;
+            position: absolute;
+            left: 52%;
+            top: -20px;
+            z-index: 6;
+            transition: transform 0.3s, filter 0.3s;
+            cursor: pointer;
+        }
+
+        .booking-image-friend5:hover {
+            transform: translateY(-10px) scale(1.05);
+            filter: brightness(1.15);
+            z-index: 10;
+        }
+
+        /* Places Globe Section */
+        .places {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0;
+        }
+
+        .places .section-title h2 {
+            color: white;
+        }
+
+        .places .section-title p {
+            color: #999;
+        }
+
+        .globe-layout {
+            display: flex;
+            gap: 0;
+            align-items: flex-start;
+        }
+
+        #globe-container {
+            flex: 1;
+            height: 500px;
+            cursor: grab;
+            min-width: 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        #globe-container:active {
+            cursor: grabbing;
+        }
+
+        .show-info-panel {
+            width: 380px;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px 10px 10px 0;
+            padding: 20px 20px 10px 20px;
+            display: none;
+            position: relative;
+            z-index: 10;
+            margin-left: 0;
+            height: fit-content;
+        }
+
+        .show-info-panel.active {
+            display: block;
+        }
+
+        .show-poster {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .show-info-panel h3 {
+            color: var(--accent);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .show-info-panel .show-venue {
+            color: #ccc;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .show-info-panel .show-block {
+            color: #888;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+        }
+
+        .show-info-panel h4 {
+            color: white;
+            font-size: 1rem;
+            margin: 15px 0 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 5px;
+        }
+
+        .ensemble-list, .setlist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ensemble-list li, .setlist li {
+            color: #ccc;
+            font-size: 0.9rem;
+            padding: 3px 0;
+        }
+
+        .ensemble-list li strong {
+            color: white;
+        }
+
+        .setlist li {
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .setlist li:before {
+            content: "♪";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        .setlist li[class^="song-"] {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-weight: 500;
+        }
+        .setlist li.song-originals { color: #6ab04c; }
+        .setlist li.song-originals:before { color: #6ab04c; }
+        .setlist li.song-traditionals { color: #f0c674; }
+        .setlist li.song-traditionals:before { color: #f0c674; }
+        .setlist li.song-covers { color: #a29bfe; }
+        .setlist li.song-covers:before { color: #a29bfe; }
+        .setlist li.song-vgm { color: #ff7675; }
+        .setlist li.song-vgm:before { color: #ff7675; }
+
+        .show-leaderboard {
+            display: none;
+            gap: 40px;
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .show-leaderboard.active {
+            display: flex;
+        }
+
+        .leaderboard-section {
+            flex: 1;
+        }
+
+        .leaderboard-section h4 {
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .leaderboard-section .ensemble-list,
+        .leaderboard-section .setlist {
+            columns: 2;
+            column-gap: 30px;
+        }
+
+        .leaderboard-section .ensemble-list li,
+        .leaderboard-section .setlist li {
+            break-inside: avoid;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .song-breakdown {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .song-breakdown h5 {
+            color: #999;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .breakdown-bar {
+            display: flex;
+            height: 24px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .breakdown-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            transition: flex 0.3s;
+        }
+
+        .breakdown-segment.originals { background: var(--primary); }
+        .breakdown-segment.traditionals { background: var(--accent); }
+        .breakdown-segment.covers { background: #6b5b95; }
+        .breakdown-segment.vgm { background: #e74c3c; }
+
+        .breakdown-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #ccc;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.originals { background: var(--primary); }
+        .legend-dot.traditionals { background: var(--accent); }
+        .legend-dot.covers { background: #6b5b95; }
+        .legend-dot.vgm { background: #e74c3c; }
+
+        .venue-info {
+            text-align: center;
+            padding: 20px;
+            min-height: 80px;
+            color: #ccc;
+        }
+
+        .venue-info h4 {
+            color: var(--accent);
+            margin-bottom: 5px;
+            font-size: 1.3rem;
+        }
+
+        .venue-info p {
+            margin: 3px 0;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero .container,
+            .about-grid,
+            .booking-grid,
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+
+            .music-grid,
+            .offerings-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            nav ul {
+                display: none;
+            }
+
+            .globe-layout {
+                flex-direction: column;
+            }
+
+            .show-info-panel {
+                width: 100%;
+                margin-top: 20px;
+                margin-left: 0;
+            }
+
+            .show-leaderboard {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .leaderboard-section .ensemble-list,
+            .leaderboard-section .setlist {
+                columns: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .music-grid,
+            .offerings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                flex-wrap: wrap;
+            }
+
+            #globe-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="#hero" class="logo"><img src="images/jh-logo.svg" alt="JH Logo">Justin Holmes</a>
+            <ul>
+                <li><a href="#offerings">Offerings</a></li>
+                <li><a href="#music">Music</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#places"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Places</a></li>
+                <li><a href="#videos">Videos</a></li>
+                <li><a href="#booking">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="hero" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Justin Holmes</h1>
+                <p style="color: #d4a574; font-weight: 700; margin-bottom: 0.5rem;">Self-Proclaimed Bronze Medal Winner,<br>2027 Hackabilly Bluegrass Competition</p>
+                <p>Founder of Cryptograss, PickiPedia, and The Immutable String Band.</p>
+                <a href="#booking" class="btn">Contact</a>
+                <a href="#music" class="btn btn-outline">Listen</a>
+            </div>
+            <div class="hero-image">
+                <img src="/images/thumb/e/ec/Justin-st-pete-thompson.jpg/280px-Justin-st-pete-thompson.jpg" alt="Justin Holmes playing guitar">
+            </div>
+        </div>
+        <div class="social-links hero-social">
+            <a href="https://warpcast.com/justinholmes" title="Farcaster">
+                <svg viewBox="0 0 24 24"><path d="M3 4h18v16H3V4zm3 3v10h2V7H6zm4 0v10h2V7h-2zm4 0v10h2V7h-2zm4 0v5h2V7h-2z"/></svg>
+            </a>
+            <a href="https://www.youtube.com/@JustinMylesHolmes" title="YouTube">
+                <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+            <a href="https://justinholmes.bandcamp.com" title="Bandcamp">
+                <svg viewBox="0 0 24 24"><path d="M0 18.75l7.437-13.5H24l-7.438 13.5H0z"/></svg>
+            </a>
+            <a href="https://instagram.com/JustinMylesHolmes" title="Instagram">
+                <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <a href="https://t.me/justinmylesholmesoffical" title="Telegram">
+                <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            </a>
+            <a href="https://github.com/jmyles" title="GitHub">
+                <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            </a>
+            <a href="https://justinholmes.com" title="Website">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </a>
+        </div>
+    </section>
+
+    <section id="offerings" class="offerings">
+        <div class="container">
+            <div class="section-title">
+                <h2>Offerings</h2>
+                <p>Live music, talks, podcast features</p>
+            </div>
+            <div class="offerings-grid">
+                <a href="https://www.youtube.com/watch?v=YIxg0Qcdf94" target="_blank" class="offering-card">
+                    <div class="offering-image">
+                        <img src="/images/thumb/c/cf/EthDenver-stage-with-the-boys2.jpg/200px-EthDenver-stage-with-the-boys2.jpg" alt="Live Performance">
+                        <div class="play-overlay">▶</div>
+                    </div>
+                    <h4>Live Performance</h4>
+                    <p>Full band shows with The Immutable String Band, solo acoustic sets, or duo configurations. Bluegrass, old-time, and original music.</p>
+                </a>
+                <a href="https://www.youtube.com/watch?v=om0tew-Z4gE" target="_blank" class="offering-card">
+                    <div class="offering-image">
+                        <img src="images/live-talks-new.jpg" alt="Live Talks">
+                        <div class="play-overlay">▶</div>
+                    </div>
+                    <h4>Talks with Live Coding</h4>
+                    <p>From Lightning Talks to Keynotes, on cryptographic primitives, distributed systems, and the intersection of crypto-anarchy and traditional music.</p>
+                </a>
+                <a href="https://www.youtube.com/watch?v=Y3s9Fu4yu7o&t=2938" target="_blank" class="offering-card">
+                    <div class="offering-image">
+                        <img src="https://img.youtube.com/vi/Y3s9Fu4yu7o/hqdefault.jpg" alt="Podcasts">
+                        <div class="play-overlay">▶</div>
+                    </div>
+                    <h4>Podcasts</h4>
+                    <p>Guest appearances on podcasts discussing blockchain, music, technology, and the future of decentralized creative economies.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="music" class="music">
+        <div class="container">
+            <div class="section-title">
+                <h2>Music</h2>
+                <p>Albums, singles, and collaborations</p>
+            </div>
+            <div class="music-grid">
+                <div class="album-card">
+                    <img src="images/vowel-sounds-cover.png" alt="Vowel Sounds Album">
+                    <div class="album-info">
+                        <h4>Vowel Sounds</h4>
+                        <p>2024 - Full Album</p>
+                        <div class="track-dropdown">
+                            <button class="track-toggle">View Tracks ▼</button>
+                            <ol class="track-list">
+                                <li class="track-item" data-track="3716911717">
+                                    <div class="track-row"><span class="play-btn">▶</span> Lost</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="2561466004">
+                                    <div class="track-row"><span class="play-btn">▶</span> Hell or High Water</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="169736">
+                                    <div class="track-row"><span class="play-btn">▶</span> Cork Board</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="295449334">
+                                    <div class="track-row"><span class="play-btn">▶</span> Power Underneath</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="2419343800">
+                                    <div class="track-row"><span class="play-btn">▶</span> return(Place)</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="1195393655">
+                                    <div class="track-row"><span class="play-btn">▶</span> Vowel Sounds</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="2925472049">
+                                    <div class="track-row"><span class="play-btn">▶</span> gm☕</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="3930086613">
+                                    <div class="track-row"><span class="play-btn">▶</span> The Morning of The Bank Run</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="3888624559">
+                                    <div class="track-row"><span class="play-btn">▶</span> Rollups and Rearview Mirrors</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="1813577675">
+                                    <div class="track-row"><span class="play-btn">▶</span> Barlow's Jig</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="album-card">
+                    <img src="images/collaborations.jpg" alt="Collaborations">
+                    <div class="album-info">
+                        <h4>Recent Collaborations</h4>
+                        <p>Live & Studio Sessions</p>
+                        <div class="track-dropdown">
+                            <button class="track-toggle">View Artists ▼</button>
+                            <div class="track-list artist-list">
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>Jakub Vysoky</strong> — mandolin, vocals, cajon, ukulele</div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>Skyler Golden</strong> — bass, dobro</div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>Kuba Hejhal</strong> — fiddle <em style="color: var(--accent);">1997–2024</em></div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>Cory Walker</strong> — 5-string banjo</div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>Harry Clark</strong> — mandolin, guitar</div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>David Grier</strong> — guitar</div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>Pepa Lopera</strong> — fiddle</div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>Jake Stargel</strong> — bass, mandolin, guitar</div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>Maddie Denton</strong> — fiddle</div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>Gaven Largent</strong> — dobro</div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>Kyle Tuttle</strong> — 5-string banjo</div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>John Mailander</strong> — fiddle</div>
+                                </div>
+                                <div class="artist-entry">
+                                    <div class="artist-header"><strong>Sam Grisman</strong> — bass</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="album-card">
+                    <img src="images/4masks-cover.png" alt="4masks Album">
+                    <div class="album-info">
+                        <h4>4masks</h4>
+                        <p>2026 - Full Album</p>
+                        <div class="track-dropdown">
+                            <button class="track-toggle">View Tracks ▼</button>
+                            <ol class="track-list">
+                                <li class="track-item" data-track="2752420247">
+                                    <div class="track-row"><span class="play-btn">▶</span> Paint Exchange</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="535305089">
+                                    <div class="track-row"><span class="play-btn">▶</span> Silver .44</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="2198085444">
+                                    <div class="track-row"><span class="play-btn">▶</span> Moon Factory</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="2500983495">
+                                    <div class="track-row"><span class="play-btn">▶</span> Needle and Thread</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="2031075955">
+                                    <div class="track-row"><span class="play-btn">▶</span> Victory</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="1842702533">
+                                    <div class="track-row"><span class="play-btn">▶</span> Cicada Song</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="117060504">
+                                    <div class="track-row"><span class="play-btn">▶</span> August</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="1205518268">
+                                    <div class="track-row"><span class="play-btn">▶</span> Proximity</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="295358735">
+                                    <div class="track-row"><span class="play-btn">▶</span> Drowsy Maggie</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="3711285203">
+                                    <div class="track-row"><span class="play-btn">▶</span> Masks</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                                <li class="track-item" data-track="3763597452">
+                                    <div class="track-row"><span class="play-btn">▶</span> Swords to Ploughshares</div>
+                                    <div class="bandcamp-embed"></div>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-title">
+                <h2>About</h2>
+                <p>Where bluegrass meets the blockchain</p>
+            </div>
+            <div class="about-grid">
+                <div class="about-image">
+                    <img src="/images/thumb/4/42/Justin-seoul-sesame.jpg/200px-Justin-seoul-sesame.jpg" alt="Justin Holmes">
+                </div>
+                <div class="about-content">
+                    <h3>Traditional Music for the Digital Age</h3>
+                    <p>Justin Holmes is probably best known in bluegrass circles as "that throatsinging dude/guy." He plays guitar, mandolin, melodica, and tin whistle in his touring, rotating bluegrass band, The Immutable String Band.</p>
+                    <p>With thousands of published contributions to open source cryptography and web codebases, Justin was until recently better known as a software engineer than a musician. His music blends bluegrass, old-time, and traditional music from around the world, with lyrics about cryptography, privacy, artificial intelligence, and the evolution of the internet.</p>
+                    <p>Justin has been learning and practicing Tuvan Throatsinging and other overtone singing styles since 2004, and holds a brown belt in isshinryu karate.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="places" class="places">
+        <div class="container">
+            <div class="section-title">
+                <h2>The Places We've Played</h2>
+                <p>47 shows across 5 continents</p>
+            </div>
+            <div class="globe-layout">
+                <div style="position: relative; flex: 1; min-height: 500px;">
+                    <div id="globe-container" style="width: 100%; height: 100%;"></div>
+                    <div id="globe-zoom-controls" style="position: absolute; top: 10px; left: 10px; display: flex; flex-direction: column; gap: 5px; z-index: 10;">
+                        <button id="zoom-in" style="width: 30px; height: 30px; background: rgba(30,30,30,0.8); border: 1px solid #d4a574; color: #d4a574; font-size: 18px; cursor: pointer; border-radius: 4px;">+</button>
+                        <button id="zoom-out" style="width: 30px; height: 30px; background: rgba(30,30,30,0.8); border: 1px solid #d4a574; color: #d4a574; font-size: 18px; cursor: pointer; border-radius: 4px;">−</button>
+                    </div>
+                </div>
+                <div id="show-info-panel" class="show-info-panel">
+                    <img id="show-poster" class="show-poster" src="" alt="Show poster" style="display: none;">
+                    <h3 id="show-title"></h3>
+                    <div id="show-venue" class="show-venue"></div>
+                    <div id="show-block" class="show-block"></div>
+                </div>
+            </div>
+            <div id="show-leaderboard" class="show-leaderboard">
+                <div class="leaderboard-section">
+                    <h4>Ensemble</h4>
+                    <ul id="show-ensemble" class="ensemble-list"></ul>
+                    <div id="song-breakdown" class="song-breakdown"></div>
+                </div>
+                <div class="leaderboard-section">
+                    <h4>Setlist</h4>
+                    <ul id="show-setlist" class="setlist"></ul>
+                </div>
+            </div>
+            <div id="venue-info" class="venue-info"></div>
+        </div>
+    </section>
+
+    <section id="videos" class="videos">
+        <div class="container">
+            <div class="section-title">
+                <h2>Videos</h2>
+                <p>Performances, talks, and behind the scenes</p>
+            </div>
+            <div class="video-grid">
+                <div class="video-card">
+                    <iframe src="https://www.youtube.com/embed/UqVmvH3Ltd4" title="Justin Holmes Performance" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-card">
+                    <iframe src="https://www.youtube.com/embed/Y3s9Fu4yu7o" title="The unlikely shared origins of bluegrass and blockchains" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-card">
+                    <iframe src="https://www.youtube.com/embed/YIxg0Qcdf94" title="Justin Holmes Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-card">
+                    <iframe src="https://www.youtube.com/embed/yTI1HoFYbE0" title="Justin Holmes Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="booking" class="booking">
+        <div class="container">
+            <div class="section-title">
+                <h2>Contact</h2>
+                <p>For performances, talks, and appearances</p>
+            </div>
+            <div class="booking-grid">
+                <div class="booking-info">
+                    <h3>Let's Make Something Happen</h3>
+                    <p>Whether you're looking for a full band bluegrass show, a tech conference keynote, or a podcast guest appearance, I'd love to hear about your event.</p>
+                    <ul>
+                        <li><span>Full Band Performance</span><span>3-6 piece band</span></li>
+                        <li><span>Solo/Duo Acoustic</span><span>Intimate settings</span></li>
+                        <li><span>Talks with Live Coding</span><span>5-60 minutes</span></li>
+                        <li><span>Podcast</span><span>30-90 minutes</span></li>
+                        <li><span>Private Event</span><span>let's talk</span></li>
+                    </ul>
+                    <p><strong>Based in:</strong> St. Petersburg, FL<br>
+                    <strong>Touring:</strong> BONAFIDE</p>
+                    <div class="booking-images">
+                        <img src="images/booking-image.jpg" alt="Justin Holmes" class="booking-image">
+                        <img src="images/notch-cropped.png" alt="Notch" class="booking-image-notch">
+                        <img src="images/friend3.png" alt="Friend" class="booking-image-friend">
+                        <img src="images/friend4.png" alt="Friend" class="booking-image-friend4">
+                        <img src="images/friend5.png" alt="Friend" class="booking-image-friend5">
+                    </div>
+                </div>
+                <div class="booking-form">
+                    <h3>Send an Inquiry</h3>
+                    <p style="margin-bottom: 1.5rem; font-size: 1.3rem; font-weight: 600;">
+                        Or reach out directly via
+                        <a href="mailto:Booking@JustinHolmes.com" style="color: #d4a574; font-weight: 700;">Email</a>,
+                        <a href="https://t.me/justinmylesholmesoffical" style="color: #d4a574; font-weight: 700;">Telegram</a>, or
+                        <a href="https://instagram.com/JustinMylesHolmes" style="color: #d4a574; font-weight: 700;">Instagram</a>
+                    </p>
+                    <form id="booking-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Your Name</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Tell me about your event</label>
+                            <textarea id="message" name="message" placeholder="Expected attendance, budget range, any special requests..."></textarea>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">Send Inquiry</button>
+                        <p style="margin-top: 3rem; text-align: center; color: #d4a574; font-style: italic;">"Self-Proclaimed Bronze Medal Winner,<br>2027 Hackabilly Bluegrass Competition"</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <div class="section-title">
+                <h2>Gallery</h2>
+                <p>On stage and behind the scenes</p>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="/images/thumb/e/ec/Justin-st-pete-thompson.jpg/300px-Justin-st-pete-thompson.jpg" alt="Performance photo">
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/thumb/4/42/Justin-seoul-sesame.jpg/300px-Justin-seoul-sesame.jpg" alt="Performance photo">
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/thumb/c/cf/EthDenver-stage-with-the-boys2.jpg/300px-EthDenver-stage-with-the-boys2.jpg" alt="Performance photo">
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/thumb/3/33/Skyler-justin-cory.jpeg/300px-Skyler-justin-cory.jpeg" alt="Performance photo">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="video-modal">
+        <div class="video-modal-content">
+            <button class="video-modal-close" id="modal-close">&times;</button>
+            <iframe id="modal-video" src="" title="Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Justin Holmes</h3>
+                    <p>Bluegrass musician, software engineer, and blockchain innovator. Building a better future for traditional music.</p>
+                    <div class="social-links">
+                        <a href="https://warpcast.com/justinholmes" title="Farcaster">
+                            <svg viewBox="0 0 24 24"><path d="M3 4h18v16H3V4zm3 3v10h2V7H6zm4 0v10h2V7h-2zm4 0v10h2V7h-2zm4 0v5h2V7h-2z"/></svg>
+                        </a>
+                        <a href="https://www.youtube.com/@JustinMylesHolmes" title="YouTube">
+                            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                        <a href="https://justinholmes.bandcamp.com" title="Bandcamp">
+                            <svg viewBox="0 0 24 24"><path d="M0 18.75l7.437-13.5H24l-7.438 13.5H0z"/></svg>
+                        </a>
+                        <a href="https://instagram.com/JustinMylesHolmes" title="Instagram">
+                            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <a href="https://t.me/justinmylesholmesoffical" title="Telegram">
+                            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                        </a>
+                        <a href="https://github.com/jmyles" title="GitHub">
+                            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                        </a>
+                        <a href="https://justinholmes.com" title="Website">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#music">Music</a></li>
+                        <li><a href="#places">Places</a></li>
+                        <li><a href="#videos">Videos</a></li>
+                        <li><a href="#booking">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Projects</h4>
+                    <ul>
+                        <li><a href="https://cryptograss.live">Cryptograss</a></li>
+                        <li><a href="https://pickipedia.xyz">PickiPedia</a></li>
+                        <li><a href="https://pickipedia.xyz/revealer">Revealer</a></li>
+                        <li><a href="https://pickipedia.xyz/wiki/Blue_Railroad_Squats">Blue Railroad</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Justin Holmes. Part of the <a href="https://cryptograss.live" style="color: var(--accent);">Cryptograss</a> ecosystem.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll to top on page load (prevents browser scroll restoration)
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(26, 26, 26, 0.98)';
+            } else {
+                nav.style.background = 'rgba(26, 26, 26, 0.95)';
+            }
+        });
+
+        // Video Modal
+        const modal = document.getElementById('video-modal');
+        const modalVideo = document.getElementById('modal-video');
+        const modalClose = document.getElementById('modal-close');
+
+        // Open modal when clicking offering cards with video data
+        document.querySelectorAll('.offering-card[data-video]').forEach(card => {
+            card.addEventListener('click', function() {
+                const videoId = this.dataset.video;
+                const startTime = this.dataset.start;
+                let videoUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                if (startTime) {
+                    videoUrl += `&start=${startTime}`;
+                }
+                modalVideo.src = videoUrl;
+                modal.classList.add('active');
+            });
+        });
+
+        // Close modal
+        modalClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeModal();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        function closeModal() {
+            modal.classList.remove('active');
+            modalVideo.src = '';
+        }
+
+        // Track list dropdown toggle
+        document.querySelectorAll('.track-toggle').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const trackList = this.nextElementSibling;
+                trackList.classList.toggle('active');
+                const isArtists = this.textContent.includes('Artists');
+                if (isArtists) {
+                    this.textContent = trackList.classList.contains('active') ? 'Hide Artists ▲' : 'View Artists ▼';
+                } else {
+                    this.textContent = trackList.classList.contains('active') ? 'Hide Tracks ▲' : 'View Tracks ▼';
+                }
+            });
+        });
+
+        // Track player with inline Bandcamp embed
+        document.querySelectorAll('.track-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                const trackId = this.dataset.track;
+                const embedContainer = this.querySelector('.bandcamp-embed');
+                const isPlaying = this.classList.contains('playing');
+
+                // Close all other players
+                document.querySelectorAll('.track-item.playing').forEach(other => {
+                    if (other !== this) {
+                        other.classList.remove('playing');
+                        other.querySelector('.bandcamp-embed').innerHTML = '';
+                    }
+                });
+
+                if (isPlaying) {
+                    this.classList.remove('playing');
+                    embedContainer.innerHTML = '';
+                } else {
+                    this.classList.add('playing');
+                    embedContainer.innerHTML = `<iframe style="border: 0; width: 100%; height: 42px;" src="https://bandcamp.com/EmbeddedPlayer/track=${trackId}/size=small/bgcol=f5f3ef/linkcol=4a7c59/transparent=true/autoplay=true/" seamless allow="autoplay"></iframe>`;
+                }
+            });
+        });
+    </script>
+    <!-- Globe.gl for interactive globe -->
+    <script src="https://unpkg.com/globe.gl"></script>
+    <script>
+        // All show data from ARTHEL YAML files
+        const shows = [
+            {
+                lat: 50.0755, lng: 14.4378,
+                title: "ETHPrague 2025 First Show",
+                venue: "Burza #4",
+                city: "Prague, Czech Republic",
+                block: 0,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Jakub Vysoky","instruments":["mandolin"]}],
+                setlist: ["Red Haired Boy","Drowsy Maggie","Little Maggie","Nanny State Fiddler","Cork Board","Rueben's Train","Loser","Power Underneath"]
+            },
+            {
+                lat: 50.0755, lng: 14.4378,
+                title: "ETHPrague 2025 Second Show",
+                venue: "Bike Jesus",
+                city: "Prague, Czech Republic",
+                block: 0,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Pavel Bohm","instruments":["dobro"]}],
+                setlist: ["The Morning of The Bank Run","The Frog","Dragon Roost Island","Song of Storms","Terrapin Station","Paint Exchange","Lost","As long as I am in this world, you will never hack alone","Shady Grove","Clinch Mountain Backstep","Garfield's Blackberry Blossom","Silver .44","I Know You Rider","The Two Sisters"]
+            },
+            {
+                lat: -33.9249, lng: 18.4241,
+                title: "EthCapetown 2019",
+                venue: "",
+                city: "Capetown, South Africa",
+                block: 7624763,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","wood flute","Laúd","kalimba"]}],
+                setlist: ["Mercedes Benz","Is it a money thing?","Give Freely of The Chain"]
+            },
+            {
+                lat: 40.6782, lng: -73.9442,
+                title: "EthNY 2019",
+                venue: "Brooklyn Navy Yard",
+                city: "Brooklyn, New York",
+                block: 7729184,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","wood flute","Laúd","six-whistle","kalimba"]}],
+                setlist: ["Vowel Sounds","Ohio"]
+            },
+            {
+                lat: 52.52, lng: 13.405,
+                title: "EthBerlin 2019",
+                venue: "The Factory",
+                city: "Berlin, Germany",
+                block: 8408560,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar"]}],
+                setlist: ["As long as I am in this world, you will never hack alone"]
+            },
+            {
+                lat: 34.6937, lng: 135.5023,
+                title: "devconV",
+                venue: "",
+                city: "Osaka, Japan",
+                block: 8717612,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","wood flute","six-whistle","kalimba"]}],
+                setlist: []
+            },
+            {
+                lat: 41.3851, lng: 2.1734,
+                title: "Hello Decentralization",
+                venue: "",
+                city: "Barcelona, Catalonia",
+                block: 11908068,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["Laúd","wood flute","six-whistle","kalimba"]},{"name":"Leify Green","instruments":["guitar","fiddle"]}],
+                setlist: ["The Morning of the Bank Run","Song of Storms","What happens on Layers 0, 1, and 2?"]
+            },
+            {
+                lat: 52.3676, lng: 4.9041,
+                title: "Zero Knowledge Summit 7",
+                venue: "",
+                city: "Amsterdam, Netherlands",
+                block: 14628177,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","kalimba"]}],
+                setlist: ["The Morning of The Bank Run"]
+            },
+            {
+                lat: 52.3676, lng: 4.9041,
+                title: "Justin Holmes @ devconnect cowork",
+                venue: "",
+                city: "Amsterdam, Netherlands",
+                block: 14635630,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","kalimba","six-whistle"]},{"name":"Jakub Vysoky","instruments":["ukelele","cajon"]}],
+                setlist: ["What goes on the blockchain?","The Morning of The Bank Run","Hell or High Water","Song of Storms"]
+            },
+            {
+                lat: 52.3676, lng: 4.9041,
+                title: "devconnect 2022",
+                venue: "",
+                city: "Amsterdam, Netherlands",
+                block: 14655789,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","kalimba","six-whistle"]},{"name":"Shaka Lei Kaumaka","instruments":["bass","percussion"]}],
+                setlist: ["Hell or High Water","Zero Knowledge and Time Machines","Song of Time","The Morning of The Bank Run","Todo es Posible","Song of Storms"]
+            },
+            {
+                lat: 41.3851, lng: 2.1734,
+                title: "EthBarcelona 2022",
+                venue: "Centre Convencions International Barcelona",
+                city: "Barcelona, Catalonia",
+                block: 15232479,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","wood flute","six-whistle","melodica"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"David Flores Pradillas","instruments":["fiddle"]},{"name":"Shaka Lei Kaumaka","instruments":["bass","cajon"]}],
+                setlist: ["The Morning of The Bank Run","Todo es Posible","Millennial Fair","Nanny State Fiddler","Song of Storms","Vowel Sounds","Cork Board","Hell or High Water","Thresholds and Enclaves"]
+            },
+            {
+                lat: 52.52, lng: 13.405,
+                title: "Zero Knowledge Summit 8",
+                venue: "",
+                city: "Berlin, Germany",
+                block: 15539549,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","melodica","six-whistle","kalimba"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Shaka Lei Kaumaka","instruments":["bass"]}],
+                setlist: ["Song of Storms","Nanny State Fiddler","Cork Board","The Two Sisters","Power Underneath","Hell or High Water","Salt Creek","Hell or High Water"]
+            },
+            {
+                lat: 52.52, lng: 13.405,
+                title: "re:generate / The Merge",
+                venue: "Full Node",
+                city: "Berlin, Germany",
+                block: 15540733,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","melodica","six-whistle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Shaka Lei Kaumaka","instruments":["bass"]}],
+                setlist: ["Lost","Song of Storms","I Just Wanna Play","Simple Melody; Simple Peace","Dragon Roost Island","The Morning of the Bank Run","Power Underneath","Vowel Sounds"]
+            },
+            {
+                lat: 52.52, lng: 13.405,
+                title: "Threshodlers welcome you to The Bridge",
+                venue: "Treptower Bridge",
+                city: "Berlin, Germany",
+                block: 15546631,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","melodica","six-whistle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Shaka Lei Kaumaka","instruments":["bass"]}],
+                setlist: ["Hell or High Water","Todo Es Posible","Lost","Last Train from Poor Valley","Millennial Fair","Simple Melody; Simple Peace","Dragon Roost Island","Wind and Rain","Nanny State Fiddler"]
+            },
+            {
+                lat: 4.711, lng: -74.0721,
+                title: "devcon VI night 1",
+                venue: "chiva lounge",
+                city: "Bogotá, Colombia",
+                block: 15735471,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","piano","melodica","six-whistle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Pepa Lopera","instruments":["fiddle"]},{"name":"Shaka Lei Kaumaka","instruments":["bass"]}],
+                setlist: ["Wind and Rain","Dragon Roost Island","Vowel Sounds","Hell or High Water","Chrono Trigger","Bubak and Hungaricus","Q&A","Nanny State Fiddler"]
+            },
+            {
+                lat: 4.711, lng: -74.0721,
+                title: "devcon VI night 2",
+                venue: "chiva lounge",
+                city: "Bogotá, Colombia",
+                block: 15742928,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","piano","melodica","six-whistle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Pepa Lopera","instruments":["fiddle"]},{"name":"Shaka Lei Kaumaka","instruments":["bass","percussion"]}],
+                setlist: ["Last Train From Poor Valley","Hard Time / Killing Floor Blues","Morrison's Jig","I Lost My Seed Phrase","Millennial Fair","Power Underneath","Song of Storms","Cork Board","The Decisive Battle","Victory-ff4","Clandestino","The Morning of the Bank Run"]
+            },
+            {
+                lat: 39.7392, lng: -104.9903,
+                title: "Threshold Network @ River",
+                venue: "River Bar Denver",
+                city: "Denver, Colorado",
+                block: 16751390,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","six-whistle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Cory Walker","instruments":["5-string banjo"]},{"name":"Christian Ward","instruments":["fiddle"]},{"name":"Jake Stargel","instruments":["bass"]}],
+                setlist: ["Barlow's Jig","Rollups and Rearview Mirrors","From Bill to Brewster","The Two Sisters","Cork Board","Last Train From Poor Valley","Bubak and Hungaricus","Rooster","Hell or High Water","Song of Storms","Power Underneath","gm☕","The Morning of the Bank Run"]
+            },
+            {
+                lat: 39.7392, lng: -104.9903,
+                title: "EthDenver 2023",
+                venue: "National Western Stock Show",
+                city: "Denver, Colorado",
+                block: 16758794,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","six-whistle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Cory Walker","instruments":["5-string banjo"]},{"name":"Christian Ward","instruments":["fiddle"]},{"name":"Jake Stargel","instruments":["bass"]}],
+                setlist: ["Lost","Dragon Roost Island","Vowel Sounds","Nanny State Fiddler","Barlow's Jig"]
+            },
+            {
+                lat: 50.4167, lng: 14.25,
+                title: "Festival MY 2023",
+                venue: "Farmě v Krabčicích",
+                city: "Krabčicích, Czech Republic",
+                block: 17350845,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","six-whistle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Honza Špringl","instruments":["5-string banjo (clawhammer)"]},{"name":"Kuba Hejhal","instruments":["fiddle"]},{"name":"Jirka Hoření","instruments":["bass"]},{"name":"Petr Potoček","instruments":["dobro"]},{"name":"Jarda Vysoky","instruments":["accordion"]}],
+                setlist: ["Morrison's Jig","Hell or High Water","Barlow's Jig","The Two Sisters","Dragon Roost Island","The Morning of the Bank Run","Bubak and Hungaricus"]
+            },
+            {
+                lat: 50.4253, lng: 14.2619,
+                title: "Roudnice Castle (RCNL Podzámčí)",
+                venue: "Roudnice Castle (RCNL Podzámčí)",
+                city: "Roudnice nad Labem, Czech Republic",
+                block: 17359159,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","six-whistle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Honza Špringl","instruments":["5-string banjo (clawhammer)"]},{"name":"Kuba Hejhal","instruments":["fiddle"]},{"name":"Jirka Hoření","instruments":["bass"]},{"name":"Jarda Vysoky","instruments":["accordion"]}],
+                setlist: ["Song of Storms","Nanny State Fiddler","Morrison's Jig","Jirka's 12","Bubak and Hungaricus","Dragon Roost Island","Hell or High Water","Medvidek","Slavíci Z Madridu"]
+            },
+            {
+                lat: 50.0755, lng: 14.4378,
+                title: "EthPrague 2023",
+                venue: "La Fabrika",
+                city: "Prague, Czech Republic",
+                block: 17451407,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","six-whistle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Honza Špringl","instruments":["5-string banjo (clawhammer)"]},{"name":"Petr Potoček","instruments":["dobro"]},{"name":"Kuba Hejhal","instruments":["fiddle"]},{"name":"Jirka Hoření","instruments":["bass"]},{"name":"Jarda Vysoky","instruments":["accordion"]}],
+                setlist: ["The Morning of The Bank Run","Barlow's Jig","Dragon Roost Island","Slavíci Z Madridu","Nanny State Fiddler","The Two Sisters","Vowel Sounds","Bubak and Hungaricus"]
+            },
+            {
+                lat: 41.3851, lng: 2.1734,
+                title: "EthBarcelona 2023",
+                venue: "BIG C",
+                city: "Barcelona, Catalonia",
+                block: 17642973,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","wood flute","six-whistle","melodica"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Kuba Hejhal","instruments":["fiddle"]},{"name":"Fabian Aguilera","instruments":["bass"]}],
+                setlist: ["Morrison's Jig","Hell or High Water (A Policeman and a Fortune Teller)","The World","From Bill to Brewster","Rollups and Rearview Mirrors","Barlow's Jig","Power Underneath","The Morning of the Bank Run","Manzanita"]
+            },
+            {
+                lat: 41.3851, lng: 2.1734,
+                title: "Hootena @ EthBarcelona doorway",
+                venue: "BIG C",
+                city: "Barcelona, Catalonia",
+                block: 17658380,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","wood flute","six-whistle","melodica"]},{"name":"Jakub Wysoky","instruments":["mandolin"]},{"name":"Kuba Hejhal","instruments":["fiddle"]}],
+                setlist: ["Nanny State Fiddler","Song of Storms","Dragon Roost Island","The Two Sisters","Power Underneath","Cork Board","Barlow's Jig","Manzanita","Bubak and Hungaricus","Lost"]
+            },
+            {
+                lat: 48.8566, lng: 2.3522,
+                title: "Gitcoin House Paris",
+                venue: "Gitcoin House",
+                city: "Paris, France",
+                block: 17728577,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","wood flute","six-whistle","melodica"]}],
+                setlist: ["Hell or High Water (a Policeman and a Fortune Teller)","The Morning of the Bank Run","Power Underneath","Cork Board","Where Rainbows Never Die","Song of Storms","Song of Time","Rollups and Rearview Mirrors"]
+            },
+            {
+                lat: 45.5155, lng: -122.6789,
+                title: "Global Forum on Ethereum Localism 2023",
+                venue: "Bridgespace",
+                city: "Portland, Oregon",
+                block: 18344309,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","wood flute","six-whistle"]},{"name":"Open Tony","instruments":["fiddle"]},{"name":"Miriam Hacksaw","instruments":["fiddle"]},{"name":"Kyle Bestape","instruments":["mandolin"]}],
+                setlist: ["Where are we?","Hell or High Water (a Policeman and a Fortune Teller)","Is it a money thing?","Open Up","On Quantum Implications of Local Movements","Lost","Last Train From Poor Valley","The Morning of The Bank Run","Nanny State Fiddler","Silver .44","Loser","Drowsy Maggie","Little Maggie","Drowsy Maggie","Power Underneath","Song of Time"]
+            },
+            {
+                lat: 39.7392, lng: -104.9903,
+                title: "MycoFi Day",
+                venue: "Gitcoin House",
+                city: "Denver, Colorado",
+                block: 19336308,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","wood flute"]},{"name":"Skyler Golden","instruments":["bass","dobro"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Laura Quam","instruments":["fiddle"]}],
+                setlist: ["Power Underneath","Song of Storms","Lost","Loser","Rollups and Rearview Mirrors","Swallowtail Jig","Kesh Jig","Last Train From Poor Valley","Nanny State Fiddler","O Death","Mercedes Benz","The Morning of The Bank Run","Angel Band","Ashokan Farewell","Can the Circle Be Unbroken? (By and By)"]
+            },
+            {
+                lat: 36.1627, lng: -86.7816,
+                title: "Justin Holmes + David Grier",
+                venue: "Tunesmith Studios",
+                city: "Nashville, Tennessee",
+                block: 19569155,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","six-whistle"]},{"name":"David Grier","instruments":["guitar"]}],
+                setlist: ["Drowsy Maggie","Barlow's Jig"]
+            },
+            {
+                lat: 44.4903, lng: -71.5692,
+                title: "Porcupine 2024",
+                venue: "North Country Camp",
+                city: "Lancaster, New Hampshire",
+                block: 20150677,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","mandolin","wood flute","six-whistle"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Mike Merenda","instruments":["banjo"]},{"name":"Brendan Daniel","instruments":["guitar"]}],
+                setlist: ["The Two Sisters","Lost","Paint Exchange","On My Way Home","Dire Wolf","Silver .44","Cork Board","Needle On The Outskirts","The Morning of The Bank Run","Free State of Mind","Seven Bridges Road"]
+            },
+            {
+                lat: 50.8503, lng: 4.3517,
+                title: "DAO Brussels",
+                venue: "Commons Hub Brussels",
+                city: "Brussels, Belgium",
+                block: 20226737,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","melodica","six-whistle"]},{"name":"Skyler Golden","instruments":["bass"]}],
+                setlist: ["The Morning of The Bank Run","Dire Wolf","Nanny State Fiddler","Song of Storms","Vowel Sounds"]
+            },
+            {
+                lat: 50.8503, lng: 4.3517,
+                title: "Arbitrum Govhack Brussels 2024",
+                venue: "Brussels Doubletree",
+                city: "Brussels, Belgium",
+                block: 20254790,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["wood flute"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Kuba Hejhal","instruments":["fiddle"]}],
+                setlist: ["Lost","What is consensus?","Dragon Roost Island","Nanny State Fiddler","Rollups and Rearview Mirrors","Cork Board","Drowsy Maggie","Man of Constant Sorrow"]
+            },
+            {
+                lat: 50.8503, lng: 4.3517,
+                title: "Regens Unite 2024",
+                venue: "Commons Hub Brussels",
+                city: "Brussels, Belgium",
+                block: 20277935,
+                poster: "https://cryptograss.live/assets/images/posters/regens-brussels-2024.jpeg",
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","mandolin","six-whistle","melodica"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Kuba Hejhal","instruments":["fiddle"]},{"name":"Kyle Bestape","instruments":["mandolin"]}],
+                setlist: ["Paint Exchange","Hell or High Water","Salt Creek","Hell or High Water","Cicada Song","Lost","Loser","Song of Storms","Power Underneath","Oh, the Dreadful Wind and Rain","The Morning of The Bank Run","Seven Bridges Road","Silver .44","Back Up and Push","Nanny State Fiddler","August"]
+            },
+            {
+                lat: 50.8503, lng: 4.3517,
+                title: "Building Network States: Atoms Edition",
+                venue: "Brussels Aquaponic Farm - BIGH Anderlecht",
+                city: "Brussels, Belgium",
+                block: 20477451,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","six-whistle"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Kuba Hejhal","instruments":["fiddle"]},{"name":"Kyle Bestape","instruments":["mandolin"]}],
+                setlist: ["Dragon Roost Island","Back Up and Push","Salt Creek","Drowsy Maggie","Lost","Fish and Whistle","Aquanoodle","Rueben's Train"]
+            },
+            {
+                lat: 50.43, lng: 14.265,
+                title: "Bar Vorovka",
+                venue: "Bar Vorovka",
+                city: "Vědomice-Roudnice, Czech Republic",
+                block: 20528222,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","six-whistle","melodica"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Kuba Hejhal","instruments":["fiddle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]}],
+                setlist: ["Lost","Back Up and Push","Millennial Fair","Nanny State Fiddler","Manzanita","Can the Circle Be Unbroken","Shady Grove","Seven Bridges Road","Hell or High Water","August","Silver .44","Red Haired Boy","Where Rainbows Never Die","The Frog","Bubak and Hungaricus","Power Underneath"]
+            },
+            {
+                lat: 50.0755, lng: 14.4378,
+                title: "Klub Betlémská",
+                venue: "Klub Betlémská",
+                city: "Prague, Czech Republic",
+                block: 20535679,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","wood flute","six-whistle"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Kuba Hejhal","instruments":["fiddle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]}],
+                setlist: ["Paint Exchange","The Two Sisters","Cork Board","Loser","Drowsy Maggie","The Morning of The Bank Run","Dragon Roost Island"]
+            },
+            {
+                lat: 52.52, lng: 13.405,
+                title: "MOOS Space",
+                venue: "MOOS Space",
+                city: "Berlin, Germany",
+                block: 20550008,
+                poster: "https://cryptograss.live/assets/images/posters/moos-space-2024.png",
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","six-whistle","melodica"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Kuba Hejhal","instruments":["fiddle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]}],
+                setlist: ["Hell or High Water","Song of Storms","Red Haired Boy","Silver .44","Song of Storms","The Goy's Teeth","Manzanita","O Death","Loser","Seven Bridges Road","Paint Exchange","Drowsy Maggie","Little Maggie","Dragon Roost Island","Mercedes Benz","Cicada Song","Bubak and Hungaricus","Power Underneath"]
+            },
+            {
+                lat: 52.52, lng: 13.405,
+                title: "web3summit 2024",
+                venue: "Funkhaus Berlin",
+                city: "Berlin, Germany",
+                block: 20570887,
+                poster: "https://cryptograss.live/assets/images/posters/web3summit-2024.png",
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","melodica","six-whistle"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Kuba Hejhal","instruments":["fiddle"]},{"name":"Jakub Vysoky","instruments":["mandolin"]}],
+                setlist: ["August","Last Train From Poor Valley","Salt Creek","The Two Sisters","victory-ff7","Swords to Ploughshares","Morrison's Jig","Man of Constant Sorrow","Manzanita","Nanny State Fiddler","Lost","The Frog","Rueben's Train","Back Up and Push","Rollups and Rearview Mirrors","Drowsy Maggie","Shady Grove","Dragon Roost Island","The Morning of The Bank Run"]
+            },
+            {
+                lat: 40.015, lng: -105.2705,
+                title: "GFEL Boulder 2025",
+                venue: "The Riverside",
+                city: "Boulder, Colorado",
+                block: 21904604,
+                poster: "https://cryptograss.live/assets/images/posters/GFELRC4.png",
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","melodica","six-whistle"]},{"name":"Skyler Golden","instruments":["dobro"]},{"name":"Kyle Bestape","instruments":["mandolin"]},{"name":"Laura Quam","instruments":["fiddle"]},{"name":"Jake Stargel","instruments":["bass"]}],
+                setlist: ["Red Haired Boy","Nanny State Fiddler","Dragon Roost Island","Nanny State Fiddler","Vowel Sounds","Bubak and Hungaricus","Loser"]
+            },
+            {
+                lat: 39.7392, lng: -104.9903,
+                title: "Allo DAO Summoning",
+                venue: "Gitcoin Church",
+                city: "Denver, Colorado",
+                block: 21933658,
+                poster: "https://cryptograss.live/assets/images/posters/ALLODAORC5.png",
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar","melodica","six-whistle"]},{"name":"Skyler Golden","instruments":["dobro"]},{"name":"Kyle Bestape","instruments":["mandolin"]},{"name":"Laura Quam","instruments":["fiddle"]},{"name":"Chris Elliott","instruments":["banjo"]},{"name":"Jake Stargel","instruments":["bass"]}],
+                setlist: ["Hell or high water","Clinch Mountain Backstep","Shady Grove","Drowsy Maggie","Paint Exchange","You and Whose Army","All the Tired Horses","Song of Storms","Salt Creek"]
+            },
+            {
+                lat: 39.7392, lng: -104.9903,
+                title: "Schelling Point",
+                venue: "Number 38",
+                city: "Denver, Colorado",
+                block: 21940657,
+                poster: "https://cryptograss.live/assets/images/posters/SCHELLINGPOINTRC4.png",
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Laura Quam","instruments":["fiddle"]},{"name":"Chris Elliott","instruments":["banjo"]},{"name":"Jake Stargel","instruments":["mandolin"]}],
+                setlist: ["Rueben's Train","Garfield's Blackberry Blossom","From Bill to Brewster","Terrapin Station","From Bill to Brewster","Nanny State Fiddler","From Bill to Brewster"]
+            },
+            {
+                lat: 39.4817, lng: -106.0384,
+                title: "GRASSBurn Zero",
+                venue: "Crucible",
+                city: "Breckenridge, Colorado",
+                block: 21984926,
+                poster: "https://cryptograss.live/assets/images/posters/GRASSBURNIRLRC1.png",
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Chris Elliott","instruments":["banjo"]},{"name":"Jake Stargel","instruments":["mandolin"]}],
+                setlist: ["Red Haired Boy","The Morning of the Bank Run","Lost","Sonic Offerings","The Two Sisters","Power Underneath","Salt Creek","Shady Grove","Sonic Offerings","Silver .44","Song of Storms","Loser","Hell or High Water"]
+            },
+            {
+                lat: 50.4253, lng: 14.2619,
+                title: "Kulturní dům Říp",
+                venue: "Kulturní dům Říp",
+                city: "Roudnice nad Labem, Czech Republic",
+                block: 22390575,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Nick Jennings","instruments":["banjo","dulcimer"]},{"name":"Jakub Vysoky","instruments":["mandolin"]}],
+                setlist: ["Drowsy Maggie","Little Maggie","Power Underneath","Cork Board","Shady Grove","Devil Jam","Hell or High Water","Salt Creek","Hell or High Water"]
+            },
+            {
+                lat: 49.5938, lng: 17.2509,
+                title: "Variace Olomouc",
+                venue: "Variace Olomouc",
+                city: "Olomouc, Czech Republic",
+                block: 22394175,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Bogdan","instruments":["percussion"]}],
+                setlist: ["Lost","Paint Exchange","Rueben's Train","Silver .44","Terrapin Station","Dragon Roost Island","Silver .44"]
+            },
+            {
+                lat: 50.2294, lng: 17.2044,
+                title: "Vinckovo",
+                venue: "Vinckovo",
+                city: "Jesenik, Czech Republic",
+                block: 22406012,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Ondra Kozak","instruments":["fiddle"]}],
+                setlist: ["Red Haired Boy","Song of Storms","The Morning of The Bank Run","Manzanita","Nanny State Fiddler","O Death","Clinch Mountain Backstep","The Two Sisters","Can the Circle Be Unbroken"]
+            },
+            {
+                lat: 52.3676, lng: 4.9041,
+                title: "ETHDam 2025",
+                venue: "Pakhuis de Zwijger",
+                city: "Amsterdam, Netherlands",
+                block: 22447747,
+                poster: "https://cryptograss.live/assets/images/posters/RC 2 ETHDam tour poster 2025(1).png",
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Bones","instruments":["banjo"]},{"name":"Seamus","instruments":["fiddle"]},{"name":"Joshua","instruments":["cello"]}],
+                setlist: ["Silver .44","Paint Exchange","Lost","Red Haired Boy","Drowsy Maggie","Little Maggie","Shady Grove","The Two Sisters","Nanny State Fiddler"]
+            },
+            {
+                lat: 50.4253, lng: 14.2619,
+                title: "Kuba Hejhal Memorial",
+                venue: "Koruna",
+                city: "Roudnice nad Labem, Czech Republic",
+                block: 22504683,
+                poster: null,
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar"]},{"name":"Skyler Golden","instruments":["bass"]},{"name":"Jakub Vysoky","instruments":["mandolin"]},{"name":"Honza Špringl","instruments":["5-string banjo","tenor banjo","guitar"]}],
+                setlist: ["Red Haired Boy","Lady Be Good","Old Joe Clark","Power Underneath","Dragon Roost Island","Jednou mi fotr povídá","Can the Circle Be Unbroken? (By and By)","Smrti"]
+            },
+            {
+                lat: 44.4903, lng: -71.5692,
+                title: "Porcupine 2025",
+                venue: "North Country Camp",
+                city: "Lancaster, New Hampshire",
+                block: 22748946,
+                poster: "https://cryptograss.live/assets/images/posters/porcupine2025-poster.png",
+                ensemble: [{"name":"Justin Holmes","instruments":["guitar"]},{"name":"Skyler Golden","instruments":["bass"]}],
+                setlist: ["Hell or High Water","Rueben's Train","Red Haired Boy","Drowsy Maggie","Little Maggie","Song of Storms","Power Underneath","The Morning of The Bank Run","Shady Grove","Salt Creek","Loser","Vowel Sounds","Proximity","Terrapin Station","Dragon Roost Island","Silver .44","I Know You Rider","Garfield's Blackberry Blossom","Paint Exchange"]
+            }
+        ];
+
+        // Initialize globe
+        const globeContainer = document.getElementById('globe-container');
+        const venueInfo = document.getElementById('venue-info');
+        const showInfoPanel = document.getElementById('show-info-panel');
+        const showPoster = document.getElementById('show-poster');
+        const showTitle = document.getElementById('show-title');
+        const showVenue = document.getElementById('show-venue');
+        const showBlock = document.getElementById('show-block');
+        const showEnsemble = document.getElementById('show-ensemble');
+        const showSetlist = document.getElementById('show-setlist');
+        const showLeaderboard = document.getElementById('show-leaderboard');
+        const songBreakdown = document.getElementById('song-breakdown');
+
+        // Song categorization
+        const traditionals = ["Angel Band", "Back Up and Push", "Bubak and Hungaricus", "Can the Circle Be Unbroken", "Clinch Mountain Backstep", "Drowsy Maggie", "Garfield's Blackberry Blossom", "Hard Time Killing Floor Blues", "I Know You Rider", "Kesh Jig", "Little Maggie", "Man of Constant Sorrow", "Morrison's Jig", "O Death", "Old Joe Clark", "Red Haired Boy", "Rueben's Train", "Salt Creek", "Shady Grove", "The Two Sisters", "Tom Dooley", "Manzanita", "Seven Bridges Road", "All the Tired Horses"];
+        const vgm = ["Song of Storms", "Dragon Roost Island", "Victory", "Millennial Fair", "Song of Time", "Terrapin Station"];
+        const covers = ["Loser", "Dire Wolf", "The Frog", "Mercedes Benz", "Clandestino", "You and Whose Army"];
+
+        function categorizeSong(song) {
+            const cleanName = song.replace(/:.*$/, '').trim();
+            if (traditionals.some(t => cleanName.toLowerCase().includes(t.toLowerCase()))) return 'traditionals';
+            if (vgm.some(v => cleanName.toLowerCase().includes(v.toLowerCase()))) return 'vgm';
+            if (covers.some(c => cleanName.toLowerCase().includes(c.toLowerCase()))) return 'covers';
+            return 'originals';
+        }
+
+        function displayBreakdown(setlist) {
+            if (!setlist || setlist.length === 0) {
+                songBreakdown.innerHTML = '';
+                return;
+            }
+
+            const counts = { originals: 0, traditionals: 0, covers: 0, vgm: 0 };
+            setlist.forEach(song => {
+                counts[categorizeSong(song)]++;
+            });
+
+            const total = setlist.length;
+            const segments = [];
+            const legendItems = [];
+
+            if (counts.originals > 0) {
+                segments.push(`<div class="breakdown-segment originals" style="flex: ${counts.originals}">${counts.originals}</div>`);
+                legendItems.push(`<div class="legend-item"><span class="legend-dot originals"></span>Originals (${counts.originals})</div>`);
+            }
+            if (counts.traditionals > 0) {
+                segments.push(`<div class="breakdown-segment traditionals" style="flex: ${counts.traditionals}">${counts.traditionals}</div>`);
+                legendItems.push(`<div class="legend-item"><span class="legend-dot traditionals"></span>Traditional (${counts.traditionals})</div>`);
+            }
+            if (counts.vgm > 0) {
+                segments.push(`<div class="breakdown-segment vgm" style="flex: ${counts.vgm}">${counts.vgm}</div>`);
+                legendItems.push(`<div class="legend-item"><span class="legend-dot vgm"></span>Video Game (${counts.vgm})</div>`);
+            }
+            if (counts.covers > 0) {
+                segments.push(`<div class="breakdown-segment covers" style="flex: ${counts.covers}">${counts.covers}</div>`);
+                legendItems.push(`<div class="legend-item"><span class="legend-dot covers"></span>Covers (${counts.covers})</div>`);
+            }
+
+            songBreakdown.innerHTML = `
+                <h5>Song Breakdown</h5>
+                <div class="breakdown-bar">${segments.join('')}</div>
+                <div class="breakdown-legend">${legendItems.join('')}</div>
+            `;
+        }
+
+        function displayShowInfo(show) {
+            // Show the panel
+            showInfoPanel.classList.add('active');
+
+            // Set poster
+            if (show.poster) {
+                showPoster.src = show.poster;
+                showPoster.style.display = 'block';
+            } else {
+                showPoster.style.display = 'none';
+            }
+
+            // Set title and venue
+            showTitle.textContent = show.title;
+            showVenue.textContent = `${show.venue} • ${show.city}`;
+            showBlock.textContent = show.block ? `Block ${show.block.toLocaleString()}` : '';
+
+            // Set ensemble
+            if (show.ensemble && show.ensemble.length > 0) {
+                showEnsemble.innerHTML = show.ensemble.map(m =>
+                    `<li><strong>${m.name}</strong> - ${m.instruments.join(', ')}</li>`
+                ).join('');
+            } else {
+                showEnsemble.innerHTML = '<li style="color: #666;">No ensemble data</li>';
+            }
+
+            // Set setlist
+            if (show.setlist && show.setlist.length > 0) {
+                showSetlist.innerHTML = show.setlist.map(s => `<li class="song-${categorizeSong(s)}">${s}</li>`).join('');
+                displayBreakdown(show.setlist);
+            } else {
+                showSetlist.innerHTML = '<li style="color: #666;">No setlist data</li>';
+                displayBreakdown([]);
+            }
+
+            // Show leaderboard if we have ensemble or setlist data
+            if ((show.ensemble && show.ensemble.length > 0) || (show.setlist && show.setlist.length > 0)) {
+                showLeaderboard.classList.add('active');
+            } else {
+                showLeaderboard.classList.remove('active');
+            }
+        }
+
+        if (globeContainer) {
+            // Apply offset to shows at the same location
+            const locationGroups = {};
+            shows.forEach(show => {
+                const key = `${show.lat.toFixed(2)},${show.lng.toFixed(2)}`;
+                if (!locationGroups[key]) locationGroups[key] = [];
+                locationGroups[key].push(show);
+            });
+
+            Object.values(locationGroups).forEach(group => {
+                if (group.length > 1) {
+                    const offset = 1.0; // degrees offset
+                    group.forEach((show, i) => {
+                        const angle = (2 * Math.PI * i) / group.length;
+                        show.lat += offset * Math.cos(angle);
+                        show.lng += offset * Math.sin(angle);
+                    });
+                }
+            });
+
+            // Create pin marker element
+            const createPinElement = (d) => {
+                const el = document.createElement('div');
+                el.innerHTML = `
+                    <svg width="24" height="36" viewBox="0 0 24 36" style="cursor: pointer; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.4));">
+                        <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24c0-6.6-5.4-12-12-12z" fill="#d4a574"/>
+                        <circle cx="12" cy="12" r="5" fill="#1a1a1a"/>
+                    </svg>
+                `;
+                el.style.pointerEvents = 'auto';
+                el.style.cursor = 'pointer';
+                return el;
+            };
+
+            const globe = Globe()
+                .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+                .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
+                .htmlElementsData(shows)
+                .htmlLat('lat')
+                .htmlLng('lng')
+                .htmlElement(d => {
+                    const el = createPinElement(d);
+                    el.onclick = () => {
+                        displayShowInfo(d);
+                        globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: 0.6 }, 1000);
+                    };
+                    return el;
+                })
+                .htmlAltitude(0.01)
+                .width(globeContainer.offsetWidth)
+                .height(500)
+                (globeContainer);
+
+            // Auto-rotate
+            globe.controls().autoRotate = true;
+            globe.controls().autoRotateSpeed = 0.5;
+
+            // Disable zoom
+            globe.controls().enableZoom = false;
+
+            // Stop rotation on interaction
+            globeContainer.addEventListener('mousedown', () => {
+                globe.controls().autoRotate = false;
+            });
+
+            // Responsive resize
+            window.addEventListener('resize', () => {
+                globe.width(globeContainer.offsetWidth);
+            });
+
+            // Set initial view - zoomed in closer
+            globe.pointOfView({ lat: 30, lng: 0, altitude: 0.6 });
+
+            // Zoom controls
+            let currentAltitude = 0.6;
+            document.getElementById('zoom-in').addEventListener('click', () => {
+                currentAltitude = Math.max(0.1, currentAltitude - 0.15);
+                const pov = globe.pointOfView();
+                globe.pointOfView({ lat: pov.lat, lng: pov.lng, altitude: currentAltitude }, 300);
+            });
+            document.getElementById('zoom-out').addEventListener('click', () => {
+                currentAltitude = Math.min(2.5, currentAltitude + 0.15);
+                const pov = globe.pointOfView();
+                globe.pointOfView({ lat: pov.lat, lng: pov.lng, altitude: currentAltitude }, 300);
+            });
+        }
+    </script>
+
+    <!-- Form submission - opens email client -->
+    <script>
+        // Booking inquiry form - opens mailto with form contents
+        const bookingForm = document.getElementById('booking-form');
+        if (bookingForm) {
+            bookingForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const name = bookingForm.querySelector('#name').value;
+                const email = bookingForm.querySelector('#email').value;
+                const message = bookingForm.querySelector('#message').value;
+
+                const subject = encodeURIComponent(`EPK Booking Inquiry from ${name}`);
+                const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+
+                window.location.href = `mailto:Booking@JustinHolmes.com?subject=${subject}&body=${body}`;
+            });
+        }
+    </script>
+</body>
+</html>
