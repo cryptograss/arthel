@@ -298,7 +298,27 @@ export function initUploadAlbumPage(options) {
 
     // Upload button click
     uploadBtn.addEventListener('click', async () => {
-        const account = getAccount(wagmiConfig);
+        console.log('[Upload] Upload button clicked');
+        console.log('[Upload] wagmiConfig exists:', !!wagmiConfig);
+
+        if (!wagmiConfig) {
+            console.error('[Upload] wagmiConfig is undefined - wallet not properly initialized');
+            uploadError.textContent = 'Wallet not properly initialized. Please refresh the page.';
+            uploadError.style.display = 'block';
+            return;
+        }
+
+        let account;
+        try {
+            account = getAccount(wagmiConfig);
+            console.log('[Upload] getAccount succeeded, address:', account?.address);
+        } catch (err) {
+            console.error('[Upload] getAccount failed:', err);
+            uploadError.textContent = 'Failed to get wallet account. Please reconnect.';
+            uploadError.style.display = 'block';
+            return;
+        }
+
         if (!account.address) {
             uploadError.textContent = 'Please connect your wallet first.';
             uploadError.style.display = 'block';
@@ -325,14 +345,17 @@ export function initUploadAlbumPage(options) {
                 const timeResp = await fetch(`${pinningService}/time`);
                 const timeData = await timeResp.json();
                 timestamp = timeData.timestamp;
+                console.log('[Upload] Got server timestamp:', timestamp);
             } catch (e) {
-                console.warn('Could not fetch server time, using local:', e);
+                console.warn('[Upload] Could not fetch server time, using local:', e);
                 timestamp = Date.now();
             }
 
             // Create auth message and sign it
+            console.log('[Upload] Requesting signature...');
             const authMessage = `Authorize Blue Railroad pinning\nTimestamp: ${timestamp}`;
             const signature = await signMessage(wagmiConfig, { message: authMessage });
+            console.log('[Upload] Signature obtained');
 
             uploadProgressText.textContent = 'Uploading files...';
             uploadProgressBar.style.width = '5%';
@@ -409,9 +432,15 @@ export function initUploadAlbumPage(options) {
             showResult(finalResult);
 
         } catch (err) {
-            console.error('Upload error:', err);
+            console.error('[Upload] Error during upload process');
+            console.error('[Upload] Error name:', err?.name);
+            console.error('[Upload] Error message:', err?.message);
+            console.error('[Upload] Full error:', err);
+            if (err?.stack) {
+                console.error('[Upload] Stack trace:', err.stack);
+            }
             uploadProgress.style.display = 'none';
-            uploadError.textContent = err.message || 'Upload failed';
+            uploadError.textContent = err?.message || 'Upload failed';
             uploadError.style.display = 'block';
             uploadBtn.disabled = false;
         }

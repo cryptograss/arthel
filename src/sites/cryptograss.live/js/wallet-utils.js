@@ -83,9 +83,19 @@ export function createWalletConnection(options = {}) {
 
         const wagmiConfig = wagmiAdapter.wagmiConfig;
 
+        // Validate that we got a working config
+        if (!wagmiConfig) {
+            console.error('[Reown/AppKit] wagmiAdapter.wagmiConfig is undefined');
+            console.error('[Reown/AppKit] This usually means AppKit initialization failed silently');
+            console.error('[Reown/AppKit] Check that projectId is valid and domain is whitelisted');
+            return null;
+        }
+
+        console.log('[Reown/AppKit] Wallet connection initialized successfully');
         return { modal, wagmiAdapter, wagmiConfig };
     } catch (err) {
         console.error('[Reown/AppKit] Initialization failed:', err);
+        console.error('[Reown/AppKit] Error details:', err.message);
         console.error('[Reown/AppKit] ProjectId:', projectId);
         console.error('[Reown/AppKit] This often means the projectId is invalid or domain not whitelisted');
         return null;
