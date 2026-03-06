@@ -308,7 +308,7 @@ export function initUploadAlbumPage(options) {
         const data = {
             draftId,
             draftExpiresAt,
-            trackData,
+            trackData,  // includes per-track tags
             albumTitle: albumTitle.value,
             albumArtist: albumArtist.value,
             albumYear: albumYear.value,
@@ -345,18 +345,44 @@ export function initUploadAlbumPage(options) {
     function renderTrackList() {
         trackList.innerHTML = '';
         trackData.forEach((track, index) => {
+            // Initialize tags if not present
+            if (!track.tags) track.tags = '';
+
+            // Main row
             const tr = document.createElement('tr');
             tr.draggable = true;
             tr.dataset.index = index;
+            tr.classList.add('track-row');
+
+            const hasTags = track.tags && track.tags.trim().length > 0;
 
             tr.innerHTML = `
                 <td class="text-muted">${index + 1}</td>
                 <td>
+                    <span class="track-expand-toggle" data-index="${index}" style="cursor: pointer; user-select: none;">
+                        <span class="expand-icon">${hasTags ? '▼' : '▶'}</span>
+                    </span>
                     <span class="track-title" contenteditable="true" data-index="${index}">${escapeHtml(track.title)}</span>
                 </td>
                 <td class="small text-muted">${track.format}</td>
                 <td class="small text-muted">${formatDuration(track.duration_seconds)}</td>
                 <td class="small text-muted">${formatFileSize(track.size_bytes)}</td>
+            `;
+
+            // Expandable tags row
+            const tagsTr = document.createElement('tr');
+            tagsTr.classList.add('track-tags-row');
+            tagsTr.dataset.index = index;
+            tagsTr.style.display = hasTags ? 'table-row' : 'none';
+
+            tagsTr.innerHTML = `
+                <td></td>
+                <td colspan="4" class="pb-3 pt-1">
+                    <textarea class="form-control form-control-sm font-monospace track-tags-input"
+                              data-index="${index}" rows="2"
+                              placeholder="COMPOSER=Bill Monroe&#10;COMMENT=Recorded live at...">${escapeHtml(track.tags)}</textarea>
+                    <div class="form-text small">One tag per line as KEY=VALUE</div>
+                </td>
             `;
 
             // Track title editing
@@ -373,6 +399,29 @@ export function initUploadAlbumPage(options) {
                 }
             });
 
+            // Expand/collapse toggle
+            const toggle = tr.querySelector('.track-expand-toggle');
+            toggle.addEventListener('click', () => {
+                const idx = parseInt(toggle.dataset.index);
+                const tagsRow = trackList.querySelector(`.track-tags-row[data-index="${idx}"]`);
+                const icon = toggle.querySelector('.expand-icon');
+                if (tagsRow.style.display === 'none') {
+                    tagsRow.style.display = 'table-row';
+                    icon.textContent = '▼';
+                } else {
+                    tagsRow.style.display = 'none';
+                    icon.textContent = '▶';
+                }
+            });
+
+            // Tags textarea change handler
+            const tagsInput = tagsTr.querySelector('.track-tags-input');
+            tagsInput.addEventListener('blur', (e) => {
+                const idx = parseInt(e.target.dataset.index);
+                trackData[idx].tags = e.target.value;
+                saveDraftToStorage();
+            });
+
             // Drag handlers
             tr.addEventListener('dragstart', handleDragStart);
             tr.addEventListener('dragover', handleDragOver);
@@ -380,6 +429,7 @@ export function initUploadAlbumPage(options) {
             tr.addEventListener('dragend', handleDragEnd);
 
             trackList.appendChild(tr);
+            trackList.appendChild(tagsTr);
         });
         updateFinalizeButton();
     }
@@ -459,7 +509,25 @@ export function initUploadAlbumPage(options) {
             finalizeProgressText.textContent = 'Starting finalization...';
             finalizeProgressBar.style.width = '5%';
 
-            // Build finalize request
+            // Helper to parse KEY=VALUE tags from a string
+            function parseTags(tagString) {
+                const tags = {};
+                if (!tagString) return null;
+                tagString.split('\n').forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed && trimmed.includes('=')) {
+                        const eqIndex = trimmed.indexOf('=');
+                        const key = trimmed.substring(0, eqIndex).trim().toUpperCase();
+                        const value = trimmed.substring(eqIndex + 1).trim();
+                        if (key && value) {
+                            tags[key] = value;
+                        }
+                    }
+                });
+                return Object.keys(tags).length > 0 ? tags : null;
+            }
+
+            // Build finalize request with per-track tags
             const requestBody = {
                 album_title: albumTitle.value.trim(),
                 artist: albumArtist.value.trim(),
@@ -467,7 +535,8 @@ export function initUploadAlbumPage(options) {
                 description: albumDescription.value.trim() || null,
                 tracks: trackData.map(t => ({
                     filename: t.original_filename,
-                    title: t.title
+                    title: t.title,
+                    tags: parseTags(t.tags)
                 }))
             };
 
@@ -683,7 +752,7 @@ export function initUploadAlbumPage(options) {
                     title: stored.trackData?.[i]?.title || f.detected_title
                 }));
 
-                // Restore form values
+                // Restore form values (per-track tags are in trackData)
                 if (stored.albumTitle) albumTitle.value = stored.albumTitle;
                 if (stored.albumArtist) albumArtist.value = stored.albumArtist;
                 if (stored.albumYear) albumYear.value = stored.albumYear;
