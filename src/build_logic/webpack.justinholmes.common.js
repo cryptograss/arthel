@@ -86,6 +86,7 @@ export default {
                 {
                     from: path.resolve(srcDir, '../epk'),
                     to: path.resolve(outputDistDir, '../epk.justinholmes.com'),
+                    toType: 'dir',
                     noErrorOnMissing: false
                 },
             ]
