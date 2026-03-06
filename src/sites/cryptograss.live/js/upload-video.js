@@ -277,7 +277,7 @@ export function initVideoUploadPage(options) {
             try {
                 const timeResp = await fetch(`${pinningService}/time`);
                 const timeData = await timeResp.json();
-                timestamp = timeData.timestamp;
+                timestamp = timeData.time ?? timeData.timestamp ?? Date.now();
             } catch (e) {
                 console.warn('Could not fetch server time, using local:', e);
                 timestamp = Date.now();

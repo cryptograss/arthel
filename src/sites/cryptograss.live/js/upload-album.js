@@ -344,7 +344,7 @@ export function initUploadAlbumPage(options) {
             try {
                 const timeResp = await fetch(`${pinningService}/time`);
                 const timeData = await timeResp.json();
-                timestamp = timeData.timestamp;
+                timestamp = timeData.time ?? timeData.timestamp ?? Date.now();
                 console.log('[Upload] Got server timestamp:', timestamp);
             } catch (e) {
                 console.warn('[Upload] Could not fetch server time, using local:', e);

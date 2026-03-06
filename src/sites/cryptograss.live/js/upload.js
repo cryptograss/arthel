@@ -198,7 +198,7 @@ export function initUploadPage(options) {
                 const baseUrl = pinningService.replace(/\/pin$/, '');
                 const timeResp = await fetch(`${baseUrl}/time`);
                 const timeData = await timeResp.json();
-                timestamp = timeData.timestamp;
+                timestamp = timeData.time ?? timeData.timestamp ?? Date.now();
             } catch (e) {
                 console.warn('Could not fetch server time, using local:', e);
                 timestamp = Date.now();
