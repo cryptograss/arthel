@@ -1,6 +1,10 @@
 /**
- * Album Upload Page
- * Handles wallet connection, metadata entry, multi-file upload with transcoding
+ * Album Upload Page - Multi-Step Workflow
+ *
+ * Step 1: Connect wallet
+ * Step 2: Upload files → creates draft, server analyzes
+ * Step 3: Review & edit track titles, album info
+ * Step 4: Finalize → transcode, pin to IPFS
  */
 
 import { reconnect, getAccount, signMessage } from '@wagmi/core';
@@ -14,16 +18,18 @@ const wallet = createWalletConnection({
 
 const { modal, wagmiAdapter, wagmiConfig } = wallet || {};
 
+// Local storage key for draft recovery
+const DRAFT_STORAGE_KEY = 'cryptograss-album-draft';
+
 export function initUploadAlbumPage(options) {
     const { pinningService, gateway } = options;
 
     // Check if wallet connection was successfully initialized
     if (!wallet) {
         console.error('[Upload] Wallet connection failed to initialize');
-        console.error('[Upload] Check earlier [Reown] errors in console for details');
         const errorDiv = document.getElementById('upload-error');
         if (errorDiv) {
-            errorDiv.textContent = 'Wallet connection failed to initialize. Check console for details (likely domain not whitelisted in Reown Cloud).';
+            errorDiv.textContent = 'Wallet connection failed to initialize. Check console for details.';
             errorDiv.style.display = 'block';
         }
         return;
@@ -42,41 +48,87 @@ export function initUploadAlbumPage(options) {
     }
 
     // State
-    let selectedFiles = [];
-    let trackData = []; // { file, title, trackNumber }
+    let currentStep = 1;
+    let draftId = null;
+    let draftExpiresAt = null;
+    let trackData = []; // From server analysis: { original_filename, detected_title, format, duration_seconds, ... }
 
-    // DOM elements
+    // DOM Elements - Steps
+    const step1 = document.getElementById('step-1-wallet');
+    const step2 = document.getElementById('step-2-upload');
+    const step3 = document.getElementById('step-3-review');
+    const step4 = document.getElementById('step-4-finalize');
+    const resultSection = document.getElementById('result-section');
+
+    // DOM Elements - Step indicators
+    const stepIndicators = document.querySelectorAll('.step');
+
+    // DOM Elements - Wallet
     const connectBtn = document.getElementById('connect-wallet-btn');
     const notConnectedMsg = document.getElementById('not-connected-msg');
     const connectedAddress = document.getElementById('connected-address');
     const authorizationStatus = document.getElementById('authorization-status');
 
-    const albumTitle = document.getElementById('album-title');
-    const albumArtist = document.getElementById('album-artist');
-    const albumVersion = document.getElementById('album-version');
-    const albumYear = document.getElementById('album-year');
-    const albumDescription = document.getElementById('album-description');
-
+    // DOM Elements - Upload
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
     const browseLink = document.getElementById('browse-link');
-    const trackListSection = document.getElementById('track-list-section');
-    const trackList = document.getElementById('track-list');
-    const uploadBtn = document.getElementById('upload-btn');
-
     const uploadProgress = document.getElementById('upload-progress');
     const uploadProgressText = document.getElementById('upload-progress-text');
     const uploadProgressBar = document.getElementById('upload-progress-bar');
-    const progressDetails = document.getElementById('progress-details');
     const uploadError = document.getElementById('upload-error');
 
-    const resultSection = document.getElementById('result-section');
+    // DOM Elements - Review
+    const albumTitle = document.getElementById('album-title');
+    const albumArtist = document.getElementById('album-artist');
+    const albumYear = document.getElementById('album-year');
+    const albumDescription = document.getElementById('album-description');
+    const trackList = document.getElementById('track-list');
+    const draftIdDisplay = document.getElementById('draft-id-display');
+    const draftExpiresDisplay = document.getElementById('draft-expires-display');
+    const draftInfo = document.getElementById('draft-info');
+    const backToUploadBtn = document.getElementById('back-to-upload-btn');
+    const finalizeBtn = document.getElementById('finalize-btn');
+
+    // DOM Elements - Finalize
+    const finalizeProgress = document.getElementById('finalize-progress');
+    const finalizeProgressText = document.getElementById('finalize-progress-text');
+    const finalizeProgressBar = document.getElementById('finalize-progress-bar');
+    const finalizeDetails = document.getElementById('finalize-details');
+    const finalizeError = document.getElementById('finalize-error');
+
+    // DOM Elements - Result
     const resultCid = document.getElementById('result-cid');
     const copyCidBtn = document.getElementById('copy-cid-btn');
     const gatewayLink = document.getElementById('gateway-link');
     const resultTrackList = document.getElementById('result-track-list');
     const uploadDetails = document.getElementById('upload-details');
     const uploadAnotherBtn = document.getElementById('upload-another-btn');
+
+    // Step management
+    function setStep(step) {
+        currentStep = step;
+
+        // Hide all step containers
+        [step1, step2, step3, step4].forEach(el => el.style.display = 'none');
+
+        // Show current step
+        const stepMap = { 1: step1, 2: step2, 3: step3, 4: step4 };
+        if (stepMap[step]) {
+            stepMap[step].style.display = 'block';
+        }
+
+        // Update step indicators
+        stepIndicators.forEach(indicator => {
+            const indicatorStep = parseInt(indicator.dataset.step);
+            indicator.classList.remove('active', 'completed');
+            if (indicatorStep < step) {
+                indicator.classList.add('completed');
+            } else if (indicatorStep === step) {
+                indicator.classList.add('active');
+            }
+        });
+    }
 
     // Update wallet UI
     async function updateWalletUI() {
@@ -88,24 +140,33 @@ export function initUploadAlbumPage(options) {
             connectBtn.textContent = 'Connected';
 
             authorizationStatus.style.display = 'block';
-            authorizationStatus.textContent = 'Wallet connected. Authorization will be verified on upload.';
+            authorizationStatus.textContent = 'Wallet connected. Ready to upload.';
             authorizationStatus.className = 'small mt-2 authorized';
-            updateUploadButton();
+
+            // Auto-advance to upload step if on step 1
+            if (currentStep === 1) {
+                setStep(2);
+            }
         } else {
             notConnectedMsg.style.display = 'block';
             connectedAddress.style.display = 'none';
             authorizationStatus.style.display = 'none';
             connectBtn.textContent = 'Connect Wallet';
-            updateUploadButton();
+
+            // Go back to step 1 if wallet disconnects
+            if (currentStep > 1) {
+                setStep(1);
+            }
         }
+        updateFinalizeButton();
     }
 
-    function updateUploadButton() {
+    function updateFinalizeButton() {
         const account = getAccount(wagmiConfig);
         const hasFiles = trackData.length > 0;
         const hasTitle = albumTitle.value.trim().length > 0;
         const hasArtist = albumArtist.value.trim().length > 0;
-        uploadBtn.disabled = !account.address || !hasFiles || !hasTitle || !hasArtist;
+        finalizeBtn.disabled = !account.address || !hasFiles || !hasTitle || !hasArtist;
     }
 
     // Connect wallet
@@ -119,13 +180,11 @@ export function initUploadAlbumPage(options) {
             (state) => state.current,
             () => updateWalletUI()
         );
-    } else {
-        console.error('[Upload] Cannot subscribe to wallet changes - wagmiAdapter not initialized');
     }
 
     // Update button state on metadata changes
     [albumTitle, albumArtist].forEach(el => {
-        el.addEventListener('input', updateUploadButton);
+        el.addEventListener('input', updateFinalizeButton);
     });
 
     // File selection via browse link
@@ -142,9 +201,9 @@ export function initUploadAlbumPage(options) {
     });
 
     // File input change
-    fileInput.addEventListener('change', (e) => {
+    fileInput.addEventListener('change', async (e) => {
         if (e.target.files.length > 0) {
-            addFiles(Array.from(e.target.files));
+            await handleFileUpload(Array.from(e.target.files));
         }
     });
 
@@ -158,51 +217,129 @@ export function initUploadAlbumPage(options) {
         uploadArea.classList.remove('dragover');
     });
 
-    uploadArea.addEventListener('drop', (e) => {
+    uploadArea.addEventListener('drop', async (e) => {
         e.preventDefault();
         uploadArea.classList.remove('dragover');
         if (e.dataTransfer.files.length > 0) {
-            addFiles(Array.from(e.dataTransfer.files));
+            await handleFileUpload(Array.from(e.dataTransfer.files));
         }
     });
 
-    function addFiles(files) {
-        // Filter to audio files
-        const audioFiles = files.filter(f =>
-            /\.(flac|wav|mp3|ogg|m4a)$/i.test(f.name)
-        );
-
-        if (audioFiles.length === 0) {
-            uploadError.textContent = 'No supported audio files found. Use FLAC, WAV, MP3, OGG, or M4A.';
+    async function handleFileUpload(files) {
+        const account = getAccount(wagmiConfig);
+        if (!account.address) {
+            uploadError.textContent = 'Please connect your wallet first.';
             uploadError.style.display = 'block';
             return;
         }
 
         uploadError.style.display = 'none';
+        uploadProgress.style.display = 'block';
+        uploadProgressText.textContent = 'Signing authorization...';
+        uploadProgressBar.style.width = '0%';
 
-        // Sort by filename to get natural track order
-        audioFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+        try {
+            // Get server time and sign authorization
+            let timestamp;
+            try {
+                const timeResp = await fetch(`${pinningService}/time`);
+                const timeData = await timeResp.json();
+                timestamp = timeData.time ?? timeData.timestamp ?? Date.now();
+            } catch (e) {
+                timestamp = Date.now();
+            }
 
-        // Create track data
-        trackData = audioFiles.map((file, index) => ({
-            file,
-            title: extractTrackTitle(file.name),
-            trackNumber: index + 1
-        }));
+            const authMessage = `Authorize Blue Railroad pinning\nTimestamp: ${timestamp}`;
+            const signature = await signMessage(wagmiConfig, { message: authMessage });
 
-        renderTrackList();
-        trackListSection.style.display = 'block';
-        updateUploadButton();
+            uploadProgressText.textContent = 'Uploading and analyzing files...';
+            uploadProgressBar.style.width = '20%';
+
+            // Build form data
+            const formData = new FormData();
+            files.forEach(file => {
+                formData.append('files', file);
+            });
+
+            // Send to draft endpoint
+            const response = await fetch(`${pinningService}/draft-album`, {
+                method: 'POST',
+                headers: {
+                    'X-Signature': signature,
+                    'X-Timestamp': timestamp.toString()
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.detail || `HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            // Store draft info
+            draftId = result.draft_id;
+            draftExpiresAt = result.expires_at;
+            trackData = result.files.map(f => ({
+                ...f,
+                title: f.detected_title // User-editable title
+            }));
+
+            // Save to localStorage for recovery
+            saveDraftToStorage();
+
+            uploadProgress.style.display = 'none';
+
+            // Move to review step
+            renderTrackList();
+            showDraftInfo();
+            setStep(3);
+
+        } catch (err) {
+            console.error('[Upload] Error:', err);
+            uploadProgress.style.display = 'none';
+            uploadError.textContent = err?.message || 'Upload failed';
+            uploadError.style.display = 'block';
+        }
     }
 
-    function extractTrackTitle(filename) {
-        // Remove extension
-        let name = filename.replace(/\.(flac|wav|mp3|ogg|m4a)$/i, '');
-        // Remove common prefixes like "01 - " or "01. "
-        name = name.replace(/^\d+[\s._-]+/, '');
-        // Replace underscores with spaces
-        name = name.replace(/_/g, ' ');
-        return name.trim() || filename;
+    function saveDraftToStorage() {
+        const data = {
+            draftId,
+            draftExpiresAt,
+            trackData,
+            albumTitle: albumTitle.value,
+            albumArtist: albumArtist.value,
+            albumYear: albumYear.value,
+            albumDescription: albumDescription.value
+        };
+        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function loadDraftFromStorage() {
+        try {
+            const stored = localStorage.getItem(DRAFT_STORAGE_KEY);
+            if (!stored) return null;
+            return JSON.parse(stored);
+        } catch {
+            return null;
+        }
+    }
+
+    function clearDraftStorage() {
+        localStorage.removeItem(DRAFT_STORAGE_KEY);
+    }
+
+    function showDraftInfo() {
+        if (draftId) {
+            draftIdDisplay.textContent = draftId.substring(0, 8) + '...';
+            if (draftExpiresAt) {
+                const expires = new Date(draftExpiresAt);
+                draftExpiresDisplay.textContent = expires.toLocaleString();
+            }
+            draftInfo.style.display = 'block';
+        }
     }
 
     function renderTrackList() {
@@ -213,19 +350,21 @@ export function initUploadAlbumPage(options) {
             tr.dataset.index = index;
 
             tr.innerHTML = `
-                <td class="text-muted">${track.trackNumber}</td>
+                <td class="text-muted">${index + 1}</td>
                 <td>
                     <span class="track-title" contenteditable="true" data-index="${index}">${escapeHtml(track.title)}</span>
                 </td>
-                <td class="small text-muted">${truncateFilename(track.file.name, 15)}</td>
-                <td class="small text-muted">${formatFileSize(track.file.size)}</td>
+                <td class="small text-muted">${track.format}</td>
+                <td class="small text-muted">${formatDuration(track.duration_seconds)}</td>
+                <td class="small text-muted">${formatFileSize(track.size_bytes)}</td>
             `;
 
             // Track title editing
             const titleSpan = tr.querySelector('.track-title');
             titleSpan.addEventListener('blur', (e) => {
                 const idx = parseInt(e.target.dataset.index);
-                trackData[idx].title = e.target.textContent.trim() || trackData[idx].file.name;
+                trackData[idx].title = e.target.textContent.trim() || trackData[idx].detected_title;
+                saveDraftToStorage();
             });
             titleSpan.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
@@ -242,6 +381,7 @@ export function initUploadAlbumPage(options) {
 
             trackList.appendChild(tr);
         });
+        updateFinalizeButton();
     }
 
     let dragSrcIndex = null;
@@ -261,12 +401,10 @@ export function initUploadAlbumPage(options) {
         e.preventDefault();
         const targetIndex = parseInt(e.target.closest('tr').dataset.index);
         if (dragSrcIndex !== null && dragSrcIndex !== targetIndex) {
-            // Reorder
             const [moved] = trackData.splice(dragSrcIndex, 1);
             trackData.splice(targetIndex, 0, moved);
-            // Renumber
-            trackData.forEach((t, i) => t.trackNumber = i + 1);
             renderTrackList();
+            saveDraftToStorage();
         }
     }
 
@@ -275,125 +413,78 @@ export function initUploadAlbumPage(options) {
         dragSrcIndex = null;
     }
 
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
+    // Back to upload button
+    backToUploadBtn.addEventListener('click', () => {
+        setStep(2);
+    });
 
-    function truncateFilename(name, maxLen) {
-        if (name.length <= maxLen) return name;
-        const ext = name.split('.').pop();
-        const base = name.slice(0, -(ext.length + 1));
-        const truncated = base.slice(0, maxLen - ext.length - 4) + '...';
-        return truncated + '.' + ext;
-    }
-
-    function formatFileSize(bytes) {
-        if (bytes < 1024) return bytes + ' B';
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-        if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(1) + ' MB';
-        return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB';
-    }
-
-    // Upload button click
-    uploadBtn.addEventListener('click', async () => {
-        console.log('[Upload] Upload button clicked');
-        console.log('[Upload] wagmiConfig exists:', !!wagmiConfig);
-
-        if (!wagmiConfig) {
-            console.error('[Upload] wagmiConfig is undefined - wallet not properly initialized');
-            uploadError.textContent = 'Wallet not properly initialized. Please refresh the page.';
-            uploadError.style.display = 'block';
+    // Finalize button click
+    finalizeBtn.addEventListener('click', async () => {
+        if (!draftId) {
+            finalizeError.textContent = 'No draft to finalize. Please upload files first.';
+            finalizeError.style.display = 'block';
             return;
         }
 
-        let account;
-        try {
-            account = getAccount(wagmiConfig);
-            console.log('[Upload] getAccount succeeded, address:', account?.address);
-        } catch (err) {
-            console.error('[Upload] getAccount failed:', err);
-            uploadError.textContent = 'Failed to get wallet account. Please reconnect.';
-            uploadError.style.display = 'block';
-            return;
-        }
-
+        const account = getAccount(wagmiConfig);
         if (!account.address) {
-            uploadError.textContent = 'Please connect your wallet first.';
-            uploadError.style.display = 'block';
+            finalizeError.textContent = 'Wallet disconnected. Please reconnect.';
+            finalizeError.style.display = 'block';
             return;
         }
 
-        if (trackData.length === 0) {
-            uploadError.textContent = 'Please add audio files first.';
-            uploadError.style.display = 'block';
-            return;
-        }
+        // Save current form values
+        saveDraftToStorage();
 
-        uploadBtn.disabled = true;
-        uploadError.style.display = 'none';
-        uploadProgress.style.display = 'block';
-        uploadProgressText.textContent = 'Signing authorization...';
-        uploadProgressBar.style.width = '0%';
-        progressDetails.textContent = '';
+        setStep(4);
+        finalizeError.style.display = 'none';
+        finalizeProgressText.textContent = 'Signing authorization...';
+        finalizeProgressBar.style.width = '0%';
+        finalizeDetails.textContent = '';
 
         try {
-            // Get server time
+            // Get server time and sign
             let timestamp;
             try {
                 const timeResp = await fetch(`${pinningService}/time`);
                 const timeData = await timeResp.json();
                 timestamp = timeData.time ?? timeData.timestamp ?? Date.now();
-                console.log('[Upload] Got server timestamp:', timestamp);
             } catch (e) {
-                console.warn('[Upload] Could not fetch server time, using local:', e);
                 timestamp = Date.now();
             }
 
-            // Create auth message and sign it
-            console.log('[Upload] Requesting signature...');
             const authMessage = `Authorize Blue Railroad pinning\nTimestamp: ${timestamp}`;
             const signature = await signMessage(wagmiConfig, { message: authMessage });
-            console.log('[Upload] Signature obtained');
 
-            uploadProgressText.textContent = 'Uploading files...';
-            uploadProgressBar.style.width = '5%';
+            finalizeProgressText.textContent = 'Starting finalization...';
+            finalizeProgressBar.style.width = '5%';
 
-            // Build form data
-            const formData = new FormData();
-            formData.append('title', albumTitle.value.trim());
-            formData.append('artist', albumArtist.value.trim());
-            formData.append('version', albumVersion.value.trim() || 'master');
-            formData.append('year', albumYear.value.trim() || new Date().getFullYear().toString());
-            formData.append('description', albumDescription.value.trim());
+            // Build finalize request
+            const requestBody = {
+                album_title: albumTitle.value.trim(),
+                artist: albumArtist.value.trim(),
+                year: albumYear.value.trim() || null,
+                description: albumDescription.value.trim() || null,
+                tracks: trackData.map(t => ({
+                    filename: t.original_filename,
+                    title: t.title
+                }))
+            };
 
-            // Add track metadata as JSON
-            const trackMeta = trackData.map(t => ({
-                trackNumber: t.trackNumber,
-                title: t.title,
-                filename: t.file.name
-            }));
-            formData.append('tracks', JSON.stringify(trackMeta));
-
-            // Add files
-            trackData.forEach((track, index) => {
-                formData.append('files', track.file);
-            });
-
-            // Use SSE for progress
-            const response = await fetch(`${pinningService}/pin-album-direct`, {
+            // Send finalize request (returns SSE stream)
+            const response = await fetch(`${pinningService}/draft-album/${draftId}/finalize`, {
                 method: 'POST',
                 headers: {
                     'X-Signature': signature,
-                    'X-Timestamp': timestamp.toString()
+                    'X-Timestamp': timestamp.toString(),
+                    'Content-Type': 'application/json'
                 },
-                body: formData
+                body: JSON.stringify(requestBody)
             });
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.error || `HTTP ${response.status}`);
+                throw new Error(errData.detail || `HTTP ${response.status}`);
             }
 
             // Read SSE stream
@@ -408,60 +499,61 @@ export function initUploadAlbumPage(options) {
 
                 buffer += decoder.decode(value, { stream: true });
                 const lines = buffer.split('\n');
-                buffer = lines.pop(); // Keep incomplete line
+                buffer = lines.pop();
 
                 for (const line of lines) {
                     if (line.startsWith('data: ')) {
                         try {
                             const event = JSON.parse(line.slice(6));
-                            handleProgressEvent(event);
-                            if (event.stage === 'complete') {
+                            handleFinalizeEvent(event);
+                            if (event.cid) {
                                 finalResult = event;
                             }
                         } catch (e) {
                             console.warn('Failed to parse SSE event:', line);
                         }
+                    } else if (line.startsWith('event: error')) {
+                        // Next data line will have error
                     }
                 }
             }
 
             if (!finalResult) {
-                throw new Error('Upload completed without final result');
+                throw new Error('Finalization completed without result');
             }
 
+            // Clear draft storage on success
+            clearDraftStorage();
             showResult(finalResult);
 
         } catch (err) {
-            console.error('[Upload] Error during upload process');
-            console.error('[Upload] Error name:', err?.name);
-            console.error('[Upload] Error message:', err?.message);
-            console.error('[Upload] Full error:', err);
-            if (err?.stack) {
-                console.error('[Upload] Stack trace:', err.stack);
-            }
-            uploadProgress.style.display = 'none';
-            uploadError.textContent = err?.message || 'Upload failed';
-            uploadError.style.display = 'block';
-            uploadBtn.disabled = false;
+            console.error('[Finalize] Error:', err);
+            finalizeError.textContent = err?.message || 'Finalization failed';
+            finalizeError.style.display = 'block';
         }
     });
 
-    function handleProgressEvent(event) {
-        const { stage, message, progress, track } = event;
-
-        if (progress !== undefined) {
-            uploadProgressBar.style.width = progress + '%';
+    function handleFinalizeEvent(event) {
+        if (event.stage) {
+            finalizeProgressText.textContent = event.message || event.stage;
         }
-
-        uploadProgressText.textContent = message || stage;
-
-        if (track) {
-            progressDetails.textContent = `Processing: ${track}`;
+        if (event.progress !== undefined) {
+            finalizeProgressBar.style.width = event.progress + '%';
+        }
+        if (event.track) {
+            finalizeDetails.textContent = `Processing: ${event.track}`;
+        }
+        if (event.message && event.stage === 'error') {
+            finalizeError.textContent = event.message;
+            finalizeError.style.display = 'block';
         }
     }
 
     function showResult(result) {
-        uploadProgress.style.display = 'none';
+        // Hide finalize step
+        step4.style.display = 'none';
+
+        // Show result
         resultSection.style.display = 'block';
 
         resultCid.value = result.cid;
@@ -476,9 +568,9 @@ export function initUploadAlbumPage(options) {
                 const li = document.createElement('li');
                 li.className = 'list-group-item d-flex justify-content-between';
                 li.innerHTML = `
-                    <span>${track.trackNumber}. ${escapeHtml(track.title)}</span>
-                    <a href="${gateway}/${result.cid}/${track.filename}" target="_blank" class="text-muted">
-                        ${track.filename}
+                    <span>${track.track_number}. ${escapeHtml(track.title)}</span>
+                    <a href="${gateway}/${result.cid}/ogg/${track.track_number.toString().padStart(2, '0')}-${encodeURIComponent(track.title.replace(/[^a-zA-Z0-9 _-]/g, '').trim().substring(0, 50))}.ogg" target="_blank" class="text-muted">
+                        OGG
                     </a>
                 `;
                 resultTrackList.appendChild(li);
@@ -487,16 +579,21 @@ export function initUploadAlbumPage(options) {
 
         // Details
         let details = [];
-        if (result.totalSize) {
-            details.push(`Total: ${formatFileSize(result.totalSize)}`);
-        }
-        if (result.pinnedToPinata) {
+        if (result.pinata) {
             details.push('Pinned to Pinata');
         }
-        if (result.releasePageTitle) {
-            details.push(`Release: ${result.releasePageTitle}`);
+        if (result.album_title) {
+            details.push(`Album: ${result.album_title}`);
+        }
+        if (result.artist) {
+            details.push(`Artist: ${result.artist}`);
         }
         uploadDetails.textContent = details.join(' | ');
+
+        // Update step indicator to show completion
+        stepIndicators.forEach(indicator => {
+            indicator.classList.add('completed');
+        });
     }
 
     // Copy CID button
@@ -512,21 +609,116 @@ export function initUploadAlbumPage(options) {
     // Upload another button
     uploadAnotherBtn.addEventListener('click', () => {
         resultSection.style.display = 'none';
-        trackListSection.style.display = 'none';
+        draftId = null;
+        draftExpiresAt = null;
         trackData = [];
         trackList.innerHTML = '';
         fileInput.value = '';
         albumTitle.value = '';
         albumArtist.value = '';
-        albumVersion.value = '';
         albumYear.value = '';
         albumDescription.value = '';
-        uploadBtn.disabled = true;
-        updateUploadButton();
+        draftInfo.style.display = 'none';
+        clearDraftStorage();
+        setStep(2);
     });
+
+    // Utility functions
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+        return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+    }
+
+    function formatDuration(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Check for existing draft on page load
+    async function checkForExistingDraft() {
+        const stored = loadDraftFromStorage();
+        if (!stored || !stored.draftId) return;
+
+        // Check if draft still exists on server
+        const account = getAccount(wagmiConfig);
+        if (!account.address) return;
+
+        try {
+            // Get auth
+            let timestamp;
+            try {
+                const timeResp = await fetch(`${pinningService}/time`);
+                const timeData = await timeResp.json();
+                timestamp = timeData.time ?? timeData.timestamp ?? Date.now();
+            } catch (e) {
+                timestamp = Date.now();
+            }
+
+            const authMessage = `Authorize Blue Railroad pinning\nTimestamp: ${timestamp}`;
+            const signature = await signMessage(wagmiConfig, { message: authMessage });
+
+            const response = await fetch(`${pinningService}/draft-album/${stored.draftId}`, {
+                headers: {
+                    'X-Signature': signature,
+                    'X-Timestamp': timestamp.toString()
+                }
+            });
+
+            if (response.ok) {
+                // Restore draft state
+                const serverDraft = await response.json();
+                draftId = stored.draftId;
+                draftExpiresAt = serverDraft.expires_at;
+                trackData = serverDraft.files.map((f, i) => ({
+                    ...f,
+                    title: stored.trackData?.[i]?.title || f.detected_title
+                }));
+
+                // Restore form values
+                if (stored.albumTitle) albumTitle.value = stored.albumTitle;
+                if (stored.albumArtist) albumArtist.value = stored.albumArtist;
+                if (stored.albumYear) albumYear.value = stored.albumYear;
+                if (stored.albumDescription) albumDescription.value = stored.albumDescription;
+
+                renderTrackList();
+                showDraftInfo();
+                setStep(3);
+
+                console.log('[Upload] Restored draft from storage:', draftId);
+            } else {
+                // Draft expired or not found
+                clearDraftStorage();
+            }
+        } catch (e) {
+            console.warn('[Upload] Could not restore draft:', e);
+            clearDraftStorage();
+        }
+    }
 
     // Initial UI update
     updateWalletUI();
+
+    // Try to restore draft after wallet connects
+    if (wagmiAdapter && wagmiAdapter.wagmiConfig) {
+        wagmiAdapter.wagmiConfig.subscribe(
+            (state) => state.current,
+            () => {
+                const account = getAccount(wagmiConfig);
+                if (account.address && !draftId) {
+                    checkForExistingDraft();
+                }
+            }
+        );
+    }
 }
 
 // Make available globally

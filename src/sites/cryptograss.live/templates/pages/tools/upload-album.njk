@@ -7,106 +7,168 @@
         <h1 class="text-center pixel-font">Album Upload</h1>
         <p class="text-center text-muted">Upload and pin audio albums to IPFS</p>
 
+        <!-- Step Indicator -->
+        <div class="step-indicator mb-4">
+            <div class="step-track">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Connect</div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Upload</div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Review</div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Finalize</div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mt-4">
             <div class="col-md-10 offset-md-1">
-                <!-- Wallet Connection -->
-                <div class="card semi-transparent-bg mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">1. Connect Wallet</h5>
-                        <p class="small text-muted mb-2">
-                            Connect your wallet to authorize uploads. Only wallets on the allowlist can pin files.
-                        </p>
-                        <div id="wallet-status">
-                            <p id="not-connected-msg">Not connected</p>
-                            <p id="connected-address" style="display: none;" class="font-monospace"></p>
-                            <p id="authorization-status" style="display: none;" class="small mt-2"></p>
-                        </div>
-                        <button id="connect-wallet-btn" class="btn btn-primary">Connect Wallet</button>
-                    </div>
-                </div>
 
-                <!-- Album Metadata -->
-                <div class="card semi-transparent-bg mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">2. Album Info</h5>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="album-title" class="form-label">Album Title</label>
-                                <input type="text" class="form-control" id="album-title" placeholder="e.g. 4masks">
+                <!-- Step 1: Wallet Connection -->
+                <div id="step-1-wallet" class="upload-step">
+                    <div class="card semi-transparent-bg mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Connect Wallet</h5>
+                            <p class="small text-muted mb-2">
+                                Connect your wallet to authorize uploads. Only wallets on the allowlist can pin files.
+                            </p>
+                            <div id="wallet-status">
+                                <p id="not-connected-msg">Not connected</p>
+                                <p id="connected-address" style="display: none;" class="font-monospace"></p>
+                                <p id="authorization-status" style="display: none;" class="small mt-2"></p>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="album-artist" class="form-label">Artist</label>
-                                <input type="text" class="form-control" id="album-artist" placeholder="e.g. Justin Holmes">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="album-version" class="form-label">Version</label>
-                                <input type="text" class="form-control" id="album-version" placeholder="e.g. RC0, master">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="album-year" class="form-label">Year</label>
-                                <input type="text" class="form-control" id="album-year" placeholder="e.g. 2024">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="album-description" class="form-label">Description (optional)</label>
-                            <textarea class="form-control" id="album-description" rows="2" placeholder="Notes about this release..."></textarea>
+                            <button id="connect-wallet-btn" class="btn btn-primary">Connect Wallet</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- File Upload -->
-                <div class="card semi-transparent-bg mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">3. Upload Tracks</h5>
-                        <p class="small text-muted mb-2">
-                            Select audio files (FLAC, WAV, MP3, OGG). Files will be transcoded to OGG for streaming.
-                        </p>
+                <!-- Step 2: File Upload -->
+                <div id="step-2-upload" class="upload-step" style="display: none;">
+                    <div class="card semi-transparent-bg mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Upload Audio Files</h5>
+                            <p class="small text-muted mb-2">
+                                Select audio files (FLAC, WAV, MP3, OGG). Files will be analyzed and you can edit metadata in the next step.
+                            </p>
 
-                        <div id="upload-area" class="upload-dropzone mb-3">
-                            <input type="file" id="file-input" style="display: none;" multiple accept=".flac,.wav,.mp3,.ogg,.m4a">
-                            <div id="dropzone-content">
-                                <div class="dropzone-icon">🎵</div>
-                                <p class="mb-0">Drop audio files here or <a href="#" id="browse-link">browse</a></p>
-                                <p class="small text-muted mb-0">Supports FLAC, WAV, MP3, OGG, M4A</p>
+                            <div id="upload-area" class="upload-dropzone mb-3">
+                                <input type="file" id="file-input" style="display: none;" multiple accept=".flac,.wav,.mp3,.ogg,.m4a,.jpg,.jpeg,.png,.webp">
+                                <div id="dropzone-content">
+                                    <div class="dropzone-icon">🎵</div>
+                                    <p class="mb-0">Drop audio files here or <a href="#" id="browse-link">browse</a></p>
+                                    <p class="small text-muted mb-0">Supports FLAC, WAV, MP3, OGG, M4A + cover art</p>
+                                </div>
+                            </div>
+
+                            <div id="upload-progress" style="display: none;" class="mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                                    <span class="ms-2" id="upload-progress-text">Uploading and analyzing files...</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div id="upload-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div id="upload-error" class="alert alert-danger" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Review & Edit -->
+                <div id="step-3-review" class="upload-step" style="display: none;">
+                    <div class="card semi-transparent-bg mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Album Info</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="album-title" class="form-label">Album Title <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="album-title" placeholder="e.g. 4masks">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="album-artist" class="form-label">Artist <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="album-artist" placeholder="e.g. Justin Holmes">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="album-year" class="form-label">Year</label>
+                                    <input type="text" class="form-control" id="album-year" placeholder="e.g. 2024">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="album-description" class="form-label">Description</label>
+                                    <input type="text" class="form-control" id="album-description" placeholder="Notes about this release...">
+                                </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Track List -->
-                        <div id="track-list-section" style="display: none;">
-                            <h6 class="mb-2">Track Listing</h6>
-                            <p class="small text-muted">Click track titles to edit. Drag to reorder.</p>
+                    <div class="card semi-transparent-bg mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Track Listing</h5>
+                            <p class="small text-muted mb-2">Click track titles to edit. Drag rows to reorder.</p>
+
+                            <div id="draft-info" class="small text-muted mb-2" style="display: none;">
+                                Draft ID: <code id="draft-id-display"></code>
+                                <span class="ms-2">Expires: <span id="draft-expires-display"></span></span>
+                            </div>
+
                             <table class="table table-sm" id="track-table">
                                 <thead>
                                     <tr>
                                         <th style="width: 40px;">#</th>
                                         <th>Title</th>
-                                        <th style="width: 120px;">File</th>
+                                        <th style="width: 100px;">Format</th>
+                                        <th style="width: 80px;">Duration</th>
                                         <th style="width: 80px;">Size</th>
                                     </tr>
                                 </thead>
                                 <tbody id="track-list">
                                 </tbody>
                             </table>
-                        </div>
 
-                        <div id="upload-progress" style="display: none;" class="mb-3">
-                            <div class="d-flex align-items-center mb-2">
-                                <span class="spinner-border spinner-border-sm" role="status"></span>
-                                <span class="ms-2" id="upload-progress-text">Uploading...</span>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <button id="back-to-upload-btn" class="btn btn-outline-secondary btn-sm">
+                                    ← Add More Files
+                                </button>
+                                <button id="finalize-btn" class="btn btn-success" disabled>
+                                    Finalize Album
+                                </button>
                             </div>
-                            <div class="progress" style="height: 6px;">
-                                <div id="upload-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
-                            </div>
-                            <div id="progress-details" class="small text-muted mt-1"></div>
                         </div>
+                    </div>
+                </div>
 
-                        <div id="upload-error" class="alert alert-danger" style="display: none;"></div>
+                <!-- Step 4: Finalize -->
+                <div id="step-4-finalize" class="upload-step" style="display: none;">
+                    <div class="card semi-transparent-bg mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Processing Album</h5>
 
-                        <button id="upload-btn" class="btn btn-success" disabled>
-                            Upload Album
-                        </button>
+                            <div id="finalize-progress" class="mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                                    <span class="ms-2" id="finalize-progress-text">Preparing...</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div id="finalize-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <div id="finalize-details" class="small text-muted mt-1"></div>
+                            </div>
+
+                            <div id="finalize-error" class="alert alert-danger" style="display: none;"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -128,6 +190,16 @@
                         <div class="mb-3">
                             <label class="form-label small text-muted">Gateway URL</label>
                             <a id="gateway-link" href="#" target="_blank" class="d-block font-monospace small"></a>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Album Structure</label>
+                            <div class="font-monospace small bg-dark p-2 rounded">
+                                <div>📁 album/</div>
+                                <div class="ms-3">📁 flac/ (original files)</div>
+                                <div class="ms-3">📁 ogg/ (transcoded for streaming)</div>
+                                <div class="ms-3">📄 metadata.json</div>
+                            </div>
                         </div>
 
                         <div id="result-tracks" class="mb-3">
@@ -165,6 +237,75 @@ w3m-modal {
     z-index: 10000 !important;
 }
 
+/* Step Indicator */
+.step-indicator {
+    padding: 0 20px;
+}
+
+.step-track {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.step.active, .step.completed {
+    opacity: 1;
+}
+
+.step-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #333;
+    border: 2px solid #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 4px;
+    transition: all 0.2s;
+}
+
+.step.active .step-number {
+    background: #4a7c59;
+    border-color: #4a7c59;
+}
+
+.step.completed .step-number {
+    background: #198754;
+    border-color: #198754;
+}
+
+.step.completed .step-number::after {
+    content: "✓";
+}
+
+.step-label {
+    font-size: 12px;
+    color: #999;
+}
+
+.step.active .step-label {
+    color: #fff;
+}
+
+.step-connector {
+    width: 40px;
+    height: 2px;
+    background: #444;
+    margin: 0 8px;
+    margin-bottom: 20px;
+}
+
+/* Upload Dropzone */
 .upload-dropzone {
     border: 2px dashed #ccc;
     border-radius: 8px;
@@ -199,6 +340,7 @@ w3m-modal {
     color: #dc3545;
 }
 
+/* Track Table */
 #track-table tbody tr {
     cursor: move;
 }
@@ -207,6 +349,8 @@ w3m-modal {
     cursor: text;
     padding: 2px 4px;
     border-radius: 3px;
+    min-width: 100px;
+    display: inline-block;
 }
 
 #track-table .track-title:hover {
@@ -216,6 +360,7 @@ w3m-modal {
 #track-table .track-title:focus {
     background: white;
     outline: 2px solid #4a7c59;
+    color: #333;
 }
 
 .dragging {
@@ -225,6 +370,16 @@ w3m-modal {
 #result-track-list .list-group-item {
     background: transparent;
     border-color: rgba(255,255,255,0.1);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .step-connector {
+        width: 20px;
+    }
+    .step-label {
+        font-size: 10px;
+    }
 }
 </style>
 
