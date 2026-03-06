@@ -58,7 +58,7 @@ const BR_V2_ABI = [
 ];
 
 // Setup Web3Modal
-const projectId = 'c4f79cc821d56e59de850c9b35cbbe86';
+const projectId = '3e6e7e58a5918c44fa42816d90b735a6';
 const metadata = {
     name: 'Blue Railroad Admin',
     description: 'Burn Blue Railroad tokens',

@@ -69,7 +69,7 @@ const BR_V2_ABI = [
 ];
 
 // Setup Web3Modal
-const projectId = 'c4f79cc821d56e59de850c9b35cbbe86';
+const projectId = '3e6e7e58a5918c44fa42816d90b735a6';
 const metadata = {
     name: 'Blue Railroad Admin',
     description: 'Mint Blue Railroad exercise tokens',
@@ -211,6 +211,41 @@ export function initMintPage(submissionData) {
         (state) => state.current,
         () => updateWalletUI()
     );
+
+    // Manual CID entry handler (for submissions where video was already pinned externally)
+    const manualCidInput = document.getElementById('manual-cid-input');
+    const useCidBtn = document.getElementById('use-cid-btn');
+
+    if (useCidBtn && manualCidInput) {
+        useCidBtn.addEventListener('click', () => {
+            const cid = manualCidInput.value.trim();
+            if (!cid) {
+                pinError.textContent = 'Please enter a CID';
+                pinError.style.display = 'block';
+                return;
+            }
+
+            // Validate the CID format
+            const validation = validateCidForMinting(cid);
+            if (!validation.valid) {
+                pinError.textContent = validation.error;
+                pinError.style.display = 'block';
+                return;
+            }
+
+            // Set the CID
+            currentIpfsCid = cid;
+            currentVideoUri = 'ipfs://' + cid;
+
+            // Update UI to show CID is set
+            pinNotStarted.style.display = 'none';
+            pinComplete.style.display = 'block';
+            ipfsCid.textContent = cid;
+            pinError.style.display = 'none';
+
+            console.log('Manual CID set:', cid);
+        });
+    }
 
     // Pin to IPFS handler (requires wallet auth) - uses SSE streaming for progress
     if (pinBtn && videoUrl) {

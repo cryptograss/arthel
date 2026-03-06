@@ -9,7 +9,7 @@ import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { reconnect, getAccount, signMessage } from '@wagmi/core';
 
 // Setup Web3Modal
-const projectId = 'c4f79cc821d56e59de850c9b35cbbe86';
+const projectId = '3e6e7e58a5918c44fa42816d90b735a6';
 const metadata = {
     name: 'Cryptograss Upload',
     description: 'Pin files to IPFS',
