@@ -3,34 +3,16 @@
  * Handles wallet connection, video upload to Coconut.co for AV1 HLS transcoding
  */
 
-import { createAppKit } from '@reown/appkit';
-import { optimism } from '@reown/appkit/networks';
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { reconnect, getAccount, signMessage } from '@wagmi/core';
+import { createWalletConnection } from './wallet-utils.js';
 
-// Setup Web3Modal
-const projectId = 'a685c805b45541d81547b86d86d97ff5';
-const metadata = {
+// Setup wallet connection with error handling
+const wallet = createWalletConnection({
     name: 'Cryptograss Video Upload',
-    description: 'Transcode and pin video to IPFS',
-    url: 'https://cryptograss.live',
-    icons: ['https://cryptograss.live/favicon.ico']
-};
-
-const wagmiAdapter = new WagmiAdapter({
-    projectId,
-    networks: [optimism]
+    description: 'Transcode and pin video to IPFS'
 });
 
-const modal = createAppKit({
-    adapters: [wagmiAdapter],
-    networks: [optimism],
-    metadata,
-    projectId,
-    features: { analytics: false }
-});
-
-const wagmiConfig = wagmiAdapter.wagmiConfig;
+const { modal, wagmiConfig } = wallet || {};
 
 export function initVideoUploadPage(options) {
     const { pinningService, gateway } = options;

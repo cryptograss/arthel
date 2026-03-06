@@ -3,10 +3,8 @@
  * Handles wallet connection and token burning (transfer to 0x...dEaD)
  */
 
-import { createAppKit } from '@reown/appkit';
-import { optimism } from '@reown/appkit/networks';
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { reconnect, getAccount, writeContract, readContract, waitForTransactionReceipt } from '@wagmi/core';
+import { createWalletConnection } from './wallet-utils.js';
 
 // Burn address - the standard "dead" address
 const BURN_ADDRESS = '0x000000000000000000000000000000000000dEaD';
@@ -57,29 +55,13 @@ const BR_V2_ABI = [
     }
 ];
 
-// Setup Web3Modal
-const projectId = 'a685c805b45541d81547b86d86d97ff5';
-const metadata = {
+// Setup wallet connection with error handling
+const wallet = createWalletConnection({
     name: 'Blue Railroad Admin',
-    description: 'Burn Blue Railroad tokens',
-    url: 'https://cryptograss.live',
-    icons: ['https://cryptograss.live/favicon.ico']
-};
-
-const wagmiAdapter = new WagmiAdapter({
-    projectId,
-    networks: [optimism]
+    description: 'Burn Blue Railroad tokens'
 });
 
-const modal = createAppKit({
-    adapters: [wagmiAdapter],
-    networks: [optimism],
-    metadata,
-    projectId,
-    features: { analytics: false }
-});
-
-const wagmiConfig = wagmiAdapter.wagmiConfig;
+const { modal, wagmiConfig } = wallet || {};
 
 // Get contract config based on version
 function getContractConfig(version) {

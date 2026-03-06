@@ -3,11 +3,8 @@
  * Handles wallet connection, IPFS pinning, and token minting or V1→V2 migration
  */
 
-import { createAppKit } from '@reown/appkit';
-import { optimism } from '@reown/appkit/networks';
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { reconnect, getAccount, writeContract, readContract, waitForTransactionReceipt, signMessage, getEnsAddress } from '@wagmi/core';
-import { mainnet } from '@reown/appkit/networks';
+import { createWalletConnection } from './wallet-utils.js';
 import { cidToBytes32, validateCidForMinting, ZERO_HASH } from './cid-utils.js';
 
 // Blue Railroad V1 contract config
@@ -68,29 +65,14 @@ const BR_V2_ABI = [
     }
 ];
 
-// Setup Web3Modal
-const projectId = 'a685c805b45541d81547b86d86d97ff5';
-const metadata = {
+// Setup wallet connection with error handling (includes mainnet for ENS resolution)
+const wallet = createWalletConnection({
     name: 'Blue Railroad Admin',
     description: 'Mint Blue Railroad exercise tokens',
-    url: 'https://cryptograss.live',
-    icons: ['https://cryptograss.live/favicon.ico']
-};
-
-const wagmiAdapter = new WagmiAdapter({
-    projectId,
-    networks: [optimism, mainnet]  // mainnet needed for ENS resolution
+    includeMainnet: true
 });
 
-const modal = createAppKit({
-    adapters: [wagmiAdapter],
-    networks: [optimism],
-    metadata,
-    projectId,
-    features: { analytics: false }
-});
-
-const wagmiConfig = wagmiAdapter.wagmiConfig;
+const { modal, wagmiConfig } = wallet || {};
 
 // Resolve ENS name to address (returns original if already an address)
 async function resolveRecipient(recipient) {
