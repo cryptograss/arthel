@@ -116,8 +116,24 @@ export function initMintPage(submissionData) {
     let currentVideoUri = preloadedIpfsCid ? `ipfs://${preloadedIpfsCid}` : absoluteVideoUrl;
     let currentIpfsCid = preloadedIpfsCid; // Track the CID separately for bytes32 conversion
 
+    // Check if wallet connection was successfully initialized
+    if (!wallet) {
+        console.error('[Mint] Wallet connection failed to initialize');
+        console.error('[Mint] Check earlier [Reown] errors in console for details');
+        const errorDiv = document.getElementById('error-msg');
+        if (errorDiv) {
+            errorDiv.textContent = 'Wallet connection failed to initialize. Check console for details.';
+            errorDiv.style.display = 'block';
+        }
+        return;
+    }
+
     // Reconnect any existing wallet sessions
-    reconnect(wagmiConfig);
+    try {
+        reconnect(wagmiConfig);
+    } catch (err) {
+        console.error('[Mint] reconnect() failed:', err);
+    }
 
     // DOM elements - wallet
     const connectBtn = document.getElementById('connect-wallet-btn');
@@ -185,14 +201,16 @@ export function initMintPage(submissionData) {
 
     // Connect wallet button
     connectBtn.addEventListener('click', () => {
-        modal.open();
+        modal && modal.open();
     });
 
     // Subscribe to wallet state changes
-    wagmiAdapter.wagmiConfig.subscribe(
-        (state) => state.current,
-        () => updateWalletUI()
-    );
+    if (wagmiAdapter && wagmiAdapter.wagmiConfig) {
+        wagmiAdapter.wagmiConfig.subscribe(
+            (state) => state.current,
+            () => updateWalletUI()
+        );
+    }
 
     // Manual CID entry handler (for submissions where video was already pinned externally)
     const manualCidInput = document.getElementById('manual-cid-input');

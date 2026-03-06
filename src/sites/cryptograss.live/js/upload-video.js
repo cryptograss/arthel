@@ -17,8 +17,24 @@ const { modal, wagmiAdapter, wagmiConfig } = wallet || {};
 export function initVideoUploadPage(options) {
     const { pinningService, gateway } = options;
 
+    // Check if wallet connection was successfully initialized
+    if (!wallet) {
+        console.error('[VideoUpload] Wallet connection failed to initialize');
+        console.error('[VideoUpload] Check earlier [Reown] errors in console for details');
+        const errorDiv = document.getElementById('upload-error');
+        if (errorDiv) {
+            errorDiv.textContent = 'Wallet connection failed to initialize. Check console for details.';
+            errorDiv.style.display = 'block';
+        }
+        return;
+    }
+
     // Reconnect existing wallet sessions
-    reconnect(wagmiConfig);
+    try {
+        reconnect(wagmiConfig);
+    } catch (err) {
+        console.error('[VideoUpload] reconnect() failed:', err);
+    }
 
     // State
     let selectedVideo = null;
@@ -86,12 +102,14 @@ export function initVideoUploadPage(options) {
         processBtn.disabled = !account.address || !selectedVideo || !hasQuality;
     }
 
-    connectBtn.addEventListener('click', () => modal.open());
+    connectBtn.addEventListener('click', () => modal && modal.open());
 
-    wagmiAdapter.wagmiConfig.subscribe(
-        (state) => state.current,
-        () => updateWalletUI()
-    );
+    if (wagmiAdapter && wagmiAdapter.wagmiConfig) {
+        wagmiAdapter.wagmiConfig.subscribe(
+            (state) => state.current,
+            () => updateWalletUI()
+        );
+    }
 
     // Video selection
     browseLink.addEventListener('click', (e) => {

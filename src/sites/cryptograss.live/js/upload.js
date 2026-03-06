@@ -17,8 +17,24 @@ const { modal, wagmiAdapter, wagmiConfig } = wallet || {};
 export function initUploadPage(options) {
     const { pinningService, gateway } = options;
 
+    // Check if wallet connection was successfully initialized
+    if (!wallet) {
+        console.error('[Upload] Wallet connection failed to initialize');
+        console.error('[Upload] Check earlier [Reown] errors in console for details');
+        const errorDiv = document.getElementById('upload-error');
+        if (errorDiv) {
+            errorDiv.textContent = 'Wallet connection failed to initialize. Check console for details.';
+            errorDiv.style.display = 'block';
+        }
+        return;
+    }
+
     // Reconnect existing wallet sessions
-    reconnect(wagmiConfig);
+    try {
+        reconnect(wagmiConfig);
+    } catch (err) {
+        console.error('[Upload] reconnect() failed:', err);
+    }
 
     // State
     let selectedFile = null;
@@ -95,10 +111,12 @@ export function initUploadPage(options) {
     });
 
     // Subscribe to wallet changes
-    wagmiAdapter.wagmiConfig.subscribe(
-        (state) => state.current,
-        () => updateWalletUI()
-    );
+    if (wagmiAdapter && wagmiAdapter.wagmiConfig) {
+        wagmiAdapter.wagmiConfig.subscribe(
+            (state) => state.current,
+            () => updateWalletUI()
+        );
+    }
 
     // File selection via browse link
     browseLink.addEventListener('click', (e) => {

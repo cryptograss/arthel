@@ -17,8 +17,29 @@ const { modal, wagmiAdapter, wagmiConfig } = wallet || {};
 export function initUploadAlbumPage(options) {
     const { pinningService, gateway } = options;
 
+    // Check if wallet connection was successfully initialized
+    if (!wallet) {
+        console.error('[Upload] Wallet connection failed to initialize');
+        console.error('[Upload] Check earlier [Reown] errors in console for details');
+        const errorDiv = document.getElementById('upload-error');
+        if (errorDiv) {
+            errorDiv.textContent = 'Wallet connection failed to initialize. Check console for details (likely domain not whitelisted in Reown Cloud).';
+            errorDiv.style.display = 'block';
+        }
+        return;
+    }
+
+    if (!wagmiConfig) {
+        console.error('[Upload] wagmiConfig is undefined - wallet initialization incomplete');
+        return;
+    }
+
     // Reconnect existing wallet sessions
-    reconnect(wagmiConfig);
+    try {
+        reconnect(wagmiConfig);
+    } catch (err) {
+        console.error('[Upload] reconnect() failed:', err);
+    }
 
     // State
     let selectedFiles = [];
@@ -93,10 +114,14 @@ export function initUploadAlbumPage(options) {
     });
 
     // Subscribe to wallet changes
-    wagmiAdapter.wagmiConfig.subscribe(
-        (state) => state.current,
-        () => updateWalletUI()
-    );
+    if (wagmiAdapter && wagmiAdapter.wagmiConfig) {
+        wagmiAdapter.wagmiConfig.subscribe(
+            (state) => state.current,
+            () => updateWalletUI()
+        );
+    } else {
+        console.error('[Upload] Cannot subscribe to wallet changes - wagmiAdapter not initialized');
+    }
 
     // Update button state on metadata changes
     [albumTitle, albumArtist].forEach(el => {

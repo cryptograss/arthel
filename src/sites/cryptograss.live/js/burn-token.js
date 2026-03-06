@@ -73,8 +73,24 @@ function getContractConfig(version) {
 
 // Initialize on page load
 export function initBurnPage() {
+    // Check if wallet connection was successfully initialized
+    if (!wallet) {
+        console.error('[Burn] Wallet connection failed to initialize');
+        console.error('[Burn] Check earlier [Reown] errors in console for details');
+        const errorDiv = document.getElementById('error-msg');
+        if (errorDiv) {
+            errorDiv.textContent = 'Wallet connection failed to initialize. Check console for details.';
+            errorDiv.style.display = 'block';
+        }
+        return;
+    }
+
     // Reconnect any existing wallet sessions
-    reconnect(wagmiConfig);
+    try {
+        reconnect(wagmiConfig);
+    } catch (err) {
+        console.error('[Burn] reconnect() failed:', err);
+    }
 
     // DOM elements
     const tokenIdInput = document.getElementById('token-id');
@@ -135,14 +151,16 @@ export function initBurnPage() {
 
     // Connect wallet button
     connectBtn.addEventListener('click', () => {
-        modal.open();
+        modal && modal.open();
     });
 
     // Subscribe to wallet state changes
-    wagmiAdapter.wagmiConfig.subscribe(
-        (state) => state.current,
-        () => updateWalletUI()
-    );
+    if (wagmiAdapter && wagmiAdapter.wagmiConfig) {
+        wagmiAdapter.wagmiConfig.subscribe(
+            (state) => state.current,
+            () => updateWalletUI()
+        );
+    }
 
     // Check token ownership
     checkTokenBtn.addEventListener('click', async () => {
