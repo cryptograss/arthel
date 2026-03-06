@@ -83,10 +83,9 @@ export default {
                     noErrorOnMissing: true
                 },
                 // EPK - standalone site for epk.justinholmes.com
-                // Goes to output/dist/epk (sibling to output/dist/justinholmes.com)
                 {
                     from: path.resolve(srcDir, '../epk'),
-                    to: path.resolve(outputDistDir, '../epk'),
+                    to: path.resolve(outputDistDir, '../epk.justinholmes.com'),
                     noErrorOnMissing: false
                 },
             ]
