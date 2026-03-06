@@ -23,7 +23,7 @@ export const config = createConfig({
 })
 
 const web3 = new Web3();
-const projectId = '3e6e7e58a5918c44fa42816d90b735a6';
+const projectId = 'a685c805b45541d81547b86d86d97ff5';
 import { setStoneABI } from "../../../abi/setStoneABI.js";
 
 

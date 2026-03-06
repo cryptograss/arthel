@@ -16,7 +16,7 @@ const web3 = new Web3();
 // const contractAddress = '0xD3564C0E5C3A78d507B2E039A8F519B195aBAF55';
 // const contractAddress = '0xbce8A782aE58123D03747f8bf60FD2b1cCCD506a';
 const contractAddress = '0xBcf07C8a9Fc60B6C173c113Fa7CFDC97C846Dcad';
-const projectId = '3e6e7e58a5918c44fa42816d90b735a6'
+const projectId = 'a685c805b45541d81547b86d86d97ff5'
 import { mhABI as contractABI } from "../../../abi/magichatABI.js";
 
 

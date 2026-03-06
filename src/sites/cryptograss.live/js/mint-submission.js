@@ -69,7 +69,7 @@ const BR_V2_ABI = [
 ];
 
 // Setup Web3Modal
-const projectId = '3e6e7e58a5918c44fa42816d90b735a6';
+const projectId = 'a685c805b45541d81547b86d86d97ff5';
 const metadata = {
     name: 'Blue Railroad Admin',
     description: 'Mint Blue Railroad exercise tokens',
