@@ -60,8 +60,11 @@
                     <div>
                         <small class="text-muted">
                             Page built:
+                            {% if latest_git_commit %}
+                            <code title="Git commit">{{ latest_git_commit | truncate(8, true, '') }}</code>
+                            {% endif %}
                             {% if buildBlockheight %}
-                            <span class="badge bg-info" title="Ethereum block at build time">
+                            <span class="badge bg-info ms-1" title="Ethereum block at build time">
                                 block {{ buildBlockheight }}
                             </span>
                             {% else %}
