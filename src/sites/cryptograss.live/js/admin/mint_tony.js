@@ -9,9 +9,9 @@ import { brABI } from '../../../../abi/blueRailroadABI.js';
 const projectId = '3e6e7e58a5918c44fa42816d90b735a6';
 
 // Pinning service configuration
-// In production, this should point to pinning.maybelle.cryptograss.live
+// In production, this should point to pinning.delivery-kid.cryptograss.live
 // For local development, you can run the pinning service locally
-const PINNING_SERVICE_URL = 'https://pinning.maybelle.cryptograss.live';
+const PINNING_SERVICE_URL = 'https://pinning.delivery-kid.cryptograss.live';
 
 const config = createConfig({
     chains: [optimism, mainnet],
@@ -292,7 +292,7 @@ function handleManualUri() {
             ? manualUri.replace('ipfs://', '')
             : 'Manual URI';
         document.getElementById('pin-gateway-link').href = manualUri.startsWith('ipfs://')
-            ? `https://ipfs.maybelle.cryptograss.live/ipfs/${manualUri.replace('ipfs://', '')}`
+            ? `https://ipfs.delivery-kid.cryptograss.live/ipfs/${manualUri.replace('ipfs://', '')}`
             : manualUri;
     }
 }

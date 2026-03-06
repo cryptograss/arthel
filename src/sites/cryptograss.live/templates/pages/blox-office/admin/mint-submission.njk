@@ -256,7 +256,7 @@ w3m-modal {
                     '{{ participant.wallet }}'{% if not loop.last %},{% endif %}
                     {% endfor %}
                 ],
-                pinningService: 'https://pinning.maybelle.cryptograss.live/pin-from-url',
+                pinningService: 'https://pinning.delivery-kid.cryptograss.live/pin-from-url',
                 pickipediaUrl: '{{ submission.url | default("", true) }}',
                 ipfsCid: {{ ("'" + submission.ipfsCid + "'") if submission.ipfsCid else 'null' }},
                 // Upgrade-specific fields

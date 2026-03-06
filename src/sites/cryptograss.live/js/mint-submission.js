@@ -484,7 +484,7 @@ export function initMintPage(submissionData) {
 
             // Verify CID is accessible on gateway (optional but recommended)
             try {
-                const verifyResponse = await fetch(`https://ipfs.maybelle.cryptograss.live/ipfs/${currentIpfsCid}`, {
+                const verifyResponse = await fetch(`https://ipfs.delivery-kid.cryptograss.live/ipfs/${currentIpfsCid}`, {
                     method: 'HEAD'
                 });
                 if (!verifyResponse.ok) {
