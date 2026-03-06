@@ -12,7 +12,7 @@ const wallet = createWalletConnection({
     description: 'Pin albums to IPFS'
 });
 
-const { modal, wagmiConfig } = wallet || {};
+const { modal, wagmiAdapter, wagmiConfig } = wallet || {};
 
 export function initUploadAlbumPage(options) {
     const { pinningService, gateway } = options;

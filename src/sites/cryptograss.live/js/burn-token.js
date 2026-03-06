@@ -61,7 +61,7 @@ const wallet = createWalletConnection({
     description: 'Burn Blue Railroad tokens'
 });
 
-const { modal, wagmiConfig } = wallet || {};
+const { modal, wagmiAdapter, wagmiConfig } = wallet || {};
 
 // Get contract config based on version
 function getContractConfig(version) {

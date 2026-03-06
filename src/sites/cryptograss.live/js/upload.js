@@ -12,7 +12,7 @@ const wallet = createWalletConnection({
     description: 'Pin files to IPFS'
 });
 
-const { modal, wagmiConfig } = wallet || {};
+const { modal, wagmiAdapter, wagmiConfig } = wallet || {};
 
 export function initUploadPage(options) {
     const { pinningService, gateway } = options;

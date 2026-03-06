@@ -12,7 +12,7 @@ const wallet = createWalletConnection({
     description: 'Transcode and pin video to IPFS'
 });
 
-const { modal, wagmiConfig } = wallet || {};
+const { modal, wagmiAdapter, wagmiConfig } = wallet || {};
 
 export function initVideoUploadPage(options) {
     const { pinningService, gateway } = options;

@@ -72,7 +72,7 @@ const wallet = createWalletConnection({
     includeMainnet: true
 });
 
-const { modal, wagmiConfig } = wallet || {};
+const { modal, wagmiAdapter, wagmiConfig } = wallet || {};
 
 // Resolve ENS name to address (returns original if already an address)
 async function resolveRecipient(recipient) {
