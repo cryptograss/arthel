@@ -32,7 +32,7 @@ import { fetchCurrentBlockHeight } from './get_current_blockheight.js';
 // IPFS Gateway URLs for build-time checks
 const IPFS_GATEWAYS = {
     pinata: 'https://gateway.pinata.cloud/ipfs/',
-    maybelle: 'https://ipfs.maybelle.cryptograss.live/ipfs/',
+    deliveryKid: 'https://ipfs.delivery-kid.cryptograss.live/ipfs/',
     // grasshouse: 'http://localhost:8080/ipfs/',  // Add when configured
 };
 
@@ -61,7 +61,7 @@ async function checkGateway(gateway, cid, timeout = 5000) {
 /**
  * Check pinning status across all configured gateways for a list of CIDs
  * @param {Array<string>} cids - List of CIDs to check
- * @returns {Promise<Object>} Map of CID -> { pinata: bool, maybelle: bool, ... }
+ * @returns {Promise<Object>} Map of CID -> { pinata: bool, deliveryKid: bool, ... }
  */
 async function checkAllGateways(cids) {
     const results = {};
@@ -980,59 +980,45 @@ export const runPrimaryBuild = async () => {
         try {
             const rawPinataPins = deserializePinataPins();
             if (rawPinataPins) {
-                // Separate Pinata pins from maybelle-only pins
-                const pinataCids = new Set();
-                const maybelleOnlyCids = new Set();
+                // Build sets of CIDs that are ACTUALLY PINNED on each node
+                // (not just accessible via gateway)
+
+                // Pinata pins: everything in pins array except delivery-kid-only
+                const pinataPinnedCids = new Set();
                 for (const pin of rawPinataPins.pins) {
-                    if (pin.source === 'maybelle-only') {
-                        maybelleOnlyCids.add(pin.cid);
-                    } else {
-                        pinataCids.add(pin.cid);
+                    if (pin.source !== 'delivery-kid-only') {
+                        pinataPinnedCids.add(pin.cid);
                     }
                 }
 
-                // Collect other CIDs that need checking (e.g., from submissions not in any known pin set)
-                const allKnownCids = new Set([...pinataCids, ...maybelleOnlyCids]);
-                const otherCids = new Set();
-                for (const submission of allSubmissions) {
-                    if (submission.ipfsCid && !allKnownCids.has(submission.ipfsCid)) {
-                        otherCids.add(submission.ipfsCid);
+                // Delivery Kid pins: from the local-pins endpoint
+                const deliveryKidPinnedCids = new Set();
+                if (rawPinataPins.deliveryKidPins?.pins) {
+                    for (const pin of rawPinataPins.deliveryKidPins.pins) {
+                        deliveryKidPinnedCids.add(pin.cid);
                     }
                 }
 
-                // Check gateways
-                console.time('gateway-checks');
+                console.log(`Actual pins: ${pinataPinnedCids.size} on Pinata, ${deliveryKidPinnedCids.size} on Delivery Kid`);
+
+                // Build gateway status from actual pin lists (no HTTP checks needed)
                 const gatewayStatus = {};
+                const allCidsInData = new Set(rawPinataPins.pins.map(p => p.cid));
 
-                // For Pinata CIDs, mark as on Pinata, only check Maybelle
-                console.log(`Checking ${pinataCids.size} Pinata CIDs on Maybelle...`);
-                for (const cid of pinataCids) {
-                    gatewayStatus[cid] = {
-                        pinata: true,  // Known from API
-                        maybelle: await checkGateway(IPFS_GATEWAYS.maybelle, cid, 10000),
-                    };
-                }
-
-                // For maybelle-only CIDs, mark as on Maybelle, check Pinata just in case
-                console.log(`Checking ${maybelleOnlyCids.size} Maybelle-only CIDs on Pinata...`);
-                for (const cid of maybelleOnlyCids) {
-                    gatewayStatus[cid] = {
-                        pinata: await checkGateway(IPFS_GATEWAYS.pinata, cid, 10000),
-                        maybelle: true,  // Known from local pins API
-                    };
-                }
-
-                // For other CIDs, check all gateways
-                if (otherCids.size > 0) {
-                    console.log(`Checking ${otherCids.size} other CIDs on all gateways...`);
-                    for (const cid of otherCids) {
-                        gatewayStatus[cid] = {};
-                        for (const [name, url] of Object.entries(IPFS_GATEWAYS)) {
-                            gatewayStatus[cid][name] = await checkGateway(url, cid, 10000);
-                        }
+                // Also include submission CIDs that might not be pinned anywhere
+                for (const submission of allSubmissions) {
+                    if (submission.ipfsCid) {
+                        allCidsInData.add(submission.ipfsCid);
                     }
                 }
-                console.timeEnd('gateway-checks');
+
+                for (const cid of allCidsInData) {
+                    gatewayStatus[cid] = {
+                        pinata: pinataPinnedCids.has(cid),
+                        deliveryKid: deliveryKidPinnedCids.has(cid),
+                        grasshouse: false,  // Not yet configured
+                    };
+                }
 
                 categorizedPinataPins = categorizePinataPins(
                     rawPinataPins,
@@ -1042,16 +1028,16 @@ export const runPrimaryBuild = async () => {
                     gatewayStatus
                 );
 
-                // Count gateway availability
+                // Count actual pins on each node (not gateway availability)
                 const gatewayCounts = {
-                    pinata: Object.values(gatewayStatus).filter(s => s.pinata).length,
-                    maybelle: Object.values(gatewayStatus).filter(s => s.maybelle).length,
-                    grasshouse: Object.values(gatewayStatus).filter(s => s.grasshouse).length,
+                    pinata: pinataPinnedCids.size,
+                    deliveryKid: deliveryKidPinnedCids.size,
+                    grasshouse: 0,  // Not yet configured
                 };
                 categorizedPinataPins.gatewayCounts = gatewayCounts;
 
-                console.log(`Loaded ${categorizedPinataPins.summary.total} Pinata pins (${categorizedPinataPins.summary.byCategory['minted-token']} minted, ${categorizedPinataPins.summary.byCategory['submission']} submissions, ${categorizedPinataPins.summary.byCategory['recording']} recordings, ${categorizedPinataPins.summary.byCategory['blue-railroad']} blue-railroad, ${categorizedPinataPins.summary.byCategory['unknown']} unknown)`);
-                console.log(`Gateway availability: ${gatewayCounts.pinata} on Pinata, ${gatewayCounts.maybelle} on Maybelle`);
+                console.log(`Loaded ${categorizedPinataPins.summary.total} total CIDs (${categorizedPinataPins.summary.byCategory['minted-token']} minted, ${categorizedPinataPins.summary.byCategory['submission']} submissions, ${categorizedPinataPins.summary.byCategory['recording']} recordings, ${categorizedPinataPins.summary.byCategory['blue-railroad']} blue-railroad, ${categorizedPinataPins.summary.byCategory['unknown']} unknown)`);
+                console.log(`Pinned: ${gatewayCounts.pinata} on Pinata, ${gatewayCounts.deliveryKid} on Delivery Kid`);
 
                 // Fetch PickiPedia pages that reference each CID
                 const allCids = categorizedPinataPins.allPins.map(p => p.cid);

@@ -10,17 +10,17 @@ import { fetchCurrentBlockHeight } from './get_current_blockheight.js';
 dotenv.config();
 
 const PINATA_API_URL = 'https://api.pinata.cloud/v3/files/public';
-const MAYBELLE_PINNING_URL = process.env.MAYBELLE_PINNING_URL || 'https://pinning.maybelle.cryptograss.live';
+const DELIVERY_KID_PINNING_URL = process.env.DELIVERY_KID_PINNING_URL || 'https://delivery-kid.cryptograss.live';
 
 /**
- * Fetch all pins from maybelle's local IPFS node
+ * Fetch all pins from delivery-kid's local IPFS node
  * @returns {Promise<Object>} Object with pins array and metadata
  */
-async function fetchMaybellePins() {
-    const spinner = ora('Fetching pins from Maybelle IPFS node...').start();
+async function fetchDeliveryKidPins() {
+    const spinner = ora('Fetching pins from Delivery Kid IPFS node...').start();
 
     try {
-        const response = await fetch(`${MAYBELLE_PINNING_URL}/local-pins`, {
+        const response = await fetch(`${DELIVERY_KID_PINNING_URL}/local-pins`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -29,15 +29,15 @@ async function fetchMaybellePins() {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Maybelle API error: ${response.status} - ${errorText}`);
+            throw new Error(`Delivery Kid API error: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
-        spinner.succeed(`Fetched ${data.count} pins from Maybelle IPFS node`);
+        spinner.succeed(`Fetched ${data.count} pins from Delivery Kid IPFS node`);
         return data;
     } catch (error) {
-        spinner.fail(`Failed to fetch Maybelle pins: ${error.message}`);
-        return { node: 'maybelle', pins: [], count: 0, error: error.message };
+        spinner.fail(`Failed to fetch Delivery Kid pins: ${error.message}`);
+        return { node: 'delivery-kid', pins: [], count: 0, error: error.message };
     }
 }
 
@@ -122,37 +122,37 @@ async function fetchPinataPins() {
     }
 
     // Fetch from both sources in parallel
-    const [pinataPins, maybellePins] = await Promise.all([
+    const [pinataPins, deliveryKidPins] = await Promise.all([
         fetchAllPins(),
-        fetchMaybellePins()
+        fetchDeliveryKidPins()
     ]);
 
     // Build a set of Pinata CIDs for quick lookup
     const pinataCidSet = new Set(pinataPins.map(p => p.cid));
 
-    // Find maybelle-only pins (not on Pinata)
+    // Find delivery-kid-only pins (not on Pinata)
     // Uses pinnedAt from manifest if available (IPFS doesn't track pin timestamps natively)
-    const maybelleOnlyPins = (maybellePins.pins || [])
+    const deliveryKidOnlyPins = (deliveryKidPins.pins || [])
         .filter(p => !pinataCidSet.has(p.cid))
         .map(p => ({
             cid: p.cid,
             name: p.metadata?.name || null,
             size: null,
             date_pinned: p.pinnedAt || null,
-            source: 'maybelle-only',
+            source: 'delivery-kid-only',
             keyvalues: p.metadata || {},
         }));
 
-    console.log(`  Found ${maybelleOnlyPins.length} maybelle-only pins (not on Pinata)`);
+    console.log(`  Found ${deliveryKidOnlyPins.length} delivery-kid-only pins (not on Pinata)`);
 
     // Combine all pins
-    const allPins = [...pinataPins, ...maybelleOnlyPins];
+    const allPins = [...pinataPins, ...deliveryKidOnlyPins];
 
     // Calculate summary statistics
     const summary = {
         total: allPins.length,
         pinataCount: pinataPins.length,
-        maybelleOnlyCount: maybelleOnlyPins.length,
+        deliveryKidOnlyCount: deliveryKidOnlyPins.length,
         totalSize: pinataPins.reduce((sum, pin) => sum + (pin.size || 0), 0),
         byMimeType: {},
         byKeyvalueSource: {},
@@ -182,14 +182,14 @@ async function fetchPinataPins() {
         fetchedAtBlock,
         summary,
         pins: allPins,
-        maybellePins: maybellePins,  // Include raw maybelle data for reference
+        deliveryKidPins: deliveryKidPins,  // Include raw delivery-kid data for reference
     };
 
     // Serialize to disk
     serializePinataPins(pinataPinsData);
 
     console.log('\nSummary:');
-    console.log(`  Total pins: ${summary.total} (${summary.pinataCount} on Pinata, ${summary.maybelleOnlyCount} maybelle-only)`);
+    console.log(`  Total pins: ${summary.total} (${summary.pinataCount} on Pinata, ${summary.deliveryKidOnlyCount} delivery-kid-only)`);
     console.log(`  Total size (Pinata): ${(summary.totalSize / 1024 / 1024).toFixed(2)} MB`);
     console.log('  By source:');
     for (const [source, count] of Object.entries(summary.byKeyvalueSource)) {
