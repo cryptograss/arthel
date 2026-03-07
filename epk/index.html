@@ -1672,31 +1672,22 @@
                     </div>
                 </div>
                 <div class="booking-form">
-                    <h3>Send an Inquiry</h3>
-                    <p style="margin-bottom: 1.5rem; font-size: 1.3rem; font-weight: 600;">
-                        Or reach out directly via
-                        <a href="mailto:Booking@JustinHolmes.com" style="color: #d4a574; font-weight: 700;">Email</a>,
-                        <a href="https://t.me/justinmylesholmesoffical" style="color: #d4a574; font-weight: 700;">Telegram</a>, or
-                        <a href="https://instagram.com/JustinMylesHolmes" style="color: #d4a574; font-weight: 700;">Instagram</a>
+                    <h3>Get in Touch</h3>
+                    <p style="margin-bottom: 2rem; font-size: 1.3rem; font-weight: 600;">
+                        Reach out directly via
                     </p>
-                    <form id="booking-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="name">Your Name</label>
-                                <input type="text" id="name" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email</label>
-                                <input type="email" id="email" name="email" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Tell me about your event</label>
-                            <textarea id="message" name="message" placeholder="Expected attendance, budget range, any special requests..."></textarea>
-                        </div>
-                        <button type="submit" class="btn" style="width: 100%;">Send Inquiry</button>
-                        <p style="margin-top: 3rem; text-align: center; color: #d4a574; font-style: italic;">"Self-Proclaimed Bronze Medal Winner,<br>2027 Hackabilly Bluegrass Competition"</p>
-                    </form>
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem; align-items: center;">
+                        <a href="mailto:Booking@JustinHolmes.com" class="btn" style="width: 100%; max-width: 350px; text-align: center; font-size: 1.2rem;">
+                            Booking@JustinHolmes.com
+                        </a>
+                        <a href="https://t.me/justinmylesholmesoffical" class="btn btn-outline" style="width: 100%; max-width: 350px; text-align: center; font-size: 1.2rem;">
+                            Telegram
+                        </a>
+                        <a href="https://instagram.com/JustinMylesHolmes" class="btn btn-outline" style="width: 100%; max-width: 350px; text-align: center; font-size: 1.2rem;">
+                            Instagram
+                        </a>
+                    </div>
+                    <p style="margin-top: 3rem; text-align: center; color: #d4a574; font-style: italic;">"Self-Proclaimed Bronze Medal Winner,<br>2027 Hackabilly Bluegrass Competition"</p>
                 </div>
             </div>
         </div>
@@ -2554,24 +2545,5 @@
         }
     </script>
 
-    <!-- Form submission - opens email client -->
-    <script>
-        // Booking inquiry form - opens mailto with form contents
-        const bookingForm = document.getElementById('booking-form');
-        if (bookingForm) {
-            bookingForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                const name = bookingForm.querySelector('#name').value;
-                const email = bookingForm.querySelector('#email').value;
-                const message = bookingForm.querySelector('#message').value;
-
-                const subject = encodeURIComponent(`EPK Booking Inquiry from ${name}`);
-                const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
-
-                window.location.href = `mailto:Booking@JustinHolmes.com?subject=${subject}&body=${body}`;
-            });
-        }
-    </script>
 </body>
 </html>
