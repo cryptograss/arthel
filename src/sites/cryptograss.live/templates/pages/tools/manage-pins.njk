@@ -1,0 +1,220 @@
+{% extends '../../base.njk' %}
+{% block main %}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-md-10 text-post">
+        <h1 class="text-center pixel-font">Manage Pins</h1>
+        <p class="text-center text-muted">View and remove IPFS pins</p>
+
+        <!-- Wallet Connection -->
+        <div class="card semi-transparent-bg mb-4">
+            <div class="card-body">
+                <div id="not-connected">
+                    <p class="text-muted mb-2">Connect wallet to unpin items</p>
+                    <button id="connect-wallet-btn" class="btn btn-primary btn-sm">Connect Wallet</button>
+                </div>
+                <div id="connected" style="display: none;">
+                    <span class="text-muted">Connected:</span>
+                    <code id="wallet-address"></code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pins List -->
+        <div class="card semi-transparent-bg">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Pinned Items</h5>
+                    <button id="refresh-btn" class="btn btn-outline-secondary btn-sm">Refresh</button>
+                </div>
+
+                <div id="loading" class="text-muted">Loading pins...</div>
+                <div id="error" class="text-danger" style="display: none;"></div>
+
+                <table class="table table-sm" id="pins-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>CID</th>
+                            <th style="width: 100px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="pins-list"></tbody>
+                </table>
+
+                <div id="empty" class="text-muted" style="display: none;">No pins found</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="module">
+    import { reconnect, getAccount, signMessage } from '@wagmi/core';
+    import { createWalletConnection } from '/js/wallet-utils.js';
+
+    const pinningService = 'https://delivery-kid.cryptograss.live';
+    const gateway = 'https://ipfs.delivery-kid.cryptograss.live/ipfs';
+
+    const wallet = createWalletConnection({
+        name: 'Cryptograss Pin Manager',
+        description: 'Manage IPFS pins'
+    });
+
+    const { modal, wagmiConfig } = wallet || {};
+
+    // DOM elements
+    const connectBtn = document.getElementById('connect-wallet-btn');
+    const notConnected = document.getElementById('not-connected');
+    const connected = document.getElementById('connected');
+    const walletAddress = document.getElementById('wallet-address');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+    const pinsTable = document.getElementById('pins-table');
+    const pinsList = document.getElementById('pins-list');
+    const empty = document.getElementById('empty');
+
+    let currentAddress = null;
+
+    // Wallet connection
+    if (wagmiConfig) {
+        reconnect(wagmiConfig).catch(() => {});
+
+        connectBtn.addEventListener('click', () => modal.open());
+
+        wagmiConfig.subscribe(
+            (state) => state,
+            (state) => {
+                const account = getAccount(wagmiConfig);
+                if (account.address) {
+                    currentAddress = account.address;
+                    walletAddress.textContent = account.address.slice(0, 6) + '...' + account.address.slice(-4);
+                    notConnected.style.display = 'none';
+                    connected.style.display = 'block';
+                } else {
+                    currentAddress = null;
+                    notConnected.style.display = 'block';
+                    connected.style.display = 'none';
+                }
+            }
+        );
+    }
+
+    // Load pins
+    async function loadPins() {
+        loading.style.display = 'block';
+        error.style.display = 'none';
+        pinsTable.style.display = 'none';
+        empty.style.display = 'none';
+
+        try {
+            const resp = await fetch(`${pinningService}/local-pins`);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+            const data = await resp.json();
+            const pins = data.pins || [];
+
+            loading.style.display = 'none';
+
+            if (pins.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+
+            pinsList.innerHTML = '';
+            pins.forEach(pin => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <a href="${gateway}/${pin.cid}" target="_blank" class="font-monospace small">
+                            ${pin.cid.slice(0, 12)}...${pin.cid.slice(-6)}
+                        </a>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-danger btn-sm unpin-btn" data-cid="${pin.cid}">
+                            Unpin
+                        </button>
+                    </td>
+                `;
+                pinsList.appendChild(tr);
+            });
+
+            pinsTable.style.display = 'table';
+
+            // Add unpin handlers
+            document.querySelectorAll('.unpin-btn').forEach(btn => {
+                btn.addEventListener('click', () => unpinCid(btn.dataset.cid, btn));
+            });
+
+        } catch (e) {
+            loading.style.display = 'none';
+            error.textContent = `Failed to load pins: ${e.message}`;
+            error.style.display = 'block';
+        }
+    }
+
+    // Unpin
+    async function unpinCid(cid, btn) {
+        if (!currentAddress) {
+            alert('Connect wallet first');
+            return;
+        }
+
+        if (!confirm(`Unpin ${cid.slice(0, 12)}...?`)) return;
+
+        btn.disabled = true;
+        btn.textContent = 'Unpinning...';
+
+        try {
+            // Get timestamp and sign
+            let timestamp;
+            try {
+                const timeResp = await fetch(`${pinningService}/time`);
+                const timeData = await timeResp.json();
+                timestamp = timeData.time ?? timeData.timestamp ?? Date.now();
+            } catch {
+                timestamp = Date.now();
+            }
+
+            const message = `Authorize Blue Railroad pinning\nTimestamp: ${timestamp}`;
+            const signature = await signMessage(wagmiConfig, { message });
+
+            const resp = await fetch(`${pinningService}/unpin/${cid}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Signature': signature,
+                    'X-Timestamp': timestamp.toString()
+                }
+            });
+
+            if (!resp.ok) {
+                const data = await resp.json().catch(() => ({}));
+                throw new Error(data.detail || `HTTP ${resp.status}`);
+            }
+
+            // Remove row
+            btn.closest('tr').remove();
+
+            // Check if empty
+            if (pinsList.children.length === 0) {
+                pinsTable.style.display = 'none';
+                empty.style.display = 'block';
+            }
+
+        } catch (e) {
+            alert(`Unpin failed: ${e.message}`);
+            btn.disabled = false;
+            btn.textContent = 'Unpin';
+        }
+    }
+
+    refreshBtn.addEventListener('click', loadPins);
+
+    // Initial load
+    loadPins();
+</script>
+{% endblock %}
