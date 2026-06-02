@@ -61,13 +61,24 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                // Only install if node_modules doesn't exist or lockfile changed
+                // Always run pnpm install. The previous "skip if
+                // pnpm-lock.yaml isn't newer than node_modules" guard
+                // silently stranded the build with a stale tree whenever
+                // node_modules's mtime drifted (the directory mtime updates
+                // when files are written inside, which can race the
+                // lockfile mtime check). We hit this when @wagmi/core was
+                // added: the build kept reporting "changed 1 package in
+                // 725ms" while the rest of the tree stayed pinned to a
+                // pre-wagmi snapshot, and fetch_video_metadata.js died on
+                // ERR_MODULE_NOT_FOUND for @wagmi/core.
+                //
+                // pnpm install against an already-satisfied lockfile is
+                // fast — hardlinks from the content-addressable store —
+                // so the optimisation wasn't worth the failure mode.
                 sh '''#!/bin/bash
-                    if [ ! -d "node_modules" ] || [ pnpm-lock.yaml -nt node_modules ]; then
-                        . "$NVM_DIR/nvm.sh" --silent
-                        nvm use ${NODE_VERSION} --silent
-                        pnpm install --no-frozen-lockfile --config.ignore-scripts=false
-                    fi
+                    . "$NVM_DIR/nvm.sh" --silent
+                    nvm use ${NODE_VERSION} --silent
+                    pnpm install --no-frozen-lockfile --config.ignore-scripts=false
                 '''
             }
         }
