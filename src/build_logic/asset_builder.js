@@ -58,15 +58,45 @@ function gatherAssets() {
         // Ensure output directory exists
         fs.mkdirSync(path.dirname(outputPath), { recursive: true, mode: 0o777 });
 
-        // Copy original file - ensure permissions are correct
+        // Copy original file — ensure permissions are correct.
+        //
+        // Race-condition note: integration/Jenkinsfile runs the
+        // 'Build cryptograss.live' and 'Build justinholmes.com' stages in
+        // parallel, and both write into the same
+        // _prebuild_output/assets/images/ directory (locations.js sets
+        // outputPrimaryRootDir once at module-load with no per-site
+        // qualification). Two workers can collide on the same outputPath:
+        //
+        //   Worker A: copyFileSync(src, outputPath)   → file now exists
+        //   Worker B: existsSync(outputPath) === true
+        //   Worker B: chmod(outputPath); unlink(outputPath)  → file gone
+        //   Worker A: chmodSync(outputPath, 0o666)   → ENOENT, build dies
+        //
+        // Source bytes are identical between workers (same file under SCM),
+        // so whichever copy wins the race is correct. The actual failure
+        // mode is just the chmod-after-copy throwing ENOENT because the
+        // other worker unlinked our just-written file. Treating ENOENT on
+        // the chmod calls as benign closes the race without losing the
+        // existing always-fresh-overwrite intent.
         try {
-            // Remove destination if it exists to avoid permission conflicts
             if (fs.existsSync(outputPath)) {
-                fs.chmodSync(outputPath, 0o666); // Make it writable
-                fs.unlinkSync(outputPath);
+                try {
+                    fs.chmodSync(outputPath, 0o666); // Make it writable for unlink
+                    fs.unlinkSync(outputPath);
+                } catch (preCopyError) {
+                    if (preCopyError.code !== 'ENOENT') throw preCopyError;
+                    // Parallel worker unlinked it first — fine, fall through.
+                }
             }
             fs.copyFileSync(file, outputPath);
-            fs.chmodSync(outputPath, 0o666); // Ensure copied file is writable
+            try {
+                fs.chmodSync(outputPath, 0o666); // Ensure copied file is writable
+            } catch (chmodError) {
+                if (chmodError.code !== 'ENOENT') throw chmodError;
+                // Parallel worker raced our copy → unlinked before our
+                // chmod landed. Their re-copy of identical bytes is in
+                // flight; they'll do their own chmod.
+            }
         } catch (error) {
             console.error(`Failed to copy ${file} to ${outputPath}:`, error.message);
             throw error;
