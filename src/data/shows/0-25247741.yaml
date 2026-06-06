@@ -1,0 +1,69 @@
+title: "Justin Holmes at The Bundy Museum"
+venue: "The Bundy Museum"
+locality: "Binghamton"
+region1: "New York"
+timezone: "America/New York"
+ensemble:
+  "Justin Holmes": [ "guitar"]
+  "Skyler Golden": [ "bass" ]
+  "Christina Docenko": [ 'fiddle' ]
+  "Paul Sanna": [ 'banjo' ]
+sets:
+  0:
+    songplays:
+      - Vowel Sounds:
+        mode: segue
+      - The Morning of The Bank Run
+      - Salt Creek
+      - Hell or High Water
+      - Startropics Theme:
+        mode: segue 
+        ensemble-modifications:
+          featuring:
+           - Fibonacci Emery Holmes (keys)
+      - Can the Circle Be Unbroken:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+            - Fibonacci Emery Holmes (vocals)
+      - All the Tired Horses:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+            - Fibonacci Emery Holmes (vocals)
+      - Startropics Theme:
+        mode: reprise
+      - Power Underneath:
+        ensemble-modifications:
+          featuring:
+            - Fibonacci Emery Holmes (keys)
+      - Drowsy Maggie:
+        mode: segue
+      - Silver .44:
+        mode: segue
+      - I Know You Rider
+  1:
+    songplays:
+      - O Death:
+          ensemble-modifications:
+            solo: Justin
+      - Peggy O:
+        mode: segue
+      - Loser
+      - Morrison's Jig:
+        mode: segue
+      - Song of Storms
+      - Swords to Ploughshares
+      - Garfield's Blackberry Blossom
+      - Where Rainbows Never Die
+      - Nanny State Fiddler:
+        mode: segue
+      - Dragon Roost Island:
+        mode: segue
+      - Terrapin Station:
+        mode: segue
+      - Vowel Sounds:
+        mode: reprise
+
+      
+

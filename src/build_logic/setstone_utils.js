@@ -37,6 +37,9 @@ export function generateSetStonePages(shows, outputDir) {
             } else if (showId === '0-22748946') { // Porcupine 2025
                 fakeTicketStubCount = 40;
                 startTokenId = 100;
+            } else if (showId === '0-25247741') {
+                fakeTicketStubCount = 20;
+                startTokenId = 140;
             }
             
             if (fakeTicketStubCount > 0) {
