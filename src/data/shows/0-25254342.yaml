@@ -2,7 +2,7 @@ title: "Justin Holmes at The Bundy Museum"
 venue: "The Bundy Museum"
 locality: "Binghamton"
 region1: "New York"
-timezone: "America/New York"
+timezone: "America/New_York"
 ensemble:
   "Justin Holmes": [ "guitar"]
   "Skyler Golden": [ "bass" ]
@@ -45,8 +45,8 @@ sets:
   1:
     songplays:
       - O Death:
-          ensemble-modifications:
-            solo: Justin
+        ensemble-modifications:
+          solo: Justin
       - Peggy O:
         mode: segue
       - Loser
