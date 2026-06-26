@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title TicketStubClaimer
@@ -49,7 +49,7 @@ contract TicketStubClaimer is ERC721, Ownable, ReentrancyGuard {
     /// @dev Emitted when ticket stubs are created for a show
     event ShowTicketStubsCreated(uint8[] bandIds, uint32 indexed blockheight, uint32 count);
     
-    constructor() ERC721("Cryptograss Ticket Stub", "CGTS") {}
+    constructor(address initialOwner) ERC721("Cryptograss Ticket Stub", "CGTS") Ownable(initialOwner) {}
     
     /**
      * @dev Creates ticket stubs for a show with pre-computed secret hashes
@@ -301,7 +301,7 @@ contract TicketStubClaimer is ERC721, Ownable, ReentrancyGuard {
      */
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         require(tokenId < nextTokenId, "URI query for nonexistent token");
-        require(_exists(tokenId), "URI query for nonexistent token");
+        require(_ownerOf(tokenId) != address(0), "URI query for nonexistent token");
         
         string memory baseURI = _baseURI();
         return bytes(baseURI).length > 0 
