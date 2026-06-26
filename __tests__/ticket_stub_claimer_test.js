@@ -86,7 +86,44 @@ class MockTicketStubClaimer {
         stub.claimedBy = caller;
         stub.claimedAt = Date.now(); // Mock block number
         this.usedSecrets.add(hashedSecret);
-        
+
+        return true;
+    }
+
+    claimTicketStubFor(tokenId, secret, recipient, caller) {
+        if (!recipient || recipient === 'zero_address') {
+            throw new Error('Recipient cannot be zero address');
+        }
+
+        const stub = this.ticketStubs.get(tokenId);
+
+        if (!stub || !stub.exists) {
+            throw new Error('Ticket stub does not exist');
+        }
+
+        if (stub.claimedBy) {
+            throw new Error('Ticket stub already claimed');
+        }
+
+        if (!secret || secret.length === 0) {
+            throw new Error('Secret cannot be empty');
+        }
+
+        const hashedSecret = this.hashSecret(secret);
+
+        if (stub.secretHash !== hashedSecret) {
+            throw new Error('Invalid secret');
+        }
+
+        if (this.usedSecrets.has(hashedSecret)) {
+            throw new Error('Secret already used');
+        }
+
+        // Mark as claimed by the recipient, not the caller
+        stub.claimedBy = recipient;
+        stub.claimedAt = Date.now();
+        this.usedSecrets.add(hashedSecret);
+
         return true;
     }
 
@@ -280,12 +317,91 @@ describe('TicketStubClaimer Contract', () => {
 
         test('tracks claimed count correctly', () => {
             expect(contract.getClaimedCountForShow(showId)).toBe(0);
-            
+
             contract.claimTicketStub(1, secrets[0], 'claimer1');
             expect(contract.getClaimedCountForShow(showId)).toBe(1);
-            
+
             contract.claimTicketStub(2, secrets[1], 'claimer2');
             expect(contract.getClaimedCountForShow(showId)).toBe(2);
+        });
+    });
+
+    describe('Claiming on behalf of a recipient (claimTicketStubFor)', () => {
+        beforeEach(() => {
+            contract.createTicketStubsForShow(showId, secretHashes);
+        });
+
+        test('claims to recipient address, not the caller', () => {
+            const tokenId = 1;
+            const recipient = 'intended_recipient';
+            const relayer = 'gas_paying_relayer';
+
+            const result = contract.claimTicketStubFor(tokenId, secrets[0], recipient, relayer);
+            expect(result).toBe(true);
+
+            const stub = contract.getTicketStub(tokenId);
+            expect(stub.claimedBy).toBe(recipient);
+            expect(stub.claimedBy).not.toBe(relayer);
+            expect(stub.claimedAt).toBeGreaterThan(0);
+        });
+
+        test('marks the ticket stub as unclaimable after a successful claimFor', () => {
+            contract.claimTicketStubFor(1, secrets[0], 'recipient', 'relayer');
+            expect(contract.canClaim(1, secrets[0])).toBe(false);
+        });
+
+        test('fails when recipient is the zero address', () => {
+            expect(() => {
+                contract.claimTicketStubFor(1, secrets[0], 'zero_address', 'relayer');
+            }).toThrow('Recipient cannot be zero address');
+        });
+
+        test('fails when recipient is null/empty', () => {
+            expect(() => {
+                contract.claimTicketStubFor(1, secrets[0], null, 'relayer');
+            }).toThrow('Recipient cannot be zero address');
+        });
+
+        test('fails when claiming for non-existent ticket stub', () => {
+            expect(() => {
+                contract.claimTicketStubFor(999, 'anysecret', 'recipient', 'relayer');
+            }).toThrow('Ticket stub does not exist');
+        });
+
+        test('fails when claiming for already-claimed ticket stub', () => {
+            contract.claimTicketStubFor(1, secrets[0], 'first_recipient', 'relayer');
+
+            expect(() => {
+                contract.claimTicketStubFor(1, secrets[0], 'second_recipient', 'relayer');
+            }).toThrow('Ticket stub already claimed');
+        });
+
+        test('fails when claiming for with invalid secret', () => {
+            expect(() => {
+                contract.claimTicketStubFor(1, 'wrong_secret', 'recipient', 'relayer');
+            }).toThrow('Invalid secret');
+        });
+
+        test('fails when claiming for with empty secret', () => {
+            expect(() => {
+                contract.claimTicketStubFor(1, '', 'recipient', 'relayer');
+            }).toThrow('Secret cannot be empty');
+        });
+
+        test('prevents double-claim across both entry points (claimTicketStub then claimTicketStubFor)', () => {
+            contract.claimTicketStub(1, secrets[0], 'self_claimer');
+
+            expect(() => {
+                contract.claimTicketStubFor(1, secrets[0], 'recipient', 'relayer');
+            }).toThrow('Ticket stub already claimed');
+        });
+
+        test('prevents double-claim across both entry points (claimTicketStubFor then claimTicketStub)', () => {
+            contract.claimTicketStubFor(1, secrets[0], 'recipient', 'relayer');
+
+            expect(() => {
+                contract.claimTicketStub(1, secrets[0], 'self_claimer');
+            }).toThrow('Ticket stub already claimed');
         });
     });
 
