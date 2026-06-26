@@ -121,7 +121,38 @@ contract TicketStubClaimer is ERC721, Ownable, ReentrancyGuard {
         
         emit TicketStubClaimed(tokenId, msg.sender);
     }
-    
+
+    /**
+     * @dev Claims a ticket stub on behalf of a specified recipient using the secret
+     * @param tokenId The ID of the ticket stub to claim
+     * @param secret The secret printed on the physical ticket stub
+     * @param recipient The address to mint the NFT to
+     *
+     * Identical to `claimTicketStub` except the NFT is minted to `recipient` rather
+     * than the caller. Enables relayer/gasless flows where a gas-paying third party
+     * submits the claim transaction so the holder doesn't need ETH on the deployment
+     * chain. The secret is the bearer instrument: whoever holds it can authorize a
+     * mint to any address.
+     */
+    function claimTicketStubFor(uint32 tokenId, string calldata secret, address recipient) external nonReentrant {
+        require(recipient != address(0), "Recipient cannot be zero address");
+        require(ticketStubs[tokenId].exists, "Ticket stub does not exist");
+        require(ticketStubs[tokenId].claimedBy == address(0), "Ticket stub already claimed");
+        require(bytes(secret).length > 0, "Secret cannot be empty");
+
+        bytes32 hashedSecret = keccak256(abi.encodePacked(secret));
+        require(ticketStubs[tokenId].secretHash == hashedSecret, "Invalid secret");
+
+        // Mark as claimed by the recipient (not the caller)
+        ticketStubs[tokenId].claimedBy = recipient;
+        ticketStubs[tokenId].claimedAt = uint32(block.number);
+
+        // Mint the NFT to the recipient
+        _mint(recipient, tokenId);
+
+        emit TicketStubClaimed(tokenId, recipient);
+    }
+
     /**
      * @dev Checks if a ticket stub can be claimed with the given secret
      * @param tokenId The ID of the ticket stub to check
