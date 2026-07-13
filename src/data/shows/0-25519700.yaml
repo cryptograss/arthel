@@ -1,0 +1,56 @@
+title: "Freedompalooza 2026"
+venue: "Roaring Brook Farm"
+locality: "Groveton"
+region1: "New Hampshire"
+timezone: "America/New_York"
+ensemble:
+  "Justin Holmes": [ "guitar", "mandolin"]
+sets:
+  0:
+    songplays:
+      - Salt Creek
+      - Tom Dooley
+      - The Morning of the Bank Run
+      - Pancho and Lefty
+      - Peggy O # On mando, but we don't have a way to show that yet.
+      - Shady Grove # Same, this song was mando.
+      - Clinch Mountain Backstep:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+           - Mark Hansen (cajon)
+      - Nanny State Fiddler:
+        ensemble-modifications:
+          featuring:
+           - Mark Hansen (cajon)
+  1:
+    songplays:
+      - Lost:
+        mode: segue
+      - I Know You Rider
+      - Rueben's Train
+      - Drowsy Maggie:
+        mode: segue
+      - Little Maggie
+      - Where Rainbows Never Die
+      - Hell or High Water
+      - Startropics Theme:
+        mode: segue 
+        ensemble-modifications:
+          featuring:
+           - Fibonacci Emery Holmes (keys)
+      - Can the Circle Be Unbroken:
+        mode: segue
+        ensemble-modifications:
+          featuring:
+            - Fibonacci Emery Holmes (vocals)
+      - Startropics Theme:
+        mode: reprise
+      - Power Underneath:
+        ensemble-modifications:
+          featuring:
+            - Fibonacci Emery Holmes (keys)
+      - Silver .44
+
+      
+
