@@ -27,8 +27,18 @@ pipeline {
                     . "$NVM_DIR/nvm.sh" --silent
                     nvm use ${NODE_VERSION} --silent
 
-                    # Always install pinned pnpm version for lockfile compatibility
-                    npm install -g pnpm@9.15.9
+                    # Ensure pinned pnpm@9.15.9 is present. Skip reinstall when
+                    # already at the right version — reinstalling on every job
+                    # (this fires every 2 min) creates a race window where npm's
+                    # atomic rename swap can leave a .pnpm-XXXXXX temp dir sitting
+                    # in global node_modules, and the next install then fails with
+                    # ENOTEMPTY on the rename. Nuke any such leftovers before
+                    # attempting a fresh install so we self-heal from a prior
+                    # aborted run.
+                    if [ "$(pnpm --version 2>/dev/null)" != "9.15.9" ]; then
+                        find "$(npm root -g)" -maxdepth 1 -name '.pnpm-*' -exec rm -rf {} + 2>/dev/null || true
+                        npm install -g pnpm@9.15.9
+                    fi
 
                     pnpm install --no-frozen-lockfile --config.ignore-scripts=false
                 '''
