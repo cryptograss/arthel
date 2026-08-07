@@ -1,0 +1,4 @@
+Set Stones are onchain merch designed to memorialize a show. They are kin to traditional show-based merch like ticket stubs and posters. They are ERC-721s (or maybe in the future sometimes ERC-1155s or a similar standard, on EVM chains and perhaps other networks) that can be minted only by people who attended the show in question.
+
+ They have customizable elements (colors, highlight song, and a brief text field for a note).  Set Stones appear alongside the set and show in user interfaces where sets, shows, and songs are displayed.  The ENS name of the owner is displayed in many of these instances.
+
