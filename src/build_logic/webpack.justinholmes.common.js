@@ -10,7 +10,8 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 
 
-const { outputDistDir, outputPrimaryRootDir, outputPrimarySiteDir, siteDir, site, srcDir } = getProjectDirs();
+const { outputDistDir, outputPrimaryRootDir, outputPrimarySiteDir, siteDir, site,
+        fetchedAssetsDir, audioDir, epkDir } = getProjectDirs();
 
 // Make sure the output directory exists
 fs.mkdirSync(outputDistDir, { recursive: true });
@@ -63,7 +64,7 @@ export default {
                     to: path.resolve(outputDistDir, 'assets')
                 },
                 {
-                    from: path.resolve(srcDir, 'fetched_assets'),
+                    from: fetchedAssetsDir,
                     to: path.resolve(outputDistDir, 'assets/fetched'),
                     globOptions: {
                         dot: true,
@@ -78,13 +79,13 @@ export default {
                     noErrorOnMissing: true
                 },
                 {
-                    from: path.resolve(srcDir, '../audio'),
+                    from: audioDir,
                     to: path.resolve(outputDistDir, 'audio'),
                     noErrorOnMissing: true
                 },
                 // EPK - standalone site for epk.justinholmes.com
                 {
-                    from: path.resolve(srcDir, '../epk'),
+                    from: epkDir,
                     to: path.resolve(outputDistDir, '../epk.justinholmes.com'),
                     toType: 'dir',
                     noErrorOnMissing: false
