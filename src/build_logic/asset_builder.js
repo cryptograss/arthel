@@ -16,14 +16,12 @@ let unusedImages = new Set();
 let _assets_gathered = false;
 
 function gatherAssets() {
-    const { imagesSourceDir, outputPrimaryRootDir, srcDir, basePath } = getProjectDirs();
+    const { imagesSourceDir, outputPrimaryRootDir, fetchedAssetsDir, basePath } = getProjectDirs();
     const imageDirPattern = `${imagesSourceDir}/**/*.{png,jpg,jpeg,gif,avif,svg,webp,mp4}`
 
     const assetsOutputDir = path.join(outputPrimaryRootDir, 'assets');
     const imageOutputDir = path.join(assetsOutputDir, 'images');
     const mappingFilePath = path.join(outputPrimaryRootDir, 'imageMapping.json');
-
-    const fetchedAssetsDir = path.join(srcDir, 'fetched_assets');
 
     console.time('asset-gathering');
 

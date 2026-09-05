@@ -23,6 +23,7 @@ import { appendChainDataToShows } from './chain_reading.js';
 
 // Feature-specific modules
 import { generateSetStonePages, renderSetStoneImages } from './setstone_utils.js';
+import { renderPostsCollection } from './posts.js';
 import { verifyBlueRailroadVideos, generateBlueRailroadV2Metadata } from './blue_railroad.js';
 import { fetchPendingSubmissions, fetchAllSubmissions, fetchRecordings, fetchPagesForCids } from './pickipedia_submissions.js';
 import { cidToBytes32 } from './cid_utils.js';
@@ -819,62 +820,10 @@ export const runPrimaryBuild = async () => {
     }
 
     ///////////////////////////
-    // Chapter 5: Happenings
+    // Chapter 5: Posts (cryptograss.live calls these 'happenings')
     ///////////////////////////
 
-    if (site === "cryptograss.live") {  // TODO: This is a hack.  We need to make this more general.  Probably #197.
-
-        // Iterate though YAML files in data/happenings
-        let happenings = {};
-        fs.readdirSync(path.resolve(dataDir, 'happenings')).forEach(file => {
-            if (file.endsWith('.yaml')) {
-                const fileContents = fs.readFileSync(path.join(dataDir, 'happenings', file), 'utf8');
-                const yamlData = yaml.load(fileContents);
-                happenings[file.replace(/\.yaml$/, '')] = yamlData;
-            }
-        });
-
-        // Find MD file, render the MD therein, and add it as "body" to the happening.
-        for (let [happening_epoch_and_slug, happening_data] of Object.entries(happenings)) {
-            let context = {} // TOOD: Does anything belong in the context for single happenings?
-
-            let happening_slug = happening_epoch_and_slug.split('-')[1];
-            let happening_epoch = happening_epoch_and_slug.split('-')[0];
-
-            const local_dt = DateTime.fromSeconds(parseInt(happening_epoch));
-            happening_data['local_datetime'] = local_dt.toLocaleString(DateTime.DATE_MED)
-            const md_path = path.resolve(dataDir, 'happenings', `${happening_epoch_and_slug}.md`);
-            if (fs.existsSync(md_path)) {
-                const md_contents_raw = fs.readFileSync(md_path, 'utf8');
-                const md_contents_njk_rendered = nunjucks.renderString(md_contents_raw, context)
-                happening_data.body = marked(md_contents_njk_rendered)
-            }
-        }
-
-        // Render cryptograss.live happenings - TODO: move this to secondary builder.
-
-
-        // First, all the happenings to the news page (TODO: paginate this? TODO: Turn this into a regular page, with happenigns as context.)
-        renderPage({
-            template_path: 'pages/happenings.njk',
-            output_path: `index.html`,
-            site: site,
-            context: {
-                happenings: happenings,
-                site: site,
-            }
-        });
-
-        for (let [happening_slug, happening_data] of Object.entries(happenings)) {
-            renderPage({
-                template_path: 'reuse/single-happening.njk',
-                output_path: `happenings/${happening_slug}.html`,
-                context: happening_data,
-                site: site,
-            }
-            );
-        }
-    }
+    renderPostsCollection({ site });
 
     ///////////////////////////
     // Chapter 5.5: Blue Railroad Submission Mint Pages

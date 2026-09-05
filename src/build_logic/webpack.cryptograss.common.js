@@ -8,7 +8,8 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
-const { outputPrimarySiteDir, outputPrimaryRootDir, outputDistDir, siteDir, srcDir } = getProjectDirs();
+const { outputPrimarySiteDir, outputPrimaryRootDir, outputDistDir, siteDir,
+        fetchedAssetsDir, audioDir } = getProjectDirs();
 
 // Make sure the output directory exists
 fs.mkdirSync(outputDistDir, { recursive: true });
@@ -71,7 +72,7 @@ export function buildConfig() {
                     noErrorOnMissing: true
                 },
                 {
-                    from: path.resolve(srcDir, 'fetched_assets'),
+                    from: fetchedAssetsDir,
                     to: path.resolve(outputDistDir, 'assets/fetched'),
                     globOptions: {
                         dot: true,
@@ -91,7 +92,7 @@ export function buildConfig() {
                     noErrorOnMissing: true
                 },
                 {
-                    from: path.resolve(srcDir, '../audio'),
+                    from: audioDir,
                     to: path.resolve(outputDistDir, 'audio'),
                     noErrorOnMissing: true
                 },
