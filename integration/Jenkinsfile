@@ -24,10 +24,11 @@ pipeline {
     stages {
         stage('Submodules') {
             steps {
-                // Initialize and update submodules
+                // Submodules at the commits production pins (no --remote): happenings' shows change on the site
+                // only when a signed merge here moves the pin, never by a push to happenings on GitHub.
                 sh '''
                     git submodule init
-                    git submodule update --recursive --remote
+                    git submodule update --recursive
                 '''
             }
         }
