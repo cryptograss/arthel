@@ -1,0 +1,203 @@
+{{#if compact}}
+    {{> slicey}}
+{{else}}
+    {{> bigger-banner}}
+{{/if}}
+
+<div id="cryptograss-content" class="container mt-3">
+    <h1 class="text-light pixel-font text-center mb-3">cryptograss.eth</h1>
+    <hr/>
+    <p class="h5 text-light pixel-font text-center">Decentralized apps written by bluegrassers</p>
+    <p class="h3 text-light curly text-center">Bluegrass written by cryptographers</p>
+
+    <div class="player">
+        <audio id="audio-player">
+            <source type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        
+
+        <div class="album-art">
+            <img alt="Album Art" id="player-album-cover">
+        </div>
+        <div class="info">
+            <div id="player-title" class="player-title"></div>
+            <div id="player-artist" class="player-artist"></div>
+        </div>
+        <div class="controls">
+            <button id="player-previous" onclick="previousSong()">&#x23EE</button> <!-- previous -->
+            <button id="player-play-pause" onclick="playPause()">&#9654;</button> <!-- play/pause -->
+            <button id="player-next" onclick="nextSong()">&#x23ED</button> <!-- next -->
+        </div>
+        <div class="progress-bar">
+            <progress value="0" max="100"></progress>
+            <span class="time" id="current-time">00:00</span>
+            <span class="time" id="current-time">00:00</span>
+        </div>
+    </div>
+
+    <div class="row">  {{!-- cryptograss nav --}}
+        <div class="col-12">
+            <ul class="nav subnav nav-tabs pixel-font">
+                <li class="nav-item pi">
+                    <button data-group="cryptograss-nav" data-show="bazaar" class="nav-link exclusive active">onchain
+                        bazaar</button>
+                </li>
+                <li class="nav-item">
+                    <button data-group="cryptograss-nav" data-show="faq" class="nav-link exclusive">FAQs</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <br>
+    <br>
+
+    <div id="bazaar" class="cryptograss-nav">
+
+        <h3 class="text-white">
+            Blue Railroad Train Squats
+        </h3>
+        <h4 class="text-white">
+            You can earn one by taking a video of yourself doing squats with "Blue Railroad Train", from Tony Rice's
+            Manzanita album, to the Justin Holmes discord.
+        </h4>
+        <table class="chainDataList">
+            {{#each chainData.blueRailroads}}
+                <tr>
+                    <td>{{id}}</td>
+                    <td>{{owner}}</td>
+                    <td><a href="{{uri}}">video</a></td>
+                </tr>
+            {{/each}}
+        </table>
+    </div>
+    <div class="row">
+        <div class="col-2"></div>
+        <div id="faq" class="col-sm-8 cryptograss-nav" style="display: none;">
+            {{safeHTML faq}}
+        </div>
+        <div class="col-2"></div>
+    </div>
+</div>
+
+<style>
+        .player {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 250px;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .album-art {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .album-art img {
+            width: 100%;
+        }
+        .info {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .player-title {
+            font-size: 1.2em;
+            color: #27292b;
+            font-weight: bold;
+        }
+        .player-artist {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .controls {
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .controls button {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        .controls button:hover {
+            color: #000;
+        }
+        .progress-bar {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .progress-bar progress {
+            width: 100%;
+        }
+</style>
+
+<script>
+const audioPlayer = document.getElementById('audio-player');
+const playlist = [
+    {'file':'audio/silver44.wav', "length": 342, "name": "Silver .44", "artist": "Justin Holmes", "album_cover": "{{resolveImage 'albums/vowel-sounds-cover-art-400.png' }}"},
+    {'file':'audio/august.wav', "length": 179, "name": "August", "artist": "Justin Holmes", "album_cover": "{{resolveImage 'albums/vowel-sounds-cover-art-400.png' }}"}
+];
+let currentSongIndex = 0;
+
+function loadSong(index) {
+    audioPlayer.src = playlist[index]['file'];
+    audioPlayer.load();
+
+    document.getElementById('player-title').innerText = playlist[index]['name'];
+    document.getElementById('player-artist').innerText = playlist[index]['artist'];
+    document.getElementById('player-album-cover').src = playlist[index]['album_cover'];
+}
+
+loadSong(currentSongIndex);
+
+function nextSong() {
+    currentSongIndex = (currentSongIndex + 1) % playlist.length;
+    var is_playing = !audioPlayer.paused;
+
+    loadSong(currentSongIndex);
+
+    if(is_playing) {
+        audioPlayer.play();
+    }
+}
+
+function previousSong() {
+    currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
+    var is_playing = !audioPlayer.paused;
+    loadSong(currentSongIndex);
+
+    if(is_playing) {
+        audioPlayer.play();
+    }
+}
+
+function playPause() {
+    if (audioPlayer.paused) {
+        audioPlayer.play();
+        document.getElementById("player-play-pause").innerHTML = "&#x23F8";
+    } else {
+        audioPlayer.pause();
+        document.getElementById("player-play-pause").innerHTML = "&#9654;";
+    }
+}
+
+// On load, load the first song
+document.addEventListener('DOMContentLoaded', function() {
+    audioPlayer.src = playlist[currentSongIndex]['file'];
+    audioPlayer.load();
+});
+
+</script>
