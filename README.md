@@ -103,3 +103,6 @@ It is a private repo, so you'll need to be added to the cryptograss org to clone
 
 `git submodule add git@github.com:cryptograss/happenings.git src/data/happenings`
 
+## License
+
+This repository is under the Rabbithole Bacon License — see [LICENSE.MD](LICENSE.MD).
