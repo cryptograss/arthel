@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from "url";
 import { stringify } from "./utils.js"
 import { getProjectDirs } from "./locations.js";
 import { setStoneContractAddress, blueRailroadContractAddress, blueRailroadV2ContractAddress, revealerContractAddress } from './constants.js';
@@ -40,7 +41,14 @@ export function deserializeChainData() {
 
 export function deserializeTimeData() {
     const { dataDir } = getProjectDirs();
-    const time_data_json_path = path.resolve(dataDir, 'time_data.json');
+    // The suite runs from a clean checkout, where the fetched time_data.json
+    // does not exist yet (it is gitignored: fetching needs the chain and the
+    // vault key), so TEST_TIME_DATA reads the committed fixture instead.
+    // Regenerate it with scripts/make_test_time_data.mjs, which mirrors this
+    // switch on the TEST_CHAIN_DATA one below.
+    const time_data_json_path = process.env.TEST_TIME_DATA
+        ? path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../__tests__/fixtures/time_data.json')
+        : path.resolve(dataDir, 'time_data.json');
     const time_data_json = fs.readFileSync(time_data_json_path, 'utf8');
     return JSON.parse(time_data_json);
 }
