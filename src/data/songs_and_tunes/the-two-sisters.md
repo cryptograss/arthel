@@ -3,7 +3,7 @@ furthest-reaching clear lineage of any song we play, with its oldest surviving w
 
 I've seen several scholars opine that the variation of lyrics throughout the history of this song is high (for exmaple, [Robert B. Waltz and David G. Engle at Ballad Index assert](https://balladindex.org/Ballads/C010.html) that "The refrains sung with this ballad vary tremendously").
 
-...and maybe this is my bias as a bluegrasser, but in my reading, I've been surprised as how *consistent* the lyrics seem to be. The variations in almost four centuries of this song are not much more than we find in just a single century of evolution of bluegrass standards like Rueben's Train or Shady Grove.
+...and maybe this is my bias as a bluegrasser, but in my reading, I've been surprised as how *consistent* the lyrics seem to be. The variations in almost four centuries of this song are not much more than we find in just a single century of evolution of bluegrass standards like Reuben's Train or Shady Grove.
 
 Consider that the 1658 version begins *"There were two sisters who went a' playin'"*, while the most common 2024 version begins *"There were two sisters walking down a street"*. That's pretty serious staying power.
 
