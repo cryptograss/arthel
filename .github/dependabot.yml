@@ -1,0 +1,20 @@
+# Dependabot: one pull request per wave, not five (Justin, #ramp, 15 Nov: "a boatload of dependency CBs").
+#
+# This repository has no scheduled version updates — only GitHub's security updates, which arrive
+# whether or not this file exists. Two things here:
+#   - open-pull-requests-limit: 0 keeps it that way. It turns version updates off; security updates
+#     have their own cap of 10 and are unaffected.
+#   - the group gathers every security update for this ecosystem into a single pull request, so the
+#     lockfile is resolved once instead of five times against each other.
+# A group without applies-to would cover version updates only, which are off here, so applies-to matters.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
