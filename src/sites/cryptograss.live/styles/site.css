@@ -1,0 +1,759 @@
+/*
+ * cryptograss.live, 27 Nov 2026: the field the drawing at the top of the page shows, kept going.
+ *
+ * Everything here is something growing: a plot of text on pale paper with the dashed teal edge
+ * the site has always had; a heading whose first letter has vines on it (Petals and Vines, a face
+ * the site has carried since the start and never set a word in); a rule that is a runner with
+ * leaves. Nothing is boxed in hard lines, and nothing is square.
+ *
+ * Loaded after styles-common.css, which still dresses the ticket stubs and the older pages.
+ */
+
+/* Cabin, from the files this repository has always had (the pages used to ask Google for it). */
+@font-face {
+    font-family: "Cabin";
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url("../../justinholmes.com/styles/cabin/Cabin-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Cabin";
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+    src: url("../../justinholmes.com/styles/cabin/Cabin-Italic.ttf");
+}
+
+@font-face {
+    font-family: "Cabin";
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    src: url("../../justinholmes.com/styles/cabin/Cabin-SemiBold.ttf");
+}
+
+@font-face {
+    font-family: "Cabin";
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url("../../justinholmes.com/styles/cabin/Cabin-Bold.ttf");
+}
+
+@font-face {
+    font-family: "petals";
+    font-style: normal;
+    font-display: swap;
+    src: url("PetalsAndVines-Regular.ttf");
+}
+
+:root {
+    --cg-paper: #edf1e8;
+    --cg-plot: rgba(249, 253, 249, 0.92);
+    --cg-ink: #1c2a1e;
+    --cg-soft: #4c5d4e;
+    --cg-leaf: #2c5a37;
+    --cg-moss: #6d8f4c;
+    --cg-sage: #c9cfb0;
+    --cg-teal: #008f8c;                    /* the dashed edge's teal, darkened until it reads as text */
+    --cg-teal-edge: #00bcb9;
+    --cg-bark: #5c3a1e;
+    --cg-berry: #8a2f3d;
+    /* a runner with leaves, drawn once and laid end to end */
+    --cg-vine: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='28' viewBox='0 0 160 28'%3E%3Cpath d='M0 14 C 20 2, 40 2, 80 14 S 140 26, 160 14' fill='none' stroke='%236d8f4c' stroke-width='1.6'/%3E%3Cg fill='%236d8f4c'%3E%3Cpath d='M26 7 q 8 -9 15 -2 q -9 6 -15 2z'/%3E%3Cpath d='M56 9 q 2 11 -7 14 q -2 -10 7 -14z'/%3E%3Cpath d='M106 21 q 8 9 15 2 q -9 -6 -15 -2z'/%3E%3Cpath d='M136 19 q 2 -11 -7 -14 q -2 10 7 14z'/%3E%3C/g%3E%3Ccircle cx='80' cy='14' r='2.2' fill='%238a2f3d'/%3E%3C/svg%3E");
+}
+
+/* --- the page ----------------------------------------------------------------------------- */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body.cg {
+    margin: 0;
+    background-color: var(--cg-paper);
+    color: var(--cg-ink);
+    font-family: Cabin, "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+}
+
+body.cg a {
+    color: var(--cg-teal);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+}
+
+body.cg a:hover {
+    color: var(--cg-leaf);
+}
+
+body.cg :focus-visible {
+    outline: 3px solid var(--cg-teal-edge);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.cg-skip {
+    position: absolute;
+    left: -999px;
+    top: 0;
+    z-index: 3000;
+    padding: 0.5em 1em;
+    background: var(--cg-leaf);
+    color: #fff !important;
+}
+
+.cg-skip:focus {
+    left: 0;
+}
+
+/* the older pages sit in these; keep them from running off a phone */
+#base-container {
+    background-image: none;
+    background-color: transparent;
+    padding: 0;
+    overflow-x: clip;
+}
+
+#main-container {
+    position: relative;
+    z-index: 1;
+    max-width: 72rem;
+    padding: 0 1rem;
+}
+
+#main-container .row > [class*="col-"] {
+    min-width: 0;
+}
+
+#main-container img,
+#main-container video,
+#main-container canvas {
+    max-width: 100%;
+}
+
+/* a ticket stub is laid out to the pixel: it keeps its size, and its frame scrolls */
+#main-container .ticket-stub-container img,
+#main-container .ticket-stub-container canvas {
+    max-width: none;
+}
+
+#main-container pre,
+#main-container code {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+/* --- the top: the drawing, the name, the ways in ------------------------------------------- */
+
+.cg-top {
+    position: relative;
+    background-color: var(--cg-sage);
+    background-image: url("cryptograss-cropped.jpg");
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;
+}
+
+/* the drawing fades into the page instead of ending on a line */
+.cg-top::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4.5rem;
+    background: linear-gradient(to bottom, rgba(237, 241, 232, 0), var(--cg-paper));
+    pointer-events: none;
+}
+
+.cg-nav {
+    position: relative;
+    z-index: 2;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0.55rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1.5rem;
+}
+
+.cg-nav-home {
+    font-family: grid-writing, Georgia, serif;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--cg-ink) !important;
+    text-decoration: none;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+}
+
+.cg-nav ul {
+    list-style: none;
+    margin: 0 0 0 auto;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.1rem 0.35rem;
+}
+
+.cg-nav ul a {
+    display: block;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    color: var(--cg-ink) !important;
+    font-weight: 600;
+    text-decoration: none;
+    background: rgba(249, 253, 249, 0.7);
+}
+
+.cg-nav ul a:hover,
+.cg-nav ul a.active {
+    background: var(--cg-leaf);
+    color: #fff !important;
+}
+
+.cg-nav ul a.cg-nav-in {
+    background: #ff67fd;                    /* magenta's own colour, for the way in to it */
+    color: #23002b !important;
+}
+
+.cg-nav ul a.cg-nav-in:hover {
+    background: #23002b;
+    color: #ff67fd !important;
+}
+
+.cg-nav-toggle {
+    display: none;
+}
+
+@media (max-width: 46rem) {
+    .js .cg-nav-toggle {
+        display: block;
+        margin-left: auto;
+        padding: 0.3rem 0.9rem;
+        border: 2px dashed var(--cg-teal-edge);
+        border-radius: 999px;
+        background: rgba(249, 253, 249, 0.9);
+        color: var(--cg-ink);
+        font: inherit;
+        font-weight: 600;
+    }
+
+    .cg-nav ul {
+        flex-basis: 100%;
+        margin-left: 0;
+    }
+
+    .js .cg-nav ul {
+        display: none;
+    }
+
+    .js .cg-nav.is-open ul {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.3rem;
+        padding: 0.4rem 0;
+    }
+
+    .cg-nav ul a {
+        background: rgba(249, 253, 249, 0.92);
+    }
+}
+
+.cg-mast {
+    position: relative;
+    z-index: 1;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 2.2rem 1rem 5.5rem;
+    text-align: center;
+}
+
+.cg-mast--small {
+    padding: 0.6rem 1rem 4rem;
+}
+
+.cg-wordmark {
+    margin: 0;
+    font-family: petals, grid-writing, Georgia, serif;
+    font-weight: normal;
+    font-size: clamp(3rem, 13vw, 8.5rem);
+    line-height: 1;
+    color: var(--cg-ink);
+    text-shadow: 0 0 18px rgba(255, 255, 255, 0.95), 0 0 4px rgba(255, 255, 255, 0.9);
+}
+
+.cg-tagline {
+    display: inline-block;
+    margin: 0.6rem 0 0;
+    padding: 0.15rem 1.1rem;
+    font-family: aesthetic, Georgia, serif;
+    font-size: clamp(1.25rem, 3.6vw, 2rem);
+    color: var(--cg-leaf);
+    background: rgba(249, 253, 249, 0.82);
+    border-radius: 999px;
+}
+
+/* --- plots: text, on paper, in the field ---------------------------------------------------- */
+
+.cg-wrap {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.cg-plot {
+    position: relative;
+    margin: 2.5rem 0 0;
+    padding: 1.6rem 1.6rem 1.5rem;
+    background: var(--cg-plot);
+    border-right: 4px dashed var(--cg-teal-edge);
+    border-radius: 1.1rem 0.3rem 1.4rem 0.5rem;
+    box-shadow: 0 1px 0 rgba(44, 90, 55, 0.14), 0 10px 26px -18px rgba(28, 42, 30, 0.55);
+}
+
+.cg-plot > :last-child {
+    margin-bottom: 0;
+}
+
+/* a heading: a book face, and a first letter that something has grown over */
+.cg-h {
+    margin: 0 0 0.55rem;
+    font-family: aesthetic, Georgia, serif;
+    font-weight: normal;
+    font-size: clamp(1.9rem, 4.8vw, 2.7rem);
+    line-height: 1.1;
+    color: var(--cg-leaf);
+}
+
+.cg-h::first-letter {
+    font-family: petals, aesthetic, Georgia, serif;
+    font-size: 1.45em;
+    color: var(--cg-ink);
+}
+
+.cg-h a {
+    color: inherit !important;
+    text-decoration: none;
+}
+
+.cg-kicker {
+    margin: 0 0 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cg-berry);
+}
+
+.cg-lead {
+    font-size: 1.3rem;
+    line-height: 1.5;
+}
+
+.cg-soft {
+    color: var(--cg-soft);
+}
+
+.cg-count {
+    margin: 0.7rem 0 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--cg-bark);
+}
+
+/* a rule that is a runner */
+.cg-vine {
+    height: 28px;
+    margin: 3rem 0 0;
+    border: 0;
+    opacity: 1;
+    background-image: var(--cg-vine);
+    background-repeat: repeat-x;
+    background-position: center;
+}
+
+.cg-section-title {
+    margin: 1.2rem 0 0;
+    text-align: center;
+    font-family: grid-writing, Georgia, serif;
+    font-weight: normal;
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    line-height: 1.1;
+    color: var(--cg-ink);
+}
+
+.cg-section-sub {
+    max-width: 44rem;
+    margin: 0.3rem auto 0;
+    text-align: center;
+    color: var(--cg-soft);
+}
+
+/* --- ways on ------------------------------------------------------------------------------- */
+
+.cg-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 1.1rem 0 0;
+}
+
+.cg-btn,
+body.cg a.cg-btn {
+    display: inline-block;
+    padding: 0.5rem 1.15rem;
+    border: 2px solid var(--cg-leaf);
+    border-radius: 999px 999px 999px 0.4rem;      /* a leaf, more or less */
+    background: var(--cg-leaf);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.18s ease, border-radius 0.18s ease;
+}
+
+.cg-btn:hover,
+body.cg a.cg-btn:hover {
+    color: #fff;
+    background: var(--cg-ink);
+    border-color: var(--cg-ink);
+    transform: rotate(-1.5deg);
+}
+
+.cg-btn--quiet,
+body.cg a.cg-btn--quiet {
+    background: transparent;
+    color: var(--cg-leaf);
+}
+
+.cg-btn--quiet:hover,
+body.cg a.cg-btn--quiet:hover {
+    background: var(--cg-leaf);
+    border-color: var(--cg-leaf);
+    color: #fff;
+}
+
+.cg-btn--magenta,
+body.cg a.cg-btn--magenta {
+    background: #ff67fd;
+    border-color: #23002b;
+    color: #23002b;
+}
+
+.cg-btn--magenta:hover,
+body.cg a.cg-btn--magenta:hover {
+    background: #23002b;
+    border-color: #23002b;
+    color: #ff67fd;
+}
+
+/* --- what's growing: four plots ------------------------------------------------------------ */
+
+.cg-growing {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.75rem;
+}
+
+.cg-growing .cg-plot {
+    display: flex;
+    flex-direction: column;
+}
+
+.cg-growing .cg-btns {
+    margin-top: auto;
+    padding-top: 1.1rem;
+}
+
+/* a sprig at each plot's corner, that leans when the plot is touched */
+.cg-growing .cg-plot::before {
+    content: "";
+    position: absolute;
+    top: -1.25rem;
+    left: 1.1rem;
+    width: 3.2rem;
+    height: 2rem;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'%3E%3Cpath d='M4 38 C 10 22, 22 12, 44 8' fill='none' stroke='%232c5a37' stroke-width='2'/%3E%3Cg fill='%236d8f4c'%3E%3Cpath d='M14 26 q -9 -6 -4 -16 q 8 6 4 16z'/%3E%3Cpath d='M24 17 q 2 -12 14 -12 q -2 11 -14 12z'/%3E%3Cpath d='M40 9 q 8 -10 20 -5 q -8 10 -20 5z'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
+    transform-origin: 10% 100%;
+    transition: transform 0.35s ease;
+}
+
+.cg-growing .cg-plot:hover::before {
+    transform: rotate(9deg) scale(1.12);
+}
+
+.cg-magenta-plot {
+    background: #17141f;
+    color: #f3ecf5;
+    border-right-color: #ff67fd;
+}
+
+.cg-magenta-plot .cg-h,
+.cg-magenta-plot .cg-h::first-letter {
+    color: #ff67fd;
+}
+
+.cg-magenta-plot .cg-soft,
+.cg-magenta-plot .cg-count {
+    color: #cdbfd2;
+}
+
+body.cg .cg-magenta-plot a:not(.cg-btn) {
+    color: #ff9dfd;
+}
+
+@media (max-width: 52rem) {
+    .cg-growing {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- news: what's said on the wiki, what's passed around in magenta -------------------------- */
+
+.cg-two {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.75rem;
+}
+
+@media (max-width: 52rem) {
+    .cg-two {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cg-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.cg-list > li {
+    padding: 0.7rem 0;
+    border-bottom: 1px dashed rgba(44, 90, 55, 0.35);
+}
+
+.cg-list > li:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.cg-list small {
+    display: block;
+    color: var(--cg-soft);
+}
+
+.cg-from {
+    margin: 1rem 0 0;
+    font-size: 0.9rem;
+    color: var(--cg-soft);
+}
+
+/* --- merch ---------------------------------------------------------------------------------- */
+
+.cg-three {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr));
+    gap: 0 1.5rem;
+}
+
+.cg-three .cg-plot {
+    display: flex;
+    flex-direction: column;
+}
+
+.cg-three .cg-btns {
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+.cg-h--small {
+    font-size: clamp(1.6rem, 4vw, 2rem);
+}
+
+.cg-stones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.4rem 0 0.2rem;
+}
+
+.cg-stones img {
+    width: 3.6rem;
+    height: 3.6rem;
+    image-rendering: pixelated;
+    transition: transform 0.2s ease;
+}
+
+.cg-stones a:hover img {
+    transform: rotate(8deg) scale(1.1);
+}
+
+/* --- why: a page of the notebook ------------------------------------------------------------ */
+
+.cg-why {
+    max-width: 46rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cg-shout {
+    margin: 0;
+    font-family: grid-writing, Georgia, serif;
+    font-size: clamp(1.5rem, 4.4vw, 2.3rem);
+    line-height: 1.2;
+    color: var(--cg-ink);
+}
+
+.cg-roots {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    columns: 18rem;
+    column-gap: 2.5rem;
+}
+
+.cg-roots li {
+    break-inside: avoid;
+    padding: 0.45rem 0;
+}
+
+.cg-roots b {
+    color: var(--cg-leaf);
+}
+
+/* --- long reading: a happening, the questions ----------------------------------------------- */
+
+.cg-prose {
+    max-width: 46rem;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.15rem;
+}
+
+.cg-prose h2,
+.cg-prose h3,
+.cg-prose h4 {
+    margin: 2rem 0 0.5rem;
+    font-family: aesthetic, Georgia, serif;
+    font-weight: normal;
+    font-size: 1.7rem;
+    line-height: 1.2;
+    color: var(--cg-leaf);
+}
+
+.cg-prose h4:first-child,
+.cg-prose h2:first-child {
+    margin-top: 0;
+}
+
+.cg-prose blockquote {
+    margin: 1.2rem 0;
+    padding: 0.2rem 0 0.2rem 1.1rem;
+    border-left: 4px dashed var(--cg-teal-edge);
+    font-style: italic;
+    color: var(--cg-soft);
+}
+
+.cg-prose img {
+    max-width: 100%;
+    height: auto;
+}
+
+.cg-date {
+    margin: 0 0 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cg-berry);
+}
+
+/* --- the foot: the ground ------------------------------------------------------------------- */
+
+.cg-foot {
+    margin-top: 4rem;
+    padding: 2.5rem 1rem 1.5rem;
+    background: var(--cg-ink);
+    color: #cfd8cc;
+    font-size: 0.98rem;
+    background-image: var(--cg-vine);
+    background-repeat: repeat-x;
+    background-position: center 0.5rem;
+}
+
+.cg-foot-in {
+    max-width: 72rem;
+    margin: 1.2rem auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1.25rem 2rem;
+}
+
+.cg-foot h2 {
+    margin: 0 0 0.4rem;
+    font-family: aesthetic, Georgia, serif;
+    font-weight: normal;
+    font-size: 1.35rem;
+    color: #fff;
+}
+
+.cg-foot ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+body.cg .cg-foot a {
+    color: #9fe3e1;
+}
+
+body.cg .cg-foot a:hover {
+    color: #fff;
+}
+
+.cg-foot p {
+    margin: 0 0 0.5rem;
+}
+
+.cg-foot .cg-foot-build {
+    max-width: 72rem;
+    margin: 1.6rem auto 0;
+    padding-top: 0.9rem;
+    border-top: 1px dashed rgba(207, 216, 204, 0.35);
+    font-size: 0.85rem;
+    text-align: center;
+    color: #a6b3a4;
+}
+
+/* --- older pages, in the new field ----------------------------------------------------------- */
+
+.text-post {
+    border-radius: 1.1rem 0.3rem 1.4rem 0.5rem;
+    background: var(--cg-plot);
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.example-ticket-container {
+    overflow-x: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .cg-btn,
+    .cg-growing .cg-plot::before,
+    .cg-stones img {
+        transition: none;
+    }
+}

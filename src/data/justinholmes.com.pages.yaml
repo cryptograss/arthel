@@ -4,6 +4,9 @@ index:
     page_title: "Future-proofing Bluegrass"
   include_data_in_context:
     - latest_git_commit
+    - shows
+    - pickers_by_instance_count
+    - media
 
 listen:
   template: listen.njk
@@ -83,7 +86,7 @@ shows:
     include_data_in_context:
       - shows
     context:
-        page_title: "Instances"
+        page_title: "Shows"
 
 # add-live-set:
 #   context:
@@ -116,6 +119,9 @@ all-songs:
   template: "songs/all-songs.njk"
   include_data_in_context:
     - songs
+    - songsByProvenance
+  context:
+    page_title: "Songs"
 
 songs-by-provenance:
   template: "songs/songs-by-provenance.njk"

@@ -30,11 +30,13 @@ John Perry Barlow, who wrote many GD songs that you know and probably cover, sai
 > 
 (quote is truncated, but if you read the entire section from which it is taken, I think you'll agree that it is very much in the spirit of the above.)
 
-Captain Crunch
-
 #### OK, but what about the scams?
 
 You'll be fine.  Lot scene awareness.  You got this.
+
+<!-- draft below -->
+
+Captain Crunch
 
 #### So there are like... hippies in crypto?
 

@@ -1,10 +1,2 @@
-<div id="page-build-metadata" class="text-muted small mt-5 pt-3 border-top">
-    <div class="row">
-        <div class="col text-center">
-            Built on ref <code>{% if latest_git_commit %}{{ latest_git_commit | truncate(8, true, '') }}{% else %}—{% endif %}</code>
-            {% if chainData and chainData.mainnetBlockNumber %}
-            at mainnet block <code>{{ chainData.mainnetBlockNumber }}</code>
-            {% endif %}
-        </div>
-    </div>
-</div>
+{# What a page was built from is in the footer of every page now (partials/footer.njk); the pages
+   that included this keep including it, and it adds nothing twice. #}

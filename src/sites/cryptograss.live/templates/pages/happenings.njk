@@ -1,16 +1,20 @@
 {% extends '../base.njk' %}
 
 {% block main %}
-    <div class="row">
-        <div class="col-2"></div>
-        <div id="top-news" class="col-md-8 text-post">
-            <div class="row">
-                <h1 class="text-center grid-writing">cryptograss happenings</h1>
-            </div>
+<h1 class="cg-section-title">Happenings</h1>
+<p class="cg-section-sub">Announcements from cryptograss. For what's being said day to day, the
+    headlines are on <a href="{{ eco.pickipedia }}">PickiPedia</a> and the talk is in
+    <a href="{{ eco.magenta }}">magenta</a>.</p>
 
-            {% for h, happening in happenings %}
-                {% include 'reuse/single-happening.njk' %}
-            {% endfor %}
-        </div>
+{% for happening in happenings %}
+<article class="cg-plot" id="top-news">
+    <div class="cg-prose">
+        <p class="cg-date">{{ happening.local_datetime }}</p>
+        <h2 class="cg-h cg-h--small"><a href="{{ basePath }}{{ happening.resource_url }}">{{ happening.headline }}</a></h2>
+        {% include 'reuse/single-happening.njk' %}
     </div>
+</article>
+{% else %}
+<section class="cg-plot cg-why"><p>Nothing announced yet.</p></section>
+{% endfor %}
 {% endblock %}

@@ -28,6 +28,8 @@ import { fetchPendingSubmissions, fetchAllSubmissions, fetchRecordings, fetchPag
 import { cidToBytes32 } from './cid_utils.js';
 import { DateTime } from 'luxon';
 import { fetchCurrentBlockHeight } from './get_current_blockheight.js';
+import { getEcosystem, rabbitholeLink, baconLink, challengeLink, wikiLink, PICKIPEDIA, MAGENTA, RABBITHOLE, BACON } from './ecosystem.js';
+import { getNunjucksEnv } from './utils/template_helpers.js';
 
 // IPFS Gateway URLs for build-time checks
 const IPFS_GATEWAYS = {
@@ -241,7 +243,7 @@ function matchSubmissionsToTokens(submissions, blueRailroadV2s) {
 
 export const runPrimaryBuild = async () => {
     const oldUmask = process.umask(0o000); // Ensure that proper permissions are applied
-    const { outputPrimaryRootDir, dataDir, templateDir, site, outputPrimarySiteDir } = getProjectDirs();
+    const { outputPrimaryRootDir, outputBaseDir, dataDir, templateDir, site, outputPrimarySiteDir } = getProjectDirs();
     const { shows, songs, pickers, songsByProvenance } = getShowAndSetData();
 
     const ensureDirectories = () => {
@@ -465,6 +467,95 @@ export const runPrimaryBuild = async () => {
     // A lot going on here - this is where we actually append things like set stones, ticket stubs, etc., to the shows.  Any further chain data that is required to render shows to templates needs to be added here.
     appendChainDataToShows(shows, chainData); // Mutates shows, obviously.
 
+    // A show is ahead of us when its block is: the chain data says which block this build stands on.
+    const buildBlock = Number(chainData.mainnetBlockNumber) || 0;
+    for (const show of Object.values(shows)) {
+        show.is_future = buildBlock > 0 && show.blockheight > buildBlock;
+    }
+
+    ////////
+    //// 3.1c: the rest of cryptograss, as these sites show it (ecosystem.js)
+    //////
+    // PickiPedia's headlines and size, the tracks Rabbithole hands out, the size of the Oracle's
+    // graph, magenta's tidings, and which pickers have a PickiPedia page. A source that doesn't
+    // answer is null, and the templates draw without it.
+    const ecosystem = await getEcosystem({
+        only: site === 'cryptograss.live' ? ['news', 'wiki', 'tracks', 'tidings', 'graph'] : ['tracks', 'graph', 'pages'],
+        cacheDir: path.resolve(outputBaseDir, '_prebuild_ecosystem', site),
+        names: site === 'justinholmes.com' ? Object.keys(pickers) : [],
+    });
+    for (const track of ecosystem.tracks || []) {
+        track.listen = rabbitholeLink(track.cid);
+    }
+    // A song with a track of that name in Rabbithole plays there from its own page.
+    const readyByTitle = {};
+    for (const track of ecosystem.tracks || []) {
+        readyByTitle[track.title.toLowerCase()] = track;
+    }
+    for (const song of Object.values(songs)) {
+        const track = song.title && readyByTitle[String(song.title).toLowerCase()];
+        if (track) {
+            song.rabbithole_url = track.listen;
+        }
+    }
+
+    // A picker's PickiPedia page, where there is one; and their graph in the Oracle, where the
+    // Oracle knows them (by their page's name, or by the name we have, when they have no page yet).
+    const inTheOracle = new Set((ecosystem.graph && ecosystem.graph.names) || []);
+    for (const [picker_name, picker_data] of Object.entries(pickers)) {
+        const page = ecosystem.pages && ecosystem.pages[picker_name];
+        if (page) {
+            picker_data.pickipedia_page = page;
+            picker_data.pickipedia_url = wikiLink(page);
+        }
+        const known = [page, picker_name].find((name) => name && inTheOracle.has(name));
+        if (known) {
+            picker_data.bacon_url = baconLink(known);
+        }
+    }
+    const justinsPage = (ecosystem.pages && ecosystem.pages['Justin Holmes']) || 'Justin Myles Holmes';
+
+    // The same tracks, under the record each is on ('' for one on no record: a live cut).
+    const tracksByRecord = {};
+    for (const track of ecosystem.tracks || []) {
+        const record = track.record || '';
+        if (!tracksByRecord[record]) {
+            tracksByRecord[record] = [];
+        }
+        tracksByRecord[record].push(track);
+    }
+
+    // Plain data, on every template of the site: links out, what was read above, and what this
+    // build stands on. (Data, not functions: a template that meets none of it draws without it.)
+    const nunjucksEnv = getNunjucksEnv(site);
+    nunjucksEnv.addGlobal('eco', {
+        ...ecosystem,
+        tracks_by_record: tracksByRecord,
+        pickipedia: PICKIPEDIA,
+        magenta: MAGENTA,
+        rabbithole: RABBITHOLE,
+        bacon: BACON,
+        justin: {
+            page: justinsPage,
+            wiki: wikiLink(justinsPage),
+            bacon: baconLink(justinsPage),
+            challenge: challengeLink(justinsPage),
+        },
+    });
+    const buildCommit = execSync('git rev-parse HEAD').toString().trim();
+    nunjucksEnv.addGlobal('build', {
+        commit: buildCommit,
+        commit_short: buildCommit.slice(0, 8),
+        block: buildBlock,
+        block_display: buildBlock ? buildBlock.toLocaleString('en-US') : '',
+        shows: Object.keys(shows).length,
+        songs: Object.keys(songs).length,
+        pickers: Object.keys(pickers).length,
+        setstones: Object.values(shows).reduce((n, show) => n + Object.values(show.sets || {}).reduce((m, set) => m + ((set.setstones || []).length), 0), 0),
+        blueRailroads: Object.keys(chainData.blueRailroadV2s || {}).length,
+        vowelSoundsContributions: (chainData.vowelSoundContributions || []).length,
+    });
+
     // Fetch Blue Railroad submissions and recordings from PickiPedia (cryptograss.live only)
     let pendingSubmissions = [];
     let allSubmissions = [];
@@ -489,9 +580,17 @@ export const runPrimaryBuild = async () => {
         }
     }
 
+    // The videos the Listen page lists (page_specific/listen), for any page that asks for `media`.
+    const media = {};
+    for (const kind of ['sessions', 'live', 'talks']) {
+        const mediaPath = `src/data/page_specific/listen/${kind}.yaml`;
+        media[kind] = fs.existsSync(mediaPath) ? (yaml.load(fs.readFileSync(mediaPath, 'utf8')) || []) : [];
+    }
+
     const dataAvailableAsContext = {
         "songs": songs,
         "shows": shows,
+        "media": media,
         'songsByProvenance': songsByProvenance,
         'latest_git_commit': execSync('git rev-parse HEAD').toString().trim(),
         'chainData': chainData,
@@ -531,9 +630,12 @@ export const runPrimaryBuild = async () => {
             pageSpecificFiles.forEach(file => {
                 const fileContents = fs.readFileSync(path.join(pageSpecificDataPath, file), 'utf8');
 
-                // If it's markdown, render it with marked.
+                // If it's markdown, render it with marked: as far as a line that reads
+                // <!-- draft below -->, if it has one. What's under that line stays in the file,
+                // for whoever is writing it, and off the page.
                 if (file.endsWith('.md')) {
-                    contextFromPageSpecificFiles[page][file.replace(/\.md$/, '')] = marked(fileContents);
+                    const published = fileContents.split(/^<!--\s*draft below\s*-->\s*$/m)[0];
+                    contextFromPageSpecificFiles[page][file.replace(/\.md$/, '')] = marked(published);
                 }
                 // If it's yaml, load it as yaml.
                 if (file.endsWith('.yaml')) {
@@ -854,22 +956,36 @@ export const runPrimaryBuild = async () => {
         // Render cryptograss.live happenings - TODO: move this to secondary builder.
 
 
-        // First, all the happenings to the news page (TODO: paginate this? TODO: Turn this into a regular page, with happenigns as context.)
+        // Newest first: a happening's name begins with the second it was written.
+        const happeningsNewestFirst = Object.entries(happenings).sort((a, b) => parseInt(b[0]) - parseInt(a[0]));
+        for (const [happening_slug, happening_data] of happeningsNewestFirst) {
+            happening_data.slug = happening_slug;
+            happening_data.resource_url = `/happenings/${happening_slug}`;
+        }
+
+        // All the happenings on their own page, /happenings. (They were the home page until 27 Nov
+        // 2026, written over the one the pages YAML renders; the home is that one now.)
         renderPage({
             template_path: 'pages/happenings.njk',
-            output_path: `index.html`,
+            output_path: `happenings.html`,
             site: site,
             context: {
-                happenings: happenings,
+                page_name: 'happenings',
+                page_title: 'Happenings',
+                happenings: happeningsNewestFirst.map(([, happening_data]) => happening_data),
                 site: site,
             }
         });
 
-        for (let [happening_slug, happening_data] of Object.entries(happenings)) {
+        for (const [happening_slug, happening_data] of happeningsNewestFirst) {
             renderPage({
-                template_path: 'reuse/single-happening.njk',
+                template_path: 'pages/happening.njk',
                 output_path: `happenings/${happening_slug}.html`,
-                context: happening_data,
+                context: {
+                    page_name: 'happenings',
+                    page_title: happening_data.headline,
+                    happening: happening_data,
+                },
                 site: site,
             }
             );

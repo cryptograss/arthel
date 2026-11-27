@@ -223,8 +223,9 @@
                 "{{rabbit_hash}}",
             {% endfor %}]
 
-        const stone_price_wei = {{show.stone_price}}
-        const artist_id = {{show.artist_id}}
+        {# null where the show has no stones: with nothing after the "=", the whole script failed to parse. #}
+        const stone_price_wei = {{ show.stone_price | default("null") }}
+        const artist_id = {{ show.artist_id | default("null") }}
         const blockheight = {{show.blockheight}}
 
         const setSongs = [

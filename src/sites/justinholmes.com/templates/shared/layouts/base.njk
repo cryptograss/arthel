@@ -2,66 +2,87 @@
 
 <html lang="en">
 <head>
-    <link href="https://fonts.googleapis.com/css?family=Cabin" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{ page_title }} | Justin Holmes</title>
+    <title>{% if page_title %}{{ page_title }} | {% endif %}Justin Holmes and the Immutable String Band</title>
 
-        <meta name="description" content="{%if
-            meta_description %}{{ meta_description }}{{ else }}Justin Holmes: future-proofing old-timey music{% endif %}">
-
+    {% set described = meta_description if meta_description else "Justin Holmes and the Immutable String Band: future-proofing old-timey music. Bluegrass and old-time, released free; every show, set and picker kept on the record." %}
+    <meta name="description" content="{{ described }}">
     <meta name="author" content="Justin Myles Holmes">
+    <meta name="theme-color" content="#12101f">
+
+    <meta property="og:site_name" content="Justin Holmes and the Immutable String Band">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% if page_title %}{{ page_title }}{% else %}Justin Holmes and the Immutable String Band{% endif %}">
+    <meta property="og:description" content="{{ described }}">
+    <meta property="og:image" content="https://justinholmes.com{{ get_image("jh-logo-shaded.png") }}">
+    <meta name="twitter:card" content="summary">
+
+    <link rel="icon" type="image/png" href="{{ get_image("jh-logo-shaded.png") }}">
 </head>
 
 <body id="bodyWithBackground">
-{% if no_video_bg %}
-{% else %}
-<video preload playsinline autoplay muted loop class="bg">
-    <source src="{{ get_image("nsf-background.mp4") }}" type="video/mp4">
-    Your browser does not support HTML5 video.
-</video>
-{% endif %}
-
-<div class="bg tiles"></div>
-
+<script>document.documentElement.classList.add('js');</script>
+<a class="jh-skip" href="#main">Skip to the page</a>
 
 <div class="contentOnTopOfVideo">
     <div id="top-fixed-area" class="fixed-top"></div>
+    <main id="main">
     {% block main %}{% endblock %}
+    </main>
 
     {% if not hide_social_nav %}
-    <nav id="footer" class="mt-3 nav nav-fill justify-content-center flex-column flex-sm-row">
+    <footer id="footer" class="jh-foot">
+        <div class="jh-foot-in">
+            <ul class="jh-foot-social">
+                <li><a target="_blank" rel="noopener" href="https://justinholmes.bandcamp.com/"><img alt="Bandcamp" src="{{ get_image("social-logos/bandcamp-button-bc-circle-green-256.png") }}"/></a></li>
+                <li><a target="_blank" rel="noopener" href="https://open.spotify.com/artist/2ThESMbZDNeAi02dpZZncE"><img alt="Spotify" src="{{ get_image("social-logos/Spotify_Icon_RGB_Green.png") }}"/></a></li>
+                <li><a target="_blank" rel="noopener" href="https://www.youtube.com/@vowelsoundmode"><img alt="YouTube" src="{{ get_image("social-logos/youtube_social_icon_red.png") }}"/></a></li>
+                <li><a target="_blank" rel="noopener" href="https://www.instagram.com/justinmylesholmes/"><img alt="Instagram" src="{{ get_image("social-logos/Instagram_Glyph_Gradient.png") }}"/></a></li>
+                <li><a target="_blank" rel="noopener" href="https://twitter.com/vowelsoundmode"><img alt="X" src="{{ get_image("social-logos/x-white.png") }}"/></a></li>
+                <li><a target="_blank" rel="noopener" href="https://discord.gg/B8rEXkSAJ4"><img alt="Discord" src="{{ get_image("social-logos/discord.png") }}"/></a></li>
+                <li><a target="_blank" rel="noopener" href="https://github.com/jMyles"><img alt="GitHub" src="{{ get_image("social-logos/Octocat.png") }}"/></a></li>
+            </ul>
 
-        <a class="p-0 nav-link" target="_blank" href="https://discord.gg/B8rEXkSAJ4">
-            <img class="mt-2" src="{{ get_image("social-logos/discord.png") }}"/>
-        </a>
+            <div class="jh-foot-cols">
+                <div>
+                    <h2>Here</h2>
+                    <ul>
+                        <li><a href="{{ basePath }}/listen">Listen</a></li>
+                        <li><a href="{{ basePath }}/shows">Shows</a></li>
+                        <li><a href="{{ basePath }}/ensemble">The Immutable String Band</a></li>
+                        <li><a href="{{ basePath }}/songs/all-songs">Every song we've played</a></li>
+                        <li><a href="{{ basePath }}/about">About</a> · <a href="{{ basePath }}/contact">Contact</a></li>
+                        <li><a href="https://epk.justinholmes.com/">Press kit</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h2>The rest of it</h2>
+                    <ul>
+                        <li><a href="{{ getCryptograssUrl() }}">cryptograss.live</a>: the tools, and why</li>
+                        <li><a href="{{ eco.pickipedia }}">PickiPedia</a>: the wiki of pickers, songs and shows</li>
+                        <li><a href="{{ eco.rabbithole }}">Rabbithole</a>: the player that shows the whole band</li>
+                        <li><a href="{{ eco.bacon }}">The Oracle of Bluegrass Bacon</a></li>
+                        <li><a href="{{ eco.magenta }}">magenta</a>: where we hang out</li>
+                    </ul>
+                </div>
+                <div>
+                    <h2>Take it home</h2>
+                    <p>Music, recordings and artwork are released under
+                        <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.
+                        Copy them, remix them, pass them along; say who made them.</p>
+                </div>
+            </div>
 
-        <a class="p-0 nav-link" target="_blank" href="https://github.com/jMyles">
-            <img src="{{ get_image("social-logos/Octocat.png") }}"/>
-        </a>
-
-        <a class="p-0 nav-link" target="_blank" href="https://justinholmes.bandcamp.com/">
-            <img src="{{ get_image("social-logos/bandcamp-button-bc-circle-green-256.png") }}"/>
-        </a>
-
-        <a class="p-0 nav-link" target="_blank" href="https://open.spotify.com/artist/2ThESMbZDNeAi02dpZZncE">
-            <img src="{{ get_image("social-logos/Spotify_Icon_RGB_Green.png") }}"/>
-        </a>
-
-        <a class="p-0 nav-link" target="_blank" href="https://twitter.com/vowelsoundmode">
-            <img src="{{ get_image("social-logos/x-white.png") }}"/>
-        </a>
-
-        <a class="p-0 nav-link" target="_blank" href="https://www.instagram.com/justinmylesholmes/">
-            <img src="{{ get_image("social-logos/Instagram_Glyph_Gradient.png") }}"/>
-        </a>
-        <a class="p-0 nav-link" target="_blank" href="https://www.youtube.com/@vowelsoundmode">
-            <img class="mt-2" src="{{ get_image("social-logos/youtube_social_icon_red.png") }}"/>
-        </a>
-    </nav>
+            {% if build.block_display %}
+            <p class="jh-foot-build">built at block {{ build.block_display }} · ref
+                <a href="https://github.com/cryptograss/arthel/commit/{{ build.commit }}">{{ build.commit_short }}</a></p>
+            {% endif %}
+        </div>
+    </footer>
     {% endif %}
 </div>
 
 </body>
+</html>

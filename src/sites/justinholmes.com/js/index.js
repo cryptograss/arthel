@@ -4,9 +4,32 @@ import 'spotlight.js';
 import '../styles/fonts.css';
 import '../styles/styles-common.css';
 import '../styles/webamp-chartifacts.css';
+import '../styles/site.css';
 import $ from 'jquery';
 
 $(document).ready(function () {
+    // The menu, on a phone: one button, and the list behind it.
+    $('.jh-menu-toggle').on('click', function () {
+        const open = $(this).closest('.jh-menu').toggleClass('is-open').hasClass('is-open');
+        $(this).attr('aria-expanded', open ? 'true' : 'false');
+    });
+
+    // A tape: the video is asked for when it is pressed, and not before.
+    $(document).on('click', '.jh-tape-screen', function () {
+        const address = $(this).data('embed');
+        if (!address) {
+            return;
+        }
+        const frame = $('<iframe>', {
+            src: address + (String(address).indexOf('?') === -1 ? '?' : '&') + 'autoplay=1',
+            title: $(this).attr('aria-label') || 'Video',
+            allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
+            referrerpolicy: 'strict-origin-when-cross-origin',
+            allowfullscreen: true,
+        });
+        $(this).replaceWith(frame);
+    });
+
     // load assets/slogans.json
     if (!window.skipSloganUpdate) {
         $.getJSON('/assets/slogans.json', function (data) {

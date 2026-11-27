@@ -4,9 +4,7 @@ html {
 
 body#bodyWithBackground {
     background-image: url("background.png");
-    height: 100%;
     margin: 0;
-    font-family: fell serif;
     color: white;
 }
 
@@ -20,18 +18,6 @@ a:hover {
     color: #ffb06b;
     text-shadow: 1px 1px 3px black, 0px 0px 10px black;
     text-decoration: underline;
-}
-
-#page-build-metadata {
-    font-size: 5px;
-}
-
-#vowel-sounds a {
-    color: #83d0ff;
-}
-
-#vowel-sounds a:hover {
-    color: black;
 }
 
 .person-bio, .bio-caption, .bio-title, h1, #about-text, .text-shadow {
@@ -65,38 +51,12 @@ a:hover {
     font-size: .7em;
 }
 
-#footer {
-    background-color: rgba(16, 0, 0, 0.59);
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 40px;
-}
-
-#footer a img {
-    margin-bottom: 10px;
-    margin-top: 5px;
-    width: 30px;
-}
-
-#top-nav {
-    border-top: 1px solid #383b67;
-}
-
 #slogan {
     font-size: calc(1rem + .6vw);
     color: black;
     -webkit-text-stroke: 1px #424032;
     text-shadow: white -1px -1px 0px, white 1px 1px 0px, white 1px -1px 0px, white -1px 1px 0px;
     min-height: 32px;
-}
-
-nav#top-nav a.nav-link {
-    font-size: 1.2em;
-    color: #99c9ff;
-    text-shadow: 0px 0px 1px black, 0px 0px 3px #1f0432, 0px 0px 2px #2f17ce;
-    text-align: center;
 }
 
 .subnav button.nav-link {
@@ -106,29 +66,6 @@ nav#top-nav a.nav-link {
 
 .subnav button.nav-link:hover {
     color: #99c9ff;
-}
-
-nav#top-nav a.nav-link:hover {
-    color: white;
-}
-
-nav#top-nav a.nav-link.active {
-    color: #bd86ff;
-}
-
-/*These are the arrows*/
-nav#top-nav a.nav-link span {
-    display: none;
-    color: #f2c6ae;
-}
-
-nav#top-nav a.nav-link.active span {
-    display: inline;
-}
-
-#top-nav a:hover {
-    text-shadow: 0px 0px 2px red, 0px 0px 9px #6a95cc, 0 0 20px #714400;
-    color: white;
 }
 
 nav a img {
@@ -598,7 +535,7 @@ nav a img {
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     background-color: rgba(248, 235, 216, 0.36);
-    font-family: fell serif;
+    font-family: fell, serif;
 }
 
 .ensemble a {

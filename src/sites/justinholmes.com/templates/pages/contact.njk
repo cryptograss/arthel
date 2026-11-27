@@ -2,19 +2,35 @@
 {% block main %}
 {% include 'partials/bigger-banner.njk' %}
 
-<div class="container mb-5">
-    <div class="semi-transparent-bg p-4">
-        <h1 class="pixel-font">Contact</h1>
-        <p class="lead">You're always welcome on our discord (we know, centralized... we'll move to Matrix or
-            something
-            similarly awesome at some point). <a href="https://discord.gg/B8rEXkSAJ4">It's here, and pretty active.</a>
-        </p>
+<div class="jh-wrap">
+    <h1 class="jh-page-title">Contact</h1>
+
+    <section class="px-box" aria-labelledby="booking">
+        <h2 class="px-title" id="booking">Booking and production</h2>
+        <div class="jh-prose">
         <p class="">For booking (talks, solo performances, or full band) contact Nicole: <a
                 href="mailto:nicole@justinholmes.com">nicole@justinholmes.com</a></p>
         <p class="">For production notes, contact Skyler: <a href="mailto:skyler@justinholmes.com">skyler@justinholmes.com</a>
         </p>
         <p class="">To contact Justin directly (please be patient for a reply :-) ): <a
                 href="mailto:justin@justinholmes.com">justin@justinholmes.com</a></p>
-    </div>
+        </div>
+        <div class="px-btns" style="text-align: center;">
+            <a class="px-btn px-btn--quiet" href="https://epk.justinholmes.com/">Press kit</a>
+        </div>
+    </section>
+
+    <section class="px-box" aria-labelledby="hang-out">
+        <h2 class="px-title" id="hang-out">Or just come hang out</h2>
+        <div class="jh-prose">
+            <p>We built a place for it: <a href="{{ eco.magenta }}">magenta</a>, for hackers, bluegrassers,
+                deadheads, cyclists, generalists, and all those smartass folk come descended from monkeys.
+                You can read along without an account.</p>
+            <p>You're always welcome on our discord too. <a href="https://discord.gg/B8rEXkSAJ4">It's here, and pretty active.</a></p>
+        </div>
+        <div class="px-btns" style="text-align: center;">
+            <a class="px-btn px-btn--go" href="{{ eco.magenta }}">Come in</a>
+        </div>
+    </section>
 </div>
 {% endblock %}

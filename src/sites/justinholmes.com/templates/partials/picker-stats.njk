@@ -1,0 +1,7 @@
+{# One picker's line of counts: what they play, and how many instances. Expects `who`: the picker's data, set by the page that includes it. #}
+<p class="jh-picker-stats">
+    {% if who.instruments_display %}{{ who.instruments_display }} · {% endif %}
+    {{ who.total_instance_count }} instance{% if who.total_instance_count != 1 %}s{% endif %}{% if who.studio_versions.length and who.shows_as_array.length %}:
+    {{ who.shows_as_array.length }} show{% if who.shows_as_array.length != 1 %}s{% endif %},
+    {{ who.studio_versions.length }} studio track{% if who.studio_versions.length != 1 %}s{% endif %}{% elif who.studio_versions.length %}, all in the studio{% elif who.total_instance_count > 1 %}, all shows{% endif %}
+</p>

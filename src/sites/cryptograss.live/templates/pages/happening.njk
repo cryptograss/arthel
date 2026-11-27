@@ -1,0 +1,15 @@
+{% extends '../base.njk' %}
+
+{# One happening, on a page of its own. #}
+{% block main %}
+<article class="cg-plot">
+    <div class="cg-prose">
+        <p class="cg-date">{{ happening.local_datetime }}</p>
+        <h1 class="cg-h cg-h--small">{{ happening.headline }}</h1>
+        {% include 'reuse/single-happening.njk' %}
+    </div>
+</article>
+<div class="cg-btns" style="justify-content: center;">
+    <a class="cg-btn cg-btn--quiet" href="{{ basePath }}/happenings">All happenings</a>
+</div>
+{% endblock %}

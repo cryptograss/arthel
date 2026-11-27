@@ -1,12 +1,13 @@
-<nav id="top-nav" class="nav nav-fill justify-content-center flex-column flex-sm-row ">
-    <a class="pt-0 pb-0 nav-link {{"active" if page_name=="listen" }}" href="{{ basePath }}/listen"><span>🠊&nbsp;</span>Listen<span>&nbsp;🠈</span></a>
-    <a class="pt-0 pb-0 nav-link {{"active" if page_name=="ensemble" }}" href="{{ basePath }}/ensemble"><span>🠊&nbsp;</span>The Immutable
-        String Band<span>&nbsp;🠈</span></a>
-    <a class="pt-0 pb-0 nav-link {{"active" if page_name=="about" }}"
-       href="{{ basePath }}/about"><span>🠊&nbsp;</span>About<span>&nbsp;🠈</span></a>
-    <a class="pt-0 pb-0 nav-link {{"active" if page_name=="shows" }}"
-       href="{{ basePath }}/shows"><span>🠊&nbsp;</span>Instances<span>&nbsp;🠈</span></a>
-    <a id="cryptograss-nav-link" class="pt-0 pb-0 nav-link pixel-font {{"active" if page_name=="cryptograss.eth" }}"
-       href="{{getCryptograssUrl()}}"><span>🠊&nbsp;</span>cryptograss.live<span>&nbsp;🠈</span></a>
-    <a class="pt-0 pb-0 nav-link {{"active" if page_name=="contact" }}" href="{{ basePath }}/contact"><span>🠊&nbsp;</span>Contact<span>&nbsp;🠈</span></a>
+{# The menu. A show's own page lights Shows; a song's, Listen. #}
+{% set at = page_name if page_name else "" %}
+<nav id="top-nav" class="jh-menu" aria-label="Main">
+    <button type="button" class="jh-menu-toggle" aria-expanded="false" aria-controls="jh-menu-list">Menu</button>
+    <ul id="jh-menu-list">
+        <li><a class="{{ "active" if at == "listen" or at.indexOf("song_") == 0 }}" href="{{ basePath }}/listen">Listen</a></li>
+        <li><a class="{{ "active" if at == "shows" or at.indexOf("show_") == 0 }}" href="{{ basePath }}/shows">Shows</a></li>
+        <li><a class="{{ "active" if at == "ensemble" }}" href="{{ basePath }}/ensemble">The Band</a></li>
+        <li><a class="{{ "active" if at == "about" }}" href="{{ basePath }}/about">About</a></li>
+        <li><a class="{{ "active" if at == "contact" }}" href="{{ basePath }}/contact">Contact</a></li>
+        <li class="jh-menu-out"><a id="cryptograss-nav-link" href="{{ getCryptograssUrl() }}">cryptograss.live</a></li>
+    </ul>
 </nav>

@@ -1,53 +1,220 @@
 {% extends '../base.njk' %}
 {% block main %}
 
-    <div class="row">
-        <div class="col-2"></div>
-        <div id="top-news" class="col-8 text-post">
-            <div class="row">
-                <h1 class="text-center">Happenings</h1>
-            </div>
-            <div class="row">
+{# ---- What this is, in the words it has always been described in ---- #}
+<section class="cg-plot cg-why" aria-labelledby="what-this-is">
+    <p class="cg-kicker" id="what-this-is">What this is</p>
+    <p class="cg-lead">Cryptograss is a will-one-day-be-a-DAO building pro-human tools for the release,
+        distribution, publication, and monetization of straight-to-public-domain music.</p>
+    <p>All cryptograss tech is open source and written by musicians and serious music fans.
+        None of the work is outsourced to engineering firms. The cryptographic tools here are written
+        by bluegrassers, and the songs by cryptographic engineers.</p>
+</section>
 
-                <h3>Some big happening in particular</h3>
+{# ---- What's growing: the four things a visitor can walk into today ---- #}
+<hr class="cg-vine" id="growing">
+<h2 class="cg-section-title">What's growing</h2>
+<p class="cg-section-sub">Four things you can walk into today. All free, no ads, all of it ours to change.</p>
 
-                <img src="{{get_image(musicians/Harry-and-Nacci.jpg)}}" alt="Happening">
-
-                   Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
-
-
-
-                </div>
+<div class="cg-growing">
+    <section class="cg-plot" aria-labelledby="grow-pickipedia">
+        <p class="cg-kicker">The wiki</p>
+        <h3 class="cg-h" id="grow-pickipedia"><a href="{{ eco.pickipedia }}">PickiPedia</a></h3>
+        <p>A knowledge base of bluegrass, old time psychedelic jams, and other public domain music:
+            the pickers, the songs, the records, the shows. Entirely maintained and administered by
+            musicians and fans, who are encouraged to write about themselves.</p>
+        {% if eco.wiki and eco.wiki.pages %}
+        <p class="cg-count">{{ eco.wiki.pages.toLocaleString("en-US") }} pages · {{ eco.wiki.edits.toLocaleString("en-US") }} edits · {{ eco.wiki.users.toLocaleString("en-US") }} people signed up</p>
+        {% endif %}
+        <div class="cg-btns">
+            <a class="cg-btn" href="{{ eco.pickipedia }}">Open PickiPedia</a>
+            <a class="cg-btn cg-btn--quiet" href="{{ eco.pickipedia }}/wiki/PickiPedia:About">What it is, and isn't</a>
         </div>
-        <div class="col-2"></div>
-    </div>
+    </section>
 
-    <div class="blue-railroad-grid">
-        {% for tokenId, data in chainData.blueRailroads %}
-            <div class="blue-railroad-card semi-transparent-bg">
-                <div class="card-header">
-                    <div class="owner-section">
-                        <div class="owner-address" data-address="{{ data.owner }}">
-                            {{ data.ownerDisplay or data.owner }}
-                        </div>
-                        <small class="text-muted">Token #{{ tokenId }}</small>
-                    </div>
-                </div>
-                {% if data.video_url %}
-                    <div class="video-container">
-                        <video controls preload="metadata">
-                            <source src="/assets/fetched/10-{{ chainData.blueRailroadContractAddress}}-{{ tokenId }}.mp4"
-                                            type="{{ data.content_type }}">
-                                    Your browser does not support the video tag.
-                                </video>
-                    </div>
-                {% else %}
-                    <div class="no-video-message">
-                                No video available
-                            </div>
-                {% endif %}
-            </div>
-        {% endfor %}
+    <section class="cg-plot" aria-labelledby="grow-oracle">
+        <p class="cg-kicker">The graph</p>
+        <h3 class="cg-h" id="grow-oracle"><a href="{{ eco.bacon }}">The Oracle of Bluegrass Bacon</a></h3>
+        <p>Any two pickers, and all the music between them: the records, the shows, and the folks who
+            played with both. Find your picker in six jumps or less and you win. Fail, and you'll have
+            to play the banjo.</p>
+        {% if eco.graph and eco.graph.pickers %}
+        <p class="cg-count">{{ eco.graph.pickers.toLocaleString("en-US") }} pickers · {{ eco.graph.records.toLocaleString("en-US") }} records · {{ eco.graph.shows.toLocaleString("en-US") }} shows · {{ eco.graph.ties.toLocaleString("en-US") }} ties between them</p>
+        {% endif %}
+        <div class="cg-btns">
+            <a class="cg-btn" href="{{ eco.bacon }}">Ask the Oracle</a>
+            <a class="cg-btn cg-btn--quiet" href="{{ eco.bacon }}/challenge">Play the Six Degrees</a>
+        </div>
+    </section>
+
+    <section class="cg-plot" aria-labelledby="grow-rabbithole">
+        <p class="cg-kicker">The player · public beta</p>
+        <h3 class="cg-h" id="grow-rabbithole"><a href="{{ eco.pickipedia }}/wiki/Rabbithole">Rabbithole</a></h3>
+        <p>Discovery through connections instead of algorithms. A player that shows the whole ensemble
+            of a track: who's playing what, each picker's page opening as they take their solo, and a
+            trail to follow down the rabbithole of pickers.</p>
+        {% if eco.tracks and eco.tracks.length %}
+        <p class="cg-count">{{ eco.tracks.length }} track{% if eco.tracks.length != 1 %}s{% endif %} charted and ready; more as each chart is finished</p>
+        {% endif %}
+        <div class="cg-btns">
+            {% if eco.tracks and eco.tracks.length %}
+            <a class="cg-btn" href="{{ eco.tracks[0].listen }}">&#9654; Listen to &ldquo;{{ eco.tracks[0].title }}&rdquo;</a>
+            {% else %}
+            <a class="cg-btn" href="{{ eco.rabbithole }}">&#9654; Open Rabbithole</a>
+            {% endif %}
+            <a class="cg-btn cg-btn--quiet" href="{{ eco.pickipedia }}/wiki/Rabbithole">How it works</a>
+        </div>
+    </section>
+
+    <section class="cg-plot cg-magenta-plot" aria-labelledby="grow-magenta">
+        <p class="cg-kicker" style="color: #ff9dfd;">The clubhouse</p>
+        <h3 class="cg-h" id="grow-magenta"><a href="{{ eco.magenta }}">magenta</a></h3>
+        <p>A place for hackers, bluegrassers, deadheads, cyclists, generalists, and all those smartass
+            folk come descended from monkeys. Moods are rooms where the people of cryptograss and the
+            emergents talk and work, in the open; tidings are the links we pass around.</p>
+        <p class="cg-count">Read along without an account. <a href="{{ eco.pickipedia }}/wiki/Magenta:Help">How it works</a>.</p>
+        <div class="cg-btns">
+            <a class="cg-btn cg-btn--magenta" href="{{ eco.magenta }}">Come in</a>
+            <a class="cg-btn cg-btn--magenta" href="{{ eco.magenta }}/tidings/">Tidings</a>
+        </div>
+    </section>
+</div>
+
+{# ---- Lately: the wiki's headlines, and what's being passed around in magenta ---- #}
+{% if (eco.news and eco.news.length) or (eco.tidings and eco.tidings.length) %}
+<hr class="cg-vine" id="lately">
+<h2 class="cg-section-title">Lately</h2>
+
+<div class="cg-two">
+    {% if eco.news and eco.news.length %}
+    <section class="cg-plot" aria-labelledby="lately-news">
+        <p class="cg-kicker">Headlines</p>
+        <h3 class="cg-h cg-h--small" id="lately-news">On PickiPedia</h3>
+        <ul class="cg-list">
+            {% for headline in eco.news %}
+            <li>{{ headline | safe }}</li>
+            {% endfor %}
+        </ul>
+        <p class="cg-from">From <a href="{{ eco.pickipedia }}">PickiPedia's front page</a>, as its editors wrote them.</p>
+    </section>
+    {% endif %}
+
+    {% if eco.tidings and eco.tidings.length %}
+    <section class="cg-plot" aria-labelledby="lately-tidings">
+        <p class="cg-kicker">Tidings</p>
+        <h3 class="cg-h cg-h--small" id="lately-tidings">Passed around in magenta</h3>
+        <ul class="cg-list">
+            {% for tiding in eco.tidings %}
+            <li>
+                <a href="{{ tiding.url | escape }}">{{ tiding.title | escape }}</a>
+                <small>{{ tiding.host | escape }}{% if tiding.comments %} · <a href="{{ tiding.talk | escape }}">{{ tiding.comments }} in the talk</a>{% endif %}</small>
+            </li>
+            {% endfor %}
+        </ul>
+        <p class="cg-from">The links people there think are worth your time. <a href="{{ eco.magenta }}/tidings/">All of them</a>.</p>
+    </section>
+    {% endif %}
+</div>
+{% endif %}
+
+{# ---- Onchain merch: the things a show leaves behind ---- #}
+<hr class="cg-vine" id="merch">
+<h2 class="cg-section-title">The metadata is the merch</h2>
+<p class="cg-section-sub">What a show or a record leaves behind, kept where nobody can take it back.</p>
+
+{% set stones = [] %}
+{% for show_id, show in shows %}{% for set_number, set in show.sets %}{% for stone in set.setstones %}{% set kept = stones.push(stone) %}{% endfor %}{% endfor %}{% endfor %}
+
+<div class="cg-three">
+    <section class="cg-plot" aria-labelledby="merch-stones">
+        <h3 class="cg-h cg-h--small" id="merch-stones">Set Stones</h3>
+        <p>The primary live show merch: mintable only by the people who were at the show, and shown
+            wherever that show connects musicians or songs.</p>
+        {% if stones.length %}
+        <div class="cg-stones">
+            {% for stone in stones %}
+            <a href="{{ basePath }}/all-setstones"><img src="{{ basePath }}/assets/images/setstones/{{ stone.tokenId }}.png" alt="Set Stone {{ stone.tokenId }}" loading="lazy"></a>
+            {% endfor %}
+        </div>
+        <p class="cg-count">{{ stones.length }} struck so far</p>
+        {% endif %}
+        <div class="cg-btns">
+            <a class="cg-btn cg-btn--quiet" href="{{ basePath }}/all-setstones">Every Set Stone</a>
+        </div>
+    </section>
+
+    <section class="cg-plot" aria-labelledby="merch-stubs">
+        <h3 class="cg-h cg-h--small" id="merch-stubs">Ticket Stubs</h3>
+        <p>Pure paper memorabilia: a stub you hold in your hand, with everything printed on it that
+            you need to claim it onchain, if and when you want to.</p>
+        <div class="cg-btns">
+            <a class="cg-btn cg-btn--quiet" href="{{ basePath }}/onchain-merch">How they work</a>
+        </div>
+    </section>
+
+    <section class="cg-plot" aria-labelledby="merch-squats">
+        <h3 class="cg-h cg-h--small" id="merch-squats">Blue Railroad Train Squats</h3>
+        <p>Awarded by hand to people who send a video of themselves doing squats to Tony Rice's
+            recording of Blue Railroad Train. A low-stakes way to learn to hold and send a token,
+            and good for your legs.</p>
+        {% if build.blueRailroads %}<p class="cg-count">{{ build.blueRailroads }} awarded so far</p>{% endif %}
+        <div class="cg-btns">
+            <a class="cg-btn cg-btn--quiet" href="{{ eco.pickipedia }}/wiki/Blue_Railroad_Train_Squats">Earn one</a>
+        </div>
+    </section>
+
+    <section class="cg-plot" aria-labelledby="merch-revealer">
+        <h3 class="cg-h cg-h--small" id="merch-revealer">Revealer</h3>
+        <p>The first cryptograss tool: it releases a record, to everyone, once a contribution goal is
+            met onchain. It released <i>Vowel Sounds</i>.</p>
+        {% if build.vowelSoundsContributions %}<p class="cg-count">{{ build.vowelSoundsContributions }} contributions released that record</p>{% endif %}
+        <div class="cg-btns">
+            <a class="cg-btn cg-btn--quiet" href="https://justinholmes.com/music/vowel-sounds/">See it</a>
+        </div>
+    </section>
+</div>
+
+{# ---- Why ---- #}
+<hr class="cg-vine" id="why">
+<section class="cg-plot cg-why" aria-labelledby="why-title">
+    <p class="cg-shout" id="why-title">Bluegrass belongs on the blockchain.<br>The music &ldquo;industry&rdquo; never got us anyway.</p>
+    <p class="mt-3"><b>Why are there so many songs about freight trains?</b> When our music came down from
+        the mountains and into the cities in search of AM radio play and record distribution, we sang
+        about the vehicles that brought us there. Traditional music has always spoke of the technological
+        liberations movements of the day. And it's no coincidence: innovation thrives in the same
+        environments as traditional music: in warm, diverse, neighborly, decentralized societies, with
+        few or no notions of ownership of ideas.</p>
+    <div class="cg-btns">
+        <a class="cg-btn cg-btn--quiet" href="{{ basePath }}/faq">Wait, isn't crypto full of scams?</a>
     </div>
+</section>
+
+{# ---- Underneath: the rest of the toolchain, by name ---- #}
+<hr class="cg-vine" id="roots">
+<h2 class="cg-section-title">Underneath</h2>
+<p class="cg-section-sub">The roots. Each is written up on PickiPedia by the people who built it.</p>
+
+<section class="cg-plot" aria-label="The rest of the toolchain">
+    <ul class="cg-roots">
+        <li><b><a href="{{ eco.pickipedia }}/wiki/Cryptograss:Delivery-kid">delivery-kid</a></b>: the seedbox. BitTorrent and IPFS for every release. &ldquo;Help your friends steal your music.&rdquo;</li>
+        <li><b><a href="{{ eco.pickipedia }}/wiki/Chartifacts">Chartifacts</a></b>: the paper charts from a studio session, as tokens, their metadata open to every other tool.</li>
+        <li><b>The Dice Protocol</b>: paper wallets from dice, rolled together, in person.</li>
+        <li><b><a href="https://github.com/cryptograss/arthel">arthel</a></b>: named for Doc Watson. Builds this site, and the band's.</li>
+        <li><b><a href="{{ eco.pickipedia }}/wiki/Cryptograss:Maybelle">maybelle</a></b>: named for Maybelle Carter. Builds and deploys everything, from the chain's latest.</li>
+        <li><b><a href="{{ eco.pickipedia }}/wiki/Cryptograss:Hunter">hunter</a></b>: named for Robert Hunter. Where the work gets done, by people and emergents.</li>
+        <li><b><a href="{{ eco.pickipedia }}/wiki/Cryptograss">All of it, and who made it</a></b>: the history, on PickiPedia.</li>
+    </ul>
+</section>
+
+{# ---- Who plays it ---- #}
+<section class="cg-plot cg-why" aria-labelledby="who-plays">
+    <p class="cg-kicker" id="who-plays">The founding band</p>
+    <p class="cg-lead mb-2">Justin Holmes and the Immutable String Band</p>
+    <p>Every show, every setlist and every picker who has been on one, kept at the block it happened on.</p>
+    <div class="cg-btns">
+        <a class="cg-btn" href="https://justinholmes.com">justinholmes.com</a>
+        <a class="cg-btn cg-btn--quiet" href="{{ basePath }}/happenings">Happenings</a>
+    </div>
+</section>
 
 {% endblock %}

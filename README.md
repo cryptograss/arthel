@@ -95,6 +95,12 @@ The build server needs access to providers for each of the chains for which data
 The jenkins instance on the builder server does not have direct access to the web server; production builds are rsynced by a separate job, by a separate user.
 
 
+### What the sites read from elsewhere
+
+Both sites show a little of the rest of cryptograss: PickiPedia's headlines and size, the tracks Rabbithole hands out, the size of The Oracle of Bluegrass Bacon's graph, which pickers have a PickiPedia page, and magenta's tidings. `src/build_logic/ecosystem.js` asks for them when a site is built and keeps the answers in `output/_prebuild_ecosystem/`, so a build every two minutes asks each source only every ten minutes or so.
+
+It never fails a build: a source that doesn't answer is left out of the pages, and they are drawn without it. `SKIP_ECOSYSTEM=true` builds without asking anyone.
+
 ### Submodules
 
 Currently, the only submodule is the happenings data, which is used to announce news and events.

@@ -1,0 +1,1166 @@
+/*
+ * justinholmes.com, 27 Nov 2026: the 8-bit half of "old-time pickin', with unit tests".
+ *
+ * Two voices, kept apart on purpose. Fell (an old book face) says what a person would say out
+ * loud; LL Pixel says what a machine would print: headings, menus, counts, buttons. Boxes are
+ * drawn the way a cartridge drew them: square pixels, no blur, a corner pixel missing.
+ *
+ * LL Pixel is drawn on a grid of eighths, so it is set at 16, 24, 32 or 48 pixels and nowhere
+ * between: at 17 a 1x screen smears the gaps in its letters into a line through them. Small
+ * pixel type carries no shadow, for the same reason.
+ *
+ * Loaded after styles-common.css, which still dresses the older pages.
+ */
+
+/* Cabin, from the files beside this one (the pages used to ask Google for it, and for Inconsolata,
+   which now falls to the reader's own monospace). */
+@font-face {
+    font-family: "Cabin";
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url("cabin/Cabin-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Cabin";
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+    src: url("cabin/Cabin-Italic.ttf");
+}
+
+@font-face {
+    font-family: "Cabin";
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url("cabin/Cabin-Bold.ttf");
+}
+
+:root {
+    --px: 4px;                             /* one "pixel" of the interface */
+    --jh-screen: #12101f;                  /* behind everything a box holds */
+    --jh-panel: rgba(20, 18, 36, 0.9);
+    --jh-line: #f4f0e6;                    /* a box's border: bone */
+    --jh-text: #f4f0e6;
+    --jh-dim: #b9b4cc;
+    --jh-blue: #99c9ff;
+    --jh-purple: #bd86ff;
+    --jh-peach: #f2c6ae;
+    --jh-go: #7bd82b;
+    /* The four the setlists have always used, and the 4masks sleeve with them. */
+    --jh-original: #7692ff;
+    --jh-traditional: #5bc600;
+    --jh-cover: #dba908;
+    --jh-game: #e84a4a;
+}
+
+/* --- the page ----------------------------------------------------------------------------- */
+
+body#bodyWithBackground {
+    font-family: fell, Georgia, 'Times New Roman', serif;    /* was "fell serif": no comma, so never Fell */
+    font-size: 1.125rem;
+    line-height: 1.55;
+    color: var(--jh-text);
+    background-color: #55565d;
+    min-height: 100vh;
+}
+
+.contentOnTopOfVideo {
+    margin-bottom: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.contentOnTopOfVideo > main {
+    flex: 1 0 auto;
+}
+
+.jh-skip {
+    position: absolute;
+    left: -999px;
+    top: 0;
+    z-index: 2000;
+    padding: 0.5em 1em;
+    background: var(--jh-peach);
+    color: #12101f;
+    font-family: 'll-pixel', monospace;
+    text-shadow: none;
+}
+
+.jh-skip:focus {
+    left: 0;
+}
+
+img {
+    max-width: 100%;
+}
+
+.pixelated {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+:focus-visible {
+    outline: var(--px) solid var(--jh-peach);
+    outline-offset: 2px;
+}
+
+/* --- the strip along the top: where this build stands -------------------------------------- */
+
+.jh-hud {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 1.75em;
+    padding: 0.35em 1em;
+    background: #0b0a14;
+    border-bottom: var(--px) solid #000;
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    color: var(--jh-dim);
+    text-transform: uppercase;
+}
+
+.jh-hud b {
+    font-weight: normal;
+    color: var(--jh-peach);
+}
+
+.jh-hud a {
+    color: var(--jh-blue);
+    text-shadow: none;
+}
+
+/* --- name, band, slogan -------------------------------------------------------------------- */
+
+.jh-marquee {
+    text-align: center;
+    padding: 1.1rem 1rem 0.6rem;
+}
+
+.jh-marquee #main-logo-at-top {
+    width: min(26rem, 82vw);
+    height: auto;
+}
+
+.jh-marquee #immutable-string-band {
+    display: block;
+    margin: 0.35rem 0 0;
+    font-size: clamp(1.35rem, 4.6vw, 2.5rem);
+    line-height: 1.1;
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+    white-space: normal;
+}
+
+.jh-marquee #immutable-string-band:hover {
+    color: var(--jh-peach);
+    text-decoration: none;
+}
+
+/* two lines kept, so a long slogan swapped in moves nothing below it */
+.jh-slogan-line {
+    min-height: 3.5rem;
+    margin-top: 0.45rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#slogan {
+    display: inline-block;
+    margin: 0;
+    max-width: 46rem;
+    padding: 0.1rem 0.75rem;
+    color: var(--jh-peach);
+    background: rgba(11, 10, 20, 0.82);
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* --- the menu ------------------------------------------------------------------------------ */
+
+.jh-menu {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 0.75rem;
+}
+
+.jh-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0.35rem 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.15rem 0.4rem;
+    background: var(--jh-panel);
+    box-shadow:
+        0 calc(var(--px) * -1) 0 0 var(--jh-line), 0 var(--px) 0 0 var(--jh-line),
+        calc(var(--px) * -1) 0 0 0 var(--jh-line), var(--px) 0 0 0 var(--jh-line);
+}
+
+.jh-menu a {
+    position: relative;
+    display: block;
+    padding: 0.45rem 0.9rem 0.45rem 1.6rem;
+    font-family: 'll-pixel', monospace;
+    font-size: 1.5rem;
+    color: var(--jh-text);
+    text-shadow: 3px 3px 0 #000;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+/* the cursor: a triangle of border, since the pixel face has no arrow of its own */
+.jh-menu a::before {
+    content: "";
+    position: absolute;
+    left: 0.55rem;
+    top: 50%;
+    margin-top: -0.38em;
+    border: 0.38em solid transparent;
+    border-left-color: var(--jh-peach);
+    border-right-width: 0;
+    visibility: hidden;
+}
+
+.jh-menu a:hover,
+.jh-menu a:focus-visible {
+    color: var(--jh-peach);
+    text-decoration: none;
+    text-shadow: 3px 3px 0 #000;
+}
+
+.jh-menu a:hover::before,
+.jh-menu a:focus-visible::before,
+.jh-menu a.active::before {
+    visibility: visible;
+}
+
+.jh-menu a.active {
+    color: var(--jh-purple);
+}
+
+.jh-menu a.active::before {
+    border-left-color: var(--jh-purple);
+    animation: jh-blink 1s steps(2, jump-none) infinite;
+}
+
+.jh-menu .jh-menu-out a {
+    color: var(--jh-blue);
+}
+
+.jh-menu-toggle {
+    display: none;
+}
+
+@keyframes jh-blink {
+    50% { opacity: 0; }
+}
+
+@media (max-width: 40rem) {
+    .js .jh-menu-toggle {
+        display: block;
+        width: 100%;
+        margin: 0 0 var(--px);
+        padding: 0.55rem 1rem;
+        font-family: 'll-pixel', monospace;
+        font-size: 1.5rem;
+        color: #12101f;
+        background: var(--jh-peach);
+        border: 0;
+        box-shadow:
+            0 calc(var(--px) * -1) 0 0 #000, 0 var(--px) 0 0 #000,
+            calc(var(--px) * -1) 0 0 0 #000, var(--px) 0 0 0 #000;
+    }
+
+    .js .jh-menu ul {
+        display: none;
+        margin-top: calc(var(--px) * 2);
+    }
+
+    .js .jh-menu.is-open ul {
+        display: block;
+    }
+
+    .jh-menu ul {
+        display: block;
+    }
+
+    .jh-menu a {
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+        white-space: normal;
+    }
+}
+
+/* a long name in a box's border: the Oracle's */
+.px-title--long {
+    letter-spacing: 0;
+}
+
+/* --- boxes --------------------------------------------------------------------------------- */
+
+.jh-wrap {
+    width: 100%;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.px-box {
+    position: relative;
+    margin: 2.2rem var(--px) 0;
+    padding: 1.6rem 1.25rem 1.25rem;
+    background: var(--jh-panel);
+    color: var(--jh-text);
+    box-shadow:
+        0 calc(var(--px) * -1) 0 0 var(--jh-line), 0 var(--px) 0 0 var(--jh-line),
+        calc(var(--px) * -1) 0 0 0 var(--jh-line), var(--px) 0 0 0 var(--jh-line),
+        calc(var(--px) * 2) calc(var(--px) * 3) 0 0 rgba(0, 0, 0, 0.45);
+}
+
+/* a box's name, set into its top border */
+.px-title {
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    transform: translateY(-58%);
+    margin: 0;
+    padding: 0.1rem 0.6rem;
+    max-width: calc(100% - 2rem);
+    background: var(--jh-screen);
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    font-weight: normal;
+    line-height: 1.3;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--jh-peach);
+    text-shadow: none;
+    box-shadow:
+        0 calc(var(--px) * -1) 0 0 var(--jh-line), 0 var(--px) 0 0 var(--jh-line),
+        calc(var(--px) * -1) 0 0 0 var(--jh-line), var(--px) 0 0 0 var(--jh-line);
+}
+
+.px-box a {
+    color: var(--jh-blue);
+    text-shadow: none;
+}
+
+.px-box a:hover {
+    color: var(--jh-peach);
+}
+
+.px-box p:last-child {
+    margin-bottom: 0;
+}
+
+.px-h {
+    margin: 0 0 0.4rem;
+    font-family: 'll-pixel', monospace;
+    font-weight: normal;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    color: #fff;
+    text-shadow: 3px 3px 0 #000;
+}
+
+.px-sub {
+    margin: 0;
+    color: var(--jh-dim);
+    font-style: italic;
+}
+
+.px-note {
+    font-size: 0.95rem;
+    color: var(--jh-dim);
+}
+
+.jh-page-title {
+    margin: 2rem 0 0;
+    text-align: center;
+    font-family: 'll-pixel', monospace;
+    font-weight: normal;
+    font-size: 2rem;
+    color: #fff;
+    text-shadow: 4px 4px 0 #000;
+}
+
+@media (min-width: 40rem) {
+    .jh-page-title {
+        font-size: 3rem;
+        text-shadow: 6px 6px 0 #000;
+    }
+
+    #slogan {
+        font-size: 1.5rem;
+    }
+
+    .jh-slogan-line {
+        min-height: 5rem;
+    }
+}
+
+/* --- buttons ------------------------------------------------------------------------------- */
+
+.px-btn,
+.px-box a.px-btn {
+    display: inline-block;
+    margin: var(--px);
+    padding: 0.55rem 1rem;
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: #12101f;
+    background: var(--jh-peach);
+    border: 0;
+    cursor: pointer;
+    text-decoration: none;
+    text-shadow: none;
+    box-shadow:
+        0 calc(var(--px) * -1) 0 0 #000, 0 var(--px) 0 0 #000,
+        calc(var(--px) * -1) 0 0 0 #000, var(--px) 0 0 0 #000,
+        inset calc(var(--px) * -1) calc(var(--px) * -1) 0 0 rgba(0, 0, 0, 0.28),
+        inset var(--px) var(--px) 0 0 rgba(255, 255, 255, 0.35);
+}
+
+.px-btn:hover,
+.px-box a.px-btn:hover {
+    color: #12101f;
+    text-decoration: none;
+    text-shadow: none;
+    filter: brightness(1.12);
+}
+
+.px-btn:active {
+    box-shadow:
+        0 calc(var(--px) * -1) 0 0 #000, 0 var(--px) 0 0 #000,
+        calc(var(--px) * -1) 0 0 0 #000, var(--px) 0 0 0 #000,
+        inset var(--px) var(--px) 0 0 rgba(0, 0, 0, 0.28);
+}
+
+.px-btn--go,
+.px-box a.px-btn--go {
+    background: var(--jh-go);
+}
+
+.px-btn--quiet,
+.px-box a.px-btn--quiet {
+    background: #cfcbe0;
+}
+
+.px-btns {
+    margin: 0.9rem calc(var(--px) * -1) 0;
+}
+
+/* a play mark that needs no glyph */
+.px-play {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-right: 0.45em;
+    border: 0.36em solid transparent;
+    border-left: 0.6em solid currentColor;
+    border-right-width: 0;
+    vertical-align: -0.02em;
+}
+
+/* --- home: now playing --------------------------------------------------------------------- */
+
+.jh-now {
+    display: grid;
+    grid-template-columns: minmax(9rem, 15rem) 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.jh-sleeve {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    box-shadow:
+        0 calc(var(--px) * -1) 0 0 #000, 0 var(--px) 0 0 #000,
+        calc(var(--px) * -1) 0 0 0 #000, var(--px) 0 0 0 #000;
+}
+
+.jh-record-name {
+    margin: 0;
+    font-family: Vanilla-Whale, 'll-pixel', serif;
+    font-weight: normal;
+    font-size: clamp(2.6rem, 9vw, 4.4rem);
+    line-height: 0.95;
+    color: #fff;
+    text-shadow: 4px 4px 0 #000;
+}
+
+.jh-tracks {
+    list-style: none;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    border-top: var(--px) dotted rgba(244, 240, 230, 0.35);
+}
+
+.jh-tracks li {
+    border-bottom: var(--px) dotted rgba(244, 240, 230, 0.35);
+}
+
+.jh-tracks a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    padding: 0.5rem 0.25rem;
+    font-family: 'll-pixel', monospace;
+    font-size: 1.5rem;
+    color: var(--jh-text);
+    text-shadow: 3px 3px 0 #000;
+    text-decoration: none;
+}
+
+.jh-tracks a:hover {
+    background: rgba(153, 201, 255, 0.14);
+    color: var(--jh-go);
+    text-decoration: none;
+}
+
+.jh-tracks .px-play {
+    color: var(--jh-go);
+}
+
+.jh-tracks small {
+    margin-left: auto;
+    padding-left: 1rem;
+    font-family: fell, Georgia, serif;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--jh-dim);
+    text-shadow: none;
+    text-align: right;
+}
+
+@media (max-width: 36rem) {
+    .jh-now {
+        grid-template-columns: 1fr;
+    }
+
+    .jh-sleeve {
+        max-width: 12rem;
+    }
+}
+
+/* --- home: the doors out ------------------------------------------------------------------- */
+
+.jh-doors {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 2.2rem 1.5rem;
+    margin-top: 2.2rem;
+}
+
+.jh-doors .px-box {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.jh-doors .px-btns {
+    margin-top: auto;
+    padding-top: 0.9rem;
+}
+
+.jh-door-art {
+    height: 5.5rem;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.jh-door-art img {
+    height: 100%;
+    width: auto;
+}
+
+/* the Oracle's mark, drawn in boxes: two pickers and what is between them */
+.jh-bacon {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.jh-bacon i {
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: var(--jh-line);
+    box-shadow: 0 0 0 var(--px) #000;
+}
+
+.jh-bacon i:nth-child(1) { background: var(--jh-original); }
+.jh-bacon i:nth-child(3) { background: var(--jh-traditional); width: 1.1rem; height: 1.1rem; }
+.jh-bacon i:nth-child(5) { background: var(--jh-cover); width: 1.1rem; height: 1.1rem; }
+.jh-bacon i:nth-child(7) { background: var(--jh-game); }
+
+.jh-bacon b {
+    display: block;
+    width: 1.6rem;
+    height: var(--px);
+    background: var(--jh-peach);
+}
+
+/* PickiPedia's door: a page, in boxes */
+.jh-wikipage {
+    width: 4rem;
+    height: 5rem;
+    padding: 0.7rem 0.55rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    background: var(--jh-line);
+    box-shadow: 0 0 0 var(--px) #000, calc(var(--px) * 2) calc(var(--px) * 2) 0 var(--px) rgba(0, 0, 0, 0.45);
+}
+
+.jh-wikipage i {
+    display: block;
+    height: var(--px);
+    background: #12101f;
+}
+
+.jh-wikipage i:nth-child(1) { width: 60%; background: var(--jh-original); height: calc(var(--px) * 2); }
+.jh-wikipage i:nth-child(4) { width: 75%; }
+
+/* --- shows --------------------------------------------------------------------------------- */
+
+.jh-showlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.jh-showlist > li {
+    display: grid;
+    grid-template-columns: 9.5rem 1fr auto;
+    gap: 0.15rem 1rem;
+    align-items: baseline;
+    padding: 0.6rem 0.25rem;
+    border-bottom: var(--px) dotted rgba(244, 240, 230, 0.3);
+}
+
+.jh-showlist > li:last-child {
+    border-bottom: 0;
+}
+
+.jh-show-when {
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    color: var(--jh-peach);
+}
+
+.jh-show-what a {
+    font-family: 'll-pixel', monospace;
+    font-size: 1.5rem;
+    text-shadow: 3px 3px 0 #000;
+}
+
+.jh-show-where {
+    display: block;
+    color: var(--jh-dim);
+    font-size: 0.98rem;
+}
+
+.jh-show-block {
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    color: var(--jh-dim);
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* what a show was made of: one cell a song, in the setlist's own four colours */
+.jh-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-top: 0.35rem;
+}
+
+.jh-strip i {
+    width: 0.6rem;
+    height: 0.6rem;
+    background: #777;
+}
+
+.jh-strip .original { background: var(--jh-original); }
+.jh-strip .traditional { background: var(--jh-traditional); }
+.jh-strip .cover { background: var(--jh-cover); }
+.jh-strip .video_game { background: var(--jh-game); }
+
+.jh-key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    color: var(--jh-dim);
+}
+
+.jh-key i {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    margin-right: 0.4rem;
+}
+
+.jh-year {
+    margin: 1.6rem 0 0.2rem;
+    font-family: 'll-pixel', monospace;
+    font-weight: normal;
+    font-size: 1.5rem;
+    color: var(--jh-purple);
+    text-shadow: 3px 3px 0 #000;
+}
+
+.jh-year:first-child {
+    margin-top: 0.3rem;
+}
+
+.jh-stones-mark {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0 0.4rem;
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    color: #12101f;
+    background: var(--jh-peach);
+    text-shadow: none;
+    vertical-align: 0.1em;
+}
+
+@media (max-width: 44rem) {
+    .jh-showlist > li {
+        grid-template-columns: 1fr;
+    }
+
+    .jh-show-block {
+        text-align: left;
+    }
+}
+
+/* --- songs --------------------------------------------------------------------------------- */
+
+.jh-songs {
+    columns: 17rem;
+    column-gap: 2.5rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.jh-songs li {
+    break-inside: avoid;
+    padding: 0.2rem 0;
+}
+
+.jh-songs span {
+    margin-left: 0.25rem;
+    font-size: 0.9rem;
+    color: var(--jh-dim);
+}
+
+.jh-songs a.jh-songs-play {
+    color: var(--jh-go);
+}
+
+/* --- the band ------------------------------------------------------------------------------ */
+
+.jh-party {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.jh-party li {
+    padding: 0.7rem 0.75rem;
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow:
+        0 calc(var(--px) * -1) 0 0 rgba(244, 240, 230, 0.4), 0 var(--px) 0 0 rgba(244, 240, 230, 0.4),
+        calc(var(--px) * -1) 0 0 0 rgba(244, 240, 230, 0.4), var(--px) 0 0 0 rgba(244, 240, 230, 0.4);
+}
+
+.jh-party a.jh-party-name {
+    display: block;
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    line-height: 1.25;
+    text-shadow: none;
+}
+
+.jh-party-plays {
+    display: block;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--jh-dim);
+}
+
+.jh-party-count {
+    display: block;
+    margin-top: 0.3rem;
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    color: var(--jh-peach);
+}
+
+.jh-picker {
+    display: grid;
+    grid-template-columns: minmax(0, 17rem) 1fr;
+    gap: 1.25rem 1.75rem;
+    align-items: start;
+}
+
+.jh-picker--flip {
+    grid-template-columns: 1fr minmax(0, 17rem);
+}
+
+.jh-picker--flip .jh-picker-photo {
+    order: 2;
+}
+
+.jh-picker--plain {
+    grid-template-columns: 1fr;
+}
+
+.jh-picker-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    box-shadow:
+        0 calc(var(--px) * -1) 0 0 #000, 0 var(--px) 0 0 #000,
+        calc(var(--px) * -1) 0 0 0 #000, var(--px) 0 0 0 #000;
+}
+
+.jh-picker-photo figcaption {
+    margin-top: 0.6rem;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--jh-dim);
+}
+
+.jh-picker figure {
+    margin: 0;
+}
+
+.jh-picker-stats {
+    margin: 0 0 0.6rem;
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    color: var(--jh-peach);
+}
+
+.jh-out {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 1.1rem;
+    margin: 0.8rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+}
+
+@media (max-width: 44rem) {
+    .jh-picker,
+    .jh-picker--flip {
+        grid-template-columns: 1fr;
+    }
+
+    .jh-picker--flip .jh-picker-photo {
+        order: 0;
+    }
+
+    .jh-picker-photo {
+        max-width: 17rem;
+    }
+}
+
+/* --- video: nothing asked of anyone else until it is pressed -------------------------------- */
+
+.jh-tapes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.jh-tape {
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.32);
+    box-shadow:
+        0 calc(var(--px) * -1) 0 0 rgba(244, 240, 230, 0.4), 0 var(--px) 0 0 rgba(244, 240, 230, 0.4),
+        calc(var(--px) * -1) 0 0 0 rgba(244, 240, 230, 0.4), var(--px) 0 0 0 rgba(244, 240, 230, 0.4);
+}
+
+.jh-tape-screen {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    color: var(--jh-go);
+    /* scanlines, and a little colour bleeding in from the corners */
+    background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0 2px, transparent 2px 4px),
+        linear-gradient(135deg, #2a2350 0%, #12101f 55%, #3a1d3f 100%);
+}
+
+.jh-tape-screen .px-play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -1.1rem 0 0 -0.8rem;
+    border-width: 1.1rem 0 1.1rem 1.8rem;
+}
+
+.jh-tape-screen:hover {
+    color: #fff;
+}
+
+.jh-tape-screen span.jh-tape-word {
+    position: absolute;
+    left: 0.6rem;
+    bottom: 0.4rem;
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    color: var(--jh-dim);
+}
+
+.jh-tape iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+}
+
+.jh-tape-label {
+    padding: 0.6rem 0.75rem 0.7rem;
+}
+
+.jh-tape-label strong {
+    display: block;
+    font-family: 'll-pixel', monospace;
+    font-weight: normal;
+    font-size: 1rem;
+    line-height: 1.3;
+    text-shadow: none;
+}
+
+.jh-tape-label span {
+    display: block;
+    font-size: 0.92rem;
+    color: var(--jh-dim);
+}
+
+.jh-jump {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 0.5rem;
+    margin: 1.4rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* --- records, on the Listen page ----------------------------------------------------------- */
+
+.jh-records {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 2.2rem 1.5rem;
+    align-items: start;
+    margin-top: 2.2rem;
+}
+
+.jh-records .px-box {
+    margin-top: 0;
+}
+
+.jh-record-head {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+
+.jh-record-head .jh-record-name {
+    font-size: clamp(2rem, 6vw, 2.8rem);
+}
+
+.jh-embed {
+    display: block;
+    width: 100%;
+    border: 0;
+    margin-top: 0.9rem;
+}
+
+blockquote.jh-quote {
+    margin: 0 0 0.8rem;
+    padding-left: 1rem;
+    border-left: var(--px) solid var(--jh-peach);
+    font-style: italic;
+    font-size: 1.2rem;
+}
+
+/* --- long reading -------------------------------------------------------------------------- */
+
+.jh-prose {
+    max-width: 44rem;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.25rem;
+    line-height: 1.6;
+}
+
+.jh-prose p {
+    margin: 0 0 1em;
+}
+
+/* --- small pixel type: capitals, a pixel apart ---------------------------------------------- */
+
+.px-btn,
+.px-box a.px-btn,
+.jh-show-when,
+.jh-show-block,
+.jh-key,
+.jh-stones-mark,
+.jh-party a.jh-party-name,
+.jh-party-count,
+.jh-picker-stats,
+.jh-out,
+.jh-tape-screen span.jh-tape-word,
+.jh-tape-label strong,
+.jh-foot-build {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* the header, and room under it for whatever page follows */
+.jh-top {
+    margin-bottom: 0.75rem;
+}
+
+/* --- the foot ------------------------------------------------------------------------------ */
+
+#footer.jh-foot {
+    position: static;
+    height: auto;
+    width: auto;
+    margin-top: 3.5rem;
+    padding: 1.5rem 1rem 1.25rem;
+    background: #0b0a14;
+    border-top: var(--px) solid #000;
+    color: var(--jh-dim);
+    font-size: 1rem;
+}
+
+.jh-foot-in {
+    max-width: 72rem;
+    margin: 0 auto;
+}
+
+.jh-foot-social {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+    margin: 0 0 2rem;
+    padding: 0 0 1.5rem;
+    list-style: none;
+    border-bottom: 2px dotted rgba(244, 240, 230, 0.25);
+}
+
+#footer.jh-foot .jh-foot-social a img {
+    display: block;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: 0;
+    object-fit: contain;
+}
+
+.jh-foot-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1.25rem 2rem;
+}
+
+.jh-foot h2 {
+    margin: 0 0 0.35rem;
+    font-family: 'll-pixel', monospace;
+    font-weight: normal;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--jh-peach);
+}
+
+.jh-foot ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.jh-foot a {
+    color: var(--jh-blue);
+    text-shadow: none;
+}
+
+.jh-foot p {
+    margin: 0 0 0.5rem;
+}
+
+.jh-foot-build {
+    margin: 1.4rem 0 0;
+    padding-top: 0.8rem;
+    border-top: 2px dotted rgba(244, 240, 230, 0.25);
+    font-family: 'll-pixel', monospace;
+    font-size: 1rem;
+    text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .jh-menu a.active::before {
+        animation: none;
+    }
+}
+
+/* --- older pages, kept from spilling off a phone ------------------------------------------- */
+
+.detail-bright-back,
+.media-share {
+    width: auto;
+    max-width: 100%;
+}
+
+#setlist .songPlay a,
+.all-shows-list h1 {
+    overflow-wrap: anywhere;
+}

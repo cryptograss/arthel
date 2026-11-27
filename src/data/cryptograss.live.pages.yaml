@@ -1,7 +1,14 @@
-llamas:
+index:
   template: index.njk
+  include_data_in_context: ["shows", "chainData"]
   context:
     page_title: "Future-proofing Bluegrass"
+
+faq:
+  template: faq.njk
+  context:
+    page_title: "Why bluegrass, why blockchains"
+    description: "Isn't crypto full of scams? Why would bluegrass go anywhere near it? The questions we get asked, mostly by pickers, and how we answer them."
 
 onchain-merch:
   template: onchain-merch.njk

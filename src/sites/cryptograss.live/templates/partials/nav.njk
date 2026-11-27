@@ -1,36 +1,12 @@
-<nav id="the-nav" class="col-12 navbar navbar-expand-md navbar-light">
-  <a class="navbar-brand grid-writing" href="#">cryptograss.live</a>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav me-auto mb-lg-0">
-      <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="{{basePath}}/happenings">Happenings</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{basePath}}/onchain-merch">Onchain Merch</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">FAQs</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Blue Railroads</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </a>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <li>
-            <a class="dropdown-item" href="#">Action</a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="#">Another action</a>
-          </li>
-          <li><hr class="dropdown-divider"></li>
-          <li>
-            <a class="dropdown-item" href="#">Something else here</a>
-          </li>
-        </ul>
-      </li>
+{% set at = page_name if page_name else "" %}
+<nav id="the-nav" class="cg-nav" aria-label="Main">
+    <a class="cg-nav-home" href="{{ basePath }}/">cryptograss</a>
+    <button type="button" class="cg-nav-toggle" aria-expanded="false" aria-controls="cg-nav-list">menu</button>
+    <ul id="cg-nav-list">
+        <li><a href="{{ basePath }}/#growing">What's growing</a></li>
+        <li><a class="{{ "active" if at == "onchain-merch" or at == "all-setstones" }}" href="{{ basePath }}/onchain-merch">Onchain merch</a></li>
+        <li><a class="{{ "active" if at == "faq" }}" href="{{ basePath }}/faq">Why</a></li>
+        <li><a class="{{ "active" if at == "happenings" }}" href="{{ basePath }}/happenings">Happenings</a></li>
+        <li><a class="cg-nav-in" href="{{ eco.magenta }}">come in</a></li>
     </ul>
-  </div>
 </nav>
