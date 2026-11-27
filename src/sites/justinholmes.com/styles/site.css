@@ -1087,7 +1087,8 @@ blockquote.jh-quote {
     margin: 0 auto;
 }
 
-.jh-foot-social {
+/* (with the footer's id, like the build line below: `.jh-foot ul` and `.jh-foot p` would undo their margins) */
+#footer.jh-foot .jh-foot-social {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -1137,7 +1138,7 @@ blockquote.jh-quote {
     margin: 0 0 0.5rem;
 }
 
-.jh-foot-build {
+#footer.jh-foot .jh-foot-build {
     margin: 1.4rem 0 0;
     padding-top: 0.8rem;
     border-top: 2px dotted rgba(244, 240, 230, 0.25);
