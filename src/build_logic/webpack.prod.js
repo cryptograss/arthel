@@ -1,7 +1,7 @@
 import { merge } from 'webpack-merge';
 import TerserPlugin from 'terser-webpack-plugin';
 import webpack from 'webpack';
-import { getProjectDirs } from './locations.js'
+import { getProjectDirs, initProjectDirs } from './locations.js'
 import fs from "fs";
 import path from "path";
 import { runPrimaryBuild } from './primary_builder.js';
@@ -9,18 +9,24 @@ import { runPrimaryBuild } from './primary_builder.js';
 // Dynamically import the common webpack config for the project, depending on the site argument
 const site = process.env.SITE;
 
+const commonConfigs = {
+    'justinholmes.com': './webpack.justinholmes.common.js',
+    'cryptograss.live': './webpack.cryptograss.common.js',
+};
+
 export async function generateProductionConfig() {
 
-    let common;
-    if (site === 'justinholmes.com') {
-        common = await import('./webpack.justinholmes.common.js');
-    } else if (site === 'cryptograss.live') {
-        common = await import('./webpack.cryptograss.common.js');
-    } else {
+    if (!commonConfigs[site]) {
         throw new Error('Invalid site argument');
     }
 
+    // The pages are written first, and the common config is loaded after: it lists the pages to
+    // emit as it loads, from what is on disk. Loaded first, it listed the build before's pages,
+    // so a new page was missing from the first build that had it, and a removed one was asked for
+    // once more. (The common config does this init too; a second one for the same site is a no-op.)
+    initProjectDirs(site);
     await runPrimaryBuild();
+    const common = await import(commonConfigs[site]);
 
 
     const { templateDir, outputDistDir, siteDir } = getProjectDirs();

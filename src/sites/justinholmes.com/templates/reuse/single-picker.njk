@@ -2,7 +2,20 @@
 {% block main %}
     {% include 'partials/bigger-banner.njk' %}
 
-    <div id="content" class="container text-light all-shows-list">
+    <div class="jh-wrap">
+        <h1 class="jh-page-title">{{ picker }}</h1>
+        <section class="px-box" aria-label="{{ picker }}, in short">
+            {% set who = picker_data %}
+            {% include 'partials/picker-stats.njk' %}
+            <ul class="jh-out">
+                <li><a href="{{ basePath }}/ensemble">The whole band</a></li>
+                {% if who.pickipedia_url %}<li><a href="{{ who.pickipedia_url }}">{{ picker }} on PickiPedia</a></li>{% endif %}
+                {% if who.bacon_url %}<li><a href="{{ who.bacon_url }}">In the Oracle of Bluegrass Bacon</a></li>{% endif %}
+            </ul>
+        </section>
+    </div>
+
+    <div id="content" class="container text-light all-shows-list mt-4">
 
         {% if picker_data.studio_versions.length > 0 %}
             <div class="row">

@@ -2,22 +2,32 @@
 
 <html lang="en">
     <head>
-        <link href="https://fonts.googleapis.com/css?family=Cabin" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{{ page_title }} | cryptograss.live</title>
+        <title>{% if page_title %}{{ page_title }} | {% endif %}cryptograss</title>
 
-        <meta name="description" content="Blockchains are Bluegrass">
-
+        {% set described = description if description else "Cryptograss: future-proofing bluegrass. Free, open tools for traditional music, written by musicians: PickiPedia, The Oracle of Bluegrass Bacon, Rabbithole, magenta." %}
+        <meta name="description" content="{{ described }}">
         <meta name="author" content="cryptograss">
+        <meta name="theme-color" content="#2c5a37">
+
+        <meta property="og:site_name" content="cryptograss">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="{% if page_title %}{{ page_title }}{% else %}cryptograss{% endif %}">
+        <meta property="og:description" content="{{ described }}">
+        <meta name="twitter:card" content="summary">
     </head>
 
-    <body>
-        <div id="base-container" class="container-fluid">
+    <body class="cg{% if page_name %} cg-page-{{ page_name | replace("/", "-") }}{% endif %}">
+        <script>document.documentElement.classList.add('js');</script>
+        <a class="cg-skip" href="#main-container">Skip to the page</a>
+        <div id="base-container">
             {% include 'partials/banner.njk' %}
-            <div id="main-container" class="container">
+            <main id="main-container" class="container">
                 {% block main %}{% endblock %}
+            </main>
+            {% include 'partials/footer.njk' %}
         </div>
     </body>
+</html>

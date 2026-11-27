@@ -192,6 +192,17 @@ description: "Connect any two musicians through shows and recordings - like Six 
 {% endblock %}
 
 {% block main %}
+    {# The Oracle grew up and moved: PickiPedia draws it now, from the wiki's own records and shows.
+       This page is where it started (arthel#298), kept as it was. #}
+    <section class="cg-plot cg-why">
+        <p class="cg-kicker">This is the first sketch</p>
+        <p class="cg-lead">The Oracle of Bluegrass Bacon lives on PickiPedia now, with every picker,
+            record and show the wiki knows.</p>
+        <div class="cg-btns">
+            <a class="cg-btn" href="{{ eco.bacon }}">Ask the Oracle</a>
+            <a class="cg-btn cg-btn--quiet" href="{{ eco.bacon }}/challenge">Play the Six Degrees</a>
+        </div>
+    </section>
     <div class="oracle-container">
         <h1>🎵 Oracle of Bluegrass Bacon</h1>
         <p>Connect any two musicians through shows and recordings! Like the famous "Six Degrees of Kevin Bacon," but for the cryptograss universe. Find the shortest path between any two musicians who have appeared on our records or performed at our shows.</p>

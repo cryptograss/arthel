@@ -2,10 +2,12 @@
 {% block main %}
     {% include 'partials/bigger-banner.njk' %}
 
-    <div id="content" class="container text-light">
-        <h1 class="text-light pixel-font text-center m-5">Meet the Musicians</h1>
-        <div id="ensemble-intro" class="fs-4 text-start semi-transparent-bg">
-            <h1 class="pixel-font">A message from Justin:</h1>
+    <div class="jh-wrap" id="content">
+        <h1 class="jh-page-title">Meet the Musicians</h1>
+
+        <section class="px-box" id="ensemble-intro" aria-labelledby="message">
+            <h2 class="px-title" id="message">A message from Justin</h2>
+            <div class="jh-prose">
             <p>
             What constitutes... mutability? In a band?
             </p>
@@ -19,103 +21,66 @@
             battlestation for myself to play games with my kiddo, to legacy enterprise web apps, to custom dapps for
             this band and production, I have had many notions in my head (sometimes literally in my dreams) about mutability and
             its role in mapping the metaphor of the mind into a codebase, and particularly object orientation.
-        </p>
+            </p>
             <p>
             Some of the most important friends I've made during these years of deliberation are those who have chosen to play (and sometimes
             write) music with me.
-        </p>
+            </p>
             <p>
             And their contributions don't seem to me to be a small part of some persistent monolith that belongs to me;
             instead, they feel each like their own distinct and complete creation.
-        </p>
-        <p>
+            </p>
+            <p>
             So what follows is a list of those people, with links to their contributions, and in some cases, a brief anecdote about our meeting.  This list is sorted by the number of instances they have appeared in, with extra weight given to studio recordings.
             </p>
-        </div>
-        {# For now, remove the first picker, as its Justin. #}
+            </div>
+        </section>
+
+        {# First, as it has always been, Justin is left off: it's his list. Those he has written about
+           come first, each in a box; everyone else follows, together. #}
+        {% set flip = [] %}
         {% for name, metadata in pickers_by_instance_count.slice(1) %}
             {% set details = ensemble[name] %}
-
-            <div class="person-info row border-top border-2 border-black mt-2 pt-2">
-                {% if loop.index % 2 === 0 %}
-                    <h2 class="fs-1 bio-title">{{name}}
-                        {% if metadata.instruments_display %}
-                            <span class="instruments-display small">({{metadata.instruments_display}})</span>{% endif %}
-
-                    </h2>
-                    <h3>
-                        Appears in <a href="{{metadata.resource_url}}">{{metadata.total_instance_count}} Instance{% if metadata.total_instance_count > 1 %}s{% endif %}
+            {% if details %}
+            {% set turn = flip.push(name) %}
+            {% set who = metadata %}{# set, so the partials below can see it: a loop's unpacked names don't reach an include #}
+            <section class="px-box person-info" aria-labelledby="picker-{{ loop.index }}">
+                <h2 class="px-title" id="picker-{{ loop.index }}">{{ name }}</h2>
+                <div class="jh-picker{% if not details.Photo %} jh-picker--plain{% elif flip.length % 2 == 0 %} jh-picker--flip{% endif %}">
+                    {% if details.Photo %}
+                    <figure class="jh-picker-photo">
+                        <a class="spotlight" href="{{ get_image(details.Photo) }}" title="{{ details.Caption }}">
+                            <img src="{{ get_image(details.Photo) }}" alt="{{ details.Caption }}" loading="lazy"/>
                         </a>
-                    </h3>
-                    {% if metadata.studio_versions.length == 0 %}
-                        <h5>
-                            {% if metadata.total_instance_count > 1 %}(All shows){% else %}(A show){% endif %}
-                        </h5>
-                    {% elif metadata.shows_as_array.length == 0 %}
-                        <h5>
-                            {% if metadata.total_instance_count > 1 %}(All studio tracks){% else %}(A studio track){% endif %}
-                        </h5>
-                    {% else %}
-                        <h5>{{metadata.shows_as_array.length}} Show{% if metadata.shows_as_array.length > 1 %}s{% endif %}, {{metadata.studio_versions.length}} Studio Track{% if metadata.studio_versions.length > 1 %}s{% endif %}
-                        </h5>
+                        <figcaption>{{ details.Caption }}</figcaption>
+                    </figure>
                     {% endif %}
-                    <div class="row">
-                        <div class="col-md-5">
-                            <a class='spotlight'
-                           href="{{ get_image(details.Photo) }}"
-                           title="{{details.Caption}}">
-                                <img src="{{ get_image(details.Photo) }}"/>
-                            </a>
-                            <figcaption class="figure-caption text-white fs-5 bio-caption">{{details.Caption}}</figcaption>
-                        </div>
-                        <div class="col-1"></div>
-                        <div class="col-md-6 fs-4 person-bio">
-                            {{details.Description}}
-                            {{details.Address}}
-                        </div>
+                    <div>
+                        {% include 'partials/picker-stats.njk' %}
+                        <p class="person-bio">{{ details.Description }}</p>
+                        {% include 'partials/picker-links.njk' %}
                     </div>
-                {% else %}
-                    <h2 class="fs-1 bio-title">{{name}}
-                        {% if metadata.instruments_display %}
-                            <span class="instruments-display small">({{metadata.instruments_display}})</span>{% endif %}
-                    </h2>
-                    <h3>
-                        Appears in <a href="{{metadata.resource_url}}">{{metadata.total_instance_count}} Instance{% if metadata.total_instance_count > 1 %}s{% endif %}
-                        </a>
-                    </h3>
-                    {% if metadata.studio_versions.length == 0 %}
-                        <h5>
-                            {% if metadata.total_instance_count > 1 %}(All shows){% else %}(A show){% endif %}
-                        </h5>
-                    {% elif metadata.shows_as_array.length == 0 %}
-                        <h5>
-                            {% if metadata.total_instance_count > 1 %}(All studio tracks){% else %}(A studio track){% endif %}
-                        </h5>
-                    {% else %}
-                        <h5>{{metadata.shows_as_array.length}} Show{% if metadata.shows_as_array.length > 1 %}s{% endif %}, {{metadata.studio_versions.length}} Studio Track{% if metadata.studio_versions.length > 1 %}s{% endif %}
-                        </h5>
-                    {% endif %}
-                    <div class="col-1"></div>
-                    <div class="row">
-                        <div class="col-md-6 fs-4 person-bio">
-                            {{details.Description}}
-                            {{details.Address}}
-                        </div>
-                        <div class="col-1"></div>
-                        <div class="col-md-5 text-center">
-
-                            <a class='spotlight'
-                           href="{{ get_image(details.Photo) }}"
-                           title="{{details.Caption}}">
-                                <img src="{{ get_image(details.Photo) }}"/>
-                            </a>
-                            <figcaption class="figure-caption text-white fs-5 bio-caption">{{details.Caption}}</figcaption>
-                        </div>
-                    </div>
-                {% endif %}
-
-            </div>
+                </div>
+            </section>
+            {% endif %}
         {% endfor %}
 
+        <section class="px-box" aria-labelledby="everyone">
+            <h2 class="px-title" id="everyone">And everyone else who has been on one</h2>
+            <ul class="jh-party">
+                {% for name, metadata in pickers_by_instance_count.slice(1) %}
+                {% if not ensemble[name] %}
+                <li>
+                    <a class="jh-party-name" href="{{ basePath }}{{ metadata.resource_url }}">{{ name }}</a>
+                    <span class="jh-party-plays">{{ metadata.instruments_display }}</span>
+                    <span class="jh-party-count">{{ metadata.total_instance_count }} instance{% if metadata.total_instance_count != 1 %}s{% endif %}</span>
+                    {% if metadata.pickipedia_url or metadata.bacon_url %}
+                    <span class="jh-party-plays">{% if metadata.pickipedia_url %}<a href="{{ metadata.pickipedia_url }}">PickiPedia</a>{% endif %}{% if metadata.pickipedia_url and metadata.bacon_url %} · {% endif %}{% if metadata.bacon_url %}<a href="{{ metadata.bacon_url }}">the Oracle</a>{% endif %}</span>
+                    {% endif %}
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </section>
     </div>
 {% endblock %}

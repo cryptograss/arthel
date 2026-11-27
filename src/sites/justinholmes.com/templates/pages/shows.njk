@@ -2,13 +2,73 @@
 {% block main %}
     {% include 'partials/bigger-banner.njk' %}
 
+    <div class="jh-wrap" id="content">
+        <h1 class="jh-page-title">Shows</h1>
 
-    <div id="content" class="container text-light all-shows-list">
-        <div class="col-md-12">
-            {% set title_as_link = true %}
+        {# What's ahead, soonest first; the list comes newest first. #}
+        {% set ahead = [] %}
+        {% for show_id, show in shows %}{% if show.is_future %}{% set soonestFirst = ahead.unshift(show) %}{% endif %}{% endfor %}
+        {% if ahead.length %}
+        <section class="px-box" aria-labelledby="ahead">
+            <h2 class="px-title" id="ahead">Ahead</h2>
+            <ol class="jh-showlist">
+                {% for show in ahead %}
+                <li>
+                    <span class="jh-show-when">{{ show.local_date }}</span>
+                    <span class="jh-show-what">
+                        <a href="{{ basePath }}{{ show.resource_url }}">{{ show.title }}</a>
+                        <span class="jh-show-where">{{ show.venue }}{% if show.locality %}, {{ show.locality }}{% endif %}{% if show.region1 %}, {{ show.region1 }}{% endif %}</span>
+                    </span>
+                    <span class="jh-show-block">block {{ show.blockheight.toLocaleString("en-US") }}</span>
+                </li>
+                {% endfor %}
+            </ol>
+        </section>
+        {% endif %}
+
+        <section class="px-box" aria-labelledby="instances">
+            <h2 class="px-title" id="instances">{{ build.shows }} instances</h2>
+            <p class="px-sub">&ldquo;Every time I take the stage and every time I put on cans in the studio, I
+                seek to make a new instance of the class Band.&rdquo; Each show is kept at the block it began on,
+                with its setlist and who played. One cell below is one song:</p>
+            <ul class="jh-key mt-2 mb-3">
+                <li><i style="background: var(--jh-original)"></i>originals</li>
+                <li><i style="background: var(--jh-traditional)"></i>traditionals</li>
+                <li><i style="background: var(--jh-cover)"></i>covers</li>
+                <li><i style="background: var(--jh-game)"></i>video game tunes</li>
+            </ul>
+
+            {% set years = [] %}
             {% for show_id, show in shows %}
-                {% include "partials/single-show-overview.njk" %}
+            {% if not show.is_future %}
+                {% set year = show.local_date.slice(-4) %}
+                {% if years[years.length - 1] != year %}
+                    {% if years.length %}</ol>{% endif %}
+                    {% set newYear = years.push(year) %}
+                    <h3 class="jh-year">{{ year }}</h3>
+                    <ol class="jh-showlist">
+                {% endif %}
+                <li>
+                    <span class="jh-show-when">{{ show.local_date }}</span>
+                    <span class="jh-show-what">
+                        <a href="{{ basePath }}{{ show.resource_url }}">{{ show.title }}</a>{% if show.has_set_stones_available %}<span class="jh-stones-mark">set stones</span>{% endif %}
+                        <span class="jh-show-where">{{ show.venue }}{% if show.locality %}, {{ show.locality }}{% endif %}{% if show.region1 %}, {{ show.region1 }}{% endif %}{% if show.region2 %}, {{ show.region2 }}{% endif %}</span>
+                        {% include 'partials/show-strip.njk' %}
+                    </span>
+                    <span class="jh-show-block">block {{ show.blockheight.toLocaleString("en-US") }}</span>
+                </li>
+            {% endif %}
             {% endfor %}
-        </div>
+            {% if years.length %}</ol>{% endif %}
+        </section>
+
+        <section class="px-box" aria-labelledby="songs-too">
+            <h2 class="px-title" id="songs-too">And the songs</h2>
+            <p>Every song we've played has a page of its own, with every time it was played.</p>
+            <div class="px-btns">
+                <a class="px-btn" href="{{ basePath }}/songs/all-songs">All {{ build.songs }} songs</a>
+                <a class="px-btn px-btn--quiet" href="{{ basePath }}/songs/songs-by-plays">Most played first</a>
+            </div>
+        </section>
     </div>
 {% endblock %}

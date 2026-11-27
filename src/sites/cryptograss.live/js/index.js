@@ -1,6 +1,8 @@
-// What is this file for, really?  It's just a placeholder.
-import '../styles/styles-common.css';
+// Every page of cryptograss.live loads this: its styles, the menu, and the ticket stubs' QR codes.
+// (Bootstrap first, so the site's own sheets have the last word.)
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/styles-common.css';
+import '../styles/site.css';
 import * as popper from 'popper.js';
 import { Dropdown } from 'bootstrap';
 import * as bootstrap from 'bootstrap';
@@ -13,6 +15,15 @@ console.log(Dropdown);
 import QRCode from 'qrcode';
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    // The menu, on a phone: one button, and the list behind it.
+    const toggle = document.querySelector('.cg-nav-toggle');
+    if (toggle) {
+        toggle.addEventListener('click', function () {
+            const open = toggle.closest('.cg-nav').classList.toggle('is-open');
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+    }
 
     // QR codes for bare secrets
     document.querySelectorAll('[data-qr-token]').forEach(canvas => {

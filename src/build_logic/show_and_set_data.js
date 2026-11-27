@@ -456,6 +456,23 @@ export function processShowAndSetData() {
 
     } // songPlays loop
 
+    // A song is on its list once, however many times it has been played: the loop above adds an
+    // original, a cover or a one-off once for every play (26 of The Morning of The Bank Run), which
+    // is how the page of songs by provenance came to be 140,000 pixels tall. A film tune goes on
+    // the film list, which nothing filled; and an original nobody has played at a show yet is
+    // still an original.
+    for (const song of Object.values(songs)) {
+        if (song.hasOwnProperty('film')) {
+            songsByProvenance['film'].push(song);
+        }
+        if (song['by_artist_id'] === 0 && song.plays.length === 0) {
+            songsByProvenance['original'].push(song);
+        }
+    }
+    for (const provenance of Object.keys(songsByProvenance)) {
+        songsByProvenance[provenance] = [...new Set(songsByProvenance[provenance])];
+    }
+
     // Now, we'll go through each set again and make a graph for song provenance.
     for (let [showID, show] of Object.entries(shows)) {
         let show_provenances = {
@@ -556,6 +573,11 @@ export function processShowAndSetData() {
 
             fs.writeFileSync(output_file_name, buffer);
         } // Set loop
+
+        // The counts themselves, for a page that draws them its own way (the list of shows: a strip
+        // per show, not a doughnut).
+        show['provenances'] = show_provenances;
+        show['songplay_count'] = Object.values(show_provenances).reduce((total, count) => total + count, 0);
 
         // Now the graph for the full show.
         // TODO: Dehydrate this into one process, instead of one for sets and one for the whole show.

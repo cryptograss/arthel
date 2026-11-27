@@ -1,5 +1,12 @@
-<div id="banner" class="container-fluid">
-    <div class="row">
-        {% include 'partials/nav.njk' %}
+{# The top of every page: the drawing, the ways in, and (on the home page) the name at full height. #}
+<header id="banner" class="cg-top">
+    {% include 'partials/nav.njk' %}
+    {% if page_name == "index" %}
+    <div class="cg-mast">
+        <h1 class="cg-wordmark">cryptograss</h1>
+        <p class="cg-tagline">future-proofing bluegrass</p>
     </div>
-</div>
+    {% else %}
+    <div class="cg-mast cg-mast--small" aria-hidden="true"></div>
+    {% endif %}
+</header>

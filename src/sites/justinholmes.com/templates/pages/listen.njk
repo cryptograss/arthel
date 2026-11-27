@@ -2,156 +2,116 @@
 {% block main %}
 {% include 'partials/bigger-banner.njk' %}
 
-<div id="listen-container" class="container mt-3">
-    <h1 class="text-light pixel-font text-center">Listen</h1>
-    <div class="row">
-        <div class="col-12">
-            <ul class="nav subnav nav-tabs pixel-font">
-                <li class="nav-item pi">
-                    <button data-group="music-listen-section" data-show="studio" class="nav-link exclusive active">
-                        Studio
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button data-group="music-listen-section" data-show="sessions" class="nav-link exclusive">Sessions
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button data-group="music-listen-section" data-show="live" class="nav-link exclusive">Live</button>
-                </li>
-                <li class="nav-item">
-                    <button data-group="music-listen-section" data-show="talks" class="nav-link exclusive">Talks
-                    </button>
-                </li>
+<div class="jh-wrap" id="listen-container">
+    <h1 class="jh-page-title">Listen</h1>
+
+    <ul class="jh-jump">
+        {% if eco.tracks and eco.tracks.length %}<li><a class="px-btn px-btn--go" href="#rabbithole"><i class="px-play"></i>In Rabbithole</a></li>{% endif %}
+        <li><a class="px-btn" href="#records">Records</a></li>
+        <li><a class="px-btn" href="#sessions">Sessions</a></li>
+        <li><a class="px-btn" href="#live">Live</a></li>
+        <li><a class="px-btn" href="#talks">Talks</a></li>
+    </ul>
+
+    {# ---- The tracks Rabbithole hands out, under the record each is on ---- #}
+    {% if eco.tracks and eco.tracks.length %}
+    <section class="px-box" id="rabbithole" aria-labelledby="rabbithole-title">
+        <h2 class="px-title" id="rabbithole-title">In Rabbithole</h2>
+        <p><a href="{{ eco.pickipedia }}/wiki/Rabbithole">Rabbithole</a> is a player that shows the whole
+            ensemble of a track: who's playing what, each picker's page opening as they take their solo,
+            and a trail to follow down the rabbithole of pickers. These are the tracks whose charts are
+            finished; more join as each is charted.</p>
+        {% for record, tracks in eco.tracks_by_record %}
+            <h3 class="px-h mt-3">{% if record %}<a href="{{ eco.pickipedia }}/wiki/{{ record | urlencode }}">{{ record }}</a>{% else %}From the stage{% endif %}</h3>
+            <ul class="jh-tracks">
+                {% for track in tracks %}
+                <li><a href="{{ track.listen }}"><i class="px-play"></i>{{ track.title }} <small>play in Rabbithole</small></a></li>
+                {% endfor %}
             </ul>
-        </div>
-    </div>
-
-    <div id="studio" class="music-listen-section">
-        <div class="row">
-            <div id="vowel-sounds" class="col-md-5">
-                <h3 class="text-white text-center"><a href="{{ basePath }}/music/vowel-sounds">Vowel Sounds</a> (Album)</h3>
-                <h3 class="text-white text-center"><a href="{{ basePath }}/music/vowel-sounds">(more info)</a></h3>
-                <h5 class="text-white text-center">Released September 2023</h5>
-            </div>
-            <div class="col-2"></div>
-            <div id="nanny-state-fiddler" class="col-md-5">
-                <h4 class="text-white text-center">Nanny State
-                    Fiddler</h4>
-                <h4 class="text-white text-center">(single)</h4>
-                <h5 class="text-white text-center">Released July 2022</h5>
-
-            </div>
-            <div class="row">
-
-                <div class="col-md-5">
-
-                    <iframe style="width: 100%; height: 472px;"
-                            src="https://bandcamp.com/EmbeddedPlayer/album=1063602042/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/"
-                            seamless><a href="https://justinholmes.bandcamp.com/album/vowel-sounds">Vowel Sounds by
-                        Justin
-                        Holmes</a></iframe>
-                </div>
-                <div class="col-2"></div>
-                <div class="col-md-5">
-                    <iframe style="border: 0; width: 100%; height: 470px;"
-                            src="https://bandcamp.com/EmbeddedPlayer/album=2958184754/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/track=3837192687/transparent=true/"
-                            seamless><a href="https://justinholmes.bandcamp.com/album/nanny-state-fiddler-single">Nanny
-                        State
-                        Fiddler (single) by Justin Holmes</a></iframe>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="sessions" class="music-listen-section" style="display: none;">
-        <div class="row">
-            <div class="col-1"></div>
-            <div class="col-11">
-                <h3 class="section-heading">Intimate recordings at studios or homes, with live audiences of 10 or
-                    less.</h3>
-            </div>
-        </div>
-        {% for media in sessions %}
-            {% if loop.index0 % 2 === 0 %}
-            <div class="row mt-3">
-            {% endif %}
-            <div class="col-sm-5 live-video index-{{ index % 4 }}">
-                <div class="row">
-                    {% set url = media.url %}
-                    {% include 'partials/youtube.njk' %}
-                </div>
-                <div class="row media-metadata-above-video" style="min-height: 100px">
-                    {% include 'partials/media-metadata.njk' %}
-                </div>
-            </div>
-            {% if loop.index0 % 2 != 0 or loop.last %}
-                </div>
-            {% else %}
-                <div class="col-2"></div>
-            {% endif %}
         {% endfor %}
+    </section>
+    {% endif %}
 
-    </div>
-
-    <div id="live" class="music-listen-section">
-        <h3 class="section-heading">Recordings from live performances at venues, festivals, and events.</h3>
-        <h4 class="section-heading pixel-font">I've been blessed to play music and relay my hopes for the future of
-            the internet all over the world,
-            from Nashville to Cape Town to Osaka to Prague.</h4>
-
-        {% for media in live %}
-            {% if loop.index0 % 2 === 0 %}
-            <div class="row mt-3">
-            {% endif %}
-            <div class="col-sm-5 live-video index-{{loop.index % 4}}">
-                <div class="row">
-                    {% set url = media.url %}
-                    {% include 'partials/youtube.njk' %}
-                </div>
-                <div class="row media-metadata-above-video" style="min-height: 100px">
-                    {% include 'partials/media-metadata.njk' %}
+    {# ---- The records ---- #}
+    <div class="jh-records" id="records">
+        {% set fourmasks = get_record_metadata("4masks") %}
+        <section class="px-box" aria-labelledby="record-4masks">
+            <h2 class="px-title" id="record-4masks">Our second record</h2>
+            <div class="jh-record-head">
+                <img class="jh-sleeve pixelated" width="400" height="400"
+                     src="{{ get_image("albums/four-masks-temp.png") }}"
+                     alt="The 4masks sleeve: four squares, red, blue, green and yellow">
+                <div>
+                    <h3 class="jh-record-name">4masks</h3>
+                    <p class="px-sub">Tunesmith Studios, Nashville</p>
                 </div>
             </div>
-            {% if loop.index0 % 2 != 0 or loop.last %}
-                </div>
-            {% else %}
-                <div class="col-2"></div>
-            {% endif %}
-        {% endfor %}
+            <p>Every track, who is on it, and the files themselves are on PickiPedia.</p>
+            <div class="px-btns">
+                <a class="px-btn" href="{{ eco.pickipedia }}/wiki/4masks">4masks on PickiPedia</a>
+                {% if fourmasks.bandcamp_url %}<a class="px-btn px-btn--quiet" href="{{ fourmasks.bandcamp_url }}">Bandcamp</a>{% endif %}
+            </div>
+        </section>
 
-    </div>
-    <div id="talks" class="music-listen-section">
-        <h3 class="section-heading">Recordings that may or may not have music, but where the focus is talking about (and
-            perhaps performing a live demo of) compelling innovations.</h3>
-
-        {% for media in talks %}
-            {% if loop.index0 % 2 === 0 %}
-            <div class="row mt-3">
-            {% endif %}
-            <div class="col-sm-5 live-video index-{{loop.index % 4}}">
-                <div class="row">
-                    {% set url = media.url %}
-                    {% include 'partials/youtube.njk' %}
-                </div>
-                <div class="row media-metadata-above-video" style="min-height: 100px">
-                    {% include 'partials/media-metadata.njk' %}
+        <section class="px-box" id="vowel-sounds" aria-labelledby="record-vowel-sounds">
+            <h2 class="px-title" id="record-vowel-sounds">Album · September 2023</h2>
+            <div class="jh-record-head">
+                <img class="jh-sleeve" width="400" height="400"
+                     src="{{ get_image("albums/vowel-sounds-cover-art-400.png") }}" alt="The Vowel Sounds sleeve">
+                <div>
+                    <h3 class="jh-record-name">Vowel Sounds</h3>
                 </div>
             </div>
-            {% if loop.index0 % 2 != 0 or loop.last %}
-                </div>
-            {% else %}
-                <div class="col-2"></div>
-            {% endif %}
-        {% endfor %}
+            <div class="px-btns">
+                <a class="px-btn" href="{{ basePath }}/music/vowel-sounds/">How it was released</a>
+                <a class="px-btn px-btn--quiet" href="{{ eco.pickipedia }}/wiki/Vowel_Sounds">On PickiPedia</a>
+            </div>
+            <iframe class="jh-embed" loading="lazy" style="height: 472px;" title="Vowel Sounds, on Bandcamp"
+                    src="https://bandcamp.com/EmbeddedPlayer/album=1063602042/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/"
+                    seamless><a href="https://justinholmes.bandcamp.com/album/vowel-sounds">Vowel Sounds by Justin Holmes</a></iframe>
+        </section>
 
+        <section class="px-box" id="nanny-state-fiddler" aria-labelledby="record-nsf">
+            <h2 class="px-title" id="record-nsf">Single · July 2022</h2>
+            <h3 class="jh-record-name" style="font-size: clamp(1.8rem, 5vw, 2.4rem);">Nanny State Fiddler</h3>
+            <iframe class="jh-embed" loading="lazy" style="height: 470px;" title="Nanny State Fiddler, on Bandcamp"
+                    src="https://bandcamp.com/EmbeddedPlayer/album=2958184754/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/track=3837192687/transparent=true/"
+                    seamless><a href="https://justinholmes.bandcamp.com/album/nanny-state-fiddler-single">Nanny State Fiddler (single) by Justin Holmes</a></iframe>
+        </section>
     </div>
 
-    <div id="ensemble-intro" class="fs-4 text-start">
-        <p><em>
-            "After we're done with the music, it's gone. Why shouldn't they take it home with them?" - Jerry Garcia
-        </em>
-        </p>
+    {# ---- Video: sessions, live, talks. Each loads when pressed. ---- #}
+    <section class="px-box" id="sessions" aria-labelledby="sessions-title">
+        <h2 class="px-title" id="sessions-title">Sessions</h2>
+        <p class="px-sub mb-3">Intimate recordings at studios or homes, with live audiences of 10 or less.</p>
+        <ul class="jh-tapes">
+            {% for tape in sessions %}{% include 'partials/tape.njk' %}{% endfor %}
+        </ul>
+    </section>
+
+    <section class="px-box" id="live" aria-labelledby="live-title">
+        <h2 class="px-title" id="live-title">Live</h2>
+        <p class="px-sub mb-3">Recordings from live performances at venues, festivals, and events. I've been
+            blessed to play music and relay my hopes for the future of the internet all over the world,
+            from Nashville to Cape Town to Osaka to Prague.</p>
+        <ul class="jh-tapes">
+            {% for tape in live %}{% include 'partials/tape.njk' %}{% endfor %}
+        </ul>
+    </section>
+
+    <section class="px-box" id="talks" aria-labelledby="talks-title">
+        <h2 class="px-title" id="talks-title">Talks</h2>
+        <p class="px-sub mb-3">Recordings that may or may not have music, but where the focus is talking about
+            (and perhaps performing a live demo of) compelling innovations.</p>
+        <ul class="jh-tapes">
+            {% for tape in talks %}{% include 'partials/tape.njk' %}{% endfor %}
+        </ul>
+    </section>
+
+    <section class="px-box" id="ensemble-intro" aria-labelledby="take-it-home">
+        <h2 class="px-title" id="take-it-home">Take it home</h2>
+        <blockquote class="jh-quote">"After we're done with the music, it's gone. Why shouldn't they take it
+            home with them?" - Jerry Garcia</blockquote>
         <p>
             Music, Recordings, and Artwork are released pursuant to the Creative Commons Attribution-ShareAlike 4.0
             International (CC BY-SA 4.0)
@@ -164,6 +124,6 @@
 
             Please share via bittorrent, IPFS, or a censorship-resistant mechanism of your choice.
         </p>
-    </div>
+    </section>
 </div>
 {% endblock %}

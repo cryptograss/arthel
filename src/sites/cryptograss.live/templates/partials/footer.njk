@@ -1,0 +1,32 @@
+<footer class="cg-foot">
+    <div class="cg-foot-in">
+        <div>
+            <h2>Growing here</h2>
+            <ul>
+                <li><a href="{{ eco.pickipedia }}">PickiPedia</a></li>
+                <li><a href="{{ eco.bacon }}">The Oracle of Bluegrass Bacon</a></li>
+                <li><a href="{{ eco.rabbithole }}">Rabbithole</a></li>
+                <li><a href="{{ eco.magenta }}">magenta</a></li>
+            </ul>
+        </div>
+        <div>
+            <h2>On this site</h2>
+            <ul>
+                <li><a href="{{ basePath }}/onchain-merch">Onchain merch</a> · <a href="{{ basePath }}/all-setstones">every Set Stone</a></li>
+                <li><a href="{{ basePath }}/faq">Why bluegrass, why blockchains</a></li>
+                <li><a href="{{ basePath }}/happenings">Happenings</a></li>
+                <li><a href="https://justinholmes.com">Justin Holmes and the Immutable String Band</a></li>
+            </ul>
+        </div>
+        <div>
+            <h2>Take it</h2>
+            <p>Everything is open source, written by musicians and serious music fans:
+                <a href="https://github.com/cryptograss">github.com/cryptograss</a>.</p>
+            <p>The music is Creative Commons. Copy it, pass it along.</p>
+        </div>
+    </div>
+    {% if build.block_display %}
+    <p class="cg-foot-build">built at block {{ build.block_display }} · ref
+        <a href="https://github.com/cryptograss/arthel/commit/{{ build.commit }}">{{ build.commit_short }}</a></p>
+    {% endif %}
+</footer>

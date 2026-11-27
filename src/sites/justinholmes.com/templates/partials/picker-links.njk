@@ -1,0 +1,6 @@
+{# Where a picker leads: their instances here, their page on PickiPedia, their graph in the Oracle. Expects `who`: the picker's data, set by the page that includes it. #}
+<ul class="jh-out">
+    <li><a href="{{ basePath }}{{ who.resource_url }}">Every instance</a></li>
+    {% if who.pickipedia_url %}<li><a href="{{ who.pickipedia_url }}">On PickiPedia</a></li>{% endif %}
+    {% if who.bacon_url %}<li><a href="{{ who.bacon_url }}">In the Oracle of Bluegrass Bacon</a></li>{% endif %}
+</ul>

@@ -1,0 +1,11 @@
+{# One video, as a tape: nothing is asked of YouTube until it is pressed (js/index.js). #}
+<li class="jh-tape">
+    <button type="button" class="jh-tape-screen" data-embed="{{ tape.url }}" aria-label="Play: {{ tape.title | escape }}">
+        <i class="px-play"></i><span class="jh-tape-word">press to load</span>
+    </button>
+    <div class="jh-tape-label">
+        <strong>{{ tape.title }}</strong>
+        {% if tape.event %}<span>{{ tape.event }}</span>{% endif %}
+        <span>{% if tape.location %}{{ tape.location }}{% endif %}{% if tape.location and tape.date %} · {% endif %}{% if tape.date %}{{ tape.date }}{% endif %}</span>
+    </div>
+</li>

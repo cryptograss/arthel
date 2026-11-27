@@ -1,0 +1,23 @@
+{% extends '../base.njk' %}
+
+{# Why bluegrass, why blockchains: Justin's answers (src/data/page_specific/faq/faq.md). #}
+{% block main %}
+<h1 class="cg-section-title">Why bluegrass, why blockchains</h1>
+<p class="cg-section-sub">The questions we get asked, mostly by pickers, and how we answer them.</p>
+
+<section class="cg-plot">
+    <div class="cg-prose">
+        {{ faq }}
+    </div>
+</section>
+
+<section class="cg-plot cg-why">
+    <p class="cg-kicker">Still not sure?</p>
+    <p>Come ask. <a href="{{ eco.magenta }}">magenta</a> is open to read without an account, and
+        the folks in it would rather talk you out of a scam than into anything.</p>
+    <div class="cg-btns">
+        <a class="cg-btn cg-btn--magenta" href="{{ eco.magenta }}">Come in</a>
+        <a class="cg-btn cg-btn--quiet" href="{{ eco.pickipedia }}/wiki/Cryptograss">Who we are, on PickiPedia</a>
+    </div>
+</section>
+{% endblock %}

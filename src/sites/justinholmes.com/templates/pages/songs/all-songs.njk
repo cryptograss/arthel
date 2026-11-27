@@ -2,12 +2,39 @@
 {% block main %}
 {% include 'partials/bigger-banner.njk' %}
 
+{# Every song and tune we've played, under where it comes from; each leads to its own page. #}
+{% set kinds = [
+    ["original", "Originals", "--jh-original"],
+    ["traditional", "Traditionals", "--jh-traditional"],
+    ["cover", "Covers", "--jh-cover"],
+    ["video_game", "Video game tunes", "--jh-game"],
+    ["film", "From films", "--jh-dim"],
+    ["one-off", "One-offs", "--jh-dim"]
+] %}
+<div class="jh-wrap" id="content">
+    <h1 class="jh-page-title">Songs</h1>
 
-<div id="content" class="container text-light">
-    {% for song in songs %}
-        <br/>
-        {% include 'reuse/song-summary.njk' %}
-        <hr/>
-    {% endfor %}
+    <section class="px-box" aria-labelledby="all-songs">
+        <h2 class="px-title" id="all-songs">{{ build.songs }} songs and tunes</h2>
+        <p class="px-sub">Everything we've played, under where it comes from. The number is how many
+            times it has been played at a show.</p>
+
+        {% for kind in kinds %}
+        {% set these = songsByProvenance[kind[0]] %}
+        {% if these and these.length %}
+        <h3 class="jh-year" style="color: var({{ kind[2] }});">{{ kind[1] }}</h3>
+        <ul class="jh-songs">
+            {% for song in these %}
+            <li><a href="{{ basePath }}{{ song.resource_url }}">{{ song.title if song.title else song.slug }}</a>{% if song.plays.length %} <span>{{ song.plays.length }}</span>{% endif %}{% if song.rabbithole_url %} <a class="jh-songs-play" href="{{ song.rabbithole_url }}" aria-label="Play {{ song.title }} in Rabbithole"><i class="px-play"></i></a>{% endif %}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endfor %}
+
+        <div class="px-btns">
+            <a class="px-btn px-btn--quiet" href="{{ basePath }}/songs/songs-by-plays">Most played first</a>
+            <a class="px-btn px-btn--quiet" href="{{ basePath }}/songs/traditionals">The traditionals, play by play</a>
+        </div>
+    </section>
 </div>
 {% endblock %}

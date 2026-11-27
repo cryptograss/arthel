@@ -37,14 +37,11 @@
             {% endif %}
 
 
-            {% if chartifacts_version and chartifacts_version.rabbithole %}
-            <div class="chartifacts-embed-container text-center" style="margin: 20px 0;">
-                <iframe src="/embed/rabbithole/{{ song_slug }}.html"
-                        width="500" height="400"
-                        frameborder="0"
-                        title="Rabbit Hole Player - {{ song.title }}"
-                        style="border: none; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
-                </iframe>
+            {# The player lives on PickiPedia now (the copy that sat in a frame here had asked for
+               /embed/rabbithole/.html, a page that never was). A song plays there once its chart is finished. #}
+            {% if song.rabbithole_url %}
+            <div class="text-center" style="margin: 20px 0;">
+                <a class="px-btn px-btn--go" href="{{ song.rabbithole_url }}"><i class="px-play"></i>Play {{ song.title }} in Rabbithole</a>
             </div>
             {% endif %}
 

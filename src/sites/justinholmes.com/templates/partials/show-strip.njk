@@ -1,0 +1,4 @@
+{# What a show was made of, one cell a song: originals, traditionals, covers, video game tunes. #}
+{% if show.songplay_count %}
+<span class="jh-strip" role="img" aria-label="{{ show.provenances.original }} originals, {{ show.provenances.traditional }} traditionals, {{ show.provenances.cover }} covers, {{ show.provenances.video_game }} video game tunes">{% for kind in ["original", "traditional", "cover", "video_game"] %}{% for n in range(show.provenances[kind]) %}<i class="{{ kind }}"></i>{% endfor %}{% endfor %}</span>
+{% endif %}

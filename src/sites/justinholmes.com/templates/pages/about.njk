@@ -2,16 +2,32 @@
 {% block main %}
 {% include 'partials/bigger-banner.njk' %}
 
-<div id="content" class="mb-5 container text-light">
-    <h1 class="text-light pixel-font text-center m-5">About Justin</h1>
-    <div class="row">
-        <div class="col-2"></div>
-        <div class="col-8">
-            <div id="about-text" class="p-3 fs-4 text-start semi-transparent-bg">
-                {{ about_text }}
-            </div>
+<div class="jh-wrap" id="content">
+    <h1 class="jh-page-title">About Justin</h1>
+
+    <section class="px-box" aria-labelledby="about-justin">
+        <h2 class="px-title" id="about-justin">In his words</h2>
+        <div id="about-text" class="jh-prose">
+            {{ about_text }}
         </div>
-        <div class="col-2"></div>
-    </div>
+        <div class="px-btns" style="text-align: center;">
+            <a class="px-btn" href="{{ eco.justin.wiki }}">More, on PickiPedia</a>
+            <a class="px-btn px-btn--quiet" href="https://epk.justinholmes.com/">Press kit</a>
+            <a class="px-btn px-btn--quiet" href="{{ basePath }}/contact">Booking</a>
+        </div>
+    </section>
+
+    <section class="px-box" aria-labelledby="about-cryptograss">
+        <h2 class="px-title" id="about-cryptograss">And cryptograss</h2>
+        <div class="jh-prose">
+            <p>The cryptographic tools here are written by bluegrassers, and the songs by cryptographic engineers.</p>
+            <p class="px-note">The music is released free, and the tools that release it are open source:
+                a wiki of pickers and songs, a player that shows the whole band, a way to find the music
+                between any two pickers, and a place to hang out. They live at cryptograss.live.</p>
+        </div>
+        <div class="px-btns" style="text-align: center;">
+            <a class="px-btn" href="{{ getCryptograssUrl() }}">cryptograss.live</a>
+        </div>
+    </section>
 </div>
 {% endblock %}
